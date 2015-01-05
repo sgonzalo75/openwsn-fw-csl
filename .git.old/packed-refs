@@ -1,0 +1,23 @@
+# pack-refs with: peeled 
+574317f5d6e418e46fd29ba5ec4c6f2a93a01115 refs/remotes/origin/EnergyHarvesting
+5875ace644dc9bd14a87345af7d9d0030a6a0071 refs/remotes/origin/RB-1.0
+3265a222913407c465d0a1276e567a58918ed438 refs/remotes/origin/RB-1.2
+986448b7035006aae19509b9b8159fee9aed678e refs/remotes/origin/RB-1.4
+53cff84f6adc197bd90b1627bbcaf9ba09d941bb refs/remotes/origin/RB-1.6
+426b5024235223be00c47a43166afe4c207201fd refs/remotes/origin/develop
+a15d8dc5aeb689c897d89068e9138c1d92cc2ddf refs/remotes/origin/develop_FW-269
+824a5e19df62639e177a975e0fd039927e0a69fb refs/remotes/origin/develop_FW-279
+e3396e5ddc532e43572f33db761fc668934a8835 refs/remotes/origin/develop_demoIAB
+fae0a0e9eea7864991ad8f5434e193122c0607d9 refs/remotes/origin/develop_uRes_FW-101
+839cdf2e3d12e31d5d7bdd611bcd873fa8b832c2 refs/remotes/origin/develop_ures
+c94b3957b9abb6d9e04e15b79f0d63150f512f06 refs/remotes/origin/develop_xbee
+53cff84f6adc197bd90b1627bbcaf9ba09d941bb refs/remotes/origin/master
+08b472582a5d75323b72ce7b7a4a6627dbd52cfd refs/tags/REL-1.0.0
+^78c85e88e62a4404feeff182147b5bc3ee18cc20
+53fcc65328b2cb96016f95fedfde312b293620e6 refs/tags/REL-1.2.0
+^a88c221249a19231c91a72bd094afd4ec36e417b
+9dc54de3f760353e6689292f0608a9e94a2fe072 refs/tags/REL-1.4.0
+^986448b7035006aae19509b9b8159fee9aed678e
+53cff84f6adc197bd90b1627bbcaf9ba09d941bb refs/tags/REL-1.6.0
+2fde10f6276a06c13a95ee38c596a0502721f6d1 refs/tags/openwsn_1_0_0
+^8270472f9397fd01eb45a260164243af7a2f1dac
