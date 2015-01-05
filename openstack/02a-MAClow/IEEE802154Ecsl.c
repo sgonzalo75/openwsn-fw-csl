@@ -1397,7 +1397,7 @@ port_INLINE void activity_csl_wakeup_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
 
       // Obtenemos la trama con los datos recibidos desde el buffer de recepción de la radio.
       ieee154e_vars.wakeupReceived->payload = &(ieee154e_vars.wakeupReceived->packet[FIRST_FRAME_BYTE]);
-      radio_getWakeUpFrame (       ieee154e_vars.wakeupReceived->payload,
+      radio_getReceivedFrame(      ieee154e_vars.wakeupReceived->payload,
                                    &ieee154e_vars.wakeupReceived->length,
                              sizeof(ieee154e_vars.wakeupReceived->packet),
                                    &ieee154e_vars.wakeupReceived->l1_rssi,

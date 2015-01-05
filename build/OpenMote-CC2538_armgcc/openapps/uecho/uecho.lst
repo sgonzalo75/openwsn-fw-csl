@@ -303,17 +303,17 @@
  254              		.file 4 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 uecho.c
-     /tmp/ccgYTvdr.s:19     .rodata:00000000 $d
-     /tmp/ccgYTvdr.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccgYTvdr.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccgYTvdr.s:32     .rodata:00000010 infouCName
-     /tmp/ccgYTvdr.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccgYTvdr.s:42     .rodata:00000024 infoStackName
-     /tmp/ccgYTvdr.s:45     .text:00000000 $t
-     /tmp/ccgYTvdr.s:50     .text:00000000 uecho_init
-     /tmp/ccgYTvdr.s:77     .text:0000000c uecho_receive
-     /tmp/ccgYTvdr.s:192    .text:000000c8 uecho_sendDone
-     /tmp/ccgYTvdr.s:227    .text:000000e4 uecho_debugPrint
+     /tmp/ccVknzG5.s:19     .rodata:00000000 $d
+     /tmp/ccVknzG5.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccVknzG5.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccVknzG5.s:32     .rodata:00000010 infouCName
+     /tmp/ccVknzG5.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccVknzG5.s:42     .rodata:00000024 infoStackName
+     /tmp/ccVknzG5.s:45     .text:00000000 $t
+     /tmp/ccVknzG5.s:50     .text:00000000 uecho_init
+     /tmp/ccVknzG5.s:77     .text:0000000c uecho_receive
+     /tmp/ccVknzG5.s:192    .text:000000c8 uecho_sendDone
+     /tmp/ccVknzG5.s:227    .text:000000e4 uecho_debugPrint
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

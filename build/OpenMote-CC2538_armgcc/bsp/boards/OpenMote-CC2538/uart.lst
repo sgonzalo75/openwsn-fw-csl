@@ -656,24 +656,24 @@
  522              		.file 5 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 uart.c
-     /tmp/ccrBddyS.s:19     .rodata:00000000 $d
-     /tmp/ccrBddyS.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccrBddyS.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccrBddyS.s:32     .rodata:00000010 infouCName
-     /tmp/ccrBddyS.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccFHORNo.s:19     .rodata:00000000 $d
+     /tmp/ccFHORNo.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccFHORNo.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccFHORNo.s:32     .rodata:00000010 infouCName
+     /tmp/ccFHORNo.s:37     .rodata:00000018 infoRadioName
                             *COM*:00000008 uart_vars
-     /tmp/ccrBddyS.s:41     .text:00000000 $t
-     /tmp/ccrBddyS.s:46     .text:00000000 uart_init
-     /tmp/ccrBddyS.s:377    .text:000001c8 uart_isr_private
-     /tmp/ccrBddyS.s:145    .text:000000f4 uart_setCallbacks
-     /tmp/ccrBddyS.s:187    .text:00000120 uart_enableInterrupts
-     /tmp/ccrBddyS.s:216    .text:00000138 uart_disableInterrupts
-     /tmp/ccrBddyS.s:245    .text:00000150 uart_clearRxInterrupts
-     /tmp/ccrBddyS.s:274    .text:00000168 uart_clearTxInterrupts
-     /tmp/ccrBddyS.s:303    .text:00000180 uart_writeByte
-     /tmp/ccrBddyS.s:340    .text:000001a4 uart_readByte
-     /tmp/ccrBddyS.s:441    .text:00000220 uart_tx_isr
-     /tmp/ccrBddyS.s:482    .text:0000024c uart_rx_isr
+     /tmp/ccFHORNo.s:41     .text:00000000 $t
+     /tmp/ccFHORNo.s:46     .text:00000000 uart_init
+     /tmp/ccFHORNo.s:377    .text:000001c8 uart_isr_private
+     /tmp/ccFHORNo.s:145    .text:000000f4 uart_setCallbacks
+     /tmp/ccFHORNo.s:187    .text:00000120 uart_enableInterrupts
+     /tmp/ccFHORNo.s:216    .text:00000138 uart_disableInterrupts
+     /tmp/ccFHORNo.s:245    .text:00000150 uart_clearRxInterrupts
+     /tmp/ccFHORNo.s:274    .text:00000168 uart_clearTxInterrupts
+     /tmp/ccFHORNo.s:303    .text:00000180 uart_writeByte
+     /tmp/ccFHORNo.s:340    .text:000001a4 uart_readByte
+     /tmp/ccFHORNo.s:441    .text:00000220 uart_tx_isr
+     /tmp/ccFHORNo.s:482    .text:0000024c uart_rx_isr
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.hw_ints.h.42.85b9479f2be35b086f1bb7cbb15bc097

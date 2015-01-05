@@ -292,19 +292,19 @@
  221              		.file 6 "openstack/04-TRAN/opencoap.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 openstack.c
-     /tmp/ccmmSZzN.s:19     .rodata:00000000 $d
-     /tmp/ccmmSZzN.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccmmSZzN.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccmmSZzN.s:32     .rodata:00000010 infouCName
-     /tmp/ccmmSZzN.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccmmSZzN.s:42     .rodata:00000024 infoStackName
-     /tmp/ccmmSZzN.s:47     .rodata:00000030 all_routers_multicast
-     /tmp/ccmmSZzN.s:67     .rodata:00000040 ipAddr_ipsoRD
-     /tmp/ccmmSZzN.s:87     .rodata:00000050 ipAddr_motesEecs
-     /tmp/ccmmSZzN.s:107    .rodata:00000060 ipAddr_local
-     /tmp/ccmmSZzN.s:127    .rodata:00000070 ipAddr_motedata
-     /tmp/ccmmSZzN.s:145    .text:00000000 $t
-     /tmp/ccmmSZzN.s:150    .text:00000000 openstack_init
+     /tmp/cck5oO8I.s:19     .rodata:00000000 $d
+     /tmp/cck5oO8I.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cck5oO8I.s:27     .rodata:00000008 infoBoardname
+     /tmp/cck5oO8I.s:32     .rodata:00000010 infouCName
+     /tmp/cck5oO8I.s:37     .rodata:00000018 infoRadioName
+     /tmp/cck5oO8I.s:42     .rodata:00000024 infoStackName
+     /tmp/cck5oO8I.s:47     .rodata:00000030 all_routers_multicast
+     /tmp/cck5oO8I.s:67     .rodata:00000040 ipAddr_ipsoRD
+     /tmp/cck5oO8I.s:87     .rodata:00000050 ipAddr_motesEecs
+     /tmp/cck5oO8I.s:107    .rodata:00000060 ipAddr_local
+     /tmp/cck5oO8I.s:127    .rodata:00000070 ipAddr_motedata
+     /tmp/cck5oO8I.s:145    .text:00000000 $t
+     /tmp/cck5oO8I.s:150    .text:00000000 openstack_init
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

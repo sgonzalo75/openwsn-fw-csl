@@ -1619,25 +1619,25 @@
  888              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
 DEFINED SYMBOLS
                             *ABS*:00000000 ssi.c
-     /tmp/ccHws6Gk.s:18     .text:00000000 $t
-     /tmp/ccHws6Gk.s:23     .text:00000000 SSIConfigSetExpClk
-     /tmp/ccHws6Gk.s:143    .text:000000b0 SSIEnable
-     /tmp/ccHws6Gk.s:182    .text:000000d8 SSIDisable
-     /tmp/ccHws6Gk.s:221    .text:00000100 SSIIntRegister
-     /tmp/ccHws6Gk.s:274    .text:0000013c SSIIntUnregister
-     /tmp/ccHws6Gk.s:325    .text:00000174 SSIIntEnable
-     /tmp/ccHws6Gk.s:366    .text:0000019c SSIIntDisable
-     /tmp/ccHws6Gk.s:408    .text:000001c8 SSIIntStatus
-     /tmp/ccHws6Gk.s:457    .text:000001f8 SSIIntClear
-     /tmp/ccHws6Gk.s:494    .text:00000218 SSIDataPut
-     /tmp/ccHws6Gk.s:541    .text:00000248 SSIDataPutNonBlocking
-     /tmp/ccHws6Gk.s:593    .text:00000284 SSIDataGet
-     /tmp/ccHws6Gk.s:641    .text:000002b8 SSIDataGetNonBlocking
-     /tmp/ccHws6Gk.s:694    .text:000002f4 SSIDMAEnable
-     /tmp/ccHws6Gk.s:735    .text:0000031c SSIDMADisable
-     /tmp/ccHws6Gk.s:777    .text:00000348 SSIBusy
-     /tmp/ccHws6Gk.s:819    .text:00000374 SSIClockSourceSet
-     /tmp/ccHws6Gk.s:856    .text:00000394 SSIClockSourceGet
+     /tmp/ccSTH4QX.s:18     .text:00000000 $t
+     /tmp/ccSTH4QX.s:23     .text:00000000 SSIConfigSetExpClk
+     /tmp/ccSTH4QX.s:143    .text:000000b0 SSIEnable
+     /tmp/ccSTH4QX.s:182    .text:000000d8 SSIDisable
+     /tmp/ccSTH4QX.s:221    .text:00000100 SSIIntRegister
+     /tmp/ccSTH4QX.s:274    .text:0000013c SSIIntUnregister
+     /tmp/ccSTH4QX.s:325    .text:00000174 SSIIntEnable
+     /tmp/ccSTH4QX.s:366    .text:0000019c SSIIntDisable
+     /tmp/ccSTH4QX.s:408    .text:000001c8 SSIIntStatus
+     /tmp/ccSTH4QX.s:457    .text:000001f8 SSIIntClear
+     /tmp/ccSTH4QX.s:494    .text:00000218 SSIDataPut
+     /tmp/ccSTH4QX.s:541    .text:00000248 SSIDataPutNonBlocking
+     /tmp/ccSTH4QX.s:593    .text:00000284 SSIDataGet
+     /tmp/ccSTH4QX.s:641    .text:000002b8 SSIDataGetNonBlocking
+     /tmp/ccSTH4QX.s:694    .text:000002f4 SSIDMAEnable
+     /tmp/ccSTH4QX.s:735    .text:0000031c SSIDMADisable
+     /tmp/ccSTH4QX.s:777    .text:00000348 SSIBusy
+     /tmp/ccSTH4QX.s:819    .text:00000374 SSIClockSourceSet
+     /tmp/ccSTH4QX.s:856    .text:00000394 SSIClockSourceGet
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.hw_ints.h.42.85b9479f2be35b086f1bb7cbb15bc097

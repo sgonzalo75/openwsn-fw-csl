@@ -697,15 +697,15 @@
  418              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
 DEFINED SYMBOLS
                             *ABS*:00000000 sleepmode.c
-     /tmp/ccNrXUtj.s:18     .text:00000000 $t
-     /tmp/ccNrXUtj.s:23     .text:00000000 SleepModeIntRegister
-     /tmp/ccNrXUtj.s:61     .text:00000024 SleepModeIntUnregister
-     /tmp/ccNrXUtj.s:91     .text:0000003c SleepModeTimerCountGet
-     /tmp/ccNrXUtj.s:153    .text:00000098 SleepModeCaptureConfig
-     /tmp/ccNrXUtj.s:206    .text:000000d8 SleepModeTimerCompareSet
-     /tmp/ccNrXUtj.s:273    .text:00000140 SleepModeCaptureGet
-     /tmp/ccNrXUtj.s:335    .text:0000019c SleepModeCaptureIsValid
-     /tmp/ccNrXUtj.s:378    .text:000001c8 SleepModeCaptureNew
+     /tmp/ccO36LmT.s:18     .text:00000000 $t
+     /tmp/ccO36LmT.s:23     .text:00000000 SleepModeIntRegister
+     /tmp/ccO36LmT.s:61     .text:00000024 SleepModeIntUnregister
+     /tmp/ccO36LmT.s:91     .text:0000003c SleepModeTimerCountGet
+     /tmp/ccO36LmT.s:153    .text:00000098 SleepModeCaptureConfig
+     /tmp/ccO36LmT.s:206    .text:000000d8 SleepModeTimerCompareSet
+     /tmp/ccO36LmT.s:273    .text:00000140 SleepModeCaptureGet
+     /tmp/ccO36LmT.s:335    .text:0000019c SleepModeCaptureIsValid
+     /tmp/ccO36LmT.s:378    .text:000001c8 SleepModeCaptureNew
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.hw_ints.h.42.85b9479f2be35b086f1bb7cbb15bc097

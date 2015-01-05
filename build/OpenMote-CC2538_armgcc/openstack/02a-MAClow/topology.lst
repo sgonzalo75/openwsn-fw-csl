@@ -229,14 +229,14 @@
   84              		.file 5 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 topology.c
-     /tmp/cc4UtzHQ.s:19     .rodata:00000000 $d
-     /tmp/cc4UtzHQ.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/cc4UtzHQ.s:27     .rodata:00000008 infoBoardname
-     /tmp/cc4UtzHQ.s:32     .rodata:00000010 infouCName
-     /tmp/cc4UtzHQ.s:37     .rodata:00000018 infoRadioName
-     /tmp/cc4UtzHQ.s:42     .rodata:00000024 infoStackName
-     /tmp/cc4UtzHQ.s:45     .text:00000000 $t
-     /tmp/cc4UtzHQ.s:50     .text:00000000 topology_isAcceptablePacket
+     /tmp/ccOmTZrN.s:19     .rodata:00000000 $d
+     /tmp/ccOmTZrN.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccOmTZrN.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccOmTZrN.s:32     .rodata:00000010 infouCName
+     /tmp/ccOmTZrN.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccOmTZrN.s:42     .rodata:00000024 infoStackName
+     /tmp/ccOmTZrN.s:45     .text:00000000 $t
+     /tmp/ccOmTZrN.s:50     .text:00000000 topology_isAcceptablePacket
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

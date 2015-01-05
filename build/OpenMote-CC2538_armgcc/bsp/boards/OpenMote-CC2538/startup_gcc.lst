@@ -716,19 +716,19 @@
  362              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
 DEFINED SYMBOLS
                             *ABS*:00000000 startup_gcc.c
-     /tmp/ccByEo8M.s:19     .bss:00000000 $d
-     /tmp/ccByEo8M.s:20     .bss:00000000 pui32Stack
-     /tmp/ccByEo8M.s:27     .flashcca:00000000 __cca
-     /tmp/ccByEo8M.s:24     .flashcca:00000000 $d
-     /tmp/ccByEo8M.s:36     .vectors:00000000 gVectors
-     /tmp/ccByEo8M.s:33     .vectors:00000000 $d
-     /tmp/ccByEo8M.s:284    .text:0000001c ResetISR
-     /tmp/ccByEo8M.s:206    .text:00000000 NmiSR
-     /tmp/ccByEo8M.s:234    .text:0000000c FaultISR
-     /tmp/ccByEo8M.s:259    .text:00000014 IntDefaultHandler
-     /tmp/ccByEo8M.s:201    .text:00000000 $t
-     /tmp/ccByEo8M.s:346    .text:00000086 zero_loop
-     /tmp/ccByEo8M.s:363    .text:00000098 $d
+     /tmp/ccXOwr6k.s:19     .bss:00000000 $d
+     /tmp/ccXOwr6k.s:20     .bss:00000000 pui32Stack
+     /tmp/ccXOwr6k.s:27     .flashcca:00000000 __cca
+     /tmp/ccXOwr6k.s:24     .flashcca:00000000 $d
+     /tmp/ccXOwr6k.s:36     .vectors:00000000 gVectors
+     /tmp/ccXOwr6k.s:33     .vectors:00000000 $d
+     /tmp/ccXOwr6k.s:284    .text:0000001c ResetISR
+     /tmp/ccXOwr6k.s:206    .text:00000000 NmiSR
+     /tmp/ccXOwr6k.s:234    .text:0000000c FaultISR
+     /tmp/ccXOwr6k.s:259    .text:00000014 IntDefaultHandler
+     /tmp/ccXOwr6k.s:201    .text:00000000 $t
+     /tmp/ccXOwr6k.s:346    .text:00000086 zero_loop
+     /tmp/ccXOwr6k.s:363    .text:00000098 $d
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.hw_nvic.h.42.f3b9efa2537e728866c85de74b3e5811

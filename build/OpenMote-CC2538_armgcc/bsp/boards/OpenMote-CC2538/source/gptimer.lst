@@ -2469,31 +2469,31 @@
  1382              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
 DEFINED SYMBOLS
                             *ABS*:00000000 gptimer.c
-     /tmp/cc0iB6Tp.s:18     .text:00000000 $t
-     /tmp/cc0iB6Tp.s:23     .text:00000000 TimerEnable
-     /tmp/cc0iB6Tp.s:68     .text:00000030 TimerDisable
-     /tmp/cc0iB6Tp.s:113    .text:00000064 TimerConfigure
-     /tmp/cc0iB6Tp.s:177    .text:000000c0 TimerControlLevel
-     /tmp/cc0iB6Tp.s:243    .text:00000110 TimerControlTrigger
-     /tmp/cc0iB6Tp.s:309    .text:00000160 TimerControlEvent
-     /tmp/cc0iB6Tp.s:363    .text:000001a0 TimerControlStall
-     /tmp/cc0iB6Tp.s:429    .text:000001f0 TimerControlWaitOnTrigger
-     /tmp/cc0iB6Tp.s:519    .text:0000027c TimerPrescaleSet
-     /tmp/cc0iB6Tp.s:574    .text:000002b8 TimerPrescaleGet
-     /tmp/cc0iB6Tp.s:623    .text:000002e8 TimerPrescaleMatchSet
-     /tmp/cc0iB6Tp.s:678    .text:00000324 TimerPrescaleMatchGet
-     /tmp/cc0iB6Tp.s:727    .text:00000354 TimerLoadSet
-     /tmp/cc0iB6Tp.s:782    .text:00000390 TimerLoadGet
-     /tmp/cc0iB6Tp.s:831    .text:000003c0 TimerValueGet
-     /tmp/cc0iB6Tp.s:880    .text:000003f0 TimerMatchSet
-     /tmp/cc0iB6Tp.s:935    .text:0000042c TimerMatchGet
-     /tmp/cc0iB6Tp.s:984    .text:0000045c TimerIntRegister
-     /tmp/cc0iB6Tp.s:1083   .text:000004ec TimerIntUnregister
-     /tmp/cc0iB6Tp.s:1179   .text:00000578 TimerIntEnable
-     /tmp/cc0iB6Tp.s:1220   .text:000005a0 TimerIntDisable
-     /tmp/cc0iB6Tp.s:1262   .text:000005cc TimerIntStatus
-     /tmp/cc0iB6Tp.s:1312   .text:000005fc TimerIntClear
-     /tmp/cc0iB6Tp.s:1349   .text:0000061c TimerSynchronize
+     /tmp/cc2yxgme.s:18     .text:00000000 $t
+     /tmp/cc2yxgme.s:23     .text:00000000 TimerEnable
+     /tmp/cc2yxgme.s:68     .text:00000030 TimerDisable
+     /tmp/cc2yxgme.s:113    .text:00000064 TimerConfigure
+     /tmp/cc2yxgme.s:177    .text:000000c0 TimerControlLevel
+     /tmp/cc2yxgme.s:243    .text:00000110 TimerControlTrigger
+     /tmp/cc2yxgme.s:309    .text:00000160 TimerControlEvent
+     /tmp/cc2yxgme.s:363    .text:000001a0 TimerControlStall
+     /tmp/cc2yxgme.s:429    .text:000001f0 TimerControlWaitOnTrigger
+     /tmp/cc2yxgme.s:519    .text:0000027c TimerPrescaleSet
+     /tmp/cc2yxgme.s:574    .text:000002b8 TimerPrescaleGet
+     /tmp/cc2yxgme.s:623    .text:000002e8 TimerPrescaleMatchSet
+     /tmp/cc2yxgme.s:678    .text:00000324 TimerPrescaleMatchGet
+     /tmp/cc2yxgme.s:727    .text:00000354 TimerLoadSet
+     /tmp/cc2yxgme.s:782    .text:00000390 TimerLoadGet
+     /tmp/cc2yxgme.s:831    .text:000003c0 TimerValueGet
+     /tmp/cc2yxgme.s:880    .text:000003f0 TimerMatchSet
+     /tmp/cc2yxgme.s:935    .text:0000042c TimerMatchGet
+     /tmp/cc2yxgme.s:984    .text:0000045c TimerIntRegister
+     /tmp/cc2yxgme.s:1083   .text:000004ec TimerIntUnregister
+     /tmp/cc2yxgme.s:1179   .text:00000578 TimerIntEnable
+     /tmp/cc2yxgme.s:1220   .text:000005a0 TimerIntDisable
+     /tmp/cc2yxgme.s:1262   .text:000005cc TimerIntStatus
+     /tmp/cc2yxgme.s:1312   .text:000005fc TimerIntClear
+     /tmp/cc2yxgme.s:1349   .text:0000061c TimerSynchronize
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.hw_gptimer.h.39.dea6f5e4e2bd4b37e815027f7cf18b04

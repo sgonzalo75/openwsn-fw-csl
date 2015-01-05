@@ -319,19 +319,19 @@
  283              		.file 4 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 techo.c
-     /tmp/ccce6SWl.s:19     .rodata:00000000 $d
-     /tmp/ccce6SWl.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccce6SWl.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccce6SWl.s:32     .rodata:00000010 infouCName
-     /tmp/ccce6SWl.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccce6SWl.s:42     .rodata:00000024 infoStackName
-     /tmp/ccce6SWl.s:45     .text:00000000 $t
-     /tmp/ccce6SWl.s:50     .text:00000000 techo_init
-     /tmp/ccce6SWl.s:77     .text:0000000c techo_shouldIlisten
-     /tmp/ccce6SWl.s:106    .text:0000001c techo_receive
-     /tmp/ccce6SWl.s:171    .text:0000006c techo_sendDone
-     /tmp/ccce6SWl.s:224    .text:000000b0 techo_connectDone
-     /tmp/ccce6SWl.s:256    .text:000000c4 techo_debugPrint
+     /tmp/ccdYfS50.s:19     .rodata:00000000 $d
+     /tmp/ccdYfS50.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccdYfS50.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccdYfS50.s:32     .rodata:00000010 infouCName
+     /tmp/ccdYfS50.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccdYfS50.s:42     .rodata:00000024 infoStackName
+     /tmp/ccdYfS50.s:45     .text:00000000 $t
+     /tmp/ccdYfS50.s:50     .text:00000000 techo_init
+     /tmp/ccdYfS50.s:77     .text:0000000c techo_shouldIlisten
+     /tmp/ccdYfS50.s:106    .text:0000001c techo_receive
+     /tmp/ccdYfS50.s:171    .text:0000006c techo_sendDone
+     /tmp/ccdYfS50.s:224    .text:000000b0 techo_connectDone
+     /tmp/ccdYfS50.s:256    .text:000000c4 techo_debugPrint
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

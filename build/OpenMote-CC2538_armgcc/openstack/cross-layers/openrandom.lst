@@ -223,16 +223,16 @@
  196              		.file 5 "inc/opendefs.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 openrandom.c
-     /tmp/ccRZLxAW.s:19     .rodata:00000000 $d
-     /tmp/ccRZLxAW.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccRZLxAW.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccRZLxAW.s:32     .rodata:00000010 infouCName
-     /tmp/ccRZLxAW.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccRZLxAW.s:42     .rodata:00000024 infoStackName
+     /tmp/ccPBIVId.s:19     .rodata:00000000 $d
+     /tmp/ccPBIVId.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccPBIVId.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccPBIVId.s:32     .rodata:00000010 infouCName
+     /tmp/ccPBIVId.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccPBIVId.s:42     .rodata:00000024 infoStackName
                             *COM*:00000002 random_vars
-     /tmp/ccRZLxAW.s:46     .text:00000000 $t
-     /tmp/ccRZLxAW.s:51     .text:00000000 openrandom_init
-     /tmp/ccRZLxAW.s:111    .text:00000064 openrandom_get16b
+     /tmp/ccPBIVId.s:46     .text:00000000 $t
+     /tmp/ccPBIVId.s:51     .text:00000000 openrandom_init
+     /tmp/ccPBIVId.s:111    .text:00000064 openrandom_get16b
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

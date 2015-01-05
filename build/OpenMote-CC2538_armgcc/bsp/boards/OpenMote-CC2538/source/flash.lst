@@ -985,18 +985,18 @@
  534              		.file 3 "bsp/boards/OpenMote-CC2538/source/rom.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 flash.c
-     /tmp/ccmwuHqb.s:18     .text:00000000 $t
-     /tmp/ccmwuHqb.s:23     .text:00000000 FlashMainPageErase
-     /tmp/ccmwuHqb.s:274    .text:00000124 FlashCacheModeGet
-     /tmp/ccmwuHqb.s:306    .text:00000140 FlashCacheModeSet
-     /tmp/ccmwuHqb.s:73     .text:00000038 FlashUpperPageErase
-     /tmp/ccmwuHqb.s:368    .text:0000018c FlashSizeGet
-     /tmp/ccmwuHqb.s:127    .text:0000007c FlashMainPageProgram
-     /tmp/ccmwuHqb.s:179    .text:000000b8 FlashUpperPageProgram
-     /tmp/ccmwuHqb.s:239    .text:0000010c FlashGet
-     /tmp/ccmwuHqb.s:403    .text:000001b8 $d
-     /tmp/ccmwuHqb.s:410    .text:000001cc $t
-     /tmp/ccmwuHqb.s:461    .text:0000020c FlashSramSizeGet
+     /tmp/ccVhffDd.s:18     .text:00000000 $t
+     /tmp/ccVhffDd.s:23     .text:00000000 FlashMainPageErase
+     /tmp/ccVhffDd.s:274    .text:00000124 FlashCacheModeGet
+     /tmp/ccVhffDd.s:306    .text:00000140 FlashCacheModeSet
+     /tmp/ccVhffDd.s:73     .text:00000038 FlashUpperPageErase
+     /tmp/ccVhffDd.s:368    .text:0000018c FlashSizeGet
+     /tmp/ccVhffDd.s:127    .text:0000007c FlashMainPageProgram
+     /tmp/ccVhffDd.s:179    .text:000000b8 FlashUpperPageProgram
+     /tmp/ccVhffDd.s:239    .text:0000010c FlashGet
+     /tmp/ccVhffDd.s:403    .text:000001b8 $d
+     /tmp/ccVhffDd.s:410    .text:000001cc $t
+     /tmp/ccVhffDd.s:461    .text:0000020c FlashSramSizeGet
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.hw_flash_ctrl.h.39.9e1b51558015e13f8d9f8700e513c4a2

@@ -112,8 +112,8 @@
   50              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
 DEFINED SYMBOLS
                             *ABS*:00000000 debug.c
-     /tmp/ccXlWmAe.s:18     .text:00000000 $t
-     /tmp/ccXlWmAe.s:23     .text:00000000 __error__
+     /tmp/ccRhXxT6.s:18     .text:00000000 $t
+     /tmp/ccRhXxT6.s:23     .text:00000000 __error__
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
