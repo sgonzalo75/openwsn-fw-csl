@@ -1,0 +1,361 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"techo.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.align	2
+  42              	infoStackName:
+  43 0024 4F70656E 		.ascii	"OpenWSN \000"
+  43      57534E20 
+  43      00
+  44 002d 000000   		.text
+  45              		.align	2
+  46              		.global	techo_init
+  47              		.thumb
+  48              		.thumb_func
+  50              	techo_init:
+  51              	.LFB0:
+  52              		.file 1 "openapps/techo/techo.c"
+   1:openapps/techo/techo.c **** #include "opendefs.h"
+   2:openapps/techo/techo.c **** #include "techo.h"
+   3:openapps/techo/techo.c **** #include "openqueue.h"
+   4:openapps/techo/techo.c **** #include "openserial.h"
+   5:openapps/techo/techo.c **** #include "opentcp.h"
+   6:openapps/techo/techo.c **** 
+   7:openapps/techo/techo.c **** //=========================== variables =======================================
+   8:openapps/techo/techo.c **** 
+   9:openapps/techo/techo.c **** //=========================== prototypes ======================================
+  10:openapps/techo/techo.c **** 
+  11:openapps/techo/techo.c **** //=========================== public ==========================================
+  12:openapps/techo/techo.c **** 
+  13:openapps/techo/techo.c **** void techo_init() {
+  53              		.loc 1 13 0
+  54              		.cfi_startproc
+  55              		@ args = 0, pretend = 0, frame = 0
+  56              		@ frame_needed = 1, uses_anonymous_args = 0
+  57              		@ link register save eliminated.
+  58 0000 80B4     		push	{r7}
+  59              	.LCFI0:
+  60              		.cfi_def_cfa_offset 4
+  61              		.cfi_offset 7, -4
+  62 0002 00AF     		add	r7, sp, #0
+  63              	.LCFI1:
+  64              		.cfi_def_cfa_register 7
+  14:openapps/techo/techo.c **** }
+  65              		.loc 1 14 0
+  66 0004 BD46     		mov	sp, r7
+  67 0006 80BC     		pop	{r7}
+  68 0008 7047     		bx	lr
+  69              		.cfi_endproc
+  70              	.LFE0:
+  72 000a 00BF     		.align	2
+  73              		.global	techo_shouldIlisten
+  74              		.thumb
+  75              		.thumb_func
+  77              	techo_shouldIlisten:
+  78              	.LFB1:
+  15:openapps/techo/techo.c **** 
+  16:openapps/techo/techo.c **** bool techo_shouldIlisten() {
+  79              		.loc 1 16 0
+  80              		.cfi_startproc
+  81              		@ args = 0, pretend = 0, frame = 0
+  82              		@ frame_needed = 1, uses_anonymous_args = 0
+  83              		@ link register save eliminated.
+  84 000c 80B4     		push	{r7}
+  85              	.LCFI2:
+  86              		.cfi_def_cfa_offset 4
+  87              		.cfi_offset 7, -4
+  88 000e 00AF     		add	r7, sp, #0
+  89              	.LCFI3:
+  90              		.cfi_def_cfa_register 7
+  17:openapps/techo/techo.c ****    return TRUE;
+  91              		.loc 1 17 0
+  92 0010 4FF00103 		mov	r3, #1
+  18:openapps/techo/techo.c **** }
+  93              		.loc 1 18 0
+  94 0014 1846     		mov	r0, r3
+  95 0016 BD46     		mov	sp, r7
+  96 0018 80BC     		pop	{r7}
+  97 001a 7047     		bx	lr
+  98              		.cfi_endproc
+  99              	.LFE1:
+ 101              		.align	2
+ 102              		.global	techo_receive
+ 103              		.thumb
+ 104              		.thumb_func
+ 106              	techo_receive:
+ 107              	.LFB2:
+  19:openapps/techo/techo.c **** 
+  20:openapps/techo/techo.c **** void techo_receive(OpenQueueEntry_t* msg) {
+ 108              		.loc 1 20 0
+ 109              		.cfi_startproc
+ 110              		@ args = 0, pretend = 0, frame = 16
+ 111              		@ frame_needed = 1, uses_anonymous_args = 0
+ 112 001c 80B5     		push	{r7, lr}
+ 113              	.LCFI4:
+ 114              		.cfi_def_cfa_offset 8
+ 115              		.cfi_offset 7, -8
+ 116              		.cfi_offset 14, -4
+ 117 001e 84B0     		sub	sp, sp, #16
+ 118              	.LCFI5:
+ 119              		.cfi_def_cfa_offset 24
+ 120 0020 00AF     		add	r7, sp, #0
+ 121              	.LCFI6:
+ 122              		.cfi_def_cfa_register 7
+ 123 0022 7860     		str	r0, [r7, #4]
+  21:openapps/techo/techo.c ****    uint16_t temp_l4_destination_port;
+  22:openapps/techo/techo.c ****    msg->owner                     = COMPONENT_TECHO;
+ 124              		.loc 1 22 0
+ 125 0024 7B68     		ldr	r3, [r7, #4]
+ 126 0026 4FF02002 		mov	r2, #32
+ 127 002a 5A70     		strb	r2, [r3, #1]
+  23:openapps/techo/techo.c ****    //reply with the same OpenQueueEntry_t
+  24:openapps/techo/techo.c ****    msg->creator                   = COMPONENT_TECHO;
+ 128              		.loc 1 24 0
+ 129 002c 7B68     		ldr	r3, [r7, #4]
+ 130 002e 4FF02002 		mov	r2, #32
+ 131 0032 1A70     		strb	r2, [r3, #0]
+  25:openapps/techo/techo.c ****    msg->l4_protocol               = IANA_TCP;
+ 132              		.loc 1 25 0
+ 133 0034 7B68     		ldr	r3, [r7, #4]
+ 134 0036 4FF00602 		mov	r2, #6
+ 135 003a 5A72     		strb	r2, [r3, #9]
+  26:openapps/techo/techo.c ****    temp_l4_destination_port       = msg->l4_destination_port;
+ 136              		.loc 1 26 0
+ 137 003c 7B68     		ldr	r3, [r7, #4]
+ 138 003e DB89     		ldrh	r3, [r3, #14]	@ movhi
+ 139 0040 FB81     		strh	r3, [r7, #14]	@ movhi
+  27:openapps/techo/techo.c ****    msg->l4_destination_port       = msg->l4_sourcePortORicmpv6Type;
+ 140              		.loc 1 27 0
+ 141 0042 7B68     		ldr	r3, [r7, #4]
+ 142 0044 9A89     		ldrh	r2, [r3, #12]
+ 143 0046 7B68     		ldr	r3, [r7, #4]
+ 144 0048 DA81     		strh	r2, [r3, #14]	@ movhi
+  28:openapps/techo/techo.c ****    msg->l4_sourcePortORicmpv6Type = temp_l4_destination_port;
+ 145              		.loc 1 28 0
+ 146 004a 7B68     		ldr	r3, [r7, #4]
+ 147 004c FA89     		ldrh	r2, [r7, #14]	@ movhi
+ 148 004e 9A81     		strh	r2, [r3, #12]	@ movhi
+  29:openapps/techo/techo.c ****    if (opentcp_send(msg)==E_FAIL) {
+ 149              		.loc 1 29 0
+ 150 0050 7868     		ldr	r0, [r7, #4]
+ 151 0052 FFF7FEFF 		bl	opentcp_send
+ 152 0056 0346     		mov	r3, r0
+ 153 0058 012B     		cmp	r3, #1
+ 154 005a 02D1     		bne	.L4
+  30:openapps/techo/techo.c ****       openqueue_freePacketBuffer(msg);
+ 155              		.loc 1 30 0
+ 156 005c 7868     		ldr	r0, [r7, #4]
+ 157 005e FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 158              	.L4:
+  31:openapps/techo/techo.c ****    }
+  32:openapps/techo/techo.c **** }
+ 159              		.loc 1 32 0
+ 160 0062 07F11007 		add	r7, r7, #16
+ 161 0066 BD46     		mov	sp, r7
+ 162 0068 80BD     		pop	{r7, pc}
+ 163              		.cfi_endproc
+ 164              	.LFE2:
+ 166 006a 00BF     		.align	2
+ 167              		.global	techo_sendDone
+ 168              		.thumb
+ 169              		.thumb_func
+ 171              	techo_sendDone:
+ 172              	.LFB3:
+  33:openapps/techo/techo.c **** 
+  34:openapps/techo/techo.c **** void techo_sendDone(OpenQueueEntry_t* msg, owerror_t error) {
+ 173              		.loc 1 34 0
+ 174              		.cfi_startproc
+ 175              		@ args = 0, pretend = 0, frame = 8
+ 176              		@ frame_needed = 1, uses_anonymous_args = 0
+ 177 006c 80B5     		push	{r7, lr}
+ 178              	.LCFI7:
+ 179              		.cfi_def_cfa_offset 8
+ 180              		.cfi_offset 7, -8
+ 181              		.cfi_offset 14, -4
+ 182 006e 82B0     		sub	sp, sp, #8
+ 183              	.LCFI8:
+ 184              		.cfi_def_cfa_offset 16
+ 185 0070 00AF     		add	r7, sp, #0
+ 186              	.LCFI9:
+ 187              		.cfi_def_cfa_register 7
+ 188 0072 7860     		str	r0, [r7, #4]
+ 189 0074 0B46     		mov	r3, r1
+ 190 0076 FB70     		strb	r3, [r7, #3]
+  35:openapps/techo/techo.c ****    msg->owner = COMPONENT_TECHO;
+ 191              		.loc 1 35 0
+ 192 0078 7B68     		ldr	r3, [r7, #4]
+ 193 007a 4FF02002 		mov	r2, #32
+ 194 007e 5A70     		strb	r2, [r3, #1]
+  36:openapps/techo/techo.c ****    if (msg->creator!=COMPONENT_TECHO) {
+ 195              		.loc 1 36 0
+ 196 0080 7B68     		ldr	r3, [r7, #4]
+ 197 0082 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 198 0084 202B     		cmp	r3, #32
+ 199 0086 09D0     		beq	.L7
+  37:openapps/techo/techo.c ****       openserial_printError(COMPONENT_TECHO,ERR_UNEXPECTED_SENDDONE,
+ 200              		.loc 1 37 0
+ 201 0088 4FF02000 		mov	r0, #32
+ 202 008c 4FF02B01 		mov	r1, #43
+ 203 0090 4FF00002 		mov	r2, #0
+ 204 0094 4FF00003 		mov	r3, #0
+ 205 0098 FFF7FEFF 		bl	openserial_printError
+ 206              	.L7:
+  38:openapps/techo/techo.c ****                             (errorparameter_t)0,
+  39:openapps/techo/techo.c ****                             (errorparameter_t)0);
+  40:openapps/techo/techo.c ****    }
+  41:openapps/techo/techo.c ****    //close TCP session, but keep listening
+  42:openapps/techo/techo.c ****    opentcp_close();
+ 207              		.loc 1 42 0
+ 208 009c FFF7FEFF 		bl	opentcp_close
+  43:openapps/techo/techo.c ****    openqueue_freePacketBuffer(msg);
+ 209              		.loc 1 43 0
+ 210 00a0 7868     		ldr	r0, [r7, #4]
+ 211 00a2 FFF7FEFF 		bl	openqueue_freePacketBuffer
+  44:openapps/techo/techo.c **** }
+ 212              		.loc 1 44 0
+ 213 00a6 07F10807 		add	r7, r7, #8
+ 214 00aa BD46     		mov	sp, r7
+ 215 00ac 80BD     		pop	{r7, pc}
+ 216              		.cfi_endproc
+ 217              	.LFE3:
+ 219 00ae 00BF     		.align	2
+ 220              		.global	techo_connectDone
+ 221              		.thumb
+ 222              		.thumb_func
+ 224              	techo_connectDone:
+ 225              	.LFB4:
+  45:openapps/techo/techo.c **** 
+  46:openapps/techo/techo.c **** void techo_connectDone(owerror_t error) {
+ 226              		.loc 1 46 0
+ 227              		.cfi_startproc
+ 228              		@ args = 0, pretend = 0, frame = 8
+ 229              		@ frame_needed = 1, uses_anonymous_args = 0
+ 230              		@ link register save eliminated.
+ 231 00b0 80B4     		push	{r7}
+ 232              	.LCFI10:
+ 233              		.cfi_def_cfa_offset 4
+ 234              		.cfi_offset 7, -4
+ 235 00b2 83B0     		sub	sp, sp, #12
+ 236              	.LCFI11:
+ 237              		.cfi_def_cfa_offset 16
+ 238 00b4 00AF     		add	r7, sp, #0
+ 239              	.LCFI12:
+ 240              		.cfi_def_cfa_register 7
+ 241 00b6 0346     		mov	r3, r0
+ 242 00b8 FB71     		strb	r3, [r7, #7]
+  47:openapps/techo/techo.c **** }
+ 243              		.loc 1 47 0
+ 244 00ba 07F10C07 		add	r7, r7, #12
+ 245 00be BD46     		mov	sp, r7
+ 246 00c0 80BC     		pop	{r7}
+ 247 00c2 7047     		bx	lr
+ 248              		.cfi_endproc
+ 249              	.LFE4:
+ 251              		.align	2
+ 252              		.global	techo_debugPrint
+ 253              		.thumb
+ 254              		.thumb_func
+ 256              	techo_debugPrint:
+ 257              	.LFB5:
+  48:openapps/techo/techo.c **** 
+  49:openapps/techo/techo.c **** bool techo_debugPrint() {
+ 258              		.loc 1 49 0
+ 259              		.cfi_startproc
+ 260              		@ args = 0, pretend = 0, frame = 0
+ 261              		@ frame_needed = 1, uses_anonymous_args = 0
+ 262              		@ link register save eliminated.
+ 263 00c4 80B4     		push	{r7}
+ 264              	.LCFI13:
+ 265              		.cfi_def_cfa_offset 4
+ 266              		.cfi_offset 7, -4
+ 267 00c6 00AF     		add	r7, sp, #0
+ 268              	.LCFI14:
+ 269              		.cfi_def_cfa_register 7
+  50:openapps/techo/techo.c ****    return FALSE;
+ 270              		.loc 1 50 0
+ 271 00c8 4FF00003 		mov	r3, #0
+  51:openapps/techo/techo.c **** }
+ 272              		.loc 1 51 0
+ 273 00cc 1846     		mov	r0, r3
+ 274 00ce BD46     		mov	sp, r7
+ 275 00d0 80BC     		pop	{r7}
+ 276 00d2 7047     		bx	lr
+ 277              		.cfi_endproc
+ 278              	.LFE5:
+ 280              	.Letext0:
+ 281              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+ 282              		.file 3 "inc/opendefs.h"
+ 283              		.file 4 "bsp/boards/OpenMote-CC2538/board_info.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 techo.c
+     /tmp/ccce6SWl.s:19     .rodata:00000000 $d
+     /tmp/ccce6SWl.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccce6SWl.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccce6SWl.s:32     .rodata:00000010 infouCName
+     /tmp/ccce6SWl.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccce6SWl.s:42     .rodata:00000024 infoStackName
+     /tmp/ccce6SWl.s:45     .text:00000000 $t
+     /tmp/ccce6SWl.s:50     .text:00000000 techo_init
+     /tmp/ccce6SWl.s:77     .text:0000000c techo_shouldIlisten
+     /tmp/ccce6SWl.s:106    .text:0000001c techo_receive
+     /tmp/ccce6SWl.s:171    .text:0000006c techo_sendDone
+     /tmp/ccce6SWl.s:224    .text:000000b0 techo_connectDone
+     /tmp/ccce6SWl.s:256    .text:000000c4 techo_debugPrint
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.toolchain_defs.h.2.e4ebbe6e0a48032a9b79077dc42e1ffd
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
+                           .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
+                           .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
+
+UNDEFINED SYMBOLS
+opentcp_send
+openqueue_freePacketBuffer
+openserial_printError
+opentcp_close

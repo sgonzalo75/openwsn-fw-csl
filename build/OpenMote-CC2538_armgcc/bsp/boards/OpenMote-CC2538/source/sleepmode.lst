@@ -1,0 +1,728 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"sleepmode.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.align	2
+  19              		.global	SleepModeIntRegister
+  20              		.thumb
+  21              		.thumb_func
+  23              	SleepModeIntRegister:
+  24              	.LFB0:
+  25              		.file 1 "bsp/boards/OpenMote-CC2538/source/sleepmode.c"
+   1:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** /******************************************************************************
+   2:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  Filename:       sleepmode.c
+   3:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  Revised:        $Date: 2013-03-22 16:13:31 +0100 (Fri, 22 Mar 2013) $
+   4:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  Revision:       $Revision: 9513 $
+   5:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *
+   6:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  Description:    Driver for the Sleep Mode Timer Module.
+   7:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *
+   8:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
+   9:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *
+  10:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *
+  11:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  Redistribution and use in source and binary forms, with or without
+  12:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  modification, are permitted provided that the following conditions
+  13:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  are met:
+  14:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *
+  15:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *    Redistributions of source code must retain the above copyright
+  16:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *    notice, this list of conditions and the following disclaimer.
+  17:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *
+  18:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *    Redistributions in binary form must reproduce the above copyright
+  19:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *    notice, this list of conditions and the following disclaimer in the
+  20:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *    documentation and/or other materials provided with the distribution.
+  21:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *
+  22:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *    Neither the name of Texas Instruments Incorporated nor the names of
+  23:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *    its contributors may be used to endorse or promote products derived
+  24:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *    from this software without specific prior written permission.
+  25:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *
+  26:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  27:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  28:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  29:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  30:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  31:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  32:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  33:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  34:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  35:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  36:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  37:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** *
+  38:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** ******************************************************************************/
+  39:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+  40:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+  41:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+  42:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \addtogroup sleepmodetimer_api
+  43:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! @{
+  44:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+  45:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+  46:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+  47:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** #include <headers/hw_ints.h>
+  48:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** #include <headers/hw_memmap.h>
+  49:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** #include <headers/hw_smwdthrosc.h>
+  50:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** #include "debug.h"
+  51:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** #include "interrupt.h"
+  52:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** #include "sleepmode.h"
+  53:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+  54:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+  55:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+  56:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! Registers an interrupt handler for Sleep Mode Timer interrupt
+  57:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+  58:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \param pfnHandler is a pointer to the function to be called when the
+  59:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! Sleep Mode Timer interrupt occurs.
+  60:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+  61:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! This function does the actual registering of the interrupt handler, thus
+  62:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! enabling the global interrupt in the interrupt controller.
+  63:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+  64:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \sa IntRegister() for important information about registering interrupt
+  65:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! handlers.
+  66:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+  67:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \return None
+  68:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+  69:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+  70:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** void
+  71:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** SleepModeIntRegister(void (*pfnHandler)(void))
+  72:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** {
+  26              		.loc 1 72 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 8
+  29              		@ frame_needed = 1, uses_anonymous_args = 0
+  30 0000 80B5     		push	{r7, lr}
+  31              	.LCFI0:
+  32              		.cfi_def_cfa_offset 8
+  33              		.cfi_offset 7, -8
+  34              		.cfi_offset 14, -4
+  35 0002 82B0     		sub	sp, sp, #8
+  36              	.LCFI1:
+  37              		.cfi_def_cfa_offset 16
+  38 0004 00AF     		add	r7, sp, #0
+  39              	.LCFI2:
+  40              		.cfi_def_cfa_register 7
+  41 0006 7860     		str	r0, [r7, #4]
+  73:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     //
+  74:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     // Register the interrupt handler.
+  75:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     //
+  76:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     IntRegister(INT_SMTIM, pfnHandler);
+  42              		.loc 1 76 0
+  43 0008 4FF0A100 		mov	r0, #161
+  44 000c 7968     		ldr	r1, [r7, #4]
+  45 000e FFF7FEFF 		bl	IntRegister
+  77:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+  78:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     //
+  79:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     // Enable the sleep mode timer interrupt.
+  80:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     //
+  81:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     IntEnable(INT_SMTIM);
+  46              		.loc 1 81 0
+  47 0012 4FF0A100 		mov	r0, #161
+  48 0016 FFF7FEFF 		bl	IntEnable
+  82:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** }
+  49              		.loc 1 82 0
+  50 001a 07F10807 		add	r7, r7, #8
+  51 001e BD46     		mov	sp, r7
+  52 0020 80BD     		pop	{r7, pc}
+  53              		.cfi_endproc
+  54              	.LFE0:
+  56 0022 00BF     		.align	2
+  57              		.global	SleepModeIntUnregister
+  58              		.thumb
+  59              		.thumb_func
+  61              	SleepModeIntUnregister:
+  62              	.LFB1:
+  83:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+  84:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+  85:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+  86:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! Unregisters an interrupt handler for the sleep mode timer interrupt
+  87:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+  88:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! This function does the actual unregistering of the interrupt handler.  This
+  89:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! function clears the handler to be called when a compare
+  90:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! interrupt occurs and masks off the interrupt in the interrupt controller
+  91:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! so that the interrupt handler no longer is called.
+  92:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+  93:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \sa IntRegister() for important information about registering interrupt
+  94:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! handlers.
+  95:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+  96:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \return None
+  97:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+  98:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+  99:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** void
+ 100:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** SleepModeIntUnregister(void)
+ 101:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** {
+  63              		.loc 1 101 0
+  64              		.cfi_startproc
+  65              		@ args = 0, pretend = 0, frame = 0
+  66              		@ frame_needed = 1, uses_anonymous_args = 0
+  67 0024 80B5     		push	{r7, lr}
+  68              	.LCFI3:
+  69              		.cfi_def_cfa_offset 8
+  70              		.cfi_offset 7, -8
+  71              		.cfi_offset 14, -4
+  72 0026 00AF     		add	r7, sp, #0
+  73              	.LCFI4:
+  74              		.cfi_def_cfa_register 7
+ 102:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     //
+ 103:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     // Disable the interrupt.
+ 104:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     //
+ 105:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     IntDisable(INT_SMTIM);
+  75              		.loc 1 105 0
+  76 0028 4FF0A100 		mov	r0, #161
+  77 002c FFF7FEFF 		bl	IntDisable
+ 106:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 107:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     //
+ 108:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     // Unregister the interrupt handler.
+ 109:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     //
+ 110:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     IntUnregister(INT_SMTIM);
+  78              		.loc 1 110 0
+  79 0030 4FF0A100 		mov	r0, #161
+  80 0034 FFF7FEFF 		bl	IntUnregister
+ 111:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** }
+  81              		.loc 1 111 0
+  82 0038 80BD     		pop	{r7, pc}
+  83              		.cfi_endproc
+  84              	.LFE1:
+  86 003a 00BF     		.align	2
+  87              		.global	SleepModeTimerCountGet
+  88              		.thumb
+  89              		.thumb_func
+  91              	SleepModeTimerCountGet:
+  92              	.LFB2:
+ 112:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 113:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+ 114:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+ 115:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! Get current value of the sleep mode timer
+ 116:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 117:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! This function returns the current value of the sleep mode timer (that is,
+ 118:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! the timer count)
+ 119:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 120:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \return Current value of the sleep mode timer
+ 121:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+ 122:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+ 123:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** uint32_t
+ 124:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** SleepModeTimerCountGet(void)
+ 125:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** {
+  93              		.loc 1 125 0
+  94              		.cfi_startproc
+  95              		@ args = 0, pretend = 0, frame = 8
+  96              		@ frame_needed = 1, uses_anonymous_args = 0
+  97              		@ link register save eliminated.
+  98 003c 80B4     		push	{r7}
+  99              	.LCFI5:
+ 100              		.cfi_def_cfa_offset 4
+ 101              		.cfi_offset 7, -4
+ 102 003e 83B0     		sub	sp, sp, #12
+ 103              	.LCFI6:
+ 104              		.cfi_def_cfa_offset 16
+ 105 0040 00AF     		add	r7, sp, #0
+ 106              	.LCFI7:
+ 107              		.cfi_def_cfa_register 7
+ 126:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     uint32_t ui32Val;
+ 127:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 128:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     ui32Val = HWREG(SMWDTHROSC_ST0);
+ 108              		.loc 1 128 0
+ 109 0042 45F24003 		movw	r3, #20544
+ 110 0046 C4F20D03 		movt	r3, 16397
+ 111 004a 1B68     		ldr	r3, [r3, #0]
+ 112 004c 7B60     		str	r3, [r7, #4]
+ 129:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     ui32Val |= HWREG(SMWDTHROSC_ST1) << 8;
+ 113              		.loc 1 129 0
+ 114 004e 45F24403 		movw	r3, #20548
+ 115 0052 C4F20D03 		movt	r3, 16397
+ 116 0056 1B68     		ldr	r3, [r3, #0]
+ 117 0058 4FEA0323 		lsl	r3, r3, #8
+ 118 005c 7A68     		ldr	r2, [r7, #4]
+ 119 005e 1343     		orrs	r3, r3, r2
+ 120 0060 7B60     		str	r3, [r7, #4]
+ 130:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     ui32Val |= HWREG(SMWDTHROSC_ST2) << 16;
+ 121              		.loc 1 130 0
+ 122 0062 45F24803 		movw	r3, #20552
+ 123 0066 C4F20D03 		movt	r3, 16397
+ 124 006a 1B68     		ldr	r3, [r3, #0]
+ 125 006c 4FEA0343 		lsl	r3, r3, #16
+ 126 0070 7A68     		ldr	r2, [r7, #4]
+ 127 0072 1343     		orrs	r3, r3, r2
+ 128 0074 7B60     		str	r3, [r7, #4]
+ 131:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     ui32Val |= HWREG(SMWDTHROSC_ST3) << 24;
+ 129              		.loc 1 131 0
+ 130 0076 45F24C03 		movw	r3, #20556
+ 131 007a C4F20D03 		movt	r3, 16397
+ 132 007e 1B68     		ldr	r3, [r3, #0]
+ 133 0080 4FEA0363 		lsl	r3, r3, #24
+ 134 0084 7A68     		ldr	r2, [r7, #4]
+ 135 0086 1343     		orrs	r3, r3, r2
+ 136 0088 7B60     		str	r3, [r7, #4]
+ 132:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 133:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     return ui32Val;
+ 137              		.loc 1 133 0
+ 138 008a 7B68     		ldr	r3, [r7, #4]
+ 134:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** }
+ 139              		.loc 1 134 0
+ 140 008c 1846     		mov	r0, r3
+ 141 008e 07F10C07 		add	r7, r7, #12
+ 142 0092 BD46     		mov	sp, r7
+ 143 0094 80BC     		pop	{r7}
+ 144 0096 7047     		bx	lr
+ 145              		.cfi_endproc
+ 146              	.LFE2:
+ 148              		.align	2
+ 149              		.global	SleepModeCaptureConfig
+ 150              		.thumb
+ 151              		.thumb_func
+ 153              	SleepModeCaptureConfig:
+ 154              	.LFB3:
+ 135:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 136:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 137:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+ 138:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+ 139:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! Selects capture port and pin
+ 140:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 141:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \param ui32Port is the port.
+ 142:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \param ui32Pin is the pin number.
+ 143:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 144:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! This function sets the port and pin on which values are to be captured.
+ 145:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 146:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! The \e ui32Port argument must be only one of the following values:
+ 147:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \b SLEEPMODE_PORT_A, \b SLEEPMODE_PORT_B,
+ 148:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \b SLEEPMODE_PORT_C, \b SLEEPMODE_PORT_D,
+ 149:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \b SLEEPMODE_PORT_USB.
+ 150:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 151:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! The \e ui32Pin argument must be only one of the following values:
+ 152:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \b SLEEPMODE_PIN_0, \b SLEEPMODE_PIN_1, \b SLEEPMODE_PIN_2,
+ 153:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \b SLEEPMODE_PIN_3, \b SLEEPMODE_PIN_4, \b SLEEPMODE_PIN_5,
+ 154:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \b SLEEPMODE_PIN_6, \b SLEEPMODE_PIN_7.
+ 155:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 156:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \note if \e ui32Port is set to \b SLEEPMODE_PORT_USB, only \e ui32Pin
+ 157:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \b SLEEPMODE_PIN_0 can be used.
+ 158:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 159:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \return None
+ 160:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+ 161:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+ 162:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** void
+ 163:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** SleepModeCaptureConfig(uint32_t ui32Port, uint32_t ui32Pin)
+ 164:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** {
+ 155              		.loc 1 164 0
+ 156              		.cfi_startproc
+ 157              		@ args = 0, pretend = 0, frame = 16
+ 158              		@ frame_needed = 1, uses_anonymous_args = 0
+ 159              		@ link register save eliminated.
+ 160 0098 80B4     		push	{r7}
+ 161              	.LCFI8:
+ 162              		.cfi_def_cfa_offset 4
+ 163              		.cfi_offset 7, -4
+ 164 009a 85B0     		sub	sp, sp, #20
+ 165              	.LCFI9:
+ 166              		.cfi_def_cfa_offset 24
+ 167 009c 00AF     		add	r7, sp, #0
+ 168              	.LCFI10:
+ 169              		.cfi_def_cfa_register 7
+ 170 009e 7860     		str	r0, [r7, #4]
+ 171 00a0 3960     		str	r1, [r7, #0]
+ 165:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     uint32_t  ui32Val;
+ 166:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 167:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     ASSERT(ui32Port == SLEEPMODE_PORT_A ||
+ 168:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****            ui32Port == SLEEPMODE_PORT_B ||
+ 169:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****            ui32Port == SLEEPMODE_PORT_C ||
+ 170:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****            ui32Port == SLEEPMODE_PORT_D ||
+ 171:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****            (ui32Port == SLEEPMODE_PORT_USB && ui32Pin == SLEEPMODE_PIN_0));
+ 172:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 173:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     ASSERT(ui32Pin == SLEEPMODE_PIN_0 ||
+ 174:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****            ui32Pin == SLEEPMODE_PIN_1 ||
+ 175:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****            ui32Pin == SLEEPMODE_PIN_2 ||
+ 176:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****            ui32Pin == SLEEPMODE_PIN_3 ||
+ 177:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****            ui32Pin == SLEEPMODE_PIN_4 ||
+ 178:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****            ui32Pin == SLEEPMODE_PIN_5 ||
+ 179:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****            ui32Pin == SLEEPMODE_PIN_6 ||
+ 180:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****            ui32Pin == SLEEPMODE_PIN_7);
+ 181:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 182:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 183:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     ui32Val = HWREG(SMWDTHROSC_STCC);
+ 172              		.loc 1 183 0
+ 173 00a2 45F25403 		movw	r3, #20564
+ 174 00a6 C4F20D03 		movt	r3, 16397
+ 175 00aa 1B68     		ldr	r3, [r3, #0]
+ 176 00ac FB60     		str	r3, [r7, #12]
+ 184:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     ui32Val &= ~(SMWDTHROSC_STCC_PORT_M | SMWDTHROSC_STCC_PIN_M);
+ 177              		.loc 1 184 0
+ 178 00ae FB68     		ldr	r3, [r7, #12]
+ 179 00b0 23F03F03 		bic	r3, r3, #63
+ 180 00b4 FB60     		str	r3, [r7, #12]
+ 185:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     ui32Val |= ui32Port | ui32Pin;
+ 181              		.loc 1 185 0
+ 182 00b6 7A68     		ldr	r2, [r7, #4]
+ 183 00b8 3B68     		ldr	r3, [r7, #0]
+ 184 00ba 1343     		orrs	r3, r3, r2
+ 185 00bc FA68     		ldr	r2, [r7, #12]
+ 186 00be 1343     		orrs	r3, r3, r2
+ 187 00c0 FB60     		str	r3, [r7, #12]
+ 186:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     HWREG(SMWDTHROSC_STCC) = ui32Val;
+ 188              		.loc 1 186 0
+ 189 00c2 45F25403 		movw	r3, #20564
+ 190 00c6 C4F20D03 		movt	r3, 16397
+ 191 00ca FA68     		ldr	r2, [r7, #12]
+ 192 00cc 1A60     		str	r2, [r3, #0]
+ 187:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 188:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** }
+ 193              		.loc 1 188 0
+ 194 00ce 07F11407 		add	r7, r7, #20
+ 195 00d2 BD46     		mov	sp, r7
+ 196 00d4 80BC     		pop	{r7}
+ 197 00d6 7047     		bx	lr
+ 198              		.cfi_endproc
+ 199              	.LFE3:
+ 201              		.align	2
+ 202              		.global	SleepModeTimerCompareSet
+ 203              		.thumb
+ 204              		.thumb_func
+ 206              	SleepModeTimerCompareSet:
+ 207              	.LFB4:
+ 189:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 190:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+ 191:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+ 192:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! Set compare value of the sleep mode timer
+ 193:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 194:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \param ui32Compare is a 32-bit compare value.
+ 195:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 196:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! This function sets the compare value of the sleep mode timer.
+ 197:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! A timer compare interrupt is generated when the timer value is equal to
+ 198:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! the compare value.
+ 199:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 200:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \note When setting a new compare value, the value must be at least 5 more
+ 201:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! than the current sleep timer value. Otherwise, the timer compare event
+ 202:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! might be lost.
+ 203:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 204:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \return None
+ 205:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+ 206:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+ 207:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** void
+ 208:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** SleepModeTimerCompareSet(uint32_t ui32Compare)
+ 209:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** {
+ 208              		.loc 1 209 0
+ 209              		.cfi_startproc
+ 210              		@ args = 0, pretend = 0, frame = 8
+ 211              		@ frame_needed = 1, uses_anonymous_args = 0
+ 212              		@ link register save eliminated.
+ 213 00d8 80B4     		push	{r7}
+ 214              	.LCFI11:
+ 215              		.cfi_def_cfa_offset 4
+ 216              		.cfi_offset 7, -4
+ 217 00da 83B0     		sub	sp, sp, #12
+ 218              	.LCFI12:
+ 219              		.cfi_def_cfa_offset 16
+ 220 00dc 00AF     		add	r7, sp, #0
+ 221              	.LCFI13:
+ 222              		.cfi_def_cfa_register 7
+ 223 00de 7860     		str	r0, [r7, #4]
+ 210:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     //
+ 211:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     // Wait for ST0, ST3 regs to be ready for writing
+ 212:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     //
+ 213:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     while(!(HWREG(SMWDTHROSC_STLOAD) & SMWDTHROSC_STLOAD_STLOAD))
+ 224              		.loc 1 213 0
+ 225 00e0 00BF     		nop
+ 226              	.L7:
+ 227              		.loc 1 213 0 is_stmt 0 discriminator 1
+ 228 00e2 45F25003 		movw	r3, #20560
+ 229 00e6 C4F20D03 		movt	r3, 16397
+ 230 00ea 1B68     		ldr	r3, [r3, #0]
+ 231 00ec 03F00103 		and	r3, r3, #1
+ 232 00f0 002B     		cmp	r3, #0
+ 233 00f2 F6D0     		beq	.L7
+ 214:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     {
+ 215:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     }
+ 216:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 217:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     HWREG(SMWDTHROSC_ST3) = (ui32Compare >> 24) & 0x000000ff;
+ 234              		.loc 1 217 0 is_stmt 1
+ 235 00f4 45F24C03 		movw	r3, #20556
+ 236 00f8 C4F20D03 		movt	r3, 16397
+ 237 00fc 7A68     		ldr	r2, [r7, #4]
+ 238 00fe 4FEA1262 		lsr	r2, r2, #24
+ 239 0102 1A60     		str	r2, [r3, #0]
+ 218:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     HWREG(SMWDTHROSC_ST2) = (ui32Compare >> 16) & 0x000000ff;
+ 240              		.loc 1 218 0
+ 241 0104 45F24803 		movw	r3, #20552
+ 242 0108 C4F20D03 		movt	r3, 16397
+ 243 010c 7A68     		ldr	r2, [r7, #4]
+ 244 010e 4FEA1242 		lsr	r2, r2, #16
+ 245 0112 D2B2     		uxtb	r2, r2
+ 246 0114 1A60     		str	r2, [r3, #0]
+ 219:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     HWREG(SMWDTHROSC_ST1) = (ui32Compare >>  8) & 0x000000ff;
+ 247              		.loc 1 219 0
+ 248 0116 45F24403 		movw	r3, #20548
+ 249 011a C4F20D03 		movt	r3, 16397
+ 250 011e 7A68     		ldr	r2, [r7, #4]
+ 251 0120 4FEA1222 		lsr	r2, r2, #8
+ 252 0124 D2B2     		uxtb	r2, r2
+ 253 0126 1A60     		str	r2, [r3, #0]
+ 220:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     HWREG(SMWDTHROSC_ST0) = ui32Compare & 0x000000ff;
+ 254              		.loc 1 220 0
+ 255 0128 45F24003 		movw	r3, #20544
+ 256 012c C4F20D03 		movt	r3, 16397
+ 257 0130 7A68     		ldr	r2, [r7, #4]
+ 258 0132 D2B2     		uxtb	r2, r2
+ 259 0134 1A60     		str	r2, [r3, #0]
+ 221:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** }
+ 260              		.loc 1 221 0
+ 261 0136 07F10C07 		add	r7, r7, #12
+ 262 013a BD46     		mov	sp, r7
+ 263 013c 80BC     		pop	{r7}
+ 264 013e 7047     		bx	lr
+ 265              		.cfi_endproc
+ 266              	.LFE4:
+ 268              		.align	2
+ 269              		.global	SleepModeCaptureGet
+ 270              		.thumb
+ 271              		.thumb_func
+ 273              	SleepModeCaptureGet:
+ 274              	.LFB5:
+ 222:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 223:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 224:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+ 225:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+ 226:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! Get last capture value
+ 227:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 228:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! This function returns the last captured value.
+ 229:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 230:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \note The captured value is one more than the value at the instant for the
+ 231:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! event on the I/O pin. Software should therefore subtract 1 from the
+ 232:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! captured value if absolute timing is required.
+ 233:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 234:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \sa SleepModeCaptureNew(), SleepModeCaptureIsValid()
+ 235:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 236:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \return Last captured value
+ 237:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+ 238:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+ 239:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** uint32_t
+ 240:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** SleepModeCaptureGet(void)
+ 241:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** {
+ 275              		.loc 1 241 0
+ 276              		.cfi_startproc
+ 277              		@ args = 0, pretend = 0, frame = 8
+ 278              		@ frame_needed = 1, uses_anonymous_args = 0
+ 279              		@ link register save eliminated.
+ 280 0140 80B4     		push	{r7}
+ 281              	.LCFI14:
+ 282              		.cfi_def_cfa_offset 4
+ 283              		.cfi_offset 7, -4
+ 284 0142 83B0     		sub	sp, sp, #12
+ 285              	.LCFI15:
+ 286              		.cfi_def_cfa_offset 16
+ 287 0144 00AF     		add	r7, sp, #0
+ 288              	.LCFI16:
+ 289              		.cfi_def_cfa_register 7
+ 242:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     uint32_t ui32Val;
+ 243:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 244:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     ui32Val = HWREG(SMWDTHROSC_STCV0);
+ 290              		.loc 1 244 0
+ 291 0146 45F25C03 		movw	r3, #20572
+ 292 014a C4F20D03 		movt	r3, 16397
+ 293 014e 1B68     		ldr	r3, [r3, #0]
+ 294 0150 7B60     		str	r3, [r7, #4]
+ 245:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     ui32Val |= HWREG(SMWDTHROSC_STCV1) << 8;
+ 295              		.loc 1 245 0
+ 296 0152 45F26003 		movw	r3, #20576
+ 297 0156 C4F20D03 		movt	r3, 16397
+ 298 015a 1B68     		ldr	r3, [r3, #0]
+ 299 015c 4FEA0323 		lsl	r3, r3, #8
+ 300 0160 7A68     		ldr	r2, [r7, #4]
+ 301 0162 1343     		orrs	r3, r3, r2
+ 302 0164 7B60     		str	r3, [r7, #4]
+ 246:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     ui32Val |= HWREG(SMWDTHROSC_STCV2) << 16;
+ 303              		.loc 1 246 0
+ 304 0166 45F26403 		movw	r3, #20580
+ 305 016a C4F20D03 		movt	r3, 16397
+ 306 016e 1B68     		ldr	r3, [r3, #0]
+ 307 0170 4FEA0343 		lsl	r3, r3, #16
+ 308 0174 7A68     		ldr	r2, [r7, #4]
+ 309 0176 1343     		orrs	r3, r3, r2
+ 310 0178 7B60     		str	r3, [r7, #4]
+ 247:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     ui32Val |= HWREG(SMWDTHROSC_STCV3) << 24;
+ 311              		.loc 1 247 0
+ 312 017a 45F26803 		movw	r3, #20584
+ 313 017e C4F20D03 		movt	r3, 16397
+ 314 0182 1B68     		ldr	r3, [r3, #0]
+ 315 0184 4FEA0363 		lsl	r3, r3, #24
+ 316 0188 7A68     		ldr	r2, [r7, #4]
+ 317 018a 1343     		orrs	r3, r3, r2
+ 318 018c 7B60     		str	r3, [r7, #4]
+ 248:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 249:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     return ui32Val;
+ 319              		.loc 1 249 0
+ 320 018e 7B68     		ldr	r3, [r7, #4]
+ 250:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** }
+ 321              		.loc 1 250 0
+ 322 0190 1846     		mov	r0, r3
+ 323 0192 07F10C07 		add	r7, r7, #12
+ 324 0196 BD46     		mov	sp, r7
+ 325 0198 80BC     		pop	{r7}
+ 326 019a 7047     		bx	lr
+ 327              		.cfi_endproc
+ 328              	.LFE5:
+ 330              		.align	2
+ 331              		.global	SleepModeCaptureIsValid
+ 332              		.thumb
+ 333              		.thumb_func
+ 335              	SleepModeCaptureIsValid:
+ 336              	.LFB6:
+ 251:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 252:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+ 253:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+ 254:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! Checks if capture value has been updated
+ 255:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 256:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! This function returns true if a value has been captured.
+ 257:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 258:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \sa SleepModeCaptureGet(), SleepModeCaptureNew()
+ 259:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 260:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \return Returns true if capture value has been updated
+ 261:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+ 262:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+ 263:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** bool
+ 264:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** SleepModeCaptureIsValid(void)
+ 265:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** {
+ 337              		.loc 1 265 0
+ 338              		.cfi_startproc
+ 339              		@ args = 0, pretend = 0, frame = 8
+ 340              		@ frame_needed = 1, uses_anonymous_args = 0
+ 341              		@ link register save eliminated.
+ 342 019c 80B4     		push	{r7}
+ 343              	.LCFI17:
+ 344              		.cfi_def_cfa_offset 4
+ 345              		.cfi_offset 7, -4
+ 346 019e 83B0     		sub	sp, sp, #12
+ 347              	.LCFI18:
+ 348              		.cfi_def_cfa_offset 16
+ 349 01a0 00AF     		add	r7, sp, #0
+ 350              	.LCFI19:
+ 351              		.cfi_def_cfa_register 7
+ 266:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     bool bValid;
+ 267:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 268:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     bValid = HWREG(SMWDTHROSC_STCS) & SMWDTHROSC_STCS_VALID;
+ 352              		.loc 1 268 0
+ 353 01a2 45F25803 		movw	r3, #20568
+ 354 01a6 C4F20D03 		movt	r3, 16397
+ 355 01aa 1B68     		ldr	r3, [r3, #0]
+ 356 01ac 03F00103 		and	r3, r3, #1
+ 357 01b0 002B     		cmp	r3, #0
+ 358 01b2 0CBF     		ite	eq
+ 359 01b4 0023     		moveq	r3, #0
+ 360 01b6 0123     		movne	r3, #1
+ 361 01b8 FB71     		strb	r3, [r7, #7]
+ 269:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 270:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     return bValid;
+ 362              		.loc 1 270 0
+ 363 01ba FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 271:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** }
+ 364              		.loc 1 271 0
+ 365 01bc 1846     		mov	r0, r3
+ 366 01be 07F10C07 		add	r7, r7, #12
+ 367 01c2 BD46     		mov	sp, r7
+ 368 01c4 80BC     		pop	{r7}
+ 369 01c6 7047     		bx	lr
+ 370              		.cfi_endproc
+ 371              	.LFE6:
+ 373              		.align	2
+ 374              		.global	SleepModeCaptureNew
+ 375              		.thumb
+ 376              		.thumb_func
+ 378              	SleepModeCaptureNew:
+ 379              	.LFB7:
+ 272:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 273:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+ 274:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+ 275:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! Prepares for a new value to  be captured
+ 276:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 277:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! This function prepares the capture logic to capture a new value.
+ 278:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 279:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! The relevant pin interrupt flag must be cleared after calling this
+ 280:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! function using IntPendClear().
+ 281:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 282:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \sa SleepModeCaptureGet(), SleepModeCaptureIsValid()
+ 283:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //!
+ 284:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //! \return None
+ 285:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //
+ 286:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** //*****************************************************************************
+ 287:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** void
+ 288:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** SleepModeCaptureNew(void)
+ 289:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** {
+ 380              		.loc 1 289 0
+ 381              		.cfi_startproc
+ 382              		@ args = 0, pretend = 0, frame = 8
+ 383              		@ frame_needed = 1, uses_anonymous_args = 0
+ 384              		@ link register save eliminated.
+ 385 01c8 80B4     		push	{r7}
+ 386              	.LCFI20:
+ 387              		.cfi_def_cfa_offset 4
+ 388              		.cfi_offset 7, -4
+ 389 01ca 83B0     		sub	sp, sp, #12
+ 390              	.LCFI21:
+ 391              		.cfi_def_cfa_offset 16
+ 392 01cc 00AF     		add	r7, sp, #0
+ 393              	.LCFI22:
+ 394              		.cfi_def_cfa_register 7
+ 290:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     uint32_t  ui32Val;
+ 291:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** 
+ 292:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     ui32Val = HWREG(SMWDTHROSC_STCS);
+ 395              		.loc 1 292 0
+ 396 01ce 45F25803 		movw	r3, #20568
+ 397 01d2 C4F20D03 		movt	r3, 16397
+ 398 01d6 1B68     		ldr	r3, [r3, #0]
+ 399 01d8 7B60     		str	r3, [r7, #4]
+ 293:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     ui32Val &= ~SMWDTHROSC_STCS_VALID;
+ 400              		.loc 1 293 0
+ 401 01da 7B68     		ldr	r3, [r7, #4]
+ 402 01dc 23F00103 		bic	r3, r3, #1
+ 403 01e0 7B60     		str	r3, [r7, #4]
+ 294:bsp/boards/OpenMote-CC2538/source/sleepmode.c ****     HWREG(SMWDTHROSC_STCS) = ui32Val;
+ 404              		.loc 1 294 0
+ 405 01e2 45F25803 		movw	r3, #20568
+ 406 01e6 C4F20D03 		movt	r3, 16397
+ 407 01ea 7A68     		ldr	r2, [r7, #4]
+ 408 01ec 1A60     		str	r2, [r3, #0]
+ 295:bsp/boards/OpenMote-CC2538/source/sleepmode.c **** }
+ 409              		.loc 1 295 0
+ 410 01ee 07F10C07 		add	r7, r7, #12
+ 411 01f2 BD46     		mov	sp, r7
+ 412 01f4 80BC     		pop	{r7}
+ 413 01f6 7047     		bx	lr
+ 414              		.cfi_endproc
+ 415              	.LFE7:
+ 417              	.Letext0:
+ 418              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+DEFINED SYMBOLS
+                            *ABS*:00000000 sleepmode.c
+     /tmp/ccNrXUtj.s:18     .text:00000000 $t
+     /tmp/ccNrXUtj.s:23     .text:00000000 SleepModeIntRegister
+     /tmp/ccNrXUtj.s:61     .text:00000024 SleepModeIntUnregister
+     /tmp/ccNrXUtj.s:91     .text:0000003c SleepModeTimerCountGet
+     /tmp/ccNrXUtj.s:153    .text:00000098 SleepModeCaptureConfig
+     /tmp/ccNrXUtj.s:206    .text:000000d8 SleepModeTimerCompareSet
+     /tmp/ccNrXUtj.s:273    .text:00000140 SleepModeCaptureGet
+     /tmp/ccNrXUtj.s:335    .text:0000019c SleepModeCaptureIsValid
+     /tmp/ccNrXUtj.s:378    .text:000001c8 SleepModeCaptureNew
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.hw_ints.h.42.85b9479f2be35b086f1bb7cbb15bc097
+                           .group:00000000 wm4.hw_memmap.h.39.19283c377d449c9bca5fdd8ccb62628c
+                           .group:00000000 wm4.hw_smwdthrosc.h.39.ab42722bc5551495328d9a67238c9bbc
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.sleepmode.h.41.8aaaa1e0c85692d50a0ac7b45436b69e
+
+UNDEFINED SYMBOLS
+IntRegister
+IntEnable
+IntDisable
+IntUnregister

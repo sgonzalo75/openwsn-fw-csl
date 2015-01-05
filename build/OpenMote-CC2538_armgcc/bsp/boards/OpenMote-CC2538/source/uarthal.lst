@@ -1,0 +1,3292 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"uarthal.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.align	2
+  19              		.global	UARTParityModeSet
+  20              		.thumb
+  21              		.thumb_func
+  23              	UARTParityModeSet:
+  24              	.LFB0:
+  25              		.file 1 "bsp/boards/OpenMote-CC2538/source/uarthal.c"
+   1:bsp/boards/OpenMote-CC2538/source/uarthal.c **** /******************************************************************************
+   2:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  Filename:       uart.c
+   3:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  Revised:        $Date: 2013-04-16 12:01:40 +0200 (Tue, 16 Apr 2013) $
+   4:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  Revision:       $Revision: 9777 $
+   5:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *
+   6:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  Description:    Driver for the UART.
+   7:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *
+   8:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
+   9:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *
+  10:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *
+  11:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  Redistribution and use in source and binary forms, with or without
+  12:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  modification, are permitted provided that the following conditions
+  13:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  are met:
+  14:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *
+  15:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *    Redistributions of source code must retain the above copyright
+  16:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *    notice, this list of conditions and the following disclaimer.
+  17:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *
+  18:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *    Redistributions in binary form must reproduce the above copyright
+  19:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *    notice, this list of conditions and the following disclaimer in the
+  20:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *    documentation and/or other materials provided with the distribution.
+  21:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *
+  22:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *    Neither the name of Texas Instruments Incorporated nor the names of
+  23:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *    its contributors may be used to endorse or promote products derived
+  24:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *    from this software without specific prior written permission.
+  25:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *
+  26:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  27:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  28:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  29:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  30:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  31:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  32:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  33:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  34:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  35:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  36:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  37:bsp/boards/OpenMote-CC2538/source/uarthal.c **** *
+  38:bsp/boards/OpenMote-CC2538/source/uarthal.c **** ******************************************************************************/
+  39:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+  40:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+  41:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+  42:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \addtogroup uart_api
+  43:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! @{
+  44:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+  45:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+  46:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+  47:bsp/boards/OpenMote-CC2538/source/uarthal.c **** #include <headers/hw_ints.h>
+  48:bsp/boards/OpenMote-CC2538/source/uarthal.c **** #include <headers/hw_memmap.h>
+  49:bsp/boards/OpenMote-CC2538/source/uarthal.c **** #include <headers/hw_sys_ctrl.h>
+  50:bsp/boards/OpenMote-CC2538/source/uarthal.c **** #include <headers/hw_uart.h>
+  51:bsp/boards/OpenMote-CC2538/source/uarthal.c **** #include "debug.h"
+  52:bsp/boards/OpenMote-CC2538/source/uarthal.c **** #include "interrupt.h"
+  53:bsp/boards/OpenMote-CC2538/source/uarthal.c **** #include "uarthal.h"
+  54:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+  55:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+  56:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+  57:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \internal
+  58:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Checks a UART base address
+  59:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+  60:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+  61:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+  62:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function determines if a UART port base address is valid.
+  63:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+  64:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return Returns \b true if the base address is valid and \b false
+  65:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! otherwise.
+  66:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+  67:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+  68:bsp/boards/OpenMote-CC2538/source/uarthal.c **** #ifdef ENABLE_ASSERT
+  69:bsp/boards/OpenMote-CC2538/source/uarthal.c **** static bool
+  70:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTBaseValid(uint32_t ui32Base)
+  71:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+  72:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     return((ui32Base == UART0_BASE) || (ui32Base == UART1_BASE));
+  73:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+  74:bsp/boards/OpenMote-CC2538/source/uarthal.c **** #endif
+  75:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+  76:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+  77:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+  78:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Sets the type of parity
+  79:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+  80:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+  81:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Parity specifies the type of parity to use.
+  82:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+  83:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function sets the type of parity to use for transmitting and expect
+  84:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! when receiving.  The \e ui32Parity parameter must be one of
+  85:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_CONFIG_PAR_NONE, \b UART_CONFIG_PAR_EVEN, \b UART_CONFIG_PAR_ODD,
+  86:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_CONFIG_PAR_ONE, or \b UART_CONFIG_PAR_ZERO.  The last two allow
+  87:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! direct control of the parity bit; it is always either one or zero based on
+  88:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! the mode.
+  89:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+  90:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+  91:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+  92:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+  93:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+  94:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTParityModeSet(uint32_t ui32Base, uint32_t ui32Parity)
+  95:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+  26              		.loc 1 95 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 8
+  29              		@ frame_needed = 1, uses_anonymous_args = 0
+  30              		@ link register save eliminated.
+  31 0000 80B4     		push	{r7}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 4
+  34              		.cfi_offset 7, -4
+  35 0002 83B0     		sub	sp, sp, #12
+  36              	.LCFI1:
+  37              		.cfi_def_cfa_offset 16
+  38 0004 00AF     		add	r7, sp, #0
+  39              	.LCFI2:
+  40              		.cfi_def_cfa_register 7
+  41 0006 7860     		str	r0, [r7, #4]
+  42 0008 3960     		str	r1, [r7, #0]
+  96:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+  97:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+  98:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+  99:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 100:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT((ui32Parity == UART_CONFIG_PAR_NONE) ||
+ 101:bsp/boards/OpenMote-CC2538/source/uarthal.c ****            (ui32Parity == UART_CONFIG_PAR_EVEN) ||
+ 102:bsp/boards/OpenMote-CC2538/source/uarthal.c ****            (ui32Parity == UART_CONFIG_PAR_ODD) ||
+ 103:bsp/boards/OpenMote-CC2538/source/uarthal.c ****            (ui32Parity == UART_CONFIG_PAR_ONE) ||
+ 104:bsp/boards/OpenMote-CC2538/source/uarthal.c ****            (ui32Parity == UART_CONFIG_PAR_ZERO));
+ 105:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 106:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 107:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Set the parity mode.
+ 108:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 109:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_LCRH) = ((HWREG(ui32Base + UART_O_LCRH) &
+  43              		.loc 1 109 0
+  44 000a 7B68     		ldr	r3, [r7, #4]
+  45 000c 03F12C03 		add	r3, r3, #44
+  46 0010 7A68     		ldr	r2, [r7, #4]
+  47 0012 02F12C02 		add	r2, r2, #44
+  48 0016 1268     		ldr	r2, [r2, #0]
+  49 0018 22F08601 		bic	r1, r2, #134
+ 110:bsp/boards/OpenMote-CC2538/source/uarthal.c ****                                       ~(UART_LCRH_SPS | UART_LCRH_EPS |
+ 111:bsp/boards/OpenMote-CC2538/source/uarthal.c ****                                         UART_LCRH_PEN)) | ui32Parity);
+  50              		.loc 1 111 0
+  51 001c 3A68     		ldr	r2, [r7, #0]
+  52 001e 0A43     		orrs	r2, r2, r1
+ 109:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_LCRH) = ((HWREG(ui32Base + UART_O_LCRH) &
+  53              		.loc 1 109 0
+  54 0020 1A60     		str	r2, [r3, #0]
+ 112:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+  55              		.loc 1 112 0
+  56 0022 07F10C07 		add	r7, r7, #12
+  57 0026 BD46     		mov	sp, r7
+  58 0028 80BC     		pop	{r7}
+  59 002a 7047     		bx	lr
+  60              		.cfi_endproc
+  61              	.LFE0:
+  63              		.align	2
+  64              		.global	UARTParityModeGet
+  65              		.thumb
+  66              		.thumb_func
+  68              	UARTParityModeGet:
+  69              	.LFB1:
+ 113:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 114:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 115:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 116:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Gets the type of parity currently being used
+ 117:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 118:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 119:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 120:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function gets the type of parity used for transmitting data and
+ 121:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! expected when receiving data.
+ 122:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 123:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return Returns the current parity settings, specified as one of
+ 124:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_CONFIG_PAR_NONE, \b UART_CONFIG_PAR_EVEN, \b UART_CONFIG_PAR_ODD,
+ 125:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_CONFIG_PAR_ONE, or \b UART_CONFIG_PAR_ZERO.
+ 126:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 127:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 128:bsp/boards/OpenMote-CC2538/source/uarthal.c **** uint32_t
+ 129:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTParityModeGet(uint32_t ui32Base)
+ 130:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+  70              		.loc 1 130 0
+  71              		.cfi_startproc
+  72              		@ args = 0, pretend = 0, frame = 8
+  73              		@ frame_needed = 1, uses_anonymous_args = 0
+  74              		@ link register save eliminated.
+  75 002c 80B4     		push	{r7}
+  76              	.LCFI3:
+  77              		.cfi_def_cfa_offset 4
+  78              		.cfi_offset 7, -4
+  79 002e 83B0     		sub	sp, sp, #12
+  80              	.LCFI4:
+  81              		.cfi_def_cfa_offset 16
+  82 0030 00AF     		add	r7, sp, #0
+  83              	.LCFI5:
+  84              		.cfi_def_cfa_register 7
+  85 0032 7860     		str	r0, [r7, #4]
+ 131:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 132:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 133:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 134:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 135:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 136:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 137:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Return the current parity setting.
+ 138:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 139:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     return(HWREG(ui32Base + UART_O_LCRH) &
+  86              		.loc 1 139 0
+  87 0034 7B68     		ldr	r3, [r7, #4]
+  88 0036 03F12C03 		add	r3, r3, #44
+  89 003a 1B68     		ldr	r3, [r3, #0]
+  90 003c 03F08603 		and	r3, r3, #134
+ 140:bsp/boards/OpenMote-CC2538/source/uarthal.c ****            (UART_LCRH_SPS | UART_LCRH_EPS | UART_LCRH_PEN));
+ 141:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+  91              		.loc 1 141 0
+  92 0040 1846     		mov	r0, r3
+  93 0042 07F10C07 		add	r7, r7, #12
+  94 0046 BD46     		mov	sp, r7
+  95 0048 80BC     		pop	{r7}
+  96 004a 7047     		bx	lr
+  97              		.cfi_endproc
+  98              	.LFE1:
+ 100              		.align	2
+ 101              		.global	UARTFIFOLevelSet
+ 102              		.thumb
+ 103              		.thumb_func
+ 105              	UARTFIFOLevelSet:
+ 106              	.LFB2:
+ 142:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 143:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 144:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 145:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Sets the FIFO level at which interrupts are generated
+ 146:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 147:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 148:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32TxLevel is the transmit FIFO interrupt level, specified as one of
+ 149:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_FIFO_TX1_8, \b UART_FIFO_TX2_8, \b UART_FIFO_TX4_8,
+ 150:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_FIFO_TX6_8, or \b UART_FIFO_TX7_8.
+ 151:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32RxLevel is the receive FIFO interrupt level, specified as one of
+ 152:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_FIFO_RX1_8, \b UART_FIFO_RX2_8, \b UART_FIFO_RX4_8,
+ 153:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_FIFO_RX6_8, or \b UART_FIFO_RX7_8.
+ 154:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 155:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function sets the FIFO level at which transmit and receive interrupts
+ 156:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! are generated.
+ 157:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 158:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+ 159:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 160:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 161:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+ 162:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTFIFOLevelSet(uint32_t ui32Base, uint32_t ui32TxLevel,
+ 163:bsp/boards/OpenMote-CC2538/source/uarthal.c ****                  uint32_t ui32RxLevel)
+ 164:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 107              		.loc 1 164 0
+ 108              		.cfi_startproc
+ 109              		@ args = 0, pretend = 0, frame = 16
+ 110              		@ frame_needed = 1, uses_anonymous_args = 0
+ 111              		@ link register save eliminated.
+ 112 004c 80B4     		push	{r7}
+ 113              	.LCFI6:
+ 114              		.cfi_def_cfa_offset 4
+ 115              		.cfi_offset 7, -4
+ 116 004e 85B0     		sub	sp, sp, #20
+ 117              	.LCFI7:
+ 118              		.cfi_def_cfa_offset 24
+ 119 0050 00AF     		add	r7, sp, #0
+ 120              	.LCFI8:
+ 121              		.cfi_def_cfa_register 7
+ 122 0052 F860     		str	r0, [r7, #12]
+ 123 0054 B960     		str	r1, [r7, #8]
+ 124 0056 7A60     		str	r2, [r7, #4]
+ 165:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 166:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 167:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 168:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 169:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT((ui32TxLevel == UART_FIFO_TX1_8) ||
+ 170:bsp/boards/OpenMote-CC2538/source/uarthal.c ****            (ui32TxLevel == UART_FIFO_TX2_8) ||
+ 171:bsp/boards/OpenMote-CC2538/source/uarthal.c ****            (ui32TxLevel == UART_FIFO_TX4_8) ||
+ 172:bsp/boards/OpenMote-CC2538/source/uarthal.c ****            (ui32TxLevel == UART_FIFO_TX6_8) ||
+ 173:bsp/boards/OpenMote-CC2538/source/uarthal.c ****            (ui32TxLevel == UART_FIFO_TX7_8));
+ 174:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT((ui32RxLevel == UART_FIFO_RX1_8) ||
+ 175:bsp/boards/OpenMote-CC2538/source/uarthal.c ****            (ui32RxLevel == UART_FIFO_RX2_8) ||
+ 176:bsp/boards/OpenMote-CC2538/source/uarthal.c ****            (ui32RxLevel == UART_FIFO_RX4_8) ||
+ 177:bsp/boards/OpenMote-CC2538/source/uarthal.c ****            (ui32RxLevel == UART_FIFO_RX6_8) ||
+ 178:bsp/boards/OpenMote-CC2538/source/uarthal.c ****            (ui32RxLevel == UART_FIFO_RX7_8));
+ 179:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 180:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 181:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Set the FIFO interrupt levels.
+ 182:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 183:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_IFLS) = ui32TxLevel | ui32RxLevel;
+ 125              		.loc 1 183 0
+ 126 0058 FB68     		ldr	r3, [r7, #12]
+ 127 005a 03F13403 		add	r3, r3, #52
+ 128 005e B968     		ldr	r1, [r7, #8]
+ 129 0060 7A68     		ldr	r2, [r7, #4]
+ 130 0062 0A43     		orrs	r2, r2, r1
+ 131 0064 1A60     		str	r2, [r3, #0]
+ 184:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 132              		.loc 1 184 0
+ 133 0066 07F11407 		add	r7, r7, #20
+ 134 006a BD46     		mov	sp, r7
+ 135 006c 80BC     		pop	{r7}
+ 136 006e 7047     		bx	lr
+ 137              		.cfi_endproc
+ 138              	.LFE2:
+ 140              		.align	2
+ 141              		.global	UARTFIFOLevelGet
+ 142              		.thumb
+ 143              		.thumb_func
+ 145              	UARTFIFOLevelGet:
+ 146              	.LFB3:
+ 185:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 186:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 187:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 188:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Gets the FIFO level at which interrupts are generated
+ 189:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 190:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 191:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param pui32TxLevel is a pointer to storage for the transmit FIFO level,
+ 192:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! returned as one of \b UART_FIFO_TX1_8, \b UART_FIFO_TX2_8,
+ 193:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_FIFO_TX4_8, \b UART_FIFO_TX6_8, or \b UART_FIFO_TX7_8.
+ 194:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param pui32RxLevel is a pointer to storage for the receive FIFO level,
+ 195:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! returned as one of \b UART_FIFO_RX1_8, \b UART_FIFO_RX2_8,
+ 196:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_FIFO_RX4_8, \b UART_FIFO_RX6_8, or \b UART_FIFO_RX7_8.
+ 197:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 198:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function gets the FIFO level at which transmit and receive interrupts
+ 199:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! are generated.
+ 200:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 201:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+ 202:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 203:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 204:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+ 205:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTFIFOLevelGet(uint32_t ui32Base, uint32_t *pui32TxLevel,
+ 206:bsp/boards/OpenMote-CC2538/source/uarthal.c ****                  uint32_t *pui32RxLevel)
+ 207:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 147              		.loc 1 207 0
+ 148              		.cfi_startproc
+ 149              		@ args = 0, pretend = 0, frame = 24
+ 150              		@ frame_needed = 1, uses_anonymous_args = 0
+ 151              		@ link register save eliminated.
+ 152 0070 80B4     		push	{r7}
+ 153              	.LCFI9:
+ 154              		.cfi_def_cfa_offset 4
+ 155              		.cfi_offset 7, -4
+ 156 0072 87B0     		sub	sp, sp, #28
+ 157              	.LCFI10:
+ 158              		.cfi_def_cfa_offset 32
+ 159 0074 00AF     		add	r7, sp, #0
+ 160              	.LCFI11:
+ 161              		.cfi_def_cfa_register 7
+ 162 0076 F860     		str	r0, [r7, #12]
+ 163 0078 B960     		str	r1, [r7, #8]
+ 164 007a 7A60     		str	r2, [r7, #4]
+ 208:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     uint32_t ui32Temp;
+ 209:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 210:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 211:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 212:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 213:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 214:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 215:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 216:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Read the FIFO level register.
+ 217:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 218:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ui32Temp = HWREG(ui32Base + UART_O_IFLS);
+ 165              		.loc 1 218 0
+ 166 007c FB68     		ldr	r3, [r7, #12]
+ 167 007e 03F13403 		add	r3, r3, #52
+ 168 0082 1B68     		ldr	r3, [r3, #0]
+ 169 0084 7B61     		str	r3, [r7, #20]
+ 219:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 220:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 221:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Extract the transmit and receive FIFO levels.
+ 222:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 223:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     *pui32TxLevel = ui32Temp & UART_IFLS_TXIFLSEL_M;
+ 170              		.loc 1 223 0
+ 171 0086 7B69     		ldr	r3, [r7, #20]
+ 172 0088 03F00702 		and	r2, r3, #7
+ 173 008c BB68     		ldr	r3, [r7, #8]
+ 174 008e 1A60     		str	r2, [r3, #0]
+ 224:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     *pui32RxLevel = ui32Temp & UART_IFLS_RXIFLSEL_M;
+ 175              		.loc 1 224 0
+ 176 0090 7B69     		ldr	r3, [r7, #20]
+ 177 0092 03F03802 		and	r2, r3, #56
+ 178 0096 7B68     		ldr	r3, [r7, #4]
+ 179 0098 1A60     		str	r2, [r3, #0]
+ 225:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 180              		.loc 1 225 0
+ 181 009a 07F11C07 		add	r7, r7, #28
+ 182 009e BD46     		mov	sp, r7
+ 183 00a0 80BC     		pop	{r7}
+ 184 00a2 7047     		bx	lr
+ 185              		.cfi_endproc
+ 186              	.LFE3:
+ 188              		.align	2
+ 189              		.global	UARTConfigSetExpClk
+ 190              		.thumb
+ 191              		.thumb_func
+ 193              	UARTConfigSetExpClk:
+ 194              	.LFB4:
+ 226:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 227:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 228:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 229:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Sets the configuration of a UART
+ 230:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 231:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 232:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32UARTClk is the rate of the clock supplied to the UART module.
+ 233:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Baud is the desired baud rate.
+ 234:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Config is the data format for the port (number of data bits,
+ 235:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! number of stop bits, and parity).
+ 236:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 237:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function configures the UART for operation in the specified data
+ 238:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! format.  The baud rate is provided in the \e ui32Baud parameter and the data
+ 239:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! format in the \e ui32Config parameter.
+ 240:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 241:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! The \e ui32Config parameter is the logical OR of three values: the number of
+ 242:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! data bits, the number of stop bits, and the parity.  \b UART_CONFIG_WLEN_8,
+ 243:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_CONFIG_WLEN_7, \b UART_CONFIG_WLEN_6, and \b UART_CONFIG_WLEN_5
+ 244:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! select from eight to five data bits per byte (respectively).
+ 245:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_CONFIG_STOP_ONE and \b UART_CONFIG_STOP_TWO select one or two stop
+ 246:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! bits (respectively).  \b UART_CONFIG_PAR_NONE, \b UART_CONFIG_PAR_EVEN,
+ 247:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_CONFIG_PAR_ODD, \b UART_CONFIG_PAR_ONE, and \b UART_CONFIG_PAR_ZERO
+ 248:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! select the parity mode (no parity bit, even parity bit, odd parity bit,
+ 249:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! parity bit always one, and parity bit always zero, respectively).
+ 250:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 251:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! The peripheral clock is set in the System Control module.  The frequency of
+ 252:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! the system clock is the value returned by SysCtrlClockGet() or
+ 253:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! SysCtrlIOClockGet() depending on the chosen clock source as set by
+ 254:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! UARTClockSourceSet(), or it can be explicitly hard coded if it is constant
+ 255:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! and known (to save the code/execution overhead of a call to
+ 256:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! SysCtrlClockGet() or SysCtrlIOClockGet()).
+ 257:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 258:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! The CC2538 part has the ability to specify the UART baud clock
+ 259:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! source (via UARTClockSourceSet()), the peripheral clock can be changed to
+ 260:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! PIOSC.  In this case, the peripheral clock should be specified as
+ 261:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! 16,000,000 (the nominal rate of PIOSC).
+ 262:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 263:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \sa See  UARTClockSourceSet()
+ 264:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 265:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+ 266:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 267:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 268:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+ 269:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTConfigSetExpClk(uint32_t ui32Base, uint32_t ui32UARTClk,
+ 270:bsp/boards/OpenMote-CC2538/source/uarthal.c ****                     uint32_t ui32Baud, uint32_t ui32Config)
+ 271:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 195              		.loc 1 271 0
+ 196              		.cfi_startproc
+ 197              		@ args = 0, pretend = 0, frame = 24
+ 198              		@ frame_needed = 1, uses_anonymous_args = 0
+ 199 00a4 80B5     		push	{r7, lr}
+ 200              	.LCFI12:
+ 201              		.cfi_def_cfa_offset 8
+ 202              		.cfi_offset 7, -8
+ 203              		.cfi_offset 14, -4
+ 204 00a6 86B0     		sub	sp, sp, #24
+ 205              	.LCFI13:
+ 206              		.cfi_def_cfa_offset 32
+ 207 00a8 00AF     		add	r7, sp, #0
+ 208              	.LCFI14:
+ 209              		.cfi_def_cfa_register 7
+ 210 00aa F860     		str	r0, [r7, #12]
+ 211 00ac B960     		str	r1, [r7, #8]
+ 212 00ae 7A60     		str	r2, [r7, #4]
+ 213 00b0 3B60     		str	r3, [r7, #0]
+ 272:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     uint32_t ui32Div;
+ 273:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 274:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 275:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 276:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 277:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 278:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(ui32Baud != 0);
+ 279:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 280:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 281:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Stop the UART.
+ 282:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 283:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     UARTDisable(ui32Base);
+ 214              		.loc 1 283 0
+ 215 00b2 F868     		ldr	r0, [r7, #12]
+ 216 00b4 FFF7FEFF 		bl	UARTDisable
+ 284:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 285:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 286:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Is the required baud rate greater than the maximum rate supported
+ 287:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // without the use of high speed mode?
+ 288:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 289:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     if((ui32Baud * 16) > ui32UARTClk)
+ 217              		.loc 1 289 0
+ 218 00b8 7B68     		ldr	r3, [r7, #4]
+ 219 00ba 4FEA0312 		lsl	r2, r3, #4
+ 220 00be BB68     		ldr	r3, [r7, #8]
+ 221 00c0 9A42     		cmp	r2, r3
+ 222 00c2 0ED9     		bls	.L7
+ 290:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+ 291:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 292:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         // Enable high speed mode.
+ 293:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 294:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         HWREG(ui32Base + UART_O_CTL) |= UART_CTL_HSE;
+ 223              		.loc 1 294 0
+ 224 00c4 FB68     		ldr	r3, [r7, #12]
+ 225 00c6 03F13003 		add	r3, r3, #48
+ 226 00ca FA68     		ldr	r2, [r7, #12]
+ 227 00cc 02F13002 		add	r2, r2, #48
+ 228 00d0 1268     		ldr	r2, [r2, #0]
+ 229 00d2 42F02002 		orr	r2, r2, #32
+ 230 00d6 1A60     		str	r2, [r3, #0]
+ 295:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 296:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 297:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         // Half the supplied baud rate to compensate for enabling high speed
+ 298:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         // mode.  This allows the following code to be common to both cases.
+ 299:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 300:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         ui32Baud /= 2;
+ 231              		.loc 1 300 0
+ 232 00d8 7B68     		ldr	r3, [r7, #4]
+ 233 00da 4FEA5303 		lsr	r3, r3, #1
+ 234 00de 7B60     		str	r3, [r7, #4]
+ 235 00e0 09E0     		b	.L8
+ 236              	.L7:
+ 301:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+ 302:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     else
+ 303:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+ 304:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 305:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         // Disable high speed mode.
+ 306:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 307:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         HWREG(ui32Base + UART_O_CTL) &= ~(UART_CTL_HSE);
+ 237              		.loc 1 307 0
+ 238 00e2 FB68     		ldr	r3, [r7, #12]
+ 239 00e4 03F13003 		add	r3, r3, #48
+ 240 00e8 FA68     		ldr	r2, [r7, #12]
+ 241 00ea 02F13002 		add	r2, r2, #48
+ 242 00ee 1268     		ldr	r2, [r2, #0]
+ 243 00f0 22F02002 		bic	r2, r2, #32
+ 244 00f4 1A60     		str	r2, [r3, #0]
+ 245              	.L8:
+ 308:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+ 309:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 310:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 311:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Compute the fractional baud rate divider.
+ 312:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 313:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ui32Div = (((ui32UARTClk * 8) / ui32Baud) + 1) / 2;
+ 246              		.loc 1 313 0
+ 247 00f6 BB68     		ldr	r3, [r7, #8]
+ 248 00f8 4FEAC302 		lsl	r2, r3, #3
+ 249 00fc 7B68     		ldr	r3, [r7, #4]
+ 250 00fe B2FBF3F3 		udiv	r3, r2, r3
+ 251 0102 03F10103 		add	r3, r3, #1
+ 252 0106 4FEA5303 		lsr	r3, r3, #1
+ 253 010a 7B61     		str	r3, [r7, #20]
+ 314:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 315:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 316:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Set the baud rate.
+ 317:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 318:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_IBRD) = ui32Div / 64;
+ 254              		.loc 1 318 0
+ 255 010c FB68     		ldr	r3, [r7, #12]
+ 256 010e 03F12403 		add	r3, r3, #36
+ 257 0112 7A69     		ldr	r2, [r7, #20]
+ 258 0114 4FEA9212 		lsr	r2, r2, #6
+ 259 0118 1A60     		str	r2, [r3, #0]
+ 319:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_FBRD) = ui32Div % 64;
+ 260              		.loc 1 319 0
+ 261 011a FB68     		ldr	r3, [r7, #12]
+ 262 011c 03F12803 		add	r3, r3, #40
+ 263 0120 7A69     		ldr	r2, [r7, #20]
+ 264 0122 02F03F02 		and	r2, r2, #63
+ 265 0126 1A60     		str	r2, [r3, #0]
+ 320:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 321:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 322:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Set parity, data length, and number of stop bits.
+ 323:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 324:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_LCRH) = ui32Config;
+ 266              		.loc 1 324 0
+ 267 0128 FB68     		ldr	r3, [r7, #12]
+ 268 012a 03F12C03 		add	r3, r3, #44
+ 269 012e 3A68     		ldr	r2, [r7, #0]
+ 270 0130 1A60     		str	r2, [r3, #0]
+ 325:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 326:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 327:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Clear the flags register.
+ 328:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 329:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_FR) = 0;
+ 271              		.loc 1 329 0
+ 272 0132 FB68     		ldr	r3, [r7, #12]
+ 273 0134 03F11803 		add	r3, r3, #24
+ 274 0138 4FF00002 		mov	r2, #0
+ 275 013c 1A60     		str	r2, [r3, #0]
+ 330:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 276              		.loc 1 330 0
+ 277 013e 07F11807 		add	r7, r7, #24
+ 278 0142 BD46     		mov	sp, r7
+ 279 0144 80BD     		pop	{r7, pc}
+ 280              		.cfi_endproc
+ 281              	.LFE4:
+ 283 0146 00BF     		.align	2
+ 284              		.global	UARTConfigGetExpClk
+ 285              		.thumb
+ 286              		.thumb_func
+ 288              	UARTConfigGetExpClk:
+ 289              	.LFB5:
+ 331:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 332:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 333:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 334:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Gets the current configuration of a UART
+ 335:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 336:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 337:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32UARTClk is the rate of the clock supplied to the UART module.
+ 338:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param pui32Baud is a pointer to storage for the baud rate.
+ 339:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param pui32Config is a pointer to storage for the data format.
+ 340:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 341:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! The baud rate and data format for the UART is determined, given an
+ 342:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! explicitly provided peripheral clock (hence the ExpClk suffix).  The
+ 343:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! returned baud rate is the actual baud rate; it may not be the exact baud
+ 344:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! rate requested or an ``official'' baud rate.  The data format returned in
+ 345:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \e pui32Config is enumerated the same as the \e ui32Config parameter of
+ 346:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! UARTConfigSetExpClk().
+ 347:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 348:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! The peripheral clock is set in the System Control module.  The frequency of
+ 349:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! the system clock is the value returned by SysCtrlClockGet() or
+ 350:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! SysCtrlIOClockGet() depending on the chosen clock source as set by
+ 351:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! UARTClockSourceSet(), or it can be explicitly hard coded if it is constant
+ 352:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! and known (to save the code/execution overhead of a call to
+ 353:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! SysCtrlClockGet() or SysCtrlIOClockGet()).
+ 354:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 355:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! The CC2538 part has the ability to specify the UART baud clock
+ 356:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! source (via UARTClockSourceSet()), the peripheral clock can be changed to
+ 357:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! PIOSC.  In this case, the peripheral clock should be specified as
+ 358:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! 16,000,000 (the nominal rate of PIOSC).
+ 359:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 360:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+ 361:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 362:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 363:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+ 364:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTConfigGetExpClk(uint32_t ui32Base, uint32_t ui32UARTClk,
+ 365:bsp/boards/OpenMote-CC2538/source/uarthal.c ****                     uint32_t *pui32Baud, uint32_t *pui32Config)
+ 366:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 290              		.loc 1 366 0
+ 291              		.cfi_startproc
+ 292              		@ args = 0, pretend = 0, frame = 24
+ 293              		@ frame_needed = 1, uses_anonymous_args = 0
+ 294              		@ link register save eliminated.
+ 295 0148 80B4     		push	{r7}
+ 296              	.LCFI15:
+ 297              		.cfi_def_cfa_offset 4
+ 298              		.cfi_offset 7, -4
+ 299 014a 87B0     		sub	sp, sp, #28
+ 300              	.LCFI16:
+ 301              		.cfi_def_cfa_offset 32
+ 302 014c 00AF     		add	r7, sp, #0
+ 303              	.LCFI17:
+ 304              		.cfi_def_cfa_register 7
+ 305 014e F860     		str	r0, [r7, #12]
+ 306 0150 B960     		str	r1, [r7, #8]
+ 307 0152 7A60     		str	r2, [r7, #4]
+ 308 0154 3B60     		str	r3, [r7, #0]
+ 367:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     uint32_t ui32Int, ui32Frac;
+ 368:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 369:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 370:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 371:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 372:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 373:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 374:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 375:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Compute the baud rate.
+ 376:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 377:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ui32Int = HWREG(ui32Base + UART_O_IBRD);
+ 309              		.loc 1 377 0
+ 310 0156 FB68     		ldr	r3, [r7, #12]
+ 311 0158 03F12403 		add	r3, r3, #36
+ 312 015c 1B68     		ldr	r3, [r3, #0]
+ 313 015e 7B61     		str	r3, [r7, #20]
+ 378:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ui32Frac = HWREG(ui32Base + UART_O_FBRD);
+ 314              		.loc 1 378 0
+ 315 0160 FB68     		ldr	r3, [r7, #12]
+ 316 0162 03F12803 		add	r3, r3, #40
+ 317 0166 1B68     		ldr	r3, [r3, #0]
+ 318 0168 3B61     		str	r3, [r7, #16]
+ 379:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     *pui32Baud = (ui32UARTClk * 4) / ((64 * ui32Int) + ui32Frac);
+ 319              		.loc 1 379 0
+ 320 016a BB68     		ldr	r3, [r7, #8]
+ 321 016c 4FEA8302 		lsl	r2, r3, #2
+ 322 0170 7B69     		ldr	r3, [r7, #20]
+ 323 0172 4FEA8311 		lsl	r1, r3, #6
+ 324 0176 3B69     		ldr	r3, [r7, #16]
+ 325 0178 CB18     		adds	r3, r1, r3
+ 326 017a B2FBF3F2 		udiv	r2, r2, r3
+ 327 017e 7B68     		ldr	r3, [r7, #4]
+ 328 0180 1A60     		str	r2, [r3, #0]
+ 380:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 381:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 382:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // See if high speed mode enabled.
+ 383:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 384:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     if(HWREG(ui32Base + UART_O_CTL) & UART_CTL_HSE)
+ 329              		.loc 1 384 0
+ 330 0182 FB68     		ldr	r3, [r7, #12]
+ 331 0184 03F13003 		add	r3, r3, #48
+ 332 0188 1B68     		ldr	r3, [r3, #0]
+ 333 018a 03F02003 		and	r3, r3, #32
+ 334 018e 002B     		cmp	r3, #0
+ 335 0190 05D0     		beq	.L10
+ 385:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+ 386:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 387:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         // High speed mode is enabled so the actual baud rate is actually
+ 388:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         // double what was just calculated.
+ 389:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 390:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         *pui32Baud *= 2;
+ 336              		.loc 1 390 0
+ 337 0192 7B68     		ldr	r3, [r7, #4]
+ 338 0194 1B68     		ldr	r3, [r3, #0]
+ 339 0196 4FEA4302 		lsl	r2, r3, #1
+ 340 019a 7B68     		ldr	r3, [r7, #4]
+ 341 019c 1A60     		str	r2, [r3, #0]
+ 342              	.L10:
+ 391:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+ 392:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 393:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 394:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Get the parity, data length, and number of stop bits.
+ 395:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 396:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     *pui32Config = (HWREG(ui32Base + UART_O_LCRH) &
+ 343              		.loc 1 396 0
+ 344 019e FB68     		ldr	r3, [r7, #12]
+ 345 01a0 03F12C03 		add	r3, r3, #44
+ 346 01a4 1B68     		ldr	r3, [r3, #0]
+ 347 01a6 03F0EE02 		and	r2, r3, #238
+ 348 01aa 3B68     		ldr	r3, [r7, #0]
+ 349 01ac 1A60     		str	r2, [r3, #0]
+ 397:bsp/boards/OpenMote-CC2538/source/uarthal.c ****                     (UART_LCRH_SPS | UART_LCRH_WLEN_M | UART_LCRH_STP2 |
+ 398:bsp/boards/OpenMote-CC2538/source/uarthal.c ****                      UART_LCRH_EPS | UART_LCRH_PEN));
+ 399:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 350              		.loc 1 399 0
+ 351 01ae 07F11C07 		add	r7, r7, #28
+ 352 01b2 BD46     		mov	sp, r7
+ 353 01b4 80BC     		pop	{r7}
+ 354 01b6 7047     		bx	lr
+ 355              		.cfi_endproc
+ 356              	.LFE5:
+ 358              		.align	2
+ 359              		.global	UARTEnable
+ 360              		.thumb
+ 361              		.thumb_func
+ 363              	UARTEnable:
+ 364              	.LFB6:
+ 400:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 401:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 402:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 403:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Enables transmitting and receiving
+ 404:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 405:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 406:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 407:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function sets the UARTEN, TXE, and RXE bits, and enables the transmit
+ 408:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! and receive FIFOs.
+ 409:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 410:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+ 411:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 412:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 413:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+ 414:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTEnable(uint32_t ui32Base)
+ 415:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 365              		.loc 1 415 0
+ 366              		.cfi_startproc
+ 367              		@ args = 0, pretend = 0, frame = 8
+ 368              		@ frame_needed = 1, uses_anonymous_args = 0
+ 369              		@ link register save eliminated.
+ 370 01b8 80B4     		push	{r7}
+ 371              	.LCFI18:
+ 372              		.cfi_def_cfa_offset 4
+ 373              		.cfi_offset 7, -4
+ 374 01ba 83B0     		sub	sp, sp, #12
+ 375              	.LCFI19:
+ 376              		.cfi_def_cfa_offset 16
+ 377 01bc 00AF     		add	r7, sp, #0
+ 378              	.LCFI20:
+ 379              		.cfi_def_cfa_register 7
+ 380 01be 7860     		str	r0, [r7, #4]
+ 416:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 417:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 418:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 419:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 420:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 421:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 422:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Enable the FIFO.
+ 423:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 424:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_LCRH) |= UART_LCRH_FEN;
+ 381              		.loc 1 424 0
+ 382 01c0 7B68     		ldr	r3, [r7, #4]
+ 383 01c2 03F12C03 		add	r3, r3, #44
+ 384 01c6 7A68     		ldr	r2, [r7, #4]
+ 385 01c8 02F12C02 		add	r2, r2, #44
+ 386 01cc 1268     		ldr	r2, [r2, #0]
+ 387 01ce 42F01002 		orr	r2, r2, #16
+ 388 01d2 1A60     		str	r2, [r3, #0]
+ 425:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 426:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 427:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Enable RX, TX, and the UART.
+ 428:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 429:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_CTL) |= (UART_CTL_UARTEN | UART_CTL_TXE |
+ 389              		.loc 1 429 0
+ 390 01d4 7B68     		ldr	r3, [r7, #4]
+ 391 01d6 03F13003 		add	r3, r3, #48
+ 392 01da 1A46     		mov	r2, r3
+ 393 01dc 7B68     		ldr	r3, [r7, #4]
+ 394 01de 03F13003 		add	r3, r3, #48
+ 395 01e2 1B68     		ldr	r3, [r3, #0]
+ 396 01e4 43F44073 		orr	r3, r3, #768
+ 397 01e8 43F00103 		orr	r3, r3, #1
+ 398 01ec 1360     		str	r3, [r2, #0]
+ 430:bsp/boards/OpenMote-CC2538/source/uarthal.c ****                                      UART_CTL_RXE);
+ 431:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 399              		.loc 1 431 0
+ 400 01ee 07F10C07 		add	r7, r7, #12
+ 401 01f2 BD46     		mov	sp, r7
+ 402 01f4 80BC     		pop	{r7}
+ 403 01f6 7047     		bx	lr
+ 404              		.cfi_endproc
+ 405              	.LFE6:
+ 407              		.align	2
+ 408              		.global	UARTDisable
+ 409              		.thumb
+ 410              		.thumb_func
+ 412              	UARTDisable:
+ 413              	.LFB7:
+ 432:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 433:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 434:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 435:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Disables transmitting and receiving
+ 436:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 437:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 438:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 439:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function clears the UARTEN, TXE, and RXE bits, waits for the end of
+ 440:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! transmission of the current character, and flushes the transmit FIFO.
+ 441:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 442:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+ 443:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 444:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 445:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+ 446:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTDisable(uint32_t ui32Base)
+ 447:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 414              		.loc 1 447 0
+ 415              		.cfi_startproc
+ 416              		@ args = 0, pretend = 0, frame = 8
+ 417              		@ frame_needed = 1, uses_anonymous_args = 0
+ 418              		@ link register save eliminated.
+ 419 01f8 80B4     		push	{r7}
+ 420              	.LCFI21:
+ 421              		.cfi_def_cfa_offset 4
+ 422              		.cfi_offset 7, -4
+ 423 01fa 83B0     		sub	sp, sp, #12
+ 424              	.LCFI22:
+ 425              		.cfi_def_cfa_offset 16
+ 426 01fc 00AF     		add	r7, sp, #0
+ 427              	.LCFI23:
+ 428              		.cfi_def_cfa_register 7
+ 429 01fe 7860     		str	r0, [r7, #4]
+ 448:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 449:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 450:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 451:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 452:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 453:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 454:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Wait for end of TX.
+ 455:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 456:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     while(HWREG(ui32Base + UART_O_FR) & UART_FR_BUSY)
+ 430              		.loc 1 456 0
+ 431 0200 00BF     		nop
+ 432              	.L13:
+ 433              		.loc 1 456 0 is_stmt 0 discriminator 1
+ 434 0202 7B68     		ldr	r3, [r7, #4]
+ 435 0204 03F11803 		add	r3, r3, #24
+ 436 0208 1B68     		ldr	r3, [r3, #0]
+ 437 020a 03F00803 		and	r3, r3, #8
+ 438 020e 002B     		cmp	r3, #0
+ 439 0210 F7D1     		bne	.L13
+ 457:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+ 458:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+ 459:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 460:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 461:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Disable the FIFO.
+ 462:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 463:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_LCRH) &= ~(UART_LCRH_FEN);
+ 440              		.loc 1 463 0 is_stmt 1
+ 441 0212 7B68     		ldr	r3, [r7, #4]
+ 442 0214 03F12C03 		add	r3, r3, #44
+ 443 0218 7A68     		ldr	r2, [r7, #4]
+ 444 021a 02F12C02 		add	r2, r2, #44
+ 445 021e 1268     		ldr	r2, [r2, #0]
+ 446 0220 22F01002 		bic	r2, r2, #16
+ 447 0224 1A60     		str	r2, [r3, #0]
+ 464:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 465:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 466:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Disable the UART.
+ 467:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 468:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_CTL) &= ~(UART_CTL_UARTEN | UART_CTL_TXE |
+ 448              		.loc 1 468 0
+ 449 0226 7B68     		ldr	r3, [r7, #4]
+ 450 0228 03F13003 		add	r3, r3, #48
+ 451 022c 1A46     		mov	r2, r3
+ 452 022e 7B68     		ldr	r3, [r7, #4]
+ 453 0230 03F13003 		add	r3, r3, #48
+ 454 0234 1B68     		ldr	r3, [r3, #0]
+ 455 0236 23F44073 		bic	r3, r3, #768
+ 456 023a 23F00103 		bic	r3, r3, #1
+ 457 023e 1360     		str	r3, [r2, #0]
+ 469:bsp/boards/OpenMote-CC2538/source/uarthal.c ****                                       UART_CTL_RXE);
+ 470:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 458              		.loc 1 470 0
+ 459 0240 07F10C07 		add	r7, r7, #12
+ 460 0244 BD46     		mov	sp, r7
+ 461 0246 80BC     		pop	{r7}
+ 462 0248 7047     		bx	lr
+ 463              		.cfi_endproc
+ 464              	.LFE7:
+ 466 024a 00BF     		.align	2
+ 467              		.global	UARTFIFOEnable
+ 468              		.thumb
+ 469              		.thumb_func
+ 471              	UARTFIFOEnable:
+ 472              	.LFB8:
+ 471:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 472:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 473:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 474:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Enables the transmit and receive FIFOs
+ 475:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 476:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 477:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 478:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This functions enables the transmit and receive FIFOs in the UART.
+ 479:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 480:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+ 481:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 482:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 483:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+ 484:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTFIFOEnable(uint32_t ui32Base)
+ 485:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 473              		.loc 1 485 0
+ 474              		.cfi_startproc
+ 475              		@ args = 0, pretend = 0, frame = 8
+ 476              		@ frame_needed = 1, uses_anonymous_args = 0
+ 477              		@ link register save eliminated.
+ 478 024c 80B4     		push	{r7}
+ 479              	.LCFI24:
+ 480              		.cfi_def_cfa_offset 4
+ 481              		.cfi_offset 7, -4
+ 482 024e 83B0     		sub	sp, sp, #12
+ 483              	.LCFI25:
+ 484              		.cfi_def_cfa_offset 16
+ 485 0250 00AF     		add	r7, sp, #0
+ 486              	.LCFI26:
+ 487              		.cfi_def_cfa_register 7
+ 488 0252 7860     		str	r0, [r7, #4]
+ 486:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 487:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 488:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 489:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 490:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 491:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 492:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Enable the FIFO.
+ 493:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 494:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_LCRH) |= UART_LCRH_FEN;
+ 489              		.loc 1 494 0
+ 490 0254 7B68     		ldr	r3, [r7, #4]
+ 491 0256 03F12C03 		add	r3, r3, #44
+ 492 025a 7A68     		ldr	r2, [r7, #4]
+ 493 025c 02F12C02 		add	r2, r2, #44
+ 494 0260 1268     		ldr	r2, [r2, #0]
+ 495 0262 42F01002 		orr	r2, r2, #16
+ 496 0266 1A60     		str	r2, [r3, #0]
+ 495:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 497              		.loc 1 495 0
+ 498 0268 07F10C07 		add	r7, r7, #12
+ 499 026c BD46     		mov	sp, r7
+ 500 026e 80BC     		pop	{r7}
+ 501 0270 7047     		bx	lr
+ 502              		.cfi_endproc
+ 503              	.LFE8:
+ 505 0272 00BF     		.align	2
+ 506              		.global	UARTFIFODisable
+ 507              		.thumb
+ 508              		.thumb_func
+ 510              	UARTFIFODisable:
+ 511              	.LFB9:
+ 496:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 497:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 498:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 499:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Disables the transmit and receive FIFOs
+ 500:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 501:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 502:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 503:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This functions disables the transmit and receive FIFOs in the UART.
+ 504:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 505:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+ 506:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 507:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 508:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+ 509:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTFIFODisable(uint32_t ui32Base)
+ 510:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 512              		.loc 1 510 0
+ 513              		.cfi_startproc
+ 514              		@ args = 0, pretend = 0, frame = 8
+ 515              		@ frame_needed = 1, uses_anonymous_args = 0
+ 516              		@ link register save eliminated.
+ 517 0274 80B4     		push	{r7}
+ 518              	.LCFI27:
+ 519              		.cfi_def_cfa_offset 4
+ 520              		.cfi_offset 7, -4
+ 521 0276 83B0     		sub	sp, sp, #12
+ 522              	.LCFI28:
+ 523              		.cfi_def_cfa_offset 16
+ 524 0278 00AF     		add	r7, sp, #0
+ 525              	.LCFI29:
+ 526              		.cfi_def_cfa_register 7
+ 527 027a 7860     		str	r0, [r7, #4]
+ 511:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 512:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 513:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 514:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 515:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 516:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 517:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Disable the FIFO.
+ 518:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 519:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_LCRH) &= ~(UART_LCRH_FEN);
+ 528              		.loc 1 519 0
+ 529 027c 7B68     		ldr	r3, [r7, #4]
+ 530 027e 03F12C03 		add	r3, r3, #44
+ 531 0282 7A68     		ldr	r2, [r7, #4]
+ 532 0284 02F12C02 		add	r2, r2, #44
+ 533 0288 1268     		ldr	r2, [r2, #0]
+ 534 028a 22F01002 		bic	r2, r2, #16
+ 535 028e 1A60     		str	r2, [r3, #0]
+ 520:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 536              		.loc 1 520 0
+ 537 0290 07F10C07 		add	r7, r7, #12
+ 538 0294 BD46     		mov	sp, r7
+ 539 0296 80BC     		pop	{r7}
+ 540 0298 7047     		bx	lr
+ 541              		.cfi_endproc
+ 542              	.LFE9:
+ 544 029a 00BF     		.align	2
+ 545              		.global	UARTEnableSIR
+ 546              		.thumb
+ 547              		.thumb_func
+ 549              	UARTEnableSIR:
+ 550              	.LFB10:
+ 521:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 522:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 523:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 524:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Enables SIR (IrDA) mode on the specified UART
+ 525:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 526:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 527:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param bLowPower indicates if SIR Low Power Mode is to be used.
+ 528:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 529:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function enables the SIREN control bit for IrDA mode on the UART.  If
+ 530:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! the \e bLowPower flag is set, then SIRLP bit will also be set.
+ 531:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 532:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+ 533:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 534:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 535:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+ 536:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTEnableSIR(uint32_t ui32Base, bool bLowPower)
+ 537:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 551              		.loc 1 537 0
+ 552              		.cfi_startproc
+ 553              		@ args = 0, pretend = 0, frame = 8
+ 554              		@ frame_needed = 1, uses_anonymous_args = 0
+ 555              		@ link register save eliminated.
+ 556 029c 80B4     		push	{r7}
+ 557              	.LCFI30:
+ 558              		.cfi_def_cfa_offset 4
+ 559              		.cfi_offset 7, -4
+ 560 029e 83B0     		sub	sp, sp, #12
+ 561              	.LCFI31:
+ 562              		.cfi_def_cfa_offset 16
+ 563 02a0 00AF     		add	r7, sp, #0
+ 564              	.LCFI32:
+ 565              		.cfi_def_cfa_register 7
+ 566 02a2 7860     		str	r0, [r7, #4]
+ 567 02a4 0B46     		mov	r3, r1
+ 568 02a6 FB70     		strb	r3, [r7, #3]
+ 538:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 539:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 540:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 541:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 542:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 543:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 544:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Enable SIR and SIRLP (if appropriate).
+ 545:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 546:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     if(bLowPower)
+ 569              		.loc 1 546 0
+ 570 02a8 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 571 02aa 002B     		cmp	r3, #0
+ 572 02ac 0AD0     		beq	.L17
+ 547:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+ 548:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         HWREG(ui32Base + UART_O_CTL) |= (UART_CTL_SIREN | UART_CTL_SIRLP);
+ 573              		.loc 1 548 0
+ 574 02ae 7B68     		ldr	r3, [r7, #4]
+ 575 02b0 03F13003 		add	r3, r3, #48
+ 576 02b4 7A68     		ldr	r2, [r7, #4]
+ 577 02b6 02F13002 		add	r2, r2, #48
+ 578 02ba 1268     		ldr	r2, [r2, #0]
+ 579 02bc 42F00602 		orr	r2, r2, #6
+ 580 02c0 1A60     		str	r2, [r3, #0]
+ 581 02c2 09E0     		b	.L16
+ 582              	.L17:
+ 549:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+ 550:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     else
+ 551:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+ 552:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         HWREG(ui32Base + UART_O_CTL) |= (UART_CTL_SIREN);
+ 583              		.loc 1 552 0
+ 584 02c4 7B68     		ldr	r3, [r7, #4]
+ 585 02c6 03F13003 		add	r3, r3, #48
+ 586 02ca 7A68     		ldr	r2, [r7, #4]
+ 587 02cc 02F13002 		add	r2, r2, #48
+ 588 02d0 1268     		ldr	r2, [r2, #0]
+ 589 02d2 42F00202 		orr	r2, r2, #2
+ 590 02d6 1A60     		str	r2, [r3, #0]
+ 591              	.L16:
+ 553:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+ 554:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 592              		.loc 1 554 0
+ 593 02d8 07F10C07 		add	r7, r7, #12
+ 594 02dc BD46     		mov	sp, r7
+ 595 02de 80BC     		pop	{r7}
+ 596 02e0 7047     		bx	lr
+ 597              		.cfi_endproc
+ 598              	.LFE10:
+ 600 02e2 00BF     		.align	2
+ 601              		.global	UARTDisableSIR
+ 602              		.thumb
+ 603              		.thumb_func
+ 605              	UARTDisableSIR:
+ 606              	.LFB11:
+ 555:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 556:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 557:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 558:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Disables SIR (IrDA) mode on the specified UART
+ 559:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 560:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 561:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 562:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function clears the SIREN (IrDA) and SIRLP (Low Power) bits.
+ 563:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 564:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+ 565:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 566:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 567:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+ 568:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTDisableSIR(uint32_t ui32Base)
+ 569:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 607              		.loc 1 569 0
+ 608              		.cfi_startproc
+ 609              		@ args = 0, pretend = 0, frame = 8
+ 610              		@ frame_needed = 1, uses_anonymous_args = 0
+ 611              		@ link register save eliminated.
+ 612 02e4 80B4     		push	{r7}
+ 613              	.LCFI33:
+ 614              		.cfi_def_cfa_offset 4
+ 615              		.cfi_offset 7, -4
+ 616 02e6 83B0     		sub	sp, sp, #12
+ 617              	.LCFI34:
+ 618              		.cfi_def_cfa_offset 16
+ 619 02e8 00AF     		add	r7, sp, #0
+ 620              	.LCFI35:
+ 621              		.cfi_def_cfa_register 7
+ 622 02ea 7860     		str	r0, [r7, #4]
+ 570:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 571:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 572:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 573:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 574:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 575:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 576:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Disable SIR and SIRLP (if appropriate).
+ 577:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 578:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_CTL) &= ~(UART_CTL_SIREN | UART_CTL_SIRLP);
+ 623              		.loc 1 578 0
+ 624 02ec 7B68     		ldr	r3, [r7, #4]
+ 625 02ee 03F13003 		add	r3, r3, #48
+ 626 02f2 7A68     		ldr	r2, [r7, #4]
+ 627 02f4 02F13002 		add	r2, r2, #48
+ 628 02f8 1268     		ldr	r2, [r2, #0]
+ 629 02fa 22F00602 		bic	r2, r2, #6
+ 630 02fe 1A60     		str	r2, [r3, #0]
+ 579:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 631              		.loc 1 579 0
+ 632 0300 07F10C07 		add	r7, r7, #12
+ 633 0304 BD46     		mov	sp, r7
+ 634 0306 80BC     		pop	{r7}
+ 635 0308 7047     		bx	lr
+ 636              		.cfi_endproc
+ 637              	.LFE11:
+ 639 030a 00BF     		.align	2
+ 640              		.global	UARTTxIntModeSet
+ 641              		.thumb
+ 642              		.thumb_func
+ 644              	UARTTxIntModeSet:
+ 645              	.LFB12:
+ 580:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 581:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 582:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 583:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Sets the operating mode for the UART transmit interrupt
+ 584:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 585:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 586:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Mode is the operating mode for the transmit interrupt.  It may be
+ 587:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_TXINT_MODE_EOT to trigger interrupts when the transmitter is idle
+ 588:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! or \b UART_TXINT_MODE_FIFO to trigger based on the current transmit FIFO
+ 589:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! level.
+ 590:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 591:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function allows the mode of the UART transmit interrupt to be set.  By
+ 592:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! default, the transmit interrupt is asserted when the FIFO level falls past
+ 593:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! a threshold set via a call to UARTFIFOLevelSet().  Alternatively, if this
+ 594:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! function is called with \e ui32Mode set to \b UART_TXINT_MODE_EOT, the
+ 595:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! transmit interrupt is asserted once the transmitter is completely idle -
+ 596:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! the transmit FIFO is empty and all bits, including any stop bits, have
+ 597:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! cleared the transmitter.
+ 598:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 599:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+ 600:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 601:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 602:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+ 603:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTTxIntModeSet(uint32_t ui32Base, uint32_t ui32Mode)
+ 604:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 646              		.loc 1 604 0
+ 647              		.cfi_startproc
+ 648              		@ args = 0, pretend = 0, frame = 8
+ 649              		@ frame_needed = 1, uses_anonymous_args = 0
+ 650              		@ link register save eliminated.
+ 651 030c 80B4     		push	{r7}
+ 652              	.LCFI36:
+ 653              		.cfi_def_cfa_offset 4
+ 654              		.cfi_offset 7, -4
+ 655 030e 83B0     		sub	sp, sp, #12
+ 656              	.LCFI37:
+ 657              		.cfi_def_cfa_offset 16
+ 658 0310 00AF     		add	r7, sp, #0
+ 659              	.LCFI38:
+ 660              		.cfi_def_cfa_register 7
+ 661 0312 7860     		str	r0, [r7, #4]
+ 662 0314 3960     		str	r1, [r7, #0]
+ 605:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 606:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 607:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 608:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 609:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT((ui32Mode == UART_TXINT_MODE_EOT) ||
+ 610:bsp/boards/OpenMote-CC2538/source/uarthal.c ****            (ui32Mode == UART_TXINT_MODE_FIFO));
+ 611:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 612:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 613:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Set or clear the EOT bit of the UART control register as appropriate.
+ 614:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 615:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_CTL) = ((HWREG(ui32Base + UART_O_CTL) &
+ 663              		.loc 1 615 0
+ 664 0316 7B68     		ldr	r3, [r7, #4]
+ 665 0318 03F13003 		add	r3, r3, #48
+ 666 031c 7A68     		ldr	r2, [r7, #4]
+ 667 031e 02F13002 		add	r2, r2, #48
+ 668 0322 1268     		ldr	r2, [r2, #0]
+ 669 0324 22F01001 		bic	r1, r2, #16
+ 616:bsp/boards/OpenMote-CC2538/source/uarthal.c ****                                      ~(UART_TXINT_MODE_EOT |
+ 617:bsp/boards/OpenMote-CC2538/source/uarthal.c ****                                        UART_TXINT_MODE_FIFO)) | ui32Mode);
+ 670              		.loc 1 617 0
+ 671 0328 3A68     		ldr	r2, [r7, #0]
+ 672 032a 0A43     		orrs	r2, r2, r1
+ 615:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_CTL) = ((HWREG(ui32Base + UART_O_CTL) &
+ 673              		.loc 1 615 0
+ 674 032c 1A60     		str	r2, [r3, #0]
+ 618:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 675              		.loc 1 618 0
+ 676 032e 07F10C07 		add	r7, r7, #12
+ 677 0332 BD46     		mov	sp, r7
+ 678 0334 80BC     		pop	{r7}
+ 679 0336 7047     		bx	lr
+ 680              		.cfi_endproc
+ 681              	.LFE12:
+ 683              		.align	2
+ 684              		.global	UARTTxIntModeGet
+ 685              		.thumb
+ 686              		.thumb_func
+ 688              	UARTTxIntModeGet:
+ 689              	.LFB13:
+ 619:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 620:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 621:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 622:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Returns the current operating mode for the UART transmit interrupt
+ 623:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 624:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 625:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 626:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function returns the current operating mode for the UART transmit
+ 627:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! interrupt.  The return value is \b UART_TXINT_MODE_EOT if the transmit
+ 628:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! interrupt is currently set to be asserted once the transmitter is
+ 629:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! completely idle - the transmit FIFO is empty and all bits, including any
+ 630:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! stop bits, have cleared the transmitter.  The return value is
+ 631:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_TXINT_MODE_FIFO if the interrupt is set to be asserted based upon
+ 632:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! the level of the transmit FIFO.
+ 633:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 634:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return Returns \b UART_TXINT_MODE_FIFO or \b UART_TXINT_MODE_EOT.
+ 635:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 636:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 637:bsp/boards/OpenMote-CC2538/source/uarthal.c **** uint32_t
+ 638:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTTxIntModeGet(uint32_t ui32Base)
+ 639:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 690              		.loc 1 639 0
+ 691              		.cfi_startproc
+ 692              		@ args = 0, pretend = 0, frame = 8
+ 693              		@ frame_needed = 1, uses_anonymous_args = 0
+ 694              		@ link register save eliminated.
+ 695 0338 80B4     		push	{r7}
+ 696              	.LCFI39:
+ 697              		.cfi_def_cfa_offset 4
+ 698              		.cfi_offset 7, -4
+ 699 033a 83B0     		sub	sp, sp, #12
+ 700              	.LCFI40:
+ 701              		.cfi_def_cfa_offset 16
+ 702 033c 00AF     		add	r7, sp, #0
+ 703              	.LCFI41:
+ 704              		.cfi_def_cfa_register 7
+ 705 033e 7860     		str	r0, [r7, #4]
+ 640:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 641:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 642:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 643:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 644:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 645:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 646:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Return the current transmit interrupt mode.
+ 647:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 648:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     return(HWREG(ui32Base + UART_O_CTL) & (UART_TXINT_MODE_EOT |
+ 706              		.loc 1 648 0
+ 707 0340 7B68     		ldr	r3, [r7, #4]
+ 708 0342 03F13003 		add	r3, r3, #48
+ 709 0346 1B68     		ldr	r3, [r3, #0]
+ 710 0348 03F01003 		and	r3, r3, #16
+ 649:bsp/boards/OpenMote-CC2538/source/uarthal.c ****                                            UART_TXINT_MODE_FIFO));
+ 650:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 711              		.loc 1 650 0
+ 712 034c 1846     		mov	r0, r3
+ 713 034e 07F10C07 		add	r7, r7, #12
+ 714 0352 BD46     		mov	sp, r7
+ 715 0354 80BC     		pop	{r7}
+ 716 0356 7047     		bx	lr
+ 717              		.cfi_endproc
+ 718              	.LFE13:
+ 720              		.align	2
+ 721              		.global	UARTCharsAvail
+ 722              		.thumb
+ 723              		.thumb_func
+ 725              	UARTCharsAvail:
+ 726              	.LFB14:
+ 651:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 652:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 653:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 654:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Determines if there are any characters in the receive FIFO
+ 655:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 656:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 657:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 658:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function returns a flag indicating whether or not there is data
+ 659:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! available in the receive FIFO.
+ 660:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 661:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return Returns \b true if there is data in the receive FIFO or \b false
+ 662:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! if there is no data in the receive FIFO.
+ 663:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 664:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 665:bsp/boards/OpenMote-CC2538/source/uarthal.c **** bool
+ 666:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTCharsAvail(uint32_t ui32Base)
+ 667:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 727              		.loc 1 667 0
+ 728              		.cfi_startproc
+ 729              		@ args = 0, pretend = 0, frame = 8
+ 730              		@ frame_needed = 1, uses_anonymous_args = 0
+ 731              		@ link register save eliminated.
+ 732 0358 80B4     		push	{r7}
+ 733              	.LCFI42:
+ 734              		.cfi_def_cfa_offset 4
+ 735              		.cfi_offset 7, -4
+ 736 035a 83B0     		sub	sp, sp, #12
+ 737              	.LCFI43:
+ 738              		.cfi_def_cfa_offset 16
+ 739 035c 00AF     		add	r7, sp, #0
+ 740              	.LCFI44:
+ 741              		.cfi_def_cfa_register 7
+ 742 035e 7860     		str	r0, [r7, #4]
+ 668:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 669:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 670:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 671:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 672:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 673:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 674:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Return the availability of characters.
+ 675:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 676:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     return((HWREG(ui32Base + UART_O_FR) & UART_FR_RXFE) ? false : true);
+ 743              		.loc 1 676 0
+ 744 0360 7B68     		ldr	r3, [r7, #4]
+ 745 0362 03F11803 		add	r3, r3, #24
+ 746 0366 1B68     		ldr	r3, [r3, #0]
+ 747 0368 03F01003 		and	r3, r3, #16
+ 748 036c 002B     		cmp	r3, #0
+ 749 036e 14BF     		ite	ne
+ 750 0370 0023     		movne	r3, #0
+ 751 0372 0123     		moveq	r3, #1
+ 752 0374 DBB2     		uxtb	r3, r3
+ 677:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 753              		.loc 1 677 0
+ 754 0376 1846     		mov	r0, r3
+ 755 0378 07F10C07 		add	r7, r7, #12
+ 756 037c BD46     		mov	sp, r7
+ 757 037e 80BC     		pop	{r7}
+ 758 0380 7047     		bx	lr
+ 759              		.cfi_endproc
+ 760              	.LFE14:
+ 762 0382 00BF     		.align	2
+ 763              		.global	UARTSpaceAvail
+ 764              		.thumb
+ 765              		.thumb_func
+ 767              	UARTSpaceAvail:
+ 768              	.LFB15:
+ 678:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 679:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 680:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 681:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Determines if there is any space in the transmit FIFO
+ 682:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 683:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 684:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 685:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function returns a flag indicating whether or not there is space
+ 686:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! available in the transmit FIFO.
+ 687:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 688:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return Returns \b true if there is space available in the transmit FIFO
+ 689:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! or \b false if there is no space available in the transmit FIFO.
+ 690:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 691:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 692:bsp/boards/OpenMote-CC2538/source/uarthal.c **** bool
+ 693:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTSpaceAvail(uint32_t ui32Base)
+ 694:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 769              		.loc 1 694 0
+ 770              		.cfi_startproc
+ 771              		@ args = 0, pretend = 0, frame = 8
+ 772              		@ frame_needed = 1, uses_anonymous_args = 0
+ 773              		@ link register save eliminated.
+ 774 0384 80B4     		push	{r7}
+ 775              	.LCFI45:
+ 776              		.cfi_def_cfa_offset 4
+ 777              		.cfi_offset 7, -4
+ 778 0386 83B0     		sub	sp, sp, #12
+ 779              	.LCFI46:
+ 780              		.cfi_def_cfa_offset 16
+ 781 0388 00AF     		add	r7, sp, #0
+ 782              	.LCFI47:
+ 783              		.cfi_def_cfa_register 7
+ 784 038a 7860     		str	r0, [r7, #4]
+ 695:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 696:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 697:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 698:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 699:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 700:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 701:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Return the availability of space.
+ 702:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 703:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     return((HWREG(ui32Base + UART_O_FR) & UART_FR_TXFF) ? false : true);
+ 785              		.loc 1 703 0
+ 786 038c 7B68     		ldr	r3, [r7, #4]
+ 787 038e 03F11803 		add	r3, r3, #24
+ 788 0392 1B68     		ldr	r3, [r3, #0]
+ 789 0394 03F02003 		and	r3, r3, #32
+ 790 0398 002B     		cmp	r3, #0
+ 791 039a 14BF     		ite	ne
+ 792 039c 0023     		movne	r3, #0
+ 793 039e 0123     		moveq	r3, #1
+ 794 03a0 DBB2     		uxtb	r3, r3
+ 704:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 795              		.loc 1 704 0
+ 796 03a2 1846     		mov	r0, r3
+ 797 03a4 07F10C07 		add	r7, r7, #12
+ 798 03a8 BD46     		mov	sp, r7
+ 799 03aa 80BC     		pop	{r7}
+ 800 03ac 7047     		bx	lr
+ 801              		.cfi_endproc
+ 802              	.LFE15:
+ 804 03ae 00BF     		.align	2
+ 805              		.global	UARTCharGetNonBlocking
+ 806              		.thumb
+ 807              		.thumb_func
+ 809              	UARTCharGetNonBlocking:
+ 810              	.LFB16:
+ 705:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 706:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 707:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 708:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Receives a character from the specified port
+ 709:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 710:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 711:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 712:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function gets a character from the receive FIFO for the specified
+ 713:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! port.
+ 714:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 715:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return Returns the character read from the specified port, cast as a
+ 716:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \e int32_t.  A \b -1 is returned if there are no characters present in the
+ 717:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! receive FIFO.  The UARTCharsAvail() function should be called before
+ 718:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! attempting to call this function.
+ 719:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 720:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 721:bsp/boards/OpenMote-CC2538/source/uarthal.c **** int32_t
+ 722:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTCharGetNonBlocking(uint32_t ui32Base)
+ 723:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 811              		.loc 1 723 0
+ 812              		.cfi_startproc
+ 813              		@ args = 0, pretend = 0, frame = 8
+ 814              		@ frame_needed = 1, uses_anonymous_args = 0
+ 815              		@ link register save eliminated.
+ 816 03b0 80B4     		push	{r7}
+ 817              	.LCFI48:
+ 818              		.cfi_def_cfa_offset 4
+ 819              		.cfi_offset 7, -4
+ 820 03b2 83B0     		sub	sp, sp, #12
+ 821              	.LCFI49:
+ 822              		.cfi_def_cfa_offset 16
+ 823 03b4 00AF     		add	r7, sp, #0
+ 824              	.LCFI50:
+ 825              		.cfi_def_cfa_register 7
+ 826 03b6 7860     		str	r0, [r7, #4]
+ 724:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 725:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 726:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 727:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 728:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 729:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 730:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // See if there are any characters in the receive FIFO.
+ 731:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 732:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     if(!(HWREG(ui32Base + UART_O_FR) & UART_FR_RXFE))
+ 827              		.loc 1 732 0
+ 828 03b8 7B68     		ldr	r3, [r7, #4]
+ 829 03ba 03F11803 		add	r3, r3, #24
+ 830 03be 1B68     		ldr	r3, [r3, #0]
+ 831 03c0 03F01003 		and	r3, r3, #16
+ 832 03c4 002B     		cmp	r3, #0
+ 833 03c6 02D1     		bne	.L28
+ 733:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+ 734:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 735:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         // Read and return the next character.
+ 736:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 737:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         return(HWREG(ui32Base + UART_O_DR));
+ 834              		.loc 1 737 0
+ 835 03c8 7B68     		ldr	r3, [r7, #4]
+ 836 03ca 1B68     		ldr	r3, [r3, #0]
+ 837 03cc 01E0     		b	.L29
+ 838              	.L28:
+ 738:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+ 739:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     else
+ 740:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+ 741:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 742:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         // There are no characters, so return a failure.
+ 743:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 744:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         return(-1);
+ 839              		.loc 1 744 0
+ 840 03ce 4FF0FF33 		mov	r3, #-1
+ 841              	.L29:
+ 745:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+ 746:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 842              		.loc 1 746 0
+ 843 03d2 1846     		mov	r0, r3
+ 844 03d4 07F10C07 		add	r7, r7, #12
+ 845 03d8 BD46     		mov	sp, r7
+ 846 03da 80BC     		pop	{r7}
+ 847 03dc 7047     		bx	lr
+ 848              		.cfi_endproc
+ 849              	.LFE16:
+ 851 03de 00BF     		.align	2
+ 852              		.global	UARTCharGet
+ 853              		.thumb
+ 854              		.thumb_func
+ 856              	UARTCharGet:
+ 857              	.LFB17:
+ 747:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 748:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 749:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 750:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Waits for a character from the specified port
+ 751:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 752:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 753:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 754:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function gets a character from the receive FIFO for the specified
+ 755:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! port.  If there are no characters available, this function waits until a
+ 756:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! character is received before returning.
+ 757:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 758:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return Returns the character read from the specified port, cast as a
+ 759:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \e int32_t.
+ 760:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 761:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 762:bsp/boards/OpenMote-CC2538/source/uarthal.c **** int32_t
+ 763:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTCharGet(uint32_t ui32Base)
+ 764:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 858              		.loc 1 764 0
+ 859              		.cfi_startproc
+ 860              		@ args = 0, pretend = 0, frame = 8
+ 861              		@ frame_needed = 1, uses_anonymous_args = 0
+ 862              		@ link register save eliminated.
+ 863 03e0 80B4     		push	{r7}
+ 864              	.LCFI51:
+ 865              		.cfi_def_cfa_offset 4
+ 866              		.cfi_offset 7, -4
+ 867 03e2 83B0     		sub	sp, sp, #12
+ 868              	.LCFI52:
+ 869              		.cfi_def_cfa_offset 16
+ 870 03e4 00AF     		add	r7, sp, #0
+ 871              	.LCFI53:
+ 872              		.cfi_def_cfa_register 7
+ 873 03e6 7860     		str	r0, [r7, #4]
+ 765:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 766:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 767:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 768:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 769:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 770:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 771:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Wait until a char is available.
+ 772:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 773:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     while(HWREG(ui32Base + UART_O_FR) & UART_FR_RXFE)
+ 874              		.loc 1 773 0
+ 875 03e8 00BF     		nop
+ 876              	.L31:
+ 877              		.loc 1 773 0 is_stmt 0 discriminator 1
+ 878 03ea 7B68     		ldr	r3, [r7, #4]
+ 879 03ec 03F11803 		add	r3, r3, #24
+ 880 03f0 1B68     		ldr	r3, [r3, #0]
+ 881 03f2 03F01003 		and	r3, r3, #16
+ 882 03f6 002B     		cmp	r3, #0
+ 883 03f8 F7D1     		bne	.L31
+ 774:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+ 775:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+ 776:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 777:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 778:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Now get the char.
+ 779:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 780:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     return(HWREG(ui32Base + UART_O_DR));
+ 884              		.loc 1 780 0 is_stmt 1
+ 885 03fa 7B68     		ldr	r3, [r7, #4]
+ 886 03fc 1B68     		ldr	r3, [r3, #0]
+ 781:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 887              		.loc 1 781 0
+ 888 03fe 1846     		mov	r0, r3
+ 889 0400 07F10C07 		add	r7, r7, #12
+ 890 0404 BD46     		mov	sp, r7
+ 891 0406 80BC     		pop	{r7}
+ 892 0408 7047     		bx	lr
+ 893              		.cfi_endproc
+ 894              	.LFE17:
+ 896 040a 00BF     		.align	2
+ 897              		.global	UARTCharPutNonBlocking
+ 898              		.thumb
+ 899              		.thumb_func
+ 901              	UARTCharPutNonBlocking:
+ 902              	.LFB18:
+ 782:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 783:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 784:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 785:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Sends a character to the specified port
+ 786:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 787:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 788:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui8Data is the character to be transmitted.
+ 789:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 790:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function writes the character \e ui8Data to the transmit FIFO for the
+ 791:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! specified port.  This function does not block, so if there is no space
+ 792:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! available, then a \b false is returned, and the application must retry the
+ 793:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! function later.
+ 794:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 795:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return Returns \b true if the character was successfully placed in the
+ 796:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! transmit FIFO or \b false if there was no space available in the transmit
+ 797:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! FIFO.
+ 798:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 799:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 800:bsp/boards/OpenMote-CC2538/source/uarthal.c **** bool
+ 801:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTCharPutNonBlocking(uint32_t ui32Base, uint8_t ui8Data)
+ 802:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 903              		.loc 1 802 0
+ 904              		.cfi_startproc
+ 905              		@ args = 0, pretend = 0, frame = 8
+ 906              		@ frame_needed = 1, uses_anonymous_args = 0
+ 907              		@ link register save eliminated.
+ 908 040c 80B4     		push	{r7}
+ 909              	.LCFI54:
+ 910              		.cfi_def_cfa_offset 4
+ 911              		.cfi_offset 7, -4
+ 912 040e 83B0     		sub	sp, sp, #12
+ 913              	.LCFI55:
+ 914              		.cfi_def_cfa_offset 16
+ 915 0410 00AF     		add	r7, sp, #0
+ 916              	.LCFI56:
+ 917              		.cfi_def_cfa_register 7
+ 918 0412 7860     		str	r0, [r7, #4]
+ 919 0414 0B46     		mov	r3, r1
+ 920 0416 FB70     		strb	r3, [r7, #3]
+ 803:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 804:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 805:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 806:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 807:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 808:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 809:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // See if there is space in the transmit FIFO.
+ 810:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 811:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     if(!(HWREG(ui32Base + UART_O_FR) & UART_FR_TXFF))
+ 921              		.loc 1 811 0
+ 922 0418 7B68     		ldr	r3, [r7, #4]
+ 923 041a 03F11803 		add	r3, r3, #24
+ 924 041e 1B68     		ldr	r3, [r3, #0]
+ 925 0420 03F02003 		and	r3, r3, #32
+ 926 0424 002B     		cmp	r3, #0
+ 927 0426 05D1     		bne	.L34
+ 812:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+ 813:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 814:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         // Write this character to the transmit FIFO.
+ 815:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 816:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         HWREG(ui32Base + UART_O_DR) = ui8Data;
+ 928              		.loc 1 816 0
+ 929 0428 7B68     		ldr	r3, [r7, #4]
+ 930 042a FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 931 042c 1A60     		str	r2, [r3, #0]
+ 817:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 818:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 819:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         // Success.
+ 820:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 821:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         return(true);
+ 932              		.loc 1 821 0
+ 933 042e 4FF00103 		mov	r3, #1
+ 934 0432 01E0     		b	.L35
+ 935              	.L34:
+ 822:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+ 823:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     else
+ 824:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+ 825:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 826:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         // There is no space in the transmit FIFO, so return a failure.
+ 827:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         //
+ 828:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         return(false);
+ 936              		.loc 1 828 0
+ 937 0434 4FF00003 		mov	r3, #0
+ 938              	.L35:
+ 829:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+ 830:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 939              		.loc 1 830 0
+ 940 0438 1846     		mov	r0, r3
+ 941 043a 07F10C07 		add	r7, r7, #12
+ 942 043e BD46     		mov	sp, r7
+ 943 0440 80BC     		pop	{r7}
+ 944 0442 7047     		bx	lr
+ 945              		.cfi_endproc
+ 946              	.LFE18:
+ 948              		.align	2
+ 949              		.global	UARTCharPut
+ 950              		.thumb
+ 951              		.thumb_func
+ 953              	UARTCharPut:
+ 954              	.LFB19:
+ 831:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 832:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 833:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 834:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Waits to send a character from the specified port
+ 835:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 836:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 837:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui8Data is the character to be transmitted.
+ 838:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 839:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function sends the character \e ui8Data to the transmit FIFO for the
+ 840:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! specified port.  If there is no space available in the transmit FIFO, this
+ 841:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! function waits until there is space available before returning.
+ 842:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 843:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+ 844:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 845:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 846:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+ 847:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTCharPut(uint32_t ui32Base, uint8_t ui8Data)
+ 848:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 955              		.loc 1 848 0
+ 956              		.cfi_startproc
+ 957              		@ args = 0, pretend = 0, frame = 8
+ 958              		@ frame_needed = 1, uses_anonymous_args = 0
+ 959              		@ link register save eliminated.
+ 960 0444 80B4     		push	{r7}
+ 961              	.LCFI57:
+ 962              		.cfi_def_cfa_offset 4
+ 963              		.cfi_offset 7, -4
+ 964 0446 83B0     		sub	sp, sp, #12
+ 965              	.LCFI58:
+ 966              		.cfi_def_cfa_offset 16
+ 967 0448 00AF     		add	r7, sp, #0
+ 968              	.LCFI59:
+ 969              		.cfi_def_cfa_register 7
+ 970 044a 7860     		str	r0, [r7, #4]
+ 971 044c 0B46     		mov	r3, r1
+ 972 044e FB70     		strb	r3, [r7, #3]
+ 849:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 850:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 851:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 852:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 853:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 854:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 855:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Wait until space is available.
+ 856:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 857:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     while(HWREG(ui32Base + UART_O_FR) & UART_FR_TXFF)
+ 973              		.loc 1 857 0
+ 974 0450 00BF     		nop
+ 975              	.L37:
+ 976              		.loc 1 857 0 is_stmt 0 discriminator 1
+ 977 0452 7B68     		ldr	r3, [r7, #4]
+ 978 0454 03F11803 		add	r3, r3, #24
+ 979 0458 1B68     		ldr	r3, [r3, #0]
+ 980 045a 03F02003 		and	r3, r3, #32
+ 981 045e 002B     		cmp	r3, #0
+ 982 0460 F7D1     		bne	.L37
+ 858:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+ 859:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+ 860:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 861:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 862:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Send the char.
+ 863:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 864:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_DR) = ui8Data;
+ 983              		.loc 1 864 0 is_stmt 1
+ 984 0462 7B68     		ldr	r3, [r7, #4]
+ 985 0464 FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 986 0466 1A60     		str	r2, [r3, #0]
+ 865:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 987              		.loc 1 865 0
+ 988 0468 07F10C07 		add	r7, r7, #12
+ 989 046c BD46     		mov	sp, r7
+ 990 046e 80BC     		pop	{r7}
+ 991 0470 7047     		bx	lr
+ 992              		.cfi_endproc
+ 993              	.LFE19:
+ 995 0472 00BF     		.align	2
+ 996              		.global	UARTBreakCtl
+ 997              		.thumb
+ 998              		.thumb_func
+ 1000              	UARTBreakCtl:
+ 1001              	.LFB20:
+ 866:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 867:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 868:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 869:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Causes a BREAK to be sent
+ 870:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 871:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 872:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param bBreakState controls the output level.
+ 873:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 874:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Calling this function with \e bBreakState set to \b true asserts a break
+ 875:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! condition on the UART.  Calling this function with \e bBreakState set to
+ 876:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b false removes the break condition.  For proper transmission of a break
+ 877:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! command, the break must be asserted for at least two complete frames.
+ 878:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 879:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+ 880:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 881:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 882:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+ 883:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTBreakCtl(uint32_t ui32Base, bool bBreakState)
+ 884:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1002              		.loc 1 884 0
+ 1003              		.cfi_startproc
+ 1004              		@ args = 0, pretend = 0, frame = 8
+ 1005              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1006              		@ link register save eliminated.
+ 1007 0474 80B4     		push	{r7}
+ 1008              	.LCFI60:
+ 1009              		.cfi_def_cfa_offset 4
+ 1010              		.cfi_offset 7, -4
+ 1011 0476 83B0     		sub	sp, sp, #12
+ 1012              	.LCFI61:
+ 1013              		.cfi_def_cfa_offset 16
+ 1014 0478 00AF     		add	r7, sp, #0
+ 1015              	.LCFI62:
+ 1016              		.cfi_def_cfa_register 7
+ 1017 047a 7860     		str	r0, [r7, #4]
+ 1018 047c 0B46     		mov	r3, r1
+ 1019 047e FB70     		strb	r3, [r7, #3]
+ 885:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 886:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 887:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 888:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 889:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 890:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 891:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Set the break condition as requested.
+ 892:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 893:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_LCRH) =
+ 1020              		.loc 1 893 0
+ 1021 0480 7B68     		ldr	r3, [r7, #4]
+ 1022 0482 03F12C03 		add	r3, r3, #44
+ 1023 0486 1A46     		mov	r2, r3
+ 894:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         (bBreakState ?
+ 895:bsp/boards/OpenMote-CC2538/source/uarthal.c ****          (HWREG(ui32Base + UART_O_LCRH) | UART_LCRH_BRK) :
+ 1024              		.loc 1 895 0
+ 1025 0488 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 1026 048a 002B     		cmp	r3, #0
+ 1027 048c 06D0     		beq	.L39
+ 1028              		.loc 1 895 0 is_stmt 0 discriminator 1
+ 1029 048e 7B68     		ldr	r3, [r7, #4]
+ 1030 0490 03F12C03 		add	r3, r3, #44
+ 1031 0494 1B68     		ldr	r3, [r3, #0]
+ 1032 0496 43F00103 		orr	r3, r3, #1
+ 1033 049a 05E0     		b	.L40
+ 1034              	.L39:
+ 896:bsp/boards/OpenMote-CC2538/source/uarthal.c ****          (HWREG(ui32Base + UART_O_LCRH) & ~(UART_LCRH_BRK)));
+ 1035              		.loc 1 896 0 is_stmt 1 discriminator 2
+ 1036 049c 7B68     		ldr	r3, [r7, #4]
+ 1037 049e 03F12C03 		add	r3, r3, #44
+ 1038 04a2 1B68     		ldr	r3, [r3, #0]
+ 895:bsp/boards/OpenMote-CC2538/source/uarthal.c ****          (HWREG(ui32Base + UART_O_LCRH) | UART_LCRH_BRK) :
+ 1039              		.loc 1 895 0 discriminator 2
+ 1040 04a4 23F00103 		bic	r3, r3, #1
+ 1041              	.L40:
+ 893:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_LCRH) =
+ 1042              		.loc 1 893 0
+ 1043 04a8 1360     		str	r3, [r2, #0]
+ 897:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1044              		.loc 1 897 0
+ 1045 04aa 07F10C07 		add	r7, r7, #12
+ 1046 04ae BD46     		mov	sp, r7
+ 1047 04b0 80BC     		pop	{r7}
+ 1048 04b2 7047     		bx	lr
+ 1049              		.cfi_endproc
+ 1050              	.LFE20:
+ 1052              		.align	2
+ 1053              		.global	UARTBusy
+ 1054              		.thumb
+ 1055              		.thumb_func
+ 1057              	UARTBusy:
+ 1058              	.LFB21:
+ 898:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 899:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 900:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 901:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Determines whether the UART transmitter is busy or not
+ 902:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 903:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 904:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 905:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Allows the caller to determine whether all transmitted bytes have cleared
+ 906:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! the transmitter hardware.  If \b false is returned, the transmit FIFO is
+ 907:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! empty and all bits of the last transmitted character, including all stop
+ 908:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! bits, have left the hardware shift register.
+ 909:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 910:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return Returns \b true if the UART is transmitting or \b false if all
+ 911:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! transmissions are complete.
+ 912:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 913:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 914:bsp/boards/OpenMote-CC2538/source/uarthal.c **** bool
+ 915:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTBusy(uint32_t ui32Base)
+ 916:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1059              		.loc 1 916 0
+ 1060              		.cfi_startproc
+ 1061              		@ args = 0, pretend = 0, frame = 8
+ 1062              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1063              		@ link register save eliminated.
+ 1064 04b4 80B4     		push	{r7}
+ 1065              	.LCFI63:
+ 1066              		.cfi_def_cfa_offset 4
+ 1067              		.cfi_offset 7, -4
+ 1068 04b6 83B0     		sub	sp, sp, #12
+ 1069              	.LCFI64:
+ 1070              		.cfi_def_cfa_offset 16
+ 1071 04b8 00AF     		add	r7, sp, #0
+ 1072              	.LCFI65:
+ 1073              		.cfi_def_cfa_register 7
+ 1074 04ba 7860     		str	r0, [r7, #4]
+ 917:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 918:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the argument.
+ 919:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 920:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 921:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 922:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 923:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Determine if the UART is busy.
+ 924:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 925:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     return((HWREG(ui32Base + UART_O_FR) & UART_FR_BUSY) ? true : false);
+ 1075              		.loc 1 925 0
+ 1076 04bc 7B68     		ldr	r3, [r7, #4]
+ 1077 04be 03F11803 		add	r3, r3, #24
+ 1078 04c2 1B68     		ldr	r3, [r3, #0]
+ 1079 04c4 03F00803 		and	r3, r3, #8
+ 1080 04c8 002B     		cmp	r3, #0
+ 1081 04ca 0CBF     		ite	eq
+ 1082 04cc 0023     		moveq	r3, #0
+ 1083 04ce 0123     		movne	r3, #1
+ 1084 04d0 DBB2     		uxtb	r3, r3
+ 926:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1085              		.loc 1 926 0
+ 1086 04d2 1846     		mov	r0, r3
+ 1087 04d4 07F10C07 		add	r7, r7, #12
+ 1088 04d8 BD46     		mov	sp, r7
+ 1089 04da 80BC     		pop	{r7}
+ 1090 04dc 7047     		bx	lr
+ 1091              		.cfi_endproc
+ 1092              	.LFE21:
+ 1094 04de 00BF     		.align	2
+ 1095              		.global	UARTIntRegister
+ 1096              		.thumb
+ 1097              		.thumb_func
+ 1099              	UARTIntRegister:
+ 1100              	.LFB22:
+ 927:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 928:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 929:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 930:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Registers an interrupt handler for a UART interrupt
+ 931:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 932:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 933:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param pfnHandler is a pointer to the function to be called when the
+ 934:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! UART interrupt occurs.
+ 935:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 936:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function does the actual registering of the interrupt handler.  This
+ 937:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! function enables the global interrupt in the interrupt controller; specific
+ 938:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! UART interrupts must be enabled via UARTIntEnable().  It is the interrupt
+ 939:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! handler's responsibility to clear the interrupt source.
+ 940:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 941:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \sa IntRegister() for important information about registering interrupt
+ 942:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! handlers.
+ 943:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 944:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+ 945:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 946:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 947:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+ 948:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTIntRegister(uint32_t ui32Base, void (*pfnHandler)(void))
+ 949:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1101              		.loc 1 949 0
+ 1102              		.cfi_startproc
+ 1103              		@ args = 0, pretend = 0, frame = 16
+ 1104              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1105 04e0 80B5     		push	{r7, lr}
+ 1106              	.LCFI66:
+ 1107              		.cfi_def_cfa_offset 8
+ 1108              		.cfi_offset 7, -8
+ 1109              		.cfi_offset 14, -4
+ 1110 04e2 84B0     		sub	sp, sp, #16
+ 1111              	.LCFI67:
+ 1112              		.cfi_def_cfa_offset 24
+ 1113 04e4 00AF     		add	r7, sp, #0
+ 1114              	.LCFI68:
+ 1115              		.cfi_def_cfa_register 7
+ 1116 04e6 7860     		str	r0, [r7, #4]
+ 1117 04e8 3960     		str	r1, [r7, #0]
+ 950:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     uint32_t ui32Int;
+ 951:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 952:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 953:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 954:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 955:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 956:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 957:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 958:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Determine the interrupt number based on the UART port.
+ 959:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 960:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ui32Int = ((ui32Base == UART0_BASE) ? INT_UART0 : INT_UART1);
+ 1118              		.loc 1 960 0
+ 1119 04ea 7A68     		ldr	r2, [r7, #4]
+ 1120 04ec 4FF44043 		mov	r3, #49152
+ 1121 04f0 C4F20003 		movt	r3, 16384
+ 1122 04f4 9A42     		cmp	r2, r3
+ 1123 04f6 02D1     		bne	.L44
+ 1124              		.loc 1 960 0 is_stmt 0 discriminator 1
+ 1125 04f8 4FF01503 		mov	r3, #21
+ 1126 04fc 01E0     		b	.L45
+ 1127              	.L44:
+ 1128              		.loc 1 960 0 discriminator 2
+ 1129 04fe 4FF01603 		mov	r3, #22
+ 1130              	.L45:
+ 1131              		.loc 1 960 0 discriminator 3
+ 1132 0502 FB60     		str	r3, [r7, #12]
+ 961:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 962:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 963:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Register the interrupt handler.
+ 964:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 965:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     IntRegister(ui32Int, pfnHandler);
+ 1133              		.loc 1 965 0 is_stmt 1 discriminator 3
+ 1134 0504 F868     		ldr	r0, [r7, #12]
+ 1135 0506 3968     		ldr	r1, [r7, #0]
+ 1136 0508 FFF7FEFF 		bl	IntRegister
+ 966:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 967:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 968:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Enable the UART interrupt.
+ 969:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 970:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     IntEnable(ui32Int);
+ 1137              		.loc 1 970 0 discriminator 3
+ 1138 050c F868     		ldr	r0, [r7, #12]
+ 1139 050e FFF7FEFF 		bl	IntEnable
+ 971:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1140              		.loc 1 971 0 discriminator 3
+ 1141 0512 07F11007 		add	r7, r7, #16
+ 1142 0516 BD46     		mov	sp, r7
+ 1143 0518 80BD     		pop	{r7, pc}
+ 1144              		.cfi_endproc
+ 1145              	.LFE22:
+ 1147 051a 00BF     		.align	2
+ 1148              		.global	UARTIntUnregister
+ 1149              		.thumb
+ 1150              		.thumb_func
+ 1152              	UARTIntUnregister:
+ 1153              	.LFB23:
+ 972:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 973:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 974:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 975:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Unregisters an interrupt handler for a UART interrupt
+ 976:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 977:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+ 978:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 979:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function does the actual unregistering of the interrupt handler.  It
+ 980:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! clears the handler to be called when a UART interrupt occurs.  This
+ 981:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! function also masks off the interrupt in the interrupt controller so that
+ 982:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! the interrupt handler no longer is called.
+ 983:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 984:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \sa IntRegister() for important information about registering interrupt
+ 985:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! handlers.
+ 986:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+ 987:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+ 988:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+ 989:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+ 990:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+ 991:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTIntUnregister(uint32_t ui32Base)
+ 992:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1154              		.loc 1 992 0
+ 1155              		.cfi_startproc
+ 1156              		@ args = 0, pretend = 0, frame = 16
+ 1157              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1158 051c 80B5     		push	{r7, lr}
+ 1159              	.LCFI69:
+ 1160              		.cfi_def_cfa_offset 8
+ 1161              		.cfi_offset 7, -8
+ 1162              		.cfi_offset 14, -4
+ 1163 051e 84B0     		sub	sp, sp, #16
+ 1164              	.LCFI70:
+ 1165              		.cfi_def_cfa_offset 24
+ 1166 0520 00AF     		add	r7, sp, #0
+ 1167              	.LCFI71:
+ 1168              		.cfi_def_cfa_register 7
+ 1169 0522 7860     		str	r0, [r7, #4]
+ 993:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     uint32_t ui32Int;
+ 994:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+ 995:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 996:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+ 997:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+ 998:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+ 999:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1000:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1001:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Determine the interrupt number based on the UART port.
+1002:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1003:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ui32Int = ((ui32Base == UART0_BASE) ? INT_UART0 : INT_UART1);
+ 1170              		.loc 1 1003 0
+ 1171 0524 7A68     		ldr	r2, [r7, #4]
+ 1172 0526 4FF44043 		mov	r3, #49152
+ 1173 052a C4F20003 		movt	r3, 16384
+ 1174 052e 9A42     		cmp	r2, r3
+ 1175 0530 02D1     		bne	.L47
+ 1176              		.loc 1 1003 0 is_stmt 0 discriminator 1
+ 1177 0532 4FF01503 		mov	r3, #21
+ 1178 0536 01E0     		b	.L48
+ 1179              	.L47:
+ 1180              		.loc 1 1003 0 discriminator 2
+ 1181 0538 4FF01603 		mov	r3, #22
+ 1182              	.L48:
+ 1183              		.loc 1 1003 0 discriminator 3
+ 1184 053c FB60     		str	r3, [r7, #12]
+1004:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1005:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1006:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Disable the interrupt.
+1007:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1008:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     IntDisable(ui32Int);
+ 1185              		.loc 1 1008 0 is_stmt 1 discriminator 3
+ 1186 053e F868     		ldr	r0, [r7, #12]
+ 1187 0540 FFF7FEFF 		bl	IntDisable
+1009:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1010:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1011:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Unregister the interrupt handler.
+1012:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1013:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     IntUnregister(ui32Int);
+ 1188              		.loc 1 1013 0 discriminator 3
+ 1189 0544 F868     		ldr	r0, [r7, #12]
+ 1190 0546 FFF7FEFF 		bl	IntUnregister
+1014:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1191              		.loc 1 1014 0 discriminator 3
+ 1192 054a 07F11007 		add	r7, r7, #16
+ 1193 054e BD46     		mov	sp, r7
+ 1194 0550 80BD     		pop	{r7, pc}
+ 1195              		.cfi_endproc
+ 1196              	.LFE23:
+ 1198 0552 00BF     		.align	2
+ 1199              		.global	UARTIntEnable
+ 1200              		.thumb
+ 1201              		.thumb_func
+ 1203              	UARTIntEnable:
+ 1204              	.LFB24:
+1015:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1016:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1017:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1018:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Enables individual UART interrupt sources
+1019:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1020:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+1021:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32IntFlags is the bit mask of the interrupt sources to be enabled.
+1022:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1023:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function enables the indicated UART interrupt sources.  Only the
+1024:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! sources that are enabled can be reflected to the processor interrupt;
+1025:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! disabled sources have no effect on the processor.
+1026:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1027:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! The \e ui32IntFlags parameter is the logical OR of any of the following:
+1028:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1029:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! - \b UART_INT_9BIT - 9-bit address match interrupt
+1030:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! - \b UART_INT_OE - Overrun Error interrupt
+1031:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! - \b UART_INT_BE - Break Error interrupt
+1032:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! - \b UART_INT_PE - Parity Error interrupt
+1033:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! - \b UART_INT_FE - Framing Error interrupt
+1034:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! - \b UART_INT_RT - Receive Timeout interrupt
+1035:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! - \b UART_INT_TX - Transmit interrupt
+1036:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! - \b UART_INT_RX - Receive interrupt
+1037:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! - \b UART_INT_CTS - CTS interrupt (UART1 only)
+1038:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1039:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+1040:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1041:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1042:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+1043:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTIntEnable(uint32_t ui32Base, uint32_t ui32IntFlags)
+1044:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1205              		.loc 1 1044 0
+ 1206              		.cfi_startproc
+ 1207              		@ args = 0, pretend = 0, frame = 8
+ 1208              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1209              		@ link register save eliminated.
+ 1210 0554 80B4     		push	{r7}
+ 1211              	.LCFI72:
+ 1212              		.cfi_def_cfa_offset 4
+ 1213              		.cfi_offset 7, -4
+ 1214 0556 83B0     		sub	sp, sp, #12
+ 1215              	.LCFI73:
+ 1216              		.cfi_def_cfa_offset 16
+ 1217 0558 00AF     		add	r7, sp, #0
+ 1218              	.LCFI74:
+ 1219              		.cfi_def_cfa_register 7
+ 1220 055a 7860     		str	r0, [r7, #4]
+ 1221 055c 3960     		str	r1, [r7, #0]
+1045:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1046:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+1047:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1048:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+1049:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1050:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1051:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Enable the specified interrupts.
+1052:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1053:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_IM) |= ui32IntFlags;
+ 1222              		.loc 1 1053 0
+ 1223 055e 7B68     		ldr	r3, [r7, #4]
+ 1224 0560 03F13803 		add	r3, r3, #56
+ 1225 0564 7A68     		ldr	r2, [r7, #4]
+ 1226 0566 02F13802 		add	r2, r2, #56
+ 1227 056a 1168     		ldr	r1, [r2, #0]
+ 1228 056c 3A68     		ldr	r2, [r7, #0]
+ 1229 056e 0A43     		orrs	r2, r2, r1
+ 1230 0570 1A60     		str	r2, [r3, #0]
+1054:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1231              		.loc 1 1054 0
+ 1232 0572 07F10C07 		add	r7, r7, #12
+ 1233 0576 BD46     		mov	sp, r7
+ 1234 0578 80BC     		pop	{r7}
+ 1235 057a 7047     		bx	lr
+ 1236              		.cfi_endproc
+ 1237              	.LFE24:
+ 1239              		.align	2
+ 1240              		.global	UARTIntDisable
+ 1241              		.thumb
+ 1242              		.thumb_func
+ 1244              	UARTIntDisable:
+ 1245              	.LFB25:
+1055:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1056:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1057:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1058:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Disables individual UART interrupt sources
+1059:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1060:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+1061:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32IntFlags is the bit mask of the interrupt sources to be disabled.
+1062:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1063:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function disables the indicated UART interrupt sources.  Only the
+1064:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! sources that are enabled can be reflected to the processor interrupt;
+1065:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! disabled sources have no effect on the processor.
+1066:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1067:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! The \e ui32IntFlags parameter has the same definition as the \e ui32IntFlags
+1068:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! parameter to UARTIntEnable().
+1069:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1070:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+1071:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1072:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1073:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+1074:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTIntDisable(uint32_t ui32Base, uint32_t ui32IntFlags)
+1075:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1246              		.loc 1 1075 0
+ 1247              		.cfi_startproc
+ 1248              		@ args = 0, pretend = 0, frame = 8
+ 1249              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1250              		@ link register save eliminated.
+ 1251 057c 80B4     		push	{r7}
+ 1252              	.LCFI75:
+ 1253              		.cfi_def_cfa_offset 4
+ 1254              		.cfi_offset 7, -4
+ 1255 057e 83B0     		sub	sp, sp, #12
+ 1256              	.LCFI76:
+ 1257              		.cfi_def_cfa_offset 16
+ 1258 0580 00AF     		add	r7, sp, #0
+ 1259              	.LCFI77:
+ 1260              		.cfi_def_cfa_register 7
+ 1261 0582 7860     		str	r0, [r7, #4]
+ 1262 0584 3960     		str	r1, [r7, #0]
+1076:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1077:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+1078:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1079:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+1080:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1081:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1082:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Disable the specified interrupts.
+1083:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1084:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_IM) &= ~(ui32IntFlags);
+ 1263              		.loc 1 1084 0
+ 1264 0586 7B68     		ldr	r3, [r7, #4]
+ 1265 0588 03F13803 		add	r3, r3, #56
+ 1266 058c 7A68     		ldr	r2, [r7, #4]
+ 1267 058e 02F13802 		add	r2, r2, #56
+ 1268 0592 1168     		ldr	r1, [r2, #0]
+ 1269 0594 3A68     		ldr	r2, [r7, #0]
+ 1270 0596 6FEA0202 		mvn	r2, r2
+ 1271 059a 0A40     		ands	r2, r2, r1
+ 1272 059c 1A60     		str	r2, [r3, #0]
+1085:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1273              		.loc 1 1085 0
+ 1274 059e 07F10C07 		add	r7, r7, #12
+ 1275 05a2 BD46     		mov	sp, r7
+ 1276 05a4 80BC     		pop	{r7}
+ 1277 05a6 7047     		bx	lr
+ 1278              		.cfi_endproc
+ 1279              	.LFE25:
+ 1281              		.align	2
+ 1282              		.global	UARTIntStatus
+ 1283              		.thumb
+ 1284              		.thumb_func
+ 1286              	UARTIntStatus:
+ 1287              	.LFB26:
+1086:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1087:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1088:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1089:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Gets the current interrupt status
+1090:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1091:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+1092:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param bMasked is \b false if the raw interrupt status is required and
+1093:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b true if the masked interrupt status is required.
+1094:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1095:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function returns the interrupt status for the specified UART.  Either
+1096:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! the raw interrupt status or the status of interrupts that are allowed to
+1097:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! reflect to the processor can be returned.
+1098:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1099:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return Returns the current interrupt status, enumerated as a bit field of
+1100:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! values described in UARTIntEnable().
+1101:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1102:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1103:bsp/boards/OpenMote-CC2538/source/uarthal.c **** uint32_t
+1104:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTIntStatus(uint32_t ui32Base, bool bMasked)
+1105:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1288              		.loc 1 1105 0
+ 1289              		.cfi_startproc
+ 1290              		@ args = 0, pretend = 0, frame = 8
+ 1291              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1292              		@ link register save eliminated.
+ 1293 05a8 80B4     		push	{r7}
+ 1294              	.LCFI78:
+ 1295              		.cfi_def_cfa_offset 4
+ 1296              		.cfi_offset 7, -4
+ 1297 05aa 83B0     		sub	sp, sp, #12
+ 1298              	.LCFI79:
+ 1299              		.cfi_def_cfa_offset 16
+ 1300 05ac 00AF     		add	r7, sp, #0
+ 1301              	.LCFI80:
+ 1302              		.cfi_def_cfa_register 7
+ 1303 05ae 7860     		str	r0, [r7, #4]
+ 1304 05b0 0B46     		mov	r3, r1
+ 1305 05b2 FB70     		strb	r3, [r7, #3]
+1106:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1107:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+1108:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1109:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+1110:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1111:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1112:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Return either the interrupt status or the raw interrupt status as
+1113:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // requested.
+1114:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1115:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     if(bMasked)
+ 1306              		.loc 1 1115 0
+ 1307 05b4 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 1308 05b6 002B     		cmp	r3, #0
+ 1309 05b8 04D0     		beq	.L52
+1116:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+1117:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         return(HWREG(ui32Base + UART_O_MIS));
+ 1310              		.loc 1 1117 0
+ 1311 05ba 7B68     		ldr	r3, [r7, #4]
+ 1312 05bc 03F14003 		add	r3, r3, #64
+ 1313 05c0 1B68     		ldr	r3, [r3, #0]
+ 1314 05c2 03E0     		b	.L53
+ 1315              	.L52:
+1118:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+1119:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     else
+1120:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+1121:bsp/boards/OpenMote-CC2538/source/uarthal.c ****         return(HWREG(ui32Base + UART_O_RIS));
+ 1316              		.loc 1 1121 0
+ 1317 05c4 7B68     		ldr	r3, [r7, #4]
+ 1318 05c6 03F13C03 		add	r3, r3, #60
+ 1319 05ca 1B68     		ldr	r3, [r3, #0]
+ 1320              	.L53:
+1122:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+1123:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1321              		.loc 1 1123 0
+ 1322 05cc 1846     		mov	r0, r3
+ 1323 05ce 07F10C07 		add	r7, r7, #12
+ 1324 05d2 BD46     		mov	sp, r7
+ 1325 05d4 80BC     		pop	{r7}
+ 1326 05d6 7047     		bx	lr
+ 1327              		.cfi_endproc
+ 1328              	.LFE26:
+ 1330              		.align	2
+ 1331              		.global	UARTIntClear
+ 1332              		.thumb
+ 1333              		.thumb_func
+ 1335              	UARTIntClear:
+ 1336              	.LFB27:
+1124:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1125:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1126:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1127:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Clears UART interrupt sources
+1128:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1129:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+1130:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32IntFlags is a bit mask of the interrupt sources to be cleared.
+1131:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1132:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! The specified UART interrupt sources are cleared, so that they no longer
+1133:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! assert.  This function must be called in the interrupt handler to keep the
+1134:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! interrupt from being recognized again immediately upon exit.
+1135:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1136:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! The \e ui32IntFlags parameter has the same definition as the \e ui32IntFlags
+1137:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! parameter to UARTIntEnable().
+1138:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1139:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \note Because there is a write buffer in the Cortex-M3 processor, it may
+1140:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! take several clock cycles before the interrupt source is actually cleared.
+1141:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Therefore, it is recommended that the interrupt source be cleared early in
+1142:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! the interrupt handler (as opposed to the very last action) to avoid
+1143:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! returning from the interrupt handler before the interrupt source is
+1144:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! actually cleared.  Failure to do so may result in the interrupt handler
+1145:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! being immediately reentered (because the interrupt controller still sees
+1146:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! the interrupt source asserted).
+1147:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1148:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+1149:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1150:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1151:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+1152:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTIntClear(uint32_t ui32Base, uint32_t ui32IntFlags)
+1153:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1337              		.loc 1 1153 0
+ 1338              		.cfi_startproc
+ 1339              		@ args = 0, pretend = 0, frame = 8
+ 1340              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1341              		@ link register save eliminated.
+ 1342 05d8 80B4     		push	{r7}
+ 1343              	.LCFI81:
+ 1344              		.cfi_def_cfa_offset 4
+ 1345              		.cfi_offset 7, -4
+ 1346 05da 83B0     		sub	sp, sp, #12
+ 1347              	.LCFI82:
+ 1348              		.cfi_def_cfa_offset 16
+ 1349 05dc 00AF     		add	r7, sp, #0
+ 1350              	.LCFI83:
+ 1351              		.cfi_def_cfa_register 7
+ 1352 05de 7860     		str	r0, [r7, #4]
+ 1353 05e0 3960     		str	r1, [r7, #0]
+1154:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1155:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+1156:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1157:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+1158:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1159:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1160:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Clear the requested interrupt sources.
+1161:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1162:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_ICR) = ui32IntFlags;
+ 1354              		.loc 1 1162 0
+ 1355 05e2 7B68     		ldr	r3, [r7, #4]
+ 1356 05e4 03F14403 		add	r3, r3, #68
+ 1357 05e8 3A68     		ldr	r2, [r7, #0]
+ 1358 05ea 1A60     		str	r2, [r3, #0]
+1163:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1359              		.loc 1 1163 0
+ 1360 05ec 07F10C07 		add	r7, r7, #12
+ 1361 05f0 BD46     		mov	sp, r7
+ 1362 05f2 80BC     		pop	{r7}
+ 1363 05f4 7047     		bx	lr
+ 1364              		.cfi_endproc
+ 1365              	.LFE27:
+ 1367 05f6 00BF     		.align	2
+ 1368              		.global	UARTDMAEnable
+ 1369              		.thumb
+ 1370              		.thumb_func
+ 1372              	UARTDMAEnable:
+ 1373              	.LFB28:
+1164:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1165:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1166:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1167:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Enable UART DMA operation
+1168:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1169:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+1170:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32DMAFlags is a bit mask of the DMA features to enable.
+1171:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1172:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! The specified UART DMA features are enabled.  The UART can be
+1173:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! configured to use DMA for transmit or receive, and to disable
+1174:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! receive if an error occurs.  The \e ui32DMAFlags parameter is the
+1175:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! logical OR of any of the following values:
+1176:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1177:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! - UART_DMA_RX - enable DMA for receive
+1178:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! - UART_DMA_TX - enable DMA for transmit
+1179:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! - UART_DMA_ERR_RXSTOP - disable DMA receive on UART error
+1180:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1181:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \note The uDMA controller must also be set up before DMA can be used
+1182:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! with the UART.
+1183:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1184:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+1185:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1186:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1187:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+1188:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTDMAEnable(uint32_t ui32Base, uint32_t ui32DMAFlags)
+1189:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1374              		.loc 1 1189 0
+ 1375              		.cfi_startproc
+ 1376              		@ args = 0, pretend = 0, frame = 8
+ 1377              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1378              		@ link register save eliminated.
+ 1379 05f8 80B4     		push	{r7}
+ 1380              	.LCFI84:
+ 1381              		.cfi_def_cfa_offset 4
+ 1382              		.cfi_offset 7, -4
+ 1383 05fa 83B0     		sub	sp, sp, #12
+ 1384              	.LCFI85:
+ 1385              		.cfi_def_cfa_offset 16
+ 1386 05fc 00AF     		add	r7, sp, #0
+ 1387              	.LCFI86:
+ 1388              		.cfi_def_cfa_register 7
+ 1389 05fe 7860     		str	r0, [r7, #4]
+ 1390 0600 3960     		str	r1, [r7, #0]
+1190:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1191:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+1192:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1193:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+1194:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1195:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1196:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Set the requested bits in the UART DMA control register.
+1197:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1198:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_DMACTL) |= ui32DMAFlags;
+ 1391              		.loc 1 1198 0
+ 1392 0602 7B68     		ldr	r3, [r7, #4]
+ 1393 0604 03F14803 		add	r3, r3, #72
+ 1394 0608 7A68     		ldr	r2, [r7, #4]
+ 1395 060a 02F14802 		add	r2, r2, #72
+ 1396 060e 1168     		ldr	r1, [r2, #0]
+ 1397 0610 3A68     		ldr	r2, [r7, #0]
+ 1398 0612 0A43     		orrs	r2, r2, r1
+ 1399 0614 1A60     		str	r2, [r3, #0]
+1199:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1400              		.loc 1 1199 0
+ 1401 0616 07F10C07 		add	r7, r7, #12
+ 1402 061a BD46     		mov	sp, r7
+ 1403 061c 80BC     		pop	{r7}
+ 1404 061e 7047     		bx	lr
+ 1405              		.cfi_endproc
+ 1406              	.LFE28:
+ 1408              		.align	2
+ 1409              		.global	UARTDMADisable
+ 1410              		.thumb
+ 1411              		.thumb_func
+ 1413              	UARTDMADisable:
+ 1414              	.LFB29:
+1200:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1201:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1202:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1203:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Disable UART DMA operation
+1204:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1205:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+1206:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32DMAFlags is a bit mask of the DMA features to disable.
+1207:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1208:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function is used to disable UART DMA features that were enabled
+1209:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! by UARTDMAEnable().  The specified UART DMA features are disabled.  The
+1210:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \e ui32DMAFlags parameter is the logical OR of any of the following values:
+1211:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1212:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! - UART_DMA_RX - disable DMA for receive
+1213:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! - UART_DMA_TX - disable DMA for transmit
+1214:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! - UART_DMA_ERR_RXSTOP - do not disable DMA receive on UART error
+1215:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1216:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+1217:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1218:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1219:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+1220:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTDMADisable(uint32_t ui32Base, uint32_t ui32DMAFlags)
+1221:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1415              		.loc 1 1221 0
+ 1416              		.cfi_startproc
+ 1417              		@ args = 0, pretend = 0, frame = 8
+ 1418              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1419              		@ link register save eliminated.
+ 1420 0620 80B4     		push	{r7}
+ 1421              	.LCFI87:
+ 1422              		.cfi_def_cfa_offset 4
+ 1423              		.cfi_offset 7, -4
+ 1424 0622 83B0     		sub	sp, sp, #12
+ 1425              	.LCFI88:
+ 1426              		.cfi_def_cfa_offset 16
+ 1427 0624 00AF     		add	r7, sp, #0
+ 1428              	.LCFI89:
+ 1429              		.cfi_def_cfa_register 7
+ 1430 0626 7860     		str	r0, [r7, #4]
+ 1431 0628 3960     		str	r1, [r7, #0]
+1222:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1223:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+1224:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1225:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+1226:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1227:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1228:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Clear the requested bits in the UART DMA control register.
+1229:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1230:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_DMACTL) &= ~ui32DMAFlags;
+ 1432              		.loc 1 1230 0
+ 1433 062a 7B68     		ldr	r3, [r7, #4]
+ 1434 062c 03F14803 		add	r3, r3, #72
+ 1435 0630 7A68     		ldr	r2, [r7, #4]
+ 1436 0632 02F14802 		add	r2, r2, #72
+ 1437 0636 1168     		ldr	r1, [r2, #0]
+ 1438 0638 3A68     		ldr	r2, [r7, #0]
+ 1439 063a 6FEA0202 		mvn	r2, r2
+ 1440 063e 0A40     		ands	r2, r2, r1
+ 1441 0640 1A60     		str	r2, [r3, #0]
+1231:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1442              		.loc 1 1231 0
+ 1443 0642 07F10C07 		add	r7, r7, #12
+ 1444 0646 BD46     		mov	sp, r7
+ 1445 0648 80BC     		pop	{r7}
+ 1446 064a 7047     		bx	lr
+ 1447              		.cfi_endproc
+ 1448              	.LFE29:
+ 1450              		.align	2
+ 1451              		.global	UARTRxErrorGet
+ 1452              		.thumb
+ 1453              		.thumb_func
+ 1455              	UARTRxErrorGet:
+ 1456              	.LFB30:
+1232:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1233:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1234:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1235:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Gets current receiver errors
+1236:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1237:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+1238:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1239:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function returns the current state of each of the 4 receiver error
+1240:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! sources.  The returned errors are equivalent to the four error bits
+1241:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! returned via the previous call to UARTCharGet() or UARTCharGetNonBlocking()
+1242:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! with the exception that the overrun error is set immediately the overrun
+1243:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! occurs rather than when a character is next read.
+1244:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1245:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return Returns a logical OR combination of the receiver error flags,
+1246:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \b UART_RXERROR_FRAMING, \b UART_RXERROR_PARITY, \b UART_RXERROR_BREAK
+1247:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! and \b UART_RXERROR_OVERRUN.
+1248:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1249:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1250:bsp/boards/OpenMote-CC2538/source/uarthal.c **** uint32_t
+1251:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTRxErrorGet(uint32_t ui32Base)
+1252:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1457              		.loc 1 1252 0
+ 1458              		.cfi_startproc
+ 1459              		@ args = 0, pretend = 0, frame = 8
+ 1460              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1461              		@ link register save eliminated.
+ 1462 064c 80B4     		push	{r7}
+ 1463              	.LCFI90:
+ 1464              		.cfi_def_cfa_offset 4
+ 1465              		.cfi_offset 7, -4
+ 1466 064e 83B0     		sub	sp, sp, #12
+ 1467              	.LCFI91:
+ 1468              		.cfi_def_cfa_offset 16
+ 1469 0650 00AF     		add	r7, sp, #0
+ 1470              	.LCFI92:
+ 1471              		.cfi_def_cfa_register 7
+ 1472 0652 7860     		str	r0, [r7, #4]
+1253:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1254:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+1255:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1256:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+1257:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1258:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1259:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Return the current value of the receive status register.
+1260:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1261:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     return(HWREG(ui32Base + UART_O_RSR) & 0x0000000F);
+ 1473              		.loc 1 1261 0
+ 1474 0654 7B68     		ldr	r3, [r7, #4]
+ 1475 0656 03F10403 		add	r3, r3, #4
+ 1476 065a 1B68     		ldr	r3, [r3, #0]
+ 1477 065c 03F00F03 		and	r3, r3, #15
+1262:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1478              		.loc 1 1262 0
+ 1479 0660 1846     		mov	r0, r3
+ 1480 0662 07F10C07 		add	r7, r7, #12
+ 1481 0666 BD46     		mov	sp, r7
+ 1482 0668 80BC     		pop	{r7}
+ 1483 066a 7047     		bx	lr
+ 1484              		.cfi_endproc
+ 1485              	.LFE30:
+ 1487              		.align	2
+ 1488              		.global	UARTRxErrorClear
+ 1489              		.thumb
+ 1490              		.thumb_func
+ 1492              	UARTRxErrorClear:
+ 1493              	.LFB31:
+1263:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1264:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1265:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1266:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Clears all reported receiver errors
+1267:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1268:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+1269:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1270:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function is used to clear all receiver error conditions reported via
+1271:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! UARTRxErrorGet().  If using the overrun, framing error, parity error or
+1272:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! break interrupts, this function must be called after clearing the interrupt
+1273:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! to ensure that later errors of the same type trigger another interrupt.
+1274:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1275:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+1276:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1277:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1278:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+1279:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTRxErrorClear(uint32_t ui32Base)
+1280:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1494              		.loc 1 1280 0
+ 1495              		.cfi_startproc
+ 1496              		@ args = 0, pretend = 0, frame = 8
+ 1497              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1498              		@ link register save eliminated.
+ 1499 066c 80B4     		push	{r7}
+ 1500              	.LCFI93:
+ 1501              		.cfi_def_cfa_offset 4
+ 1502              		.cfi_offset 7, -4
+ 1503 066e 83B0     		sub	sp, sp, #12
+ 1504              	.LCFI94:
+ 1505              		.cfi_def_cfa_offset 16
+ 1506 0670 00AF     		add	r7, sp, #0
+ 1507              	.LCFI95:
+ 1508              		.cfi_def_cfa_register 7
+ 1509 0672 7860     		str	r0, [r7, #4]
+1281:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1282:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+1283:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1284:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+1285:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1286:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1287:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Any write to the Error Clear Register will clear all bits which are
+1288:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // currently set.
+1289:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1290:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_ECR) = 0;
+ 1510              		.loc 1 1290 0
+ 1511 0674 7B68     		ldr	r3, [r7, #4]
+ 1512 0676 03F10403 		add	r3, r3, #4
+ 1513 067a 4FF00002 		mov	r2, #0
+ 1514 067e 1A60     		str	r2, [r3, #0]
+1291:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1515              		.loc 1 1291 0
+ 1516 0680 07F10C07 		add	r7, r7, #12
+ 1517 0684 BD46     		mov	sp, r7
+ 1518 0686 80BC     		pop	{r7}
+ 1519 0688 7047     		bx	lr
+ 1520              		.cfi_endproc
+ 1521              	.LFE31:
+ 1523 068a 00BF     		.align	2
+ 1524              		.global	UARTClockSourceSet
+ 1525              		.thumb
+ 1526              		.thumb_func
+ 1528              	UARTClockSourceSet:
+ 1529              	.LFB32:
+1292:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1293:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1294:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1295:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Sets the baud clock source for the specified UART
+1296:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1297:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+1298:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Source is the baud clock source for the UART.
+1299:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1300:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function allows the baud clock source for the UART to be selected.
+1301:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! The possible clock source are the system clock (\b UART_CLOCK_SYSTEM) or
+1302:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! the precision internal oscillator (\b UART_CLOCK_PIOSC).
+1303:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1304:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! If \b UART_CLOCK_SYSTEM is chosen, the IO clock frequency must thus be
+1305:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! queried by SysCtrlClcokSet().
+1306:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! If \b UART_CLOCK_PIOSC the SysCtrlIOClcokSet() function must be used.
+1307:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1308:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Changing the baud clock source will change the baud rate generated by the
+1309:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! UART.  Therefore, the baud rate should be reconfigured after any change to
+1310:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! the baud clock source.
+1311:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1312:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \note If the precision internal oscillator (\b UART_CLOCK_PIOSC) is used
+1313:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! for the UART baud clock, the system clock frequency must be at least
+1314:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! 9 MHz in Run mode.
+1315:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1316:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \sa UARTConfigSetExpClk()
+1317:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1318:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+1319:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1320:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1321:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+1322:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTClockSourceSet(uint32_t ui32Base, uint32_t ui32Source)
+1323:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1530              		.loc 1 1323 0
+ 1531              		.cfi_startproc
+ 1532              		@ args = 0, pretend = 0, frame = 8
+ 1533              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1534              		@ link register save eliminated.
+ 1535 068c 80B4     		push	{r7}
+ 1536              	.LCFI96:
+ 1537              		.cfi_def_cfa_offset 4
+ 1538              		.cfi_offset 7, -4
+ 1539 068e 83B0     		sub	sp, sp, #12
+ 1540              	.LCFI97:
+ 1541              		.cfi_def_cfa_offset 16
+ 1542 0690 00AF     		add	r7, sp, #0
+ 1543              	.LCFI98:
+ 1544              		.cfi_def_cfa_register 7
+ 1545 0692 7860     		str	r0, [r7, #4]
+ 1546 0694 3960     		str	r1, [r7, #0]
+1324:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1325:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+1326:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1327:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+1328:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT((ui32Source == UART_CLOCK_SYSTEM) || (ui32Source == UART_CLOCK_PIOSC));
+1329:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1330:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1331:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Set the UART clock source.
+1332:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1333:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_CC) = ui32Source;
+ 1547              		.loc 1 1333 0
+ 1548 0696 7B68     		ldr	r3, [r7, #4]
+ 1549 0698 03F6C873 		addw	r3, r3, #4040
+ 1550 069c 3A68     		ldr	r2, [r7, #0]
+ 1551 069e 1A60     		str	r2, [r3, #0]
+1334:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1552              		.loc 1 1334 0
+ 1553 06a0 07F10C07 		add	r7, r7, #12
+ 1554 06a4 BD46     		mov	sp, r7
+ 1555 06a6 80BC     		pop	{r7}
+ 1556 06a8 7047     		bx	lr
+ 1557              		.cfi_endproc
+ 1558              	.LFE32:
+ 1560 06aa 00BF     		.align	2
+ 1561              		.global	UARTClockSourceGet
+ 1562              		.thumb
+ 1563              		.thumb_func
+ 1565              	UARTClockSourceGet:
+ 1566              	.LFB33:
+1335:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1336:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1337:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1338:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Gets the baud clock source for the specified UART
+1339:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1340:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+1341:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1342:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function returns the baud clock source for the specified UART.  The
+1343:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! possible baud clock source are the system clock (\b UART_CLOCK_SYSTEM) or
+1344:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! the precision internal oscillator (\b UART_CLOCK_PIOSC).
+1345:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1346:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+1347:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1348:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1349:bsp/boards/OpenMote-CC2538/source/uarthal.c **** uint32_t
+1350:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UARTClockSourceGet(uint32_t ui32Base)
+1351:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1567              		.loc 1 1351 0
+ 1568              		.cfi_startproc
+ 1569              		@ args = 0, pretend = 0, frame = 8
+ 1570              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1571              		@ link register save eliminated.
+ 1572 06ac 80B4     		push	{r7}
+ 1573              	.LCFI99:
+ 1574              		.cfi_def_cfa_offset 4
+ 1575              		.cfi_offset 7, -4
+ 1576 06ae 83B0     		sub	sp, sp, #12
+ 1577              	.LCFI100:
+ 1578              		.cfi_def_cfa_offset 16
+ 1579 06b0 00AF     		add	r7, sp, #0
+ 1580              	.LCFI101:
+ 1581              		.cfi_def_cfa_register 7
+ 1582 06b2 7860     		str	r0, [r7, #4]
+1352:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1353:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+1354:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1355:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+1356:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1357:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1358:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Return the UART clock source.
+1359:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1360:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     return(HWREG(ui32Base + UART_O_CC));
+ 1583              		.loc 1 1360 0
+ 1584 06b4 7B68     		ldr	r3, [r7, #4]
+ 1585 06b6 03F6C873 		addw	r3, r3, #4040
+ 1586 06ba 1B68     		ldr	r3, [r3, #0]
+1361:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1587              		.loc 1 1361 0
+ 1588 06bc 1846     		mov	r0, r3
+ 1589 06be 07F10C07 		add	r7, r7, #12
+ 1590 06c2 BD46     		mov	sp, r7
+ 1591 06c4 80BC     		pop	{r7}
+ 1592 06c6 7047     		bx	lr
+ 1593              		.cfi_endproc
+ 1594              	.LFE33:
+ 1596              		.align	2
+ 1597              		.global	UART9BitEnable
+ 1598              		.thumb
+ 1599              		.thumb_func
+ 1601              	UART9BitEnable:
+ 1602              	.LFB34:
+1362:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1363:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1364:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1365:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Enables 9-bit mode on the specified UART
+1366:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1367:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+1368:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1369:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function enables the 9-bit operational mode of the UART.
+1370:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1371:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+1372:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1373:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1374:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+1375:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UART9BitEnable(uint32_t ui32Base)
+1376:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1603              		.loc 1 1376 0
+ 1604              		.cfi_startproc
+ 1605              		@ args = 0, pretend = 0, frame = 8
+ 1606              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1607              		@ link register save eliminated.
+ 1608 06c8 80B4     		push	{r7}
+ 1609              	.LCFI102:
+ 1610              		.cfi_def_cfa_offset 4
+ 1611              		.cfi_offset 7, -4
+ 1612 06ca 83B0     		sub	sp, sp, #12
+ 1613              	.LCFI103:
+ 1614              		.cfi_def_cfa_offset 16
+ 1615 06cc 00AF     		add	r7, sp, #0
+ 1616              	.LCFI104:
+ 1617              		.cfi_def_cfa_register 7
+ 1618 06ce 7860     		str	r0, [r7, #4]
+1377:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1378:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+1379:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1380:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+1381:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1382:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1383:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Enable 9-bit mode.
+1384:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1385:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_NINEBITADDR) |= UART_NINEBITADDR_NINEBITEN;
+ 1619              		.loc 1 1385 0
+ 1620 06d0 7B68     		ldr	r3, [r7, #4]
+ 1621 06d2 03F1A403 		add	r3, r3, #164
+ 1622 06d6 7A68     		ldr	r2, [r7, #4]
+ 1623 06d8 02F1A402 		add	r2, r2, #164
+ 1624 06dc 1268     		ldr	r2, [r2, #0]
+ 1625 06de 42F40042 		orr	r2, r2, #32768
+ 1626 06e2 1A60     		str	r2, [r3, #0]
+1386:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1627              		.loc 1 1386 0
+ 1628 06e4 07F10C07 		add	r7, r7, #12
+ 1629 06e8 BD46     		mov	sp, r7
+ 1630 06ea 80BC     		pop	{r7}
+ 1631 06ec 7047     		bx	lr
+ 1632              		.cfi_endproc
+ 1633              	.LFE34:
+ 1635 06ee 00BF     		.align	2
+ 1636              		.global	UART9BitDisable
+ 1637              		.thumb
+ 1638              		.thumb_func
+ 1640              	UART9BitDisable:
+ 1641              	.LFB35:
+1387:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1388:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1389:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1390:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Disables 9-bit mode on the specified UART
+1391:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1392:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+1393:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1394:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function disables the 9-bit operational mode of the UART.
+1395:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1396:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+1397:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1398:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1399:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+1400:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UART9BitDisable(uint32_t ui32Base)
+1401:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1642              		.loc 1 1401 0
+ 1643              		.cfi_startproc
+ 1644              		@ args = 0, pretend = 0, frame = 8
+ 1645              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1646              		@ link register save eliminated.
+ 1647 06f0 80B4     		push	{r7}
+ 1648              	.LCFI105:
+ 1649              		.cfi_def_cfa_offset 4
+ 1650              		.cfi_offset 7, -4
+ 1651 06f2 83B0     		sub	sp, sp, #12
+ 1652              	.LCFI106:
+ 1653              		.cfi_def_cfa_offset 16
+ 1654 06f4 00AF     		add	r7, sp, #0
+ 1655              	.LCFI107:
+ 1656              		.cfi_def_cfa_register 7
+ 1657 06f6 7860     		str	r0, [r7, #4]
+1402:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1403:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+1404:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1405:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+1406:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1407:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1408:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Disable 9-bit mode.
+1409:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1410:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_NINEBITADDR) &= ~UART_NINEBITADDR_NINEBITEN;
+ 1658              		.loc 1 1410 0
+ 1659 06f8 7B68     		ldr	r3, [r7, #4]
+ 1660 06fa 03F1A403 		add	r3, r3, #164
+ 1661 06fe 7A68     		ldr	r2, [r7, #4]
+ 1662 0700 02F1A402 		add	r2, r2, #164
+ 1663 0704 1268     		ldr	r2, [r2, #0]
+ 1664 0706 22F40042 		bic	r2, r2, #32768
+ 1665 070a 1A60     		str	r2, [r3, #0]
+1411:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1666              		.loc 1 1411 0
+ 1667 070c 07F10C07 		add	r7, r7, #12
+ 1668 0710 BD46     		mov	sp, r7
+ 1669 0712 80BC     		pop	{r7}
+ 1670 0714 7047     		bx	lr
+ 1671              		.cfi_endproc
+ 1672              	.LFE35:
+ 1674 0716 00BF     		.align	2
+ 1675              		.global	UART9BitAddrSet
+ 1676              		.thumb
+ 1677              		.thumb_func
+ 1679              	UART9BitAddrSet:
+ 1680              	.LFB36:
+1412:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1413:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1414:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1415:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Sets the device address(es) for 9-bit mode
+1416:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1417:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+1418:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui8Addr is the device address.
+1419:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui8Mask is the device address mask.
+1420:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1421:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function sets the device address, or range of device addresses, that
+1422:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! respond to requests on the 9-bit UART port.  The received address is masked
+1423:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! with the mask and then compared against the given address, allowing either
+1424:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! a single address (if \b ui8Mask is 0xff) or a set of addresses to be
+1425:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! matched.
+1426:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1427:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+1428:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1429:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1430:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+1431:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UART9BitAddrSet(uint32_t ui32Base, uint8_t ui8Addr,
+1432:bsp/boards/OpenMote-CC2538/source/uarthal.c ****                 uint8_t ui8Mask)
+1433:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1681              		.loc 1 1433 0
+ 1682              		.cfi_startproc
+ 1683              		@ args = 0, pretend = 0, frame = 8
+ 1684              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1685              		@ link register save eliminated.
+ 1686 0718 80B4     		push	{r7}
+ 1687              	.LCFI108:
+ 1688              		.cfi_def_cfa_offset 4
+ 1689              		.cfi_offset 7, -4
+ 1690 071a 83B0     		sub	sp, sp, #12
+ 1691              	.LCFI109:
+ 1692              		.cfi_def_cfa_offset 16
+ 1693 071c 00AF     		add	r7, sp, #0
+ 1694              	.LCFI110:
+ 1695              		.cfi_def_cfa_register 7
+ 1696 071e 7860     		str	r0, [r7, #4]
+ 1697 0720 1346     		mov	r3, r2
+ 1698 0722 0A46     		mov	r2, r1
+ 1699 0724 FA70     		strb	r2, [r7, #3]
+ 1700 0726 BB70     		strb	r3, [r7, #2]
+1434:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1435:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+1436:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1437:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+1438:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1439:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1440:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Set the address and mask.
+1441:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1442:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_NINEBITADDR) = ui8Addr << UART_NINEBITADDR_ADDR_S;
+ 1701              		.loc 1 1442 0
+ 1702 0728 7B68     		ldr	r3, [r7, #4]
+ 1703 072a 03F1A403 		add	r3, r3, #164
+ 1704 072e FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 1705 0730 1A60     		str	r2, [r3, #0]
+1443:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_NINEBITAMASK) = ui8Mask << UART_NINEBITAMASK_MASK_S;
+ 1706              		.loc 1 1443 0
+ 1707 0732 7B68     		ldr	r3, [r7, #4]
+ 1708 0734 03F1A803 		add	r3, r3, #168
+ 1709 0738 BA78     		ldrb	r2, [r7, #2]	@ zero_extendqisi2
+ 1710 073a 1A60     		str	r2, [r3, #0]
+1444:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1711              		.loc 1 1444 0
+ 1712 073c 07F10C07 		add	r7, r7, #12
+ 1713 0740 BD46     		mov	sp, r7
+ 1714 0742 80BC     		pop	{r7}
+ 1715 0744 7047     		bx	lr
+ 1716              		.cfi_endproc
+ 1717              	.LFE36:
+ 1719 0746 00BF     		.align	2
+ 1720              		.global	UART9BitAddrSend
+ 1721              		.thumb
+ 1722              		.thumb_func
+ 1724              	UART9BitAddrSend:
+ 1725              	.LFB37:
+1445:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1446:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1447:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1448:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! Sends an address character from the specified port when operating in 9-bit
+1449:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! mode
+1450:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1451:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui32Base is the base address of the UART port.
+1452:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \param ui8Addr is the address to be transmitted.
+1453:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1454:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! This function waits until all data has been sent from the specified port
+1455:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! and then sends the given address as an address byte.  It then waits until
+1456:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! the address byte has been transmitted before returning.
+1457:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1458:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! The normal data functions (UARTCharPut(), UARTCharPutNonBlocking(),
+1459:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! UARTCharGet(), and UARTCharGetNonBlocking()) are used to send and receive
+1460:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! data characters in 9-bit mode.
+1461:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //!
+1462:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //! \return None
+1463:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //
+1464:bsp/boards/OpenMote-CC2538/source/uarthal.c **** //*****************************************************************************
+1465:bsp/boards/OpenMote-CC2538/source/uarthal.c **** void
+1466:bsp/boards/OpenMote-CC2538/source/uarthal.c **** UART9BitAddrSend(uint32_t ui32Base, uint8_t ui8Addr)
+1467:bsp/boards/OpenMote-CC2538/source/uarthal.c **** {
+ 1726              		.loc 1 1467 0
+ 1727              		.cfi_startproc
+ 1728              		@ args = 0, pretend = 0, frame = 16
+ 1729              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1730              		@ link register save eliminated.
+ 1731 0748 80B4     		push	{r7}
+ 1732              	.LCFI111:
+ 1733              		.cfi_def_cfa_offset 4
+ 1734              		.cfi_offset 7, -4
+ 1735 074a 85B0     		sub	sp, sp, #20
+ 1736              	.LCFI112:
+ 1737              		.cfi_def_cfa_offset 24
+ 1738 074c 00AF     		add	r7, sp, #0
+ 1739              	.LCFI113:
+ 1740              		.cfi_def_cfa_register 7
+ 1741 074e 7860     		str	r0, [r7, #4]
+ 1742 0750 0B46     		mov	r3, r1
+ 1743 0752 FB70     		strb	r3, [r7, #3]
+1468:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     uint32_t ui32LCRH;
+1469:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1470:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1471:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Check the arguments.
+1472:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1473:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ASSERT(UARTBaseValid(ui32Base));
+1474:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1475:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1476:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Wait until the FIFO is empty and the UART is not busy.
+1477:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1478:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     while((HWREG(ui32Base + UART_O_FR) & (UART_FR_TXFE | UART_FR_BUSY)) !=
+ 1744              		.loc 1 1478 0
+ 1745 0754 00BF     		nop
+ 1746              	.L67:
+ 1747              		.loc 1 1478 0 is_stmt 0 discriminator 1
+ 1748 0756 7B68     		ldr	r3, [r7, #4]
+ 1749 0758 03F11803 		add	r3, r3, #24
+ 1750 075c 1B68     		ldr	r3, [r3, #0]
+ 1751 075e 03F08803 		and	r3, r3, #136
+ 1752 0762 802B     		cmp	r3, #128
+ 1753 0764 F7D1     		bne	.L67
+1479:bsp/boards/OpenMote-CC2538/source/uarthal.c ****             UART_FR_TXFE)
+1480:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+1481:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+1482:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1483:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1484:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1485:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Force the address/data bit to 1 to indicate this is an address byte.
+1486:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1487:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     ui32LCRH = HWREG(ui32Base + UART_O_LCRH);
+ 1754              		.loc 1 1487 0 is_stmt 1
+ 1755 0766 7B68     		ldr	r3, [r7, #4]
+ 1756 0768 03F12C03 		add	r3, r3, #44
+ 1757 076c 1B68     		ldr	r3, [r3, #0]
+ 1758 076e FB60     		str	r3, [r7, #12]
+1488:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_LCRH) = ((ui32LCRH & ~UART_LCRH_EPS) | UART_LCRH_SPS |
+ 1759              		.loc 1 1488 0
+ 1760 0770 7B68     		ldr	r3, [r7, #4]
+ 1761 0772 03F12C03 		add	r3, r3, #44
+ 1762 0776 FA68     		ldr	r2, [r7, #12]
+ 1763 0778 22F08602 		bic	r2, r2, #134
+ 1764 077c 42F08202 		orr	r2, r2, #130
+ 1765 0780 1A60     		str	r2, [r3, #0]
+1489:bsp/boards/OpenMote-CC2538/source/uarthal.c ****                                      UART_LCRH_PEN);
+1490:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1491:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1492:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Send the address.
+1493:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1494:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_DR) = ui8Addr;
+ 1766              		.loc 1 1494 0
+ 1767 0782 7B68     		ldr	r3, [r7, #4]
+ 1768 0784 FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 1769 0786 1A60     		str	r2, [r3, #0]
+1495:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1496:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1497:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Wait until the address has been sent.
+1498:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1499:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     while((HWREG(ui32Base + UART_O_FR) & (UART_FR_TXFE | UART_FR_BUSY)) !=
+ 1770              		.loc 1 1499 0
+ 1771 0788 00BF     		nop
+ 1772              	.L68:
+ 1773              		.loc 1 1499 0 is_stmt 0 discriminator 1
+ 1774 078a 7B68     		ldr	r3, [r7, #4]
+ 1775 078c 03F11803 		add	r3, r3, #24
+ 1776 0790 1B68     		ldr	r3, [r3, #0]
+ 1777 0792 03F08803 		and	r3, r3, #136
+ 1778 0796 802B     		cmp	r3, #128
+ 1779 0798 F7D1     		bne	.L68
+1500:bsp/boards/OpenMote-CC2538/source/uarthal.c ****             UART_FR_TXFE)
+1501:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     {
+1502:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     }
+1503:bsp/boards/OpenMote-CC2538/source/uarthal.c **** 
+1504:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1505:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     // Restore the address/data setting.
+1506:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     //
+1507:bsp/boards/OpenMote-CC2538/source/uarthal.c ****     HWREG(ui32Base + UART_O_LCRH) = ui32LCRH;
+ 1780              		.loc 1 1507 0 is_stmt 1
+ 1781 079a 7B68     		ldr	r3, [r7, #4]
+ 1782 079c 03F12C03 		add	r3, r3, #44
+ 1783 07a0 FA68     		ldr	r2, [r7, #12]
+ 1784 07a2 1A60     		str	r2, [r3, #0]
+1508:bsp/boards/OpenMote-CC2538/source/uarthal.c **** }
+ 1785              		.loc 1 1508 0
+ 1786 07a4 07F11407 		add	r7, r7, #20
+ 1787 07a8 BD46     		mov	sp, r7
+ 1788 07aa 80BC     		pop	{r7}
+ 1789 07ac 7047     		bx	lr
+ 1790              		.cfi_endproc
+ 1791              	.LFE37:
+ 1793              	.Letext0:
+ 1794              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+DEFINED SYMBOLS
+                            *ABS*:00000000 uarthal.c
+     /tmp/ccFtMfTD.s:18     .text:00000000 $t
+     /tmp/ccFtMfTD.s:23     .text:00000000 UARTParityModeSet
+     /tmp/ccFtMfTD.s:68     .text:0000002c UARTParityModeGet
+     /tmp/ccFtMfTD.s:105    .text:0000004c UARTFIFOLevelSet
+     /tmp/ccFtMfTD.s:145    .text:00000070 UARTFIFOLevelGet
+     /tmp/ccFtMfTD.s:193    .text:000000a4 UARTConfigSetExpClk
+     /tmp/ccFtMfTD.s:412    .text:000001f8 UARTDisable
+     /tmp/ccFtMfTD.s:288    .text:00000148 UARTConfigGetExpClk
+     /tmp/ccFtMfTD.s:363    .text:000001b8 UARTEnable
+     /tmp/ccFtMfTD.s:471    .text:0000024c UARTFIFOEnable
+     /tmp/ccFtMfTD.s:510    .text:00000274 UARTFIFODisable
+     /tmp/ccFtMfTD.s:549    .text:0000029c UARTEnableSIR
+     /tmp/ccFtMfTD.s:605    .text:000002e4 UARTDisableSIR
+     /tmp/ccFtMfTD.s:644    .text:0000030c UARTTxIntModeSet
+     /tmp/ccFtMfTD.s:688    .text:00000338 UARTTxIntModeGet
+     /tmp/ccFtMfTD.s:725    .text:00000358 UARTCharsAvail
+     /tmp/ccFtMfTD.s:767    .text:00000384 UARTSpaceAvail
+     /tmp/ccFtMfTD.s:809    .text:000003b0 UARTCharGetNonBlocking
+     /tmp/ccFtMfTD.s:856    .text:000003e0 UARTCharGet
+     /tmp/ccFtMfTD.s:901    .text:0000040c UARTCharPutNonBlocking
+     /tmp/ccFtMfTD.s:953    .text:00000444 UARTCharPut
+     /tmp/ccFtMfTD.s:1000   .text:00000474 UARTBreakCtl
+     /tmp/ccFtMfTD.s:1057   .text:000004b4 UARTBusy
+     /tmp/ccFtMfTD.s:1099   .text:000004e0 UARTIntRegister
+     /tmp/ccFtMfTD.s:1152   .text:0000051c UARTIntUnregister
+     /tmp/ccFtMfTD.s:1203   .text:00000554 UARTIntEnable
+     /tmp/ccFtMfTD.s:1244   .text:0000057c UARTIntDisable
+     /tmp/ccFtMfTD.s:1286   .text:000005a8 UARTIntStatus
+     /tmp/ccFtMfTD.s:1335   .text:000005d8 UARTIntClear
+     /tmp/ccFtMfTD.s:1372   .text:000005f8 UARTDMAEnable
+     /tmp/ccFtMfTD.s:1413   .text:00000620 UARTDMADisable
+     /tmp/ccFtMfTD.s:1455   .text:0000064c UARTRxErrorGet
+     /tmp/ccFtMfTD.s:1492   .text:0000066c UARTRxErrorClear
+     /tmp/ccFtMfTD.s:1528   .text:0000068c UARTClockSourceSet
+     /tmp/ccFtMfTD.s:1565   .text:000006ac UARTClockSourceGet
+     /tmp/ccFtMfTD.s:1601   .text:000006c8 UART9BitEnable
+     /tmp/ccFtMfTD.s:1640   .text:000006f0 UART9BitDisable
+     /tmp/ccFtMfTD.s:1679   .text:00000718 UART9BitAddrSet
+     /tmp/ccFtMfTD.s:1724   .text:00000748 UART9BitAddrSend
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.hw_ints.h.42.85b9479f2be35b086f1bb7cbb15bc097
+                           .group:00000000 wm4.hw_memmap.h.39.19283c377d449c9bca5fdd8ccb62628c
+                           .group:00000000 wm4.hw_sys_ctrl.h.39.50b4d7775c38e82076d0eb3bdc2daf82
+                           .group:00000000 wm4.hw_uart.h.39.98a53ad3c72429c06a23b03415b2e5a7
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.uarthal.h.41.25db9539abdf5c44b7896bf33c1e7f12
+
+UNDEFINED SYMBOLS
+IntRegister
+IntEnable
+IntDisable
+IntUnregister

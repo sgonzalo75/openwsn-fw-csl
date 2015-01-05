@@ -1,0 +1,1117 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"idmanager.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.align	2
+  42              	infoStackName:
+  43 0024 4F70656E 		.ascii	"OpenWSN \000"
+  43      57534E20 
+  43      00
+  44 002d 000000   		.align	2
+  47              	all_routers_multicast:
+  48 0030 FF       		.byte	-1
+  49 0031 02       		.byte	2
+  50 0032 00       		.byte	0
+  51 0033 00       		.byte	0
+  52 0034 00       		.byte	0
+  53 0035 00       		.byte	0
+  54 0036 00       		.byte	0
+  55 0037 00       		.byte	0
+  56 0038 00       		.byte	0
+  57 0039 00       		.byte	0
+  58 003a 00       		.byte	0
+  59 003b 00       		.byte	0
+  60 003c 00       		.byte	0
+  61 003d 00       		.byte	0
+  62 003e 00       		.byte	0
+  63 003f 02       		.byte	2
+  64              		.comm	idmanager_vars,69,4
+  65              		.text
+  66              		.align	2
+  67              		.global	idmanager_init
+  68              		.thumb
+  69              		.thumb_func
+  71              	idmanager_init:
+  72              	.LFB0:
+  73              		.file 1 "openstack/cross-layers/idmanager.c"
+   1:openstack/cross-layers/idmanager.c **** #include "opendefs.h"
+   2:openstack/cross-layers/idmanager.c **** #include "idmanager.h"
+   3:openstack/cross-layers/idmanager.c **** #include "eui64.h"
+   4:openstack/cross-layers/idmanager.c **** #include "packetfunctions.h"
+   5:openstack/cross-layers/idmanager.c **** #include "openserial.h"
+   6:openstack/cross-layers/idmanager.c **** #include "neighbors.h"
+   7:openstack/cross-layers/idmanager.c **** 
+   8:openstack/cross-layers/idmanager.c **** //=========================== variables =======================================
+   9:openstack/cross-layers/idmanager.c **** 
+  10:openstack/cross-layers/idmanager.c **** idmanager_vars_t idmanager_vars;
+  11:openstack/cross-layers/idmanager.c **** 
+  12:openstack/cross-layers/idmanager.c **** //=========================== prototypes ======================================
+  13:openstack/cross-layers/idmanager.c **** 
+  14:openstack/cross-layers/idmanager.c **** //=========================== public ==========================================
+  15:openstack/cross-layers/idmanager.c **** 
+  16:openstack/cross-layers/idmanager.c **** void idmanager_init() {
+  74              		.loc 1 16 0
+  75              		.cfi_startproc
+  76              		@ args = 0, pretend = 0, frame = 0
+  77              		@ frame_needed = 1, uses_anonymous_args = 0
+  78 0000 80B5     		push	{r7, lr}
+  79              	.LCFI0:
+  80              		.cfi_def_cfa_offset 8
+  81              		.cfi_offset 7, -8
+  82              		.cfi_offset 14, -4
+  83 0002 00AF     		add	r7, sp, #0
+  84              	.LCFI1:
+  85              		.cfi_def_cfa_register 7
+  17:openstack/cross-layers/idmanager.c ****    
+  18:openstack/cross-layers/idmanager.c ****    // reset local variables
+  19:openstack/cross-layers/idmanager.c ****    memset(&idmanager_vars, 0, sizeof(idmanager_vars_t));
+  86              		.loc 1 19 0
+  87 0004 40F20000 		movw	r0, #:lower16:idmanager_vars
+  88 0008 C0F20000 		movt	r0, #:upper16:idmanager_vars
+  89 000c 4FF00001 		mov	r1, #0
+  90 0010 4FF04502 		mov	r2, #69
+  91 0014 FFF7FEFF 		bl	memset
+  20:openstack/cross-layers/idmanager.c ****    
+  21:openstack/cross-layers/idmanager.c ****    // isDAGroot
+  22:openstack/cross-layers/idmanager.c **** #ifdef DAGROOT
+  23:openstack/cross-layers/idmanager.c ****    idmanager_vars.isDAGroot            = TRUE;
+  24:openstack/cross-layers/idmanager.c **** #else
+  25:openstack/cross-layers/idmanager.c ****    idmanager_vars.isDAGroot            = FALSE;
+  92              		.loc 1 25 0
+  93 0018 40F20003 		movw	r3, #:lower16:idmanager_vars
+  94 001c C0F20003 		movt	r3, #:upper16:idmanager_vars
+  95 0020 4FF00002 		mov	r2, #0
+  96 0024 1A70     		strb	r2, [r3, #0]
+  26:openstack/cross-layers/idmanager.c **** #endif
+  27:openstack/cross-layers/idmanager.c ****    
+  28:openstack/cross-layers/idmanager.c ****    // myPANID
+  29:openstack/cross-layers/idmanager.c ****    idmanager_vars.myPANID.type         = ADDR_PANID;
+  97              		.loc 1 29 0
+  98 0026 40F20003 		movw	r3, #:lower16:idmanager_vars
+  99 002a C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 100 002e 4FF00402 		mov	r2, #4
+ 101 0032 5A70     		strb	r2, [r3, #1]
+  30:openstack/cross-layers/idmanager.c ****    idmanager_vars.myPANID.panid[0]     = 0xca;
+ 102              		.loc 1 30 0
+ 103 0034 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 104 0038 C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 105 003c 4FF0CA02 		mov	r2, #202
+ 106 0040 9A70     		strb	r2, [r3, #2]
+  31:openstack/cross-layers/idmanager.c ****    idmanager_vars.myPANID.panid[1]     = 0xfe;
+ 107              		.loc 1 31 0
+ 108 0042 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 109 0046 C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 110 004a 4FF0FE02 		mov	r2, #254
+ 111 004e DA70     		strb	r2, [r3, #3]
+  32:openstack/cross-layers/idmanager.c ****    
+  33:openstack/cross-layers/idmanager.c ****    // myPrefix
+  34:openstack/cross-layers/idmanager.c ****    idmanager_vars.myPrefix.type        = ADDR_PREFIX;
+ 112              		.loc 1 34 0
+ 113 0050 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 114 0054 C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 115 0058 4FF00502 		mov	r2, #5
+ 116 005c 83F83420 		strb	r2, [r3, #52]
+  35:openstack/cross-layers/idmanager.c **** #ifdef DAGROOT
+  36:openstack/cross-layers/idmanager.c ****    idmanager_vars.myPrefix.prefix[0]   = 0xbb;
+  37:openstack/cross-layers/idmanager.c ****    idmanager_vars.myPrefix.prefix[1]   = 0xbb;
+  38:openstack/cross-layers/idmanager.c ****    idmanager_vars.myPrefix.prefix[2]   = 0x00;
+  39:openstack/cross-layers/idmanager.c ****    idmanager_vars.myPrefix.prefix[3]   = 0x00;
+  40:openstack/cross-layers/idmanager.c ****    idmanager_vars.myPrefix.prefix[4]   = 0x00;
+  41:openstack/cross-layers/idmanager.c ****    idmanager_vars.myPrefix.prefix[5]   = 0x00;
+  42:openstack/cross-layers/idmanager.c ****    idmanager_vars.myPrefix.prefix[6]   = 0x00;
+  43:openstack/cross-layers/idmanager.c ****    idmanager_vars.myPrefix.prefix[7]   = 0x00;
+  44:openstack/cross-layers/idmanager.c **** #else
+  45:openstack/cross-layers/idmanager.c ****    memset(&idmanager_vars.myPrefix.prefix[0], 0x00, sizeof(idmanager_vars.myPrefix.prefix));
+ 117              		.loc 1 45 0
+ 118 0060 0B48     		ldr	r0, .L2
+ 119 0062 4FF00001 		mov	r1, #0
+ 120 0066 4FF00802 		mov	r2, #8
+ 121 006a FFF7FEFF 		bl	memset
+  46:openstack/cross-layers/idmanager.c **** #endif
+  47:openstack/cross-layers/idmanager.c ****    
+  48:openstack/cross-layers/idmanager.c ****    // my64bID
+  49:openstack/cross-layers/idmanager.c ****    idmanager_vars.my64bID.type         = ADDR_64B;
+ 122              		.loc 1 49 0
+ 123 006e 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 124 0072 C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 125 0076 4FF00202 		mov	r2, #2
+ 126 007a 83F82320 		strb	r2, [r3, #35]
+  50:openstack/cross-layers/idmanager.c ****    eui64_get(idmanager_vars.my64bID.addr_64b);
+ 127              		.loc 1 50 0
+ 128 007e 0548     		ldr	r0, .L2+4
+ 129 0080 FFF7FEFF 		bl	eui64_get
+  51:openstack/cross-layers/idmanager.c ****    
+  52:openstack/cross-layers/idmanager.c ****    // my16bID
+  53:openstack/cross-layers/idmanager.c ****    packetfunctions_mac64bToMac16b(&idmanager_vars.my64bID,&idmanager_vars.my16bID);
+ 130              		.loc 1 53 0
+ 131 0084 0448     		ldr	r0, .L2+8
+ 132 0086 0549     		ldr	r1, .L2+12
+ 133 0088 FFF7FEFF 		bl	packetfunctions_mac64bToMac16b
+  54:openstack/cross-layers/idmanager.c **** }
+ 134              		.loc 1 54 0
+ 135 008c 80BD     		pop	{r7, pc}
+ 136              	.L3:
+ 137 008e 00BF     		.align	2
+ 138              	.L2:
+ 139 0090 35000000 		.word	idmanager_vars+53
+ 140 0094 24000000 		.word	idmanager_vars+36
+ 141 0098 23000000 		.word	idmanager_vars+35
+ 142 009c 12000000 		.word	idmanager_vars+18
+ 143              		.cfi_endproc
+ 144              	.LFE0:
+ 146              		.align	2
+ 147              		.global	idmanager_getIsDAGroot
+ 148              		.thumb
+ 149              		.thumb_func
+ 151              	idmanager_getIsDAGroot:
+ 152              	.LFB1:
+  55:openstack/cross-layers/idmanager.c **** 
+  56:openstack/cross-layers/idmanager.c **** bool idmanager_getIsDAGroot() {
+ 153              		.loc 1 56 0
+ 154              		.cfi_startproc
+ 155              		@ args = 0, pretend = 0, frame = 8
+ 156              		@ frame_needed = 1, uses_anonymous_args = 0
+ 157 00a0 80B5     		push	{r7, lr}
+ 158              	.LCFI2:
+ 159              		.cfi_def_cfa_offset 8
+ 160              		.cfi_offset 7, -8
+ 161              		.cfi_offset 14, -4
+ 162 00a2 82B0     		sub	sp, sp, #8
+ 163              	.LCFI3:
+ 164              		.cfi_def_cfa_offset 16
+ 165 00a4 00AF     		add	r7, sp, #0
+ 166              	.LCFI4:
+ 167              		.cfi_def_cfa_register 7
+  57:openstack/cross-layers/idmanager.c ****    bool res;
+  58:openstack/cross-layers/idmanager.c ****    INTERRUPT_DECLARATION();
+  59:openstack/cross-layers/idmanager.c ****    
+  60:openstack/cross-layers/idmanager.c ****    DISABLE_INTERRUPTS();
+ 168              		.loc 1 60 0
+ 169 00a6 FFF7FEFF 		bl	IntMasterDisable
+  61:openstack/cross-layers/idmanager.c ****    res=idmanager_vars.isDAGroot;
+ 170              		.loc 1 61 0
+ 171 00aa 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 172 00ae C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 173 00b2 1B78     		ldrb	r3, [r3, #0]
+ 174 00b4 FB71     		strb	r3, [r7, #7]
+  62:openstack/cross-layers/idmanager.c ****    ENABLE_INTERRUPTS();
+ 175              		.loc 1 62 0
+ 176 00b6 FFF7FEFF 		bl	IntMasterEnable
+  63:openstack/cross-layers/idmanager.c ****    return res;
+ 177              		.loc 1 63 0
+ 178 00ba FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+  64:openstack/cross-layers/idmanager.c **** }
+ 179              		.loc 1 64 0
+ 180 00bc 1846     		mov	r0, r3
+ 181 00be 07F10807 		add	r7, r7, #8
+ 182 00c2 BD46     		mov	sp, r7
+ 183 00c4 80BD     		pop	{r7, pc}
+ 184              		.cfi_endproc
+ 185              	.LFE1:
+ 187 00c6 00BF     		.align	2
+ 188              		.global	idmanager_setIsDAGroot
+ 189              		.thumb
+ 190              		.thumb_func
+ 192              	idmanager_setIsDAGroot:
+ 193              	.LFB2:
+  65:openstack/cross-layers/idmanager.c **** 
+  66:openstack/cross-layers/idmanager.c **** void idmanager_setIsDAGroot(bool newRole) {
+ 194              		.loc 1 66 0
+ 195              		.cfi_startproc
+ 196              		@ args = 0, pretend = 0, frame = 8
+ 197              		@ frame_needed = 1, uses_anonymous_args = 0
+ 198 00c8 80B5     		push	{r7, lr}
+ 199              	.LCFI5:
+ 200              		.cfi_def_cfa_offset 8
+ 201              		.cfi_offset 7, -8
+ 202              		.cfi_offset 14, -4
+ 203 00ca 82B0     		sub	sp, sp, #8
+ 204              	.LCFI6:
+ 205              		.cfi_def_cfa_offset 16
+ 206 00cc 00AF     		add	r7, sp, #0
+ 207              	.LCFI7:
+ 208              		.cfi_def_cfa_register 7
+ 209 00ce 0346     		mov	r3, r0
+ 210 00d0 FB71     		strb	r3, [r7, #7]
+  67:openstack/cross-layers/idmanager.c ****    INTERRUPT_DECLARATION();
+  68:openstack/cross-layers/idmanager.c ****    DISABLE_INTERRUPTS();
+ 211              		.loc 1 68 0
+ 212 00d2 FFF7FEFF 		bl	IntMasterDisable
+  69:openstack/cross-layers/idmanager.c ****    idmanager_vars.isDAGroot = newRole;
+ 213              		.loc 1 69 0
+ 214 00d6 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 215 00da C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 216 00de FA79     		ldrb	r2, [r7, #7]
+ 217 00e0 1A70     		strb	r2, [r3, #0]
+  70:openstack/cross-layers/idmanager.c ****    neighbors_updateMyDAGrankAndNeighborPreference();
+ 218              		.loc 1 70 0
+ 219 00e2 FFF7FEFF 		bl	neighbors_updateMyDAGrankAndNeighborPreference
+  71:openstack/cross-layers/idmanager.c ****    ENABLE_INTERRUPTS();
+ 220              		.loc 1 71 0
+ 221 00e6 FFF7FEFF 		bl	IntMasterEnable
+  72:openstack/cross-layers/idmanager.c **** }
+ 222              		.loc 1 72 0
+ 223 00ea 07F10807 		add	r7, r7, #8
+ 224 00ee BD46     		mov	sp, r7
+ 225 00f0 80BD     		pop	{r7, pc}
+ 226              		.cfi_endproc
+ 227              	.LFE2:
+ 229 00f2 00BF     		.align	2
+ 230              		.global	idmanager_getMyID
+ 231              		.thumb
+ 232              		.thumb_func
+ 234              	idmanager_getMyID:
+ 235              	.LFB3:
+  73:openstack/cross-layers/idmanager.c **** 
+  74:openstack/cross-layers/idmanager.c **** open_addr_t* idmanager_getMyID(uint8_t type) {
+ 236              		.loc 1 74 0
+ 237              		.cfi_startproc
+ 238              		@ args = 0, pretend = 0, frame = 16
+ 239              		@ frame_needed = 1, uses_anonymous_args = 0
+ 240 00f4 80B5     		push	{r7, lr}
+ 241              	.LCFI8:
+ 242              		.cfi_def_cfa_offset 8
+ 243              		.cfi_offset 7, -8
+ 244              		.cfi_offset 14, -4
+ 245 00f6 84B0     		sub	sp, sp, #16
+ 246              	.LCFI9:
+ 247              		.cfi_def_cfa_offset 24
+ 248 00f8 00AF     		add	r7, sp, #0
+ 249              	.LCFI10:
+ 250              		.cfi_def_cfa_register 7
+ 251 00fa 0346     		mov	r3, r0
+ 252 00fc FB71     		strb	r3, [r7, #7]
+  75:openstack/cross-layers/idmanager.c ****    open_addr_t* res;
+  76:openstack/cross-layers/idmanager.c ****    INTERRUPT_DECLARATION();
+  77:openstack/cross-layers/idmanager.c ****    DISABLE_INTERRUPTS();
+ 253              		.loc 1 77 0
+ 254 00fe FFF7FEFF 		bl	IntMasterDisable
+  78:openstack/cross-layers/idmanager.c ****    switch (type) {
+ 255              		.loc 1 78 0
+ 256 0102 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 257 0104 03F1FF33 		add	r3, r3, #-1
+ 258 0108 042B     		cmp	r3, #4
+ 259 010a 19D8     		bhi	.L8
+ 260 010c 01A2     		adr	r2, .L13
+ 261 010e 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 262 0112 00BF     		.align	2
+ 263              	.L13:
+ 264 0114 29010000 		.word	.L9+1
+ 265 0118 2F010000 		.word	.L10+1
+ 266 011c 41010000 		.word	.L8+1
+ 267 0120 35010000 		.word	.L11+1
+ 268 0124 3B010000 		.word	.L12+1
+ 269              	.L9:
+  79:openstack/cross-layers/idmanager.c ****      case ADDR_16B:
+  80:openstack/cross-layers/idmanager.c ****         res= &idmanager_vars.my16bID;
+ 270              		.loc 1 80 0
+ 271 0128 114B     		ldr	r3, .L16
+ 272 012a FB60     		str	r3, [r7, #12]
+  81:openstack/cross-layers/idmanager.c ****         break;
+ 273              		.loc 1 81 0
+ 274 012c 17E0     		b	.L14
+ 275              	.L10:
+  82:openstack/cross-layers/idmanager.c ****      case ADDR_64B:
+  83:openstack/cross-layers/idmanager.c ****         res= &idmanager_vars.my64bID;
+ 276              		.loc 1 83 0
+ 277 012e 114B     		ldr	r3, .L16+4
+ 278 0130 FB60     		str	r3, [r7, #12]
+  84:openstack/cross-layers/idmanager.c ****         break;
+ 279              		.loc 1 84 0
+ 280 0132 14E0     		b	.L14
+ 281              	.L11:
+  85:openstack/cross-layers/idmanager.c ****      case ADDR_PANID:
+  86:openstack/cross-layers/idmanager.c ****         res= &idmanager_vars.myPANID;
+ 282              		.loc 1 86 0
+ 283 0134 104B     		ldr	r3, .L16+8
+ 284 0136 FB60     		str	r3, [r7, #12]
+  87:openstack/cross-layers/idmanager.c ****         break;
+ 285              		.loc 1 87 0
+ 286 0138 11E0     		b	.L14
+ 287              	.L12:
+  88:openstack/cross-layers/idmanager.c ****      case ADDR_PREFIX:
+  89:openstack/cross-layers/idmanager.c ****         res= &idmanager_vars.myPrefix;
+ 288              		.loc 1 89 0
+ 289 013a 104B     		ldr	r3, .L16+12
+ 290 013c FB60     		str	r3, [r7, #12]
+  90:openstack/cross-layers/idmanager.c ****         break;
+ 291              		.loc 1 90 0
+ 292 013e 0EE0     		b	.L14
+ 293              	.L8:
+  91:openstack/cross-layers/idmanager.c ****      case ADDR_128B:
+  92:openstack/cross-layers/idmanager.c ****         // you don't ask for my full address, rather for prefix, then 64b
+  93:openstack/cross-layers/idmanager.c ****      default:
+  94:openstack/cross-layers/idmanager.c ****         openserial_printCritical(COMPONENT_IDMANAGER,ERR_WRONG_ADDR_TYPE,
+ 294              		.loc 1 94 0
+ 295 0140 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 296 0142 9BB2     		uxth	r3, r3
+ 297 0144 4FF00200 		mov	r0, #2
+ 298 0148 4FF03101 		mov	r1, #49
+ 299 014c 1A46     		mov	r2, r3
+ 300 014e 4FF00003 		mov	r3, #0
+ 301 0152 FFF7FEFF 		bl	openserial_printCritical
+  95:openstack/cross-layers/idmanager.c ****               (errorparameter_t)type,
+  96:openstack/cross-layers/idmanager.c ****               (errorparameter_t)0);
+  97:openstack/cross-layers/idmanager.c ****         res= NULL;
+ 302              		.loc 1 97 0
+ 303 0156 4FF00003 		mov	r3, #0
+ 304 015a FB60     		str	r3, [r7, #12]
+  98:openstack/cross-layers/idmanager.c ****         break;
+ 305              		.loc 1 98 0
+ 306 015c 00BF     		nop
+ 307              	.L14:
+  99:openstack/cross-layers/idmanager.c ****    }
+ 100:openstack/cross-layers/idmanager.c ****    ENABLE_INTERRUPTS();
+ 308              		.loc 1 100 0
+ 309 015e FFF7FEFF 		bl	IntMasterEnable
+ 101:openstack/cross-layers/idmanager.c ****    return res;
+ 310              		.loc 1 101 0
+ 311 0162 FB68     		ldr	r3, [r7, #12]
+ 102:openstack/cross-layers/idmanager.c **** }
+ 312              		.loc 1 102 0
+ 313 0164 1846     		mov	r0, r3
+ 314 0166 07F11007 		add	r7, r7, #16
+ 315 016a BD46     		mov	sp, r7
+ 316 016c 80BD     		pop	{r7, pc}
+ 317              	.L17:
+ 318 016e 00BF     		.align	2
+ 319              	.L16:
+ 320 0170 12000000 		.word	idmanager_vars+18
+ 321 0174 23000000 		.word	idmanager_vars+35
+ 322 0178 01000000 		.word	idmanager_vars+1
+ 323 017c 34000000 		.word	idmanager_vars+52
+ 324              		.cfi_endproc
+ 325              	.LFE3:
+ 327              		.align	2
+ 328              		.global	idmanager_setMyID
+ 329              		.thumb
+ 330              		.thumb_func
+ 332              	idmanager_setMyID:
+ 333              	.LFB4:
+ 103:openstack/cross-layers/idmanager.c **** 
+ 104:openstack/cross-layers/idmanager.c **** owerror_t idmanager_setMyID(open_addr_t* newID) {
+ 334              		.loc 1 104 0
+ 335              		.cfi_startproc
+ 336              		@ args = 0, pretend = 0, frame = 8
+ 337              		@ frame_needed = 1, uses_anonymous_args = 0
+ 338 0180 B0B5     		push	{r4, r5, r7, lr}
+ 339              	.LCFI11:
+ 340              		.cfi_def_cfa_offset 16
+ 341              		.cfi_offset 4, -16
+ 342              		.cfi_offset 5, -12
+ 343              		.cfi_offset 7, -8
+ 344              		.cfi_offset 14, -4
+ 345 0182 82B0     		sub	sp, sp, #8
+ 346              	.LCFI12:
+ 347              		.cfi_def_cfa_offset 24
+ 348 0184 00AF     		add	r7, sp, #0
+ 349              	.LCFI13:
+ 350              		.cfi_def_cfa_register 7
+ 351 0186 7860     		str	r0, [r7, #4]
+ 105:openstack/cross-layers/idmanager.c ****    INTERRUPT_DECLARATION();
+ 106:openstack/cross-layers/idmanager.c ****    DISABLE_INTERRUPTS();
+ 352              		.loc 1 106 0
+ 353 0188 FFF7FEFF 		bl	IntMasterDisable
+ 107:openstack/cross-layers/idmanager.c ****    switch (newID->type) {
+ 354              		.loc 1 107 0
+ 355 018c 7B68     		ldr	r3, [r7, #4]
+ 356 018e 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 357 0190 03F1FF33 		add	r3, r3, #-1
+ 358 0194 042B     		cmp	r3, #4
+ 359 0196 53D8     		bhi	.L19
+ 360 0198 01A2     		adr	r2, .L24
+ 361 019a 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 362 019e 00BF     		.align	2
+ 363              	.L24:
+ 364 01a0 B5010000 		.word	.L20+1
+ 365 01a4 D9010000 		.word	.L21+1
+ 366 01a8 41020000 		.word	.L19+1
+ 367 01ac FD010000 		.word	.L22+1
+ 368 01b0 21020000 		.word	.L23+1
+ 369              	.L20:
+ 108:openstack/cross-layers/idmanager.c ****      case ADDR_16B:
+ 109:openstack/cross-layers/idmanager.c ****         memcpy(&idmanager_vars.my16bID,newID,sizeof(open_addr_t));
+ 370              		.loc 1 109 0
+ 371 01b4 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 372 01b8 C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 373 01bc 7A68     		ldr	r2, [r7, #4]
+ 374 01be 03F11203 		add	r3, r3, #18
+ 375 01c2 1568     		ldr	r5, [r2, #0]	@ unaligned
+ 376 01c4 5468     		ldr	r4, [r2, #4]	@ unaligned
+ 377 01c6 9068     		ldr	r0, [r2, #8]	@ unaligned
+ 378 01c8 D168     		ldr	r1, [r2, #12]	@ unaligned
+ 379 01ca 1D60     		str	r5, [r3, #0]	@ unaligned
+ 380 01cc 5C60     		str	r4, [r3, #4]	@ unaligned
+ 381 01ce 9860     		str	r0, [r3, #8]	@ unaligned
+ 382 01d0 D960     		str	r1, [r3, #12]	@ unaligned
+ 383 01d2 127C     		ldrb	r2, [r2, #16]
+ 384 01d4 1A74     		strb	r2, [r3, #16]
+ 110:openstack/cross-layers/idmanager.c ****         break;
+ 385              		.loc 1 110 0
+ 386 01d6 43E0     		b	.L25
+ 387              	.L21:
+ 111:openstack/cross-layers/idmanager.c ****      case ADDR_64B:
+ 112:openstack/cross-layers/idmanager.c ****         memcpy(&idmanager_vars.my64bID,newID,sizeof(open_addr_t));
+ 388              		.loc 1 112 0
+ 389 01d8 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 390 01dc C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 391 01e0 7A68     		ldr	r2, [r7, #4]
+ 392 01e2 03F12303 		add	r3, r3, #35
+ 393 01e6 1568     		ldr	r5, [r2, #0]	@ unaligned
+ 394 01e8 5468     		ldr	r4, [r2, #4]	@ unaligned
+ 395 01ea 9068     		ldr	r0, [r2, #8]	@ unaligned
+ 396 01ec D168     		ldr	r1, [r2, #12]	@ unaligned
+ 397 01ee 1D60     		str	r5, [r3, #0]	@ unaligned
+ 398 01f0 5C60     		str	r4, [r3, #4]	@ unaligned
+ 399 01f2 9860     		str	r0, [r3, #8]	@ unaligned
+ 400 01f4 D960     		str	r1, [r3, #12]	@ unaligned
+ 401 01f6 127C     		ldrb	r2, [r2, #16]
+ 402 01f8 1A74     		strb	r2, [r3, #16]
+ 113:openstack/cross-layers/idmanager.c ****         break;
+ 403              		.loc 1 113 0
+ 404 01fa 31E0     		b	.L25
+ 405              	.L22:
+ 114:openstack/cross-layers/idmanager.c ****      case ADDR_PANID:
+ 115:openstack/cross-layers/idmanager.c ****         memcpy(&idmanager_vars.myPANID,newID,sizeof(open_addr_t));
+ 406              		.loc 1 115 0
+ 407 01fc 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 408 0200 C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 409 0204 7A68     		ldr	r2, [r7, #4]
+ 410 0206 03F10103 		add	r3, r3, #1
+ 411 020a 1568     		ldr	r5, [r2, #0]	@ unaligned
+ 412 020c 5468     		ldr	r4, [r2, #4]	@ unaligned
+ 413 020e 9068     		ldr	r0, [r2, #8]	@ unaligned
+ 414 0210 D168     		ldr	r1, [r2, #12]	@ unaligned
+ 415 0212 1D60     		str	r5, [r3, #0]	@ unaligned
+ 416 0214 5C60     		str	r4, [r3, #4]	@ unaligned
+ 417 0216 9860     		str	r0, [r3, #8]	@ unaligned
+ 418 0218 D960     		str	r1, [r3, #12]	@ unaligned
+ 419 021a 127C     		ldrb	r2, [r2, #16]
+ 420 021c 1A74     		strb	r2, [r3, #16]
+ 116:openstack/cross-layers/idmanager.c ****         break;
+ 421              		.loc 1 116 0
+ 422 021e 1FE0     		b	.L25
+ 423              	.L23:
+ 117:openstack/cross-layers/idmanager.c ****      case ADDR_PREFIX:
+ 118:openstack/cross-layers/idmanager.c ****         memcpy(&idmanager_vars.myPrefix,newID,sizeof(open_addr_t));
+ 424              		.loc 1 118 0
+ 425 0220 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 426 0224 C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 427 0228 7A68     		ldr	r2, [r7, #4]
+ 428 022a 03F13404 		add	r4, r3, #52
+ 429 022e 1546     		mov	r5, r2
+ 430 0230 2868     		ldr	r0, [r5, #0]	@ unaligned
+ 431 0232 6968     		ldr	r1, [r5, #4]	@ unaligned
+ 432 0234 AA68     		ldr	r2, [r5, #8]	@ unaligned
+ 433 0236 EB68     		ldr	r3, [r5, #12]	@ unaligned
+ 434 0238 0FC4     		stmia	r4!, {r0, r1, r2, r3}
+ 435 023a 2B7C     		ldrb	r3, [r5, #16]
+ 436 023c 2370     		strb	r3, [r4, #0]
+ 119:openstack/cross-layers/idmanager.c ****         break;
+ 437              		.loc 1 119 0
+ 438 023e 0FE0     		b	.L25
+ 439              	.L19:
+ 120:openstack/cross-layers/idmanager.c ****      case ADDR_128B:
+ 121:openstack/cross-layers/idmanager.c ****         //don't set 128b, but rather prefix and 64b
+ 122:openstack/cross-layers/idmanager.c ****      default:
+ 123:openstack/cross-layers/idmanager.c ****         openserial_printCritical(COMPONENT_IDMANAGER,ERR_WRONG_ADDR_TYPE,
+ 124:openstack/cross-layers/idmanager.c ****               (errorparameter_t)newID->type,
+ 440              		.loc 1 124 0
+ 441 0240 7B68     		ldr	r3, [r7, #4]
+ 442 0242 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 123:openstack/cross-layers/idmanager.c ****         openserial_printCritical(COMPONENT_IDMANAGER,ERR_WRONG_ADDR_TYPE,
+ 443              		.loc 1 123 0
+ 444 0244 4FF00200 		mov	r0, #2
+ 445 0248 4FF03101 		mov	r1, #49
+ 446 024c 1A46     		mov	r2, r3
+ 447 024e 4FF00103 		mov	r3, #1
+ 448 0252 FFF7FEFF 		bl	openserial_printCritical
+ 125:openstack/cross-layers/idmanager.c ****               (errorparameter_t)1);
+ 126:openstack/cross-layers/idmanager.c ****         ENABLE_INTERRUPTS();
+ 449              		.loc 1 126 0
+ 450 0256 FFF7FEFF 		bl	IntMasterEnable
+ 127:openstack/cross-layers/idmanager.c ****         return E_FAIL;
+ 451              		.loc 1 127 0
+ 452 025a 4FF00103 		mov	r3, #1
+ 453 025e 03E0     		b	.L26
+ 454              	.L25:
+ 128:openstack/cross-layers/idmanager.c ****    }
+ 129:openstack/cross-layers/idmanager.c ****    ENABLE_INTERRUPTS();
+ 455              		.loc 1 129 0
+ 456 0260 FFF7FEFF 		bl	IntMasterEnable
+ 130:openstack/cross-layers/idmanager.c ****    return E_SUCCESS;
+ 457              		.loc 1 130 0
+ 458 0264 4FF00003 		mov	r3, #0
+ 459              	.L26:
+ 131:openstack/cross-layers/idmanager.c **** }
+ 460              		.loc 1 131 0
+ 461 0268 1846     		mov	r0, r3
+ 462 026a 07F10807 		add	r7, r7, #8
+ 463 026e BD46     		mov	sp, r7
+ 464 0270 B0BD     		pop	{r4, r5, r7, pc}
+ 465              		.cfi_endproc
+ 466              	.LFE4:
+ 468 0272 00BF     		.align	2
+ 469              		.global	idmanager_isMyAddress
+ 470              		.thumb
+ 471              		.thumb_func
+ 473              	idmanager_isMyAddress:
+ 474              	.LFB5:
+ 132:openstack/cross-layers/idmanager.c **** 
+ 133:openstack/cross-layers/idmanager.c **** bool idmanager_isMyAddress(open_addr_t* addr) {
+ 475              		.loc 1 133 0
+ 476              		.cfi_startproc
+ 477              		@ args = 0, pretend = 0, frame = 32
+ 478              		@ frame_needed = 1, uses_anonymous_args = 0
+ 479 0274 80B5     		push	{r7, lr}
+ 480              	.LCFI14:
+ 481              		.cfi_def_cfa_offset 8
+ 482              		.cfi_offset 7, -8
+ 483              		.cfi_offset 14, -4
+ 484 0276 88B0     		sub	sp, sp, #32
+ 485              	.LCFI15:
+ 486              		.cfi_def_cfa_offset 40
+ 487 0278 00AF     		add	r7, sp, #0
+ 488              	.LCFI16:
+ 489              		.cfi_def_cfa_register 7
+ 490 027a 7860     		str	r0, [r7, #4]
+ 134:openstack/cross-layers/idmanager.c ****    open_addr_t temp_my128bID;
+ 135:openstack/cross-layers/idmanager.c ****    bool res;
+ 136:openstack/cross-layers/idmanager.c ****    INTERRUPT_DECLARATION();
+ 137:openstack/cross-layers/idmanager.c ****    DISABLE_INTERRUPTS();
+ 491              		.loc 1 137 0
+ 492 027c FFF7FEFF 		bl	IntMasterDisable
+ 138:openstack/cross-layers/idmanager.c **** 
+ 139:openstack/cross-layers/idmanager.c ****    switch (addr->type) {
+ 493              		.loc 1 139 0
+ 494 0280 7B68     		ldr	r3, [r7, #4]
+ 495 0282 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 496 0284 03F1FF33 		add	r3, r3, #-1
+ 497 0288 042B     		cmp	r3, #4
+ 498 028a 5BD8     		bhi	.L28
+ 499 028c 01A2     		adr	r2, .L34
+ 500 028e 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 501 0292 00BF     		.align	2
+ 502              	.L34:
+ 503 0294 A9020000 		.word	.L29+1
+ 504 0298 BD020000 		.word	.L30+1
+ 505 029c D1020000 		.word	.L31+1
+ 506 02a0 1D030000 		.word	.L32+1
+ 507 02a4 31030000 		.word	.L33+1
+ 508              	.L29:
+ 140:openstack/cross-layers/idmanager.c ****      case ADDR_16B:
+ 141:openstack/cross-layers/idmanager.c ****         res= packetfunctions_sameAddress(addr,&idmanager_vars.my16bID);
+ 509              		.loc 1 141 0
+ 510 02a8 7868     		ldr	r0, [r7, #4]
+ 511 02aa 3049     		ldr	r1, .L37
+ 512 02ac FFF7FEFF 		bl	packetfunctions_sameAddress
+ 513 02b0 0346     		mov	r3, r0
+ 514 02b2 FB77     		strb	r3, [r7, #31]
+ 142:openstack/cross-layers/idmanager.c ****         ENABLE_INTERRUPTS();
+ 515              		.loc 1 142 0
+ 516 02b4 FFF7FEFF 		bl	IntMasterEnable
+ 143:openstack/cross-layers/idmanager.c ****         return res;
+ 517              		.loc 1 143 0
+ 518 02b8 FB7F     		ldrb	r3, [r7, #31]	@ zero_extendqisi2
+ 519 02ba 52E0     		b	.L36
+ 520              	.L30:
+ 144:openstack/cross-layers/idmanager.c ****      case ADDR_64B:
+ 145:openstack/cross-layers/idmanager.c ****         res= packetfunctions_sameAddress(addr,&idmanager_vars.my64bID);
+ 521              		.loc 1 145 0
+ 522 02bc 7868     		ldr	r0, [r7, #4]
+ 523 02be 2C49     		ldr	r1, .L37+4
+ 524 02c0 FFF7FEFF 		bl	packetfunctions_sameAddress
+ 525 02c4 0346     		mov	r3, r0
+ 526 02c6 FB77     		strb	r3, [r7, #31]
+ 146:openstack/cross-layers/idmanager.c ****         ENABLE_INTERRUPTS();
+ 527              		.loc 1 146 0
+ 528 02c8 FFF7FEFF 		bl	IntMasterEnable
+ 147:openstack/cross-layers/idmanager.c ****         return res;
+ 529              		.loc 1 147 0
+ 530 02cc FB7F     		ldrb	r3, [r7, #31]	@ zero_extendqisi2
+ 531 02ce 48E0     		b	.L36
+ 532              	.L31:
+ 148:openstack/cross-layers/idmanager.c ****      case ADDR_128B:
+ 149:openstack/cross-layers/idmanager.c ****         // build temporary my128bID
+ 150:openstack/cross-layers/idmanager.c ****         temp_my128bID.type = ADDR_128B;
+ 533              		.loc 1 150 0
+ 534 02d0 4FF00303 		mov	r3, #3
+ 535 02d4 3B73     		strb	r3, [r7, #12]
+ 151:openstack/cross-layers/idmanager.c ****         memcpy(&temp_my128bID.addr_128b[0],&idmanager_vars.myPrefix.prefix,8);
+ 536              		.loc 1 151 0
+ 537 02d6 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 538 02da C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 539 02de 07F10D02 		add	r2, r7, #13
+ 540 02e2 03F13503 		add	r3, r3, #53
+ 541 02e6 1968     		ldr	r1, [r3, #0]	@ unaligned
+ 542 02e8 5B68     		ldr	r3, [r3, #4]	@ unaligned
+ 543 02ea 1160     		str	r1, [r2, #0]	@ unaligned
+ 544 02ec 5360     		str	r3, [r2, #4]	@ unaligned
+ 152:openstack/cross-layers/idmanager.c ****         memcpy(&temp_my128bID.addr_128b[8],&idmanager_vars.my64bID.addr_64b,8);
+ 545              		.loc 1 152 0
+ 546 02ee 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 547 02f2 C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 548 02f6 07F11502 		add	r2, r7, #21
+ 549 02fa 03F12403 		add	r3, r3, #36
+ 550 02fe 03CB     		ldmia	r3!, {r0, r1}
+ 551 0300 1060     		str	r0, [r2, #0]	@ unaligned
+ 552 0302 5160     		str	r1, [r2, #4]	@ unaligned
+ 153:openstack/cross-layers/idmanager.c **** 
+ 154:openstack/cross-layers/idmanager.c ****         res= packetfunctions_sameAddress(addr,&temp_my128bID);
+ 553              		.loc 1 154 0
+ 554 0304 07F10C03 		add	r3, r7, #12
+ 555 0308 7868     		ldr	r0, [r7, #4]
+ 556 030a 1946     		mov	r1, r3
+ 557 030c FFF7FEFF 		bl	packetfunctions_sameAddress
+ 558 0310 0346     		mov	r3, r0
+ 559 0312 FB77     		strb	r3, [r7, #31]
+ 155:openstack/cross-layers/idmanager.c ****         ENABLE_INTERRUPTS();
+ 560              		.loc 1 155 0
+ 561 0314 FFF7FEFF 		bl	IntMasterEnable
+ 156:openstack/cross-layers/idmanager.c ****         return res;
+ 562              		.loc 1 156 0
+ 563 0318 FB7F     		ldrb	r3, [r7, #31]	@ zero_extendqisi2
+ 564 031a 22E0     		b	.L36
+ 565              	.L32:
+ 157:openstack/cross-layers/idmanager.c ****      case ADDR_PANID:
+ 158:openstack/cross-layers/idmanager.c ****         res= packetfunctions_sameAddress(addr,&idmanager_vars.myPANID);
+ 566              		.loc 1 158 0
+ 567 031c 7868     		ldr	r0, [r7, #4]
+ 568 031e 1549     		ldr	r1, .L37+8
+ 569 0320 FFF7FEFF 		bl	packetfunctions_sameAddress
+ 570 0324 0346     		mov	r3, r0
+ 571 0326 FB77     		strb	r3, [r7, #31]
+ 159:openstack/cross-layers/idmanager.c ****         ENABLE_INTERRUPTS();
+ 572              		.loc 1 159 0
+ 573 0328 FFF7FEFF 		bl	IntMasterEnable
+ 160:openstack/cross-layers/idmanager.c ****         return res;
+ 574              		.loc 1 160 0
+ 575 032c FB7F     		ldrb	r3, [r7, #31]	@ zero_extendqisi2
+ 576 032e 18E0     		b	.L36
+ 577              	.L33:
+ 161:openstack/cross-layers/idmanager.c ****      case ADDR_PREFIX:
+ 162:openstack/cross-layers/idmanager.c ****         res= packetfunctions_sameAddress(addr,&idmanager_vars.myPrefix);
+ 578              		.loc 1 162 0
+ 579 0330 7868     		ldr	r0, [r7, #4]
+ 580 0332 1149     		ldr	r1, .L37+12
+ 581 0334 FFF7FEFF 		bl	packetfunctions_sameAddress
+ 582 0338 0346     		mov	r3, r0
+ 583 033a FB77     		strb	r3, [r7, #31]
+ 163:openstack/cross-layers/idmanager.c ****         ENABLE_INTERRUPTS();
+ 584              		.loc 1 163 0
+ 585 033c FFF7FEFF 		bl	IntMasterEnable
+ 164:openstack/cross-layers/idmanager.c ****         return res;
+ 586              		.loc 1 164 0
+ 587 0340 FB7F     		ldrb	r3, [r7, #31]	@ zero_extendqisi2
+ 588 0342 0EE0     		b	.L36
+ 589              	.L28:
+ 165:openstack/cross-layers/idmanager.c ****      default:
+ 166:openstack/cross-layers/idmanager.c ****         openserial_printCritical(COMPONENT_IDMANAGER,ERR_WRONG_ADDR_TYPE,
+ 167:openstack/cross-layers/idmanager.c ****               (errorparameter_t)addr->type,
+ 590              		.loc 1 167 0
+ 591 0344 7B68     		ldr	r3, [r7, #4]
+ 592 0346 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 166:openstack/cross-layers/idmanager.c ****         openserial_printCritical(COMPONENT_IDMANAGER,ERR_WRONG_ADDR_TYPE,
+ 593              		.loc 1 166 0
+ 594 0348 4FF00200 		mov	r0, #2
+ 595 034c 4FF03101 		mov	r1, #49
+ 596 0350 1A46     		mov	r2, r3
+ 597 0352 4FF00203 		mov	r3, #2
+ 598 0356 FFF7FEFF 		bl	openserial_printCritical
+ 168:openstack/cross-layers/idmanager.c ****               (errorparameter_t)2);
+ 169:openstack/cross-layers/idmanager.c ****         ENABLE_INTERRUPTS();
+ 599              		.loc 1 169 0
+ 600 035a FFF7FEFF 		bl	IntMasterEnable
+ 170:openstack/cross-layers/idmanager.c ****         return FALSE;
+ 601              		.loc 1 170 0
+ 602 035e 4FF00003 		mov	r3, #0
+ 603              	.L36:
+ 171:openstack/cross-layers/idmanager.c ****    }
+ 172:openstack/cross-layers/idmanager.c **** }
+ 604              		.loc 1 172 0
+ 605 0362 1846     		mov	r0, r3
+ 606 0364 07F12007 		add	r7, r7, #32
+ 607 0368 BD46     		mov	sp, r7
+ 608 036a 80BD     		pop	{r7, pc}
+ 609              	.L38:
+ 610              		.align	2
+ 611              	.L37:
+ 612 036c 12000000 		.word	idmanager_vars+18
+ 613 0370 23000000 		.word	idmanager_vars+35
+ 614 0374 01000000 		.word	idmanager_vars+1
+ 615 0378 34000000 		.word	idmanager_vars+52
+ 616              		.cfi_endproc
+ 617              	.LFE5:
+ 619              		.align	2
+ 620              		.global	idmanager_triggerAboutRoot
+ 621              		.thumb
+ 622              		.thumb_func
+ 624              	idmanager_triggerAboutRoot:
+ 625              	.LFB6:
+ 173:openstack/cross-layers/idmanager.c **** 
+ 174:openstack/cross-layers/idmanager.c **** void idmanager_triggerAboutRoot() {
+ 626              		.loc 1 174 0
+ 627              		.cfi_startproc
+ 628              		@ args = 0, pretend = 0, frame = 48
+ 629              		@ frame_needed = 1, uses_anonymous_args = 0
+ 630 037c 80B5     		push	{r7, lr}
+ 631              	.LCFI17:
+ 632              		.cfi_def_cfa_offset 8
+ 633              		.cfi_offset 7, -8
+ 634              		.cfi_offset 14, -4
+ 635 037e 8CB0     		sub	sp, sp, #48
+ 636              	.LCFI18:
+ 637              		.cfi_def_cfa_offset 56
+ 638 0380 00AF     		add	r7, sp, #0
+ 639              	.LCFI19:
+ 640              		.cfi_def_cfa_register 7
+ 175:openstack/cross-layers/idmanager.c ****    uint8_t         number_bytes_from_input_buffer;
+ 176:openstack/cross-layers/idmanager.c ****    uint8_t         input_buffer[9];
+ 177:openstack/cross-layers/idmanager.c ****    open_addr_t     myPrefix;
+ 178:openstack/cross-layers/idmanager.c ****    uint8_t         dodagid[16];
+ 179:openstack/cross-layers/idmanager.c ****    
+ 180:openstack/cross-layers/idmanager.c ****    //=== get command from OpenSerial
+ 181:openstack/cross-layers/idmanager.c ****    number_bytes_from_input_buffer = openserial_getInputBuffer(input_buffer,sizeof(input_buffer));
+ 641              		.loc 1 181 0
+ 642 0382 07F12403 		add	r3, r7, #36
+ 643 0386 1846     		mov	r0, r3
+ 644 0388 4FF00901 		mov	r1, #9
+ 645 038c FFF7FEFF 		bl	openserial_getInputBuffer
+ 646 0390 0346     		mov	r3, r0
+ 647 0392 87F82F30 		strb	r3, [r7, #47]
+ 182:openstack/cross-layers/idmanager.c ****    if (number_bytes_from_input_buffer!=sizeof(input_buffer)) {
+ 648              		.loc 1 182 0
+ 649 0396 97F82F30 		ldrb	r3, [r7, #47]	@ zero_extendqisi2
+ 650 039a 092B     		cmp	r3, #9
+ 651 039c 0CD0     		beq	.L40
+ 183:openstack/cross-layers/idmanager.c ****       openserial_printError(COMPONENT_IDMANAGER,ERR_INPUTBUFFER_LENGTH,
+ 652              		.loc 1 183 0
+ 653 039e 97F82F30 		ldrb	r3, [r7, #47]	@ zero_extendqisi2
+ 654 03a2 9BB2     		uxth	r3, r3
+ 655 03a4 4FF00200 		mov	r0, #2
+ 656 03a8 4FF03401 		mov	r1, #52
+ 657 03ac 1A46     		mov	r2, r3
+ 658 03ae 4FF00003 		mov	r3, #0
+ 659 03b2 FFF7FEFF 		bl	openserial_printError
+ 660 03b6 4BE0     		b	.L39
+ 661              	.L40:
+ 184:openstack/cross-layers/idmanager.c ****             (errorparameter_t)number_bytes_from_input_buffer,
+ 185:openstack/cross-layers/idmanager.c ****             (errorparameter_t)0);
+ 186:openstack/cross-layers/idmanager.c ****       return;
+ 187:openstack/cross-layers/idmanager.c ****    };
+ 188:openstack/cross-layers/idmanager.c ****    
+ 189:openstack/cross-layers/idmanager.c ****    //=== handle command
+ 190:openstack/cross-layers/idmanager.c ****    
+ 191:openstack/cross-layers/idmanager.c ****    // take action (byte 0)
+ 192:openstack/cross-layers/idmanager.c ****    switch (input_buffer[0]) {
+ 662              		.loc 1 192 0
+ 663 03b8 97F82430 		ldrb	r3, [r7, #36]	@ zero_extendqisi2
+ 664 03bc 542B     		cmp	r3, #84
+ 665 03be 0ED0     		beq	.L44
+ 666 03c0 592B     		cmp	r3, #89
+ 667 03c2 02D0     		beq	.L45
+ 668 03c4 4E2B     		cmp	r3, #78
+ 669 03c6 05D0     		beq	.L43
+ 670 03c8 18E0     		b	.L42
+ 671              	.L45:
+ 193:openstack/cross-layers/idmanager.c ****      case ACTION_YES:
+ 194:openstack/cross-layers/idmanager.c ****         idmanager_setIsDAGroot(TRUE);
+ 672              		.loc 1 194 0
+ 673 03ca 4FF00100 		mov	r0, #1
+ 674 03ce FFF7FEFF 		bl	idmanager_setIsDAGroot
+ 195:openstack/cross-layers/idmanager.c ****         break;
+ 675              		.loc 1 195 0
+ 676 03d2 13E0     		b	.L42
+ 677              	.L43:
+ 196:openstack/cross-layers/idmanager.c ****      case ACTION_NO:
+ 197:openstack/cross-layers/idmanager.c ****         idmanager_setIsDAGroot(FALSE);
+ 678              		.loc 1 197 0
+ 679 03d4 4FF00000 		mov	r0, #0
+ 680 03d8 FFF7FEFF 		bl	idmanager_setIsDAGroot
+ 198:openstack/cross-layers/idmanager.c ****         break;
+ 681              		.loc 1 198 0
+ 682 03dc 0EE0     		b	.L42
+ 683              	.L44:
+ 199:openstack/cross-layers/idmanager.c ****      case ACTION_TOGGLE:
+ 200:openstack/cross-layers/idmanager.c ****         if (idmanager_getIsDAGroot()) {
+ 684              		.loc 1 200 0
+ 685 03de FFF7FEFF 		bl	idmanager_getIsDAGroot
+ 686 03e2 0346     		mov	r3, r0
+ 687 03e4 002B     		cmp	r3, #0
+ 688 03e6 04D0     		beq	.L46
+ 201:openstack/cross-layers/idmanager.c ****            idmanager_setIsDAGroot(FALSE);
+ 689              		.loc 1 201 0
+ 690 03e8 4FF00000 		mov	r0, #0
+ 691 03ec FFF7FEFF 		bl	idmanager_setIsDAGroot
+ 202:openstack/cross-layers/idmanager.c ****         } else {
+ 203:openstack/cross-layers/idmanager.c ****            idmanager_setIsDAGroot(TRUE);
+ 204:openstack/cross-layers/idmanager.c ****         }
+ 205:openstack/cross-layers/idmanager.c ****         break;
+ 692              		.loc 1 205 0
+ 693 03f0 03E0     		b	.L49
+ 694              	.L46:
+ 203:openstack/cross-layers/idmanager.c ****            idmanager_setIsDAGroot(TRUE);
+ 695              		.loc 1 203 0
+ 696 03f2 4FF00100 		mov	r0, #1
+ 697 03f6 FFF7FEFF 		bl	idmanager_setIsDAGroot
+ 698              	.L49:
+ 699              		.loc 1 205 0
+ 700 03fa 00BF     		nop
+ 701              	.L42:
+ 206:openstack/cross-layers/idmanager.c ****    }
+ 207:openstack/cross-layers/idmanager.c ****    
+ 208:openstack/cross-layers/idmanager.c ****    // store prefix (bytes 1-8)
+ 209:openstack/cross-layers/idmanager.c ****    myPrefix.type = ADDR_PREFIX;
+ 702              		.loc 1 209 0
+ 703 03fc 4FF00503 		mov	r3, #5
+ 704 0400 3B74     		strb	r3, [r7, #16]
+ 210:openstack/cross-layers/idmanager.c ****    memcpy(
+ 705              		.loc 1 210 0
+ 706 0402 07F11103 		add	r3, r7, #17
+ 707 0406 07F12502 		add	r2, r7, #37
+ 708 040a 1168     		ldr	r1, [r2, #0]	@ unaligned
+ 709 040c 5268     		ldr	r2, [r2, #4]	@ unaligned
+ 710 040e 1960     		str	r1, [r3, #0]	@ unaligned
+ 711 0410 5A60     		str	r2, [r3, #4]	@ unaligned
+ 211:openstack/cross-layers/idmanager.c ****       myPrefix.prefix,
+ 212:openstack/cross-layers/idmanager.c ****       &input_buffer[1],
+ 213:openstack/cross-layers/idmanager.c ****       sizeof(myPrefix.prefix)
+ 214:openstack/cross-layers/idmanager.c ****    );
+ 215:openstack/cross-layers/idmanager.c ****    idmanager_setMyID(&myPrefix);
+ 712              		.loc 1 215 0
+ 713 0412 07F11003 		add	r3, r7, #16
+ 714 0416 1846     		mov	r0, r3
+ 715 0418 FFF7FEFF 		bl	idmanager_setMyID
+ 216:openstack/cross-layers/idmanager.c ****    
+ 217:openstack/cross-layers/idmanager.c ****    // indicate DODAGid to RPL
+ 218:openstack/cross-layers/idmanager.c ****    memcpy(&dodagid[0],idmanager_vars.myPrefix.prefix,8);  // prefix
+ 716              		.loc 1 218 0
+ 717 041c 40F20002 		movw	r2, #:lower16:idmanager_vars
+ 718 0420 C0F20002 		movt	r2, #:upper16:idmanager_vars
+ 719 0424 3B46     		mov	r3, r7
+ 720 0426 02F13502 		add	r2, r2, #53
+ 721 042a 1068     		ldr	r0, [r2, #0]	@ unaligned
+ 722 042c 5168     		ldr	r1, [r2, #4]	@ unaligned
+ 723 042e 03C3     		stmia	r3!, {r0, r1}
+ 219:openstack/cross-layers/idmanager.c ****    memcpy(&dodagid[8],idmanager_vars.my64bID.addr_64b,8); // eui64
+ 724              		.loc 1 219 0
+ 725 0430 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 726 0434 C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 727 0438 07F10802 		add	r2, r7, #8
+ 728 043c 03F12403 		add	r3, r3, #36
+ 729 0440 93E80300 		ldmia	r3, {r0, r1}
+ 730 0444 82E80300 		stmia	r2, {r0, r1}
+ 220:openstack/cross-layers/idmanager.c ****    icmpv6rpl_writeDODAGid(dodagid);
+ 731              		.loc 1 220 0
+ 732 0448 3B46     		mov	r3, r7
+ 733 044a 1846     		mov	r0, r3
+ 734 044c FFF7FEFF 		bl	icmpv6rpl_writeDODAGid
+ 735              	.L39:
+ 221:openstack/cross-layers/idmanager.c ****    
+ 222:openstack/cross-layers/idmanager.c ****    return;
+ 223:openstack/cross-layers/idmanager.c **** }
+ 736              		.loc 1 223 0
+ 737 0450 07F13007 		add	r7, r7, #48
+ 738 0454 BD46     		mov	sp, r7
+ 739 0456 80BD     		pop	{r7, pc}
+ 740              		.cfi_endproc
+ 741              	.LFE6:
+ 743              		.align	2
+ 744              		.global	debugPrint_id
+ 745              		.thumb
+ 746              		.thumb_func
+ 748              	debugPrint_id:
+ 749              	.LFB7:
+ 224:openstack/cross-layers/idmanager.c **** 
+ 225:openstack/cross-layers/idmanager.c **** /**
+ 226:openstack/cross-layers/idmanager.c **** \brief Trigger this module to print status information, over serial.
+ 227:openstack/cross-layers/idmanager.c **** 
+ 228:openstack/cross-layers/idmanager.c **** debugPrint_* functions are used by the openserial module to continuously print
+ 229:openstack/cross-layers/idmanager.c **** status information about several modules in the OpenWSN stack.
+ 230:openstack/cross-layers/idmanager.c **** 
+ 231:openstack/cross-layers/idmanager.c **** \returns TRUE if this function printed something, FALSE otherwise.
+ 232:openstack/cross-layers/idmanager.c **** */
+ 233:openstack/cross-layers/idmanager.c **** bool debugPrint_id() {
+ 750              		.loc 1 233 0
+ 751              		.cfi_startproc
+ 752              		@ args = 0, pretend = 0, frame = 24
+ 753              		@ frame_needed = 1, uses_anonymous_args = 0
+ 754 0458 80B5     		push	{r7, lr}
+ 755              	.LCFI20:
+ 756              		.cfi_def_cfa_offset 8
+ 757              		.cfi_offset 7, -8
+ 758              		.cfi_offset 14, -4
+ 759 045a 86B0     		sub	sp, sp, #24
+ 760              	.LCFI21:
+ 761              		.cfi_def_cfa_offset 32
+ 762 045c 00AF     		add	r7, sp, #0
+ 763              	.LCFI22:
+ 764              		.cfi_def_cfa_register 7
+ 234:openstack/cross-layers/idmanager.c ****    debugIDManagerEntry_t output;
+ 235:openstack/cross-layers/idmanager.c ****    
+ 236:openstack/cross-layers/idmanager.c ****    output.isDAGroot = idmanager_vars.isDAGroot;
+ 765              		.loc 1 236 0
+ 766 045e 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 767 0462 C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 768 0466 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 769 0468 3B70     		strb	r3, [r7, #0]
+ 237:openstack/cross-layers/idmanager.c ****    memcpy(output.myPANID,idmanager_vars.myPANID.panid,2);
+ 770              		.loc 1 237 0
+ 771 046a 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 772 046e C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 773 0472 07F10102 		add	r2, r7, #1
+ 774 0476 03F10203 		add	r3, r3, #2
+ 775 047a 1B88     		ldrh	r3, [r3, #0]	@ unaligned
+ 776 047c 1380     		strh	r3, [r2, #0]	@ unaligned
+ 238:openstack/cross-layers/idmanager.c ****    memcpy(output.my16bID,idmanager_vars.my16bID.addr_16b,2);
+ 777              		.loc 1 238 0
+ 778 047e 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 779 0482 C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 780 0486 07F10302 		add	r2, r7, #3
+ 781 048a 03F11303 		add	r3, r3, #19
+ 782 048e 1B88     		ldrh	r3, [r3, #0]	@ unaligned
+ 783 0490 1380     		strh	r3, [r2, #0]	@ unaligned
+ 239:openstack/cross-layers/idmanager.c ****    memcpy(output.my64bID,idmanager_vars.my64bID.addr_64b,8);
+ 784              		.loc 1 239 0
+ 785 0492 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 786 0496 C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 787 049a 07F10502 		add	r2, r7, #5
+ 788 049e 03F12403 		add	r3, r3, #36
+ 789 04a2 03CB     		ldmia	r3!, {r0, r1}
+ 790 04a4 1060     		str	r0, [r2, #0]	@ unaligned
+ 791 04a6 5160     		str	r1, [r2, #4]	@ unaligned
+ 240:openstack/cross-layers/idmanager.c ****    memcpy(output.myPrefix,idmanager_vars.myPrefix.prefix,8);
+ 792              		.loc 1 240 0
+ 793 04a8 40F20003 		movw	r3, #:lower16:idmanager_vars
+ 794 04ac C0F20003 		movt	r3, #:upper16:idmanager_vars
+ 795 04b0 07F10D02 		add	r2, r7, #13
+ 796 04b4 03F13503 		add	r3, r3, #53
+ 797 04b8 1968     		ldr	r1, [r3, #0]	@ unaligned
+ 798 04ba 5B68     		ldr	r3, [r3, #4]	@ unaligned
+ 799 04bc 1160     		str	r1, [r2, #0]	@ unaligned
+ 800 04be 5360     		str	r3, [r2, #4]	@ unaligned
+ 241:openstack/cross-layers/idmanager.c ****    
+ 242:openstack/cross-layers/idmanager.c ****    openserial_printStatus(STATUS_ID,(uint8_t*)&output,sizeof(debugIDManagerEntry_t));
+ 801              		.loc 1 242 0
+ 802 04c0 3B46     		mov	r3, r7
+ 803 04c2 4FF00100 		mov	r0, #1
+ 804 04c6 1946     		mov	r1, r3
+ 805 04c8 4FF01502 		mov	r2, #21
+ 806 04cc FFF7FEFF 		bl	openserial_printStatus
+ 243:openstack/cross-layers/idmanager.c ****    return TRUE;
+ 807              		.loc 1 243 0
+ 808 04d0 4FF00103 		mov	r3, #1
+ 244:openstack/cross-layers/idmanager.c **** }
+ 809              		.loc 1 244 0
+ 810 04d4 1846     		mov	r0, r3
+ 811 04d6 07F11807 		add	r7, r7, #24
+ 812 04da BD46     		mov	sp, r7
+ 813 04dc 80BD     		pop	{r7, pc}
+ 814              		.cfi_endproc
+ 815              	.LFE7:
+ 817              	.Letext0:
+ 818              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+ 819              		.file 3 "inc/opendefs.h"
+ 820              		.file 4 "openstack/cross-layers/idmanager.h"
+ 821              		.file 5 "bsp/boards/OpenMote-CC2538/board_info.h"
+ 822              		.file 6 "openstack/03b-IPv6/icmpv6rpl.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 idmanager.c
+     /tmp/ccb6174K.s:19     .rodata:00000000 $d
+     /tmp/ccb6174K.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccb6174K.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccb6174K.s:32     .rodata:00000010 infouCName
+     /tmp/ccb6174K.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccb6174K.s:42     .rodata:00000024 infoStackName
+     /tmp/ccb6174K.s:47     .rodata:00000030 all_routers_multicast
+                            *COM*:00000045 idmanager_vars
+     /tmp/ccb6174K.s:66     .text:00000000 $t
+     /tmp/ccb6174K.s:71     .text:00000000 idmanager_init
+     /tmp/ccb6174K.s:139    .text:00000090 $d
+     /tmp/ccb6174K.s:146    .text:000000a0 $t
+     /tmp/ccb6174K.s:151    .text:000000a0 idmanager_getIsDAGroot
+     /tmp/ccb6174K.s:192    .text:000000c8 idmanager_setIsDAGroot
+     /tmp/ccb6174K.s:234    .text:000000f4 idmanager_getMyID
+     /tmp/ccb6174K.s:264    .text:00000114 $d
+     /tmp/ccb6174K.s:271    .text:00000128 $t
+     /tmp/ccb6174K.s:320    .text:00000170 $d
+     /tmp/ccb6174K.s:327    .text:00000180 $t
+     /tmp/ccb6174K.s:332    .text:00000180 idmanager_setMyID
+     /tmp/ccb6174K.s:364    .text:000001a0 $d
+     /tmp/ccb6174K.s:371    .text:000001b4 $t
+     /tmp/ccb6174K.s:473    .text:00000274 idmanager_isMyAddress
+     /tmp/ccb6174K.s:503    .text:00000294 $d
+     /tmp/ccb6174K.s:510    .text:000002a8 $t
+     /tmp/ccb6174K.s:612    .text:0000036c $d
+     /tmp/ccb6174K.s:619    .text:0000037c $t
+     /tmp/ccb6174K.s:624    .text:0000037c idmanager_triggerAboutRoot
+     /tmp/ccb6174K.s:748    .text:00000458 debugPrint_id
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.toolchain_defs.h.2.e4ebbe6e0a48032a9b79077dc42e1ffd
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
+                           .group:00000000 wm4.idmanager.h.2.8c0e2159b32ef3125cbb1e984805cbfe
+                           .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
+                           .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
+                           .group:00000000 wm4.icmpv6rpl.h.15.89c5061c19a4811537f699fd2b74755c
+                           .group:00000000 wm4.neighbors.h.15.9f35f180a0332d1bc442efb0ec51905c
+
+UNDEFINED SYMBOLS
+memset
+eui64_get
+packetfunctions_mac64bToMac16b
+IntMasterDisable
+IntMasterEnable
+neighbors_updateMyDAGrankAndNeighborPreference
+openserial_printCritical
+packetfunctions_sameAddress
+openserial_getInputBuffer
+openserial_printError
+icmpv6rpl_writeDODAGid
+openserial_printStatus

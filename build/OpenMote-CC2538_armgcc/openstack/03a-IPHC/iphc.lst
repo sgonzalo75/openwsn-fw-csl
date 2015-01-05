@@ -1,0 +1,2795 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"iphc.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.align	2
+  42              	infoStackName:
+  43 0024 4F70656E 		.ascii	"OpenWSN \000"
+  43      57534E20 
+  43      00
+  44 002d 000000   		.align	2
+  47              	all_routers_multicast:
+  48 0030 FF       		.byte	-1
+  49 0031 02       		.byte	2
+  50 0032 00       		.byte	0
+  51 0033 00       		.byte	0
+  52 0034 00       		.byte	0
+  53 0035 00       		.byte	0
+  54 0036 00       		.byte	0
+  55 0037 00       		.byte	0
+  56 0038 00       		.byte	0
+  57 0039 00       		.byte	0
+  58 003a 00       		.byte	0
+  59 003b 00       		.byte	0
+  60 003c 00       		.byte	0
+  61 003d 00       		.byte	0
+  62 003e 00       		.byte	0
+  63 003f 02       		.byte	2
+  64              		.text
+  65              		.align	2
+  66              		.global	iphc_init
+  67              		.thumb
+  68              		.thumb_func
+  70              	iphc_init:
+  71              	.LFB0:
+  72              		.file 1 "openstack/03a-IPHC/iphc.c"
+   1:openstack/03a-IPHC/iphc.c **** #include "opendefs.h"
+   2:openstack/03a-IPHC/iphc.c **** #include "iphc.h"
+   3:openstack/03a-IPHC/iphc.c **** #include "packetfunctions.h"
+   4:openstack/03a-IPHC/iphc.c **** #include "idmanager.h"
+   5:openstack/03a-IPHC/iphc.c **** #include "openserial.h"
+   6:openstack/03a-IPHC/iphc.c **** #include "sixtop.h"
+   7:openstack/03a-IPHC/iphc.c **** #include "forwarding.h"
+   8:openstack/03a-IPHC/iphc.c **** #include "neighbors.h"
+   9:openstack/03a-IPHC/iphc.c **** #include "openbridge.h"
+  10:openstack/03a-IPHC/iphc.c **** 
+  11:openstack/03a-IPHC/iphc.c **** //=========================== variables =======================================
+  12:openstack/03a-IPHC/iphc.c **** 
+  13:openstack/03a-IPHC/iphc.c **** //=========================== prototypes ======================================
+  14:openstack/03a-IPHC/iphc.c **** 
+  15:openstack/03a-IPHC/iphc.c **** //===== IPv6 header
+  16:openstack/03a-IPHC/iphc.c **** owerror_t iphc_prependIPv6Header(
+  17:openstack/03a-IPHC/iphc.c ****    OpenQueueEntry_t*    msg,
+  18:openstack/03a-IPHC/iphc.c ****    uint8_t              tf,
+  19:openstack/03a-IPHC/iphc.c ****    uint32_t             value_flowLabel,
+  20:openstack/03a-IPHC/iphc.c ****    bool                 nh,
+  21:openstack/03a-IPHC/iphc.c ****    uint8_t              value_nextHeader,
+  22:openstack/03a-IPHC/iphc.c ****    uint8_t              hlim,
+  23:openstack/03a-IPHC/iphc.c ****    uint8_t              value_hopLimit,
+  24:openstack/03a-IPHC/iphc.c ****    bool                 cid,
+  25:openstack/03a-IPHC/iphc.c ****    bool                 sac,
+  26:openstack/03a-IPHC/iphc.c ****    uint8_t              sam,
+  27:openstack/03a-IPHC/iphc.c ****    bool                 m,
+  28:openstack/03a-IPHC/iphc.c ****    bool                 dac,
+  29:openstack/03a-IPHC/iphc.c ****    uint8_t              dam,
+  30:openstack/03a-IPHC/iphc.c ****    open_addr_t*         value_dest,
+  31:openstack/03a-IPHC/iphc.c ****    open_addr_t*         value_src,
+  32:openstack/03a-IPHC/iphc.c ****    uint8_t              fw_SendOrfw_Rcv
+  33:openstack/03a-IPHC/iphc.c **** );
+  34:openstack/03a-IPHC/iphc.c **** void iphc_retrieveIPv6Header(OpenQueueEntry_t* msg, ipv6_header_iht* ipv6_header);
+  35:openstack/03a-IPHC/iphc.c **** 
+  36:openstack/03a-IPHC/iphc.c **** //===== IPv6 hop-by-hop header
+  37:openstack/03a-IPHC/iphc.c **** void iphc_prependIPv6HopByHopHeader(
+  38:openstack/03a-IPHC/iphc.c ****    OpenQueueEntry_t*    msg,
+  39:openstack/03a-IPHC/iphc.c ****    uint8_t              nextheader,
+  40:openstack/03a-IPHC/iphc.c ****    uint8_t              nh,
+  41:openstack/03a-IPHC/iphc.c ****    rpl_option_ht*       rpl_option
+  42:openstack/03a-IPHC/iphc.c **** );
+  43:openstack/03a-IPHC/iphc.c **** void iphc_retrieveIPv6HopByHopHeader(
+  44:openstack/03a-IPHC/iphc.c ****    OpenQueueEntry_t*    msg,
+  45:openstack/03a-IPHC/iphc.c ****    ipv6_hopbyhop_iht*   hopbyhop_header,
+  46:openstack/03a-IPHC/iphc.c ****    rpl_option_ht*       rpl_option
+  47:openstack/03a-IPHC/iphc.c **** );
+  48:openstack/03a-IPHC/iphc.c **** 
+  49:openstack/03a-IPHC/iphc.c **** //=========================== public ==========================================
+  50:openstack/03a-IPHC/iphc.c **** 
+  51:openstack/03a-IPHC/iphc.c **** void      iphc_init() {
+  73              		.loc 1 51 0
+  74              		.cfi_startproc
+  75              		@ args = 0, pretend = 0, frame = 0
+  76              		@ frame_needed = 1, uses_anonymous_args = 0
+  77              		@ link register save eliminated.
+  78 0000 80B4     		push	{r7}
+  79              	.LCFI0:
+  80              		.cfi_def_cfa_offset 4
+  81              		.cfi_offset 7, -4
+  82 0002 00AF     		add	r7, sp, #0
+  83              	.LCFI1:
+  84              		.cfi_def_cfa_register 7
+  52:openstack/03a-IPHC/iphc.c **** }
+  85              		.loc 1 52 0
+  86 0004 BD46     		mov	sp, r7
+  87 0006 80BC     		pop	{r7}
+  88 0008 7047     		bx	lr
+  89              		.cfi_endproc
+  90              	.LFE0:
+  92 000a 00BF     		.align	2
+  93              		.global	iphc_sendFromForwarding
+  94              		.thumb
+  95              		.thumb_func
+  97              	iphc_sendFromForwarding:
+  98              	.LFB1:
+  53:openstack/03a-IPHC/iphc.c **** 
+  54:openstack/03a-IPHC/iphc.c **** // send from upper layer: I need to add 6LoWPAN header
+  55:openstack/03a-IPHC/iphc.c **** owerror_t iphc_sendFromForwarding(
+  56:openstack/03a-IPHC/iphc.c ****       OpenQueueEntry_t* msg,
+  57:openstack/03a-IPHC/iphc.c ****       ipv6_header_iht*  ipv6_header,
+  58:openstack/03a-IPHC/iphc.c ****       rpl_option_ht*    rpl_option,
+  59:openstack/03a-IPHC/iphc.c ****       uint32_t*         flow_label,
+  60:openstack/03a-IPHC/iphc.c ****       uint8_t           fw_SendOrfw_Rcv
+  61:openstack/03a-IPHC/iphc.c ****    ) {
+  99              		.loc 1 61 0
+ 100              		.cfi_startproc
+ 101              		@ args = 4, pretend = 0, frame = 112
+ 102              		@ frame_needed = 1, uses_anonymous_args = 0
+ 103 000c 90B5     		push	{r4, r7, lr}
+ 104              	.LCFI2:
+ 105              		.cfi_def_cfa_offset 12
+ 106              		.cfi_offset 4, -12
+ 107              		.cfi_offset 7, -8
+ 108              		.cfi_offset 14, -4
+ 109 000e A9B0     		sub	sp, sp, #164
+ 110              	.LCFI3:
+ 111              		.cfi_def_cfa_offset 176
+ 112 0010 0CAF     		add	r7, sp, #48
+ 113              	.LCFI4:
+ 114              		.cfi_def_cfa 7, 128
+ 115 0012 F860     		str	r0, [r7, #12]
+ 116 0014 B960     		str	r1, [r7, #8]
+ 117 0016 7A60     		str	r2, [r7, #4]
+ 118 0018 3B60     		str	r3, [r7, #0]
+  62:openstack/03a-IPHC/iphc.c ****    open_addr_t  temp_dest_prefix;
+  63:openstack/03a-IPHC/iphc.c ****    open_addr_t  temp_dest_mac64b;
+  64:openstack/03a-IPHC/iphc.c ****    open_addr_t* p_dest;
+  65:openstack/03a-IPHC/iphc.c ****    open_addr_t* p_src;  
+  66:openstack/03a-IPHC/iphc.c ****    open_addr_t  temp_src_prefix;
+  67:openstack/03a-IPHC/iphc.c ****    open_addr_t  temp_src_mac64b; 
+  68:openstack/03a-IPHC/iphc.c ****    uint8_t      sam;
+  69:openstack/03a-IPHC/iphc.c ****    uint8_t      dam;
+  70:openstack/03a-IPHC/iphc.c ****    uint8_t      nh;
+  71:openstack/03a-IPHC/iphc.c ****    uint8_t      next_header;
+  72:openstack/03a-IPHC/iphc.c ****    uint8_t      tf=IPHC_TF_ELIDED;
+ 119              		.loc 1 72 0
+ 120 001a 4FF00303 		mov	r3, #3
+ 121 001e 87F86430 		strb	r3, [r7, #100]
+  73:openstack/03a-IPHC/iphc.c ****    //option header
+  74:openstack/03a-IPHC/iphc.c ****   
+  75:openstack/03a-IPHC/iphc.c ****    // take ownership over the packet
+  76:openstack/03a-IPHC/iphc.c ****    msg->owner = COMPONENT_IPHC;
+ 122              		.loc 1 76 0
+ 123 0022 FB68     		ldr	r3, [r7, #12]
+ 124 0024 4FF01102 		mov	r2, #17
+ 125 0028 5A70     		strb	r2, [r3, #1]
+  77:openstack/03a-IPHC/iphc.c ****    
+  78:openstack/03a-IPHC/iphc.c ****    // by default, the "next header" field is carried inline
+  79:openstack/03a-IPHC/iphc.c ****    nh=IPHC_NH_INLINE;
+ 126              		.loc 1 79 0
+ 127 002a 4FF00003 		mov	r3, #0
+ 128 002e 87F86530 		strb	r3, [r7, #101]
+  80:openstack/03a-IPHC/iphc.c ****    
+  81:openstack/03a-IPHC/iphc.c ****    // error checking
+  82:openstack/03a-IPHC/iphc.c ****    if (idmanager_getIsDAGroot()==TRUE &&
+ 129              		.loc 1 82 0
+ 130 0032 FFF7FEFF 		bl	idmanager_getIsDAGroot
+ 131 0036 0346     		mov	r3, r0
+ 132 0038 002B     		cmp	r3, #0
+ 133 003a 18D0     		beq	.L3
+  83:openstack/03a-IPHC/iphc.c ****       packetfunctions_isAllRoutersMulticast(&(msg->l3_destinationAdd))==FALSE) {
+ 134              		.loc 1 83 0 discriminator 1
+ 135 003c FB68     		ldr	r3, [r7, #12]
+ 136 003e 03F11503 		add	r3, r3, #21
+ 137 0042 1846     		mov	r0, r3
+ 138 0044 FFF7FEFF 		bl	packetfunctions_isAllRoutersMulticast
+ 139 0048 0346     		mov	r3, r0
+ 140 004a 83F00103 		eor	r3, r3, #1
+ 141 004e DBB2     		uxtb	r3, r3
+  82:openstack/03a-IPHC/iphc.c ****    if (idmanager_getIsDAGroot()==TRUE &&
+ 142              		.loc 1 82 0 discriminator 1
+ 143 0050 002B     		cmp	r3, #0
+ 144 0052 0CD0     		beq	.L3
+  84:openstack/03a-IPHC/iphc.c ****       openserial_printCritical(COMPONENT_IPHC,ERR_BRIDGE_MISMATCH,
+ 145              		.loc 1 84 0
+ 146 0054 4FF01100 		mov	r0, #17
+ 147 0058 4FF03201 		mov	r1, #50
+ 148 005c 4FF00002 		mov	r2, #0
+ 149 0060 4FF00003 		mov	r3, #0
+ 150 0064 FFF7FEFF 		bl	openserial_printCritical
+  85:openstack/03a-IPHC/iphc.c ****                             (errorparameter_t)0,
+  86:openstack/03a-IPHC/iphc.c ****                             (errorparameter_t)0);
+  87:openstack/03a-IPHC/iphc.c ****       return E_FAIL;
+ 151              		.loc 1 87 0
+ 152 0068 4FF00103 		mov	r3, #1
+ 153 006c 03E1     		b	.L17
+ 154              	.L3:
+  88:openstack/03a-IPHC/iphc.c ****    }
+  89:openstack/03a-IPHC/iphc.c ****    
+  90:openstack/03a-IPHC/iphc.c ****    //discard the packet.. hop limit reached.
+  91:openstack/03a-IPHC/iphc.c ****    if (ipv6_header->hop_limit==0) {
+ 155              		.loc 1 91 0
+ 156 006e BB68     		ldr	r3, [r7, #8]
+ 157 0070 9B7A     		ldrb	r3, [r3, #10]	@ zero_extendqisi2
+ 158 0072 002B     		cmp	r3, #0
+ 159 0074 0CD1     		bne	.L5
+  92:openstack/03a-IPHC/iphc.c ****       openserial_printError(COMPONENT_IPHC,ERR_HOP_LIMIT_REACHED,
+ 160              		.loc 1 92 0
+ 161 0076 4FF01100 		mov	r0, #17
+ 162 007a 4FF01101 		mov	r1, #17
+ 163 007e 4FF00002 		mov	r2, #0
+ 164 0082 4FF00003 		mov	r3, #0
+ 165 0086 FFF7FEFF 		bl	openserial_printError
+  93:openstack/03a-IPHC/iphc.c ****                             (errorparameter_t)0,
+  94:openstack/03a-IPHC/iphc.c ****                             (errorparameter_t)0);
+  95:openstack/03a-IPHC/iphc.c ****      return E_FAIL;
+ 166              		.loc 1 95 0
+ 167 008a 4FF00103 		mov	r3, #1
+ 168 008e F2E0     		b	.L17
+ 169              	.L5:
+  96:openstack/03a-IPHC/iphc.c ****    }
+  97:openstack/03a-IPHC/iphc.c ****    
+  98:openstack/03a-IPHC/iphc.c ****    packetfunctions_ip128bToMac64b(&(msg->l3_destinationAdd),&temp_dest_prefix,&temp_dest_mac64b);
+ 170              		.loc 1 98 0
+ 171 0090 FB68     		ldr	r3, [r7, #12]
+ 172 0092 03F11501 		add	r1, r3, #21
+ 173 0096 07F15002 		add	r2, r7, #80
+ 174 009a 07F13C03 		add	r3, r7, #60
+ 175 009e 0846     		mov	r0, r1
+ 176 00a0 1146     		mov	r1, r2
+ 177 00a2 1A46     		mov	r2, r3
+ 178 00a4 FFF7FEFF 		bl	packetfunctions_ip128bToMac64b
+  99:openstack/03a-IPHC/iphc.c ****    //xv poipoi -- get the src prefix as well
+ 100:openstack/03a-IPHC/iphc.c ****    packetfunctions_ip128bToMac64b(&(msg->l3_sourceAdd),&temp_src_prefix,&temp_src_mac64b);
+ 179              		.loc 1 100 0
+ 180 00a8 FB68     		ldr	r3, [r7, #12]
+ 181 00aa 03F12601 		add	r1, r3, #38
+ 182 00ae 07F12802 		add	r2, r7, #40
+ 183 00b2 07F11403 		add	r3, r7, #20
+ 184 00b6 0846     		mov	r0, r1
+ 185 00b8 1146     		mov	r1, r2
+ 186 00ba 1A46     		mov	r2, r3
+ 187 00bc FFF7FEFF 		bl	packetfunctions_ip128bToMac64b
+ 101:openstack/03a-IPHC/iphc.c ****    //XV -poipoi we want to check if the source address prefix is the same as destination prefix
+ 102:openstack/03a-IPHC/iphc.c ****    if (packetfunctions_sameAddress(&temp_dest_prefix,&temp_src_prefix)) {   
+ 188              		.loc 1 102 0
+ 189 00c0 07F15002 		add	r2, r7, #80
+ 190 00c4 07F12803 		add	r3, r7, #40
+ 191 00c8 1046     		mov	r0, r2
+ 192 00ca 1946     		mov	r1, r3
+ 193 00cc FFF7FEFF 		bl	packetfunctions_sameAddress
+ 194 00d0 0346     		mov	r3, r0
+ 195 00d2 002B     		cmp	r3, #0
+ 196 00d4 41D0     		beq	.L6
+ 103:openstack/03a-IPHC/iphc.c ****    //dest and src on same prefix
+ 104:openstack/03a-IPHC/iphc.c ****       if (neighbors_isStableNeighbor(&(msg->l3_destinationAdd))) {
+ 197              		.loc 1 104 0
+ 198 00d6 FB68     		ldr	r3, [r7, #12]
+ 199 00d8 03F11503 		add	r3, r3, #21
+ 200 00dc 1846     		mov	r0, r3
+ 201 00de FFF7FEFF 		bl	neighbors_isStableNeighbor
+ 202 00e2 0346     		mov	r3, r0
+ 203 00e4 002B     		cmp	r3, #0
+ 204 00e6 29D0     		beq	.L7
+ 105:openstack/03a-IPHC/iphc.c ****          //if direct neighbors, MAC nextHop and IP destination indicate same node
+ 106:openstack/03a-IPHC/iphc.c ****          //the source can be ME or another who I am relaying from. If its me then SAM is elided,
+ 107:openstack/03a-IPHC/iphc.c ****          //if not SAM is 64b address 
+ 108:openstack/03a-IPHC/iphc.c ****         if (fw_SendOrfw_Rcv==PCKTFORWARD){
+ 205              		.loc 1 108 0
+ 206 00e8 97F88030 		ldrb	r3, [r7, #128]	@ zero_extendqisi2
+ 207 00ec 012B     		cmp	r3, #1
+ 208 00ee 07D1     		bne	.L8
+ 109:openstack/03a-IPHC/iphc.c ****             sam = IPHC_SAM_64B;    //case forwarding a packet
+ 209              		.loc 1 109 0
+ 210 00f0 4FF00103 		mov	r3, #1
+ 211 00f4 87F86730 		strb	r3, [r7, #103]
+ 110:openstack/03a-IPHC/iphc.c ****             p_src = &temp_src_mac64b;
+ 212              		.loc 1 110 0
+ 213 00f8 07F11403 		add	r3, r7, #20
+ 214 00fc BB66     		str	r3, [r7, #104]
+ 215 00fe 15E0     		b	.L9
+ 216              	.L8:
+ 111:openstack/03a-IPHC/iphc.c ****             //poipoi xv forcing elided addresses on src routing, this needs to be fixed so any type
+ 112:openstack/03a-IPHC/iphc.c ****         } else if (fw_SendOrfw_Rcv==PCKTSEND){
+ 217              		.loc 1 112 0
+ 218 0100 97F88030 		ldrb	r3, [r7, #128]	@ zero_extendqisi2
+ 219 0104 022B     		cmp	r3, #2
+ 220 0106 07D1     		bne	.L10
+ 113:openstack/03a-IPHC/iphc.c ****             sam = IPHC_SAM_ELIDED;
+ 221              		.loc 1 113 0
+ 222 0108 4FF00303 		mov	r3, #3
+ 223 010c 87F86730 		strb	r3, [r7, #103]
+ 114:openstack/03a-IPHC/iphc.c ****             p_src = NULL;
+ 224              		.loc 1 114 0
+ 225 0110 4FF00003 		mov	r3, #0
+ 226 0114 BB66     		str	r3, [r7, #104]
+ 227 0116 09E0     		b	.L9
+ 228              	.L10:
+ 115:openstack/03a-IPHC/iphc.c ****         } else {
+ 116:openstack/03a-IPHC/iphc.c ****            openserial_printCritical(COMPONENT_IPHC,ERR_INVALID_FWDMODE,
+ 229              		.loc 1 116 0
+ 230 0118 4FF01100 		mov	r0, #17
+ 231 011c 4FF00F01 		mov	r1, #15
+ 232 0120 4FF00002 		mov	r2, #0
+ 233 0124 4FF00003 		mov	r3, #0
+ 234 0128 FFF7FEFF 		bl	openserial_printCritical
+ 235              	.L9:
+ 117:openstack/03a-IPHC/iphc.c ****                             (errorparameter_t)0,
+ 118:openstack/03a-IPHC/iphc.c ****                             (errorparameter_t)0);
+ 119:openstack/03a-IPHC/iphc.c ****         } 
+ 120:openstack/03a-IPHC/iphc.c ****         dam = IPHC_DAM_ELIDED;
+ 236              		.loc 1 120 0
+ 237 012c 4FF00303 		mov	r3, #3
+ 238 0130 87F86630 		strb	r3, [r7, #102]
+ 121:openstack/03a-IPHC/iphc.c ****         p_dest = NULL;     
+ 239              		.loc 1 121 0
+ 240 0134 4FF00003 		mov	r3, #0
+ 241 0138 FB66     		str	r3, [r7, #108]
+ 242 013a 32E0     		b	.L11
+ 243              	.L7:
+ 122:openstack/03a-IPHC/iphc.c ****       } else {
+ 123:openstack/03a-IPHC/iphc.c ****          //else, not a direct neighbour use 64B address
+ 124:openstack/03a-IPHC/iphc.c ****          sam = IPHC_SAM_64B;
+ 244              		.loc 1 124 0
+ 245 013c 4FF00103 		mov	r3, #1
+ 246 0140 87F86730 		strb	r3, [r7, #103]
+ 125:openstack/03a-IPHC/iphc.c ****          dam = IPHC_DAM_64B;
+ 247              		.loc 1 125 0
+ 248 0144 4FF00103 		mov	r3, #1
+ 249 0148 87F86630 		strb	r3, [r7, #102]
+ 126:openstack/03a-IPHC/iphc.c ****          p_dest = &temp_dest_mac64b;      
+ 250              		.loc 1 126 0
+ 251 014c 07F13C03 		add	r3, r7, #60
+ 252 0150 FB66     		str	r3, [r7, #108]
+ 127:openstack/03a-IPHC/iphc.c ****          p_src  = &temp_src_mac64b; 
+ 253              		.loc 1 127 0
+ 254 0152 07F11403 		add	r3, r7, #20
+ 255 0156 BB66     		str	r3, [r7, #104]
+ 256 0158 23E0     		b	.L11
+ 257              	.L6:
+ 128:openstack/03a-IPHC/iphc.c ****       }
+ 129:openstack/03a-IPHC/iphc.c ****    } else {
+ 130:openstack/03a-IPHC/iphc.c ****      //not the same prefix. so the packet travels to another network
+ 131:openstack/03a-IPHC/iphc.c ****      //check if this is a source routing pkt. in case it is then the DAM is elided as it is in the 
+ 132:openstack/03a-IPHC/iphc.c ****      if(ipv6_header->next_header!=IANA_IPv6ROUTE){ 
+ 258              		.loc 1 132 0
+ 259 015a BB68     		ldr	r3, [r7, #8]
+ 260 015c 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 261 015e 2B2B     		cmp	r3, #43
+ 262 0160 10D0     		beq	.L12
+ 133:openstack/03a-IPHC/iphc.c ****       sam = IPHC_SAM_128B;
+ 263              		.loc 1 133 0
+ 264 0162 4FF00003 		mov	r3, #0
+ 265 0166 87F86730 		strb	r3, [r7, #103]
+ 134:openstack/03a-IPHC/iphc.c ****       dam = IPHC_DAM_128B;
+ 266              		.loc 1 134 0
+ 267 016a 4FF00003 		mov	r3, #0
+ 268 016e 87F86630 		strb	r3, [r7, #102]
+ 135:openstack/03a-IPHC/iphc.c ****       p_dest = &(msg->l3_destinationAdd);
+ 269              		.loc 1 135 0
+ 270 0172 FB68     		ldr	r3, [r7, #12]
+ 271 0174 03F11503 		add	r3, r3, #21
+ 272 0178 FB66     		str	r3, [r7, #108]
+ 136:openstack/03a-IPHC/iphc.c ****       p_src = &(msg->l3_sourceAdd);
+ 273              		.loc 1 136 0
+ 274 017a FB68     		ldr	r3, [r7, #12]
+ 275 017c 03F12603 		add	r3, r3, #38
+ 276 0180 BB66     		str	r3, [r7, #104]
+ 277 0182 0EE0     		b	.L11
+ 278              	.L12:
+ 137:openstack/03a-IPHC/iphc.c ****      }else{
+ 138:openstack/03a-IPHC/iphc.c ****        //source routing
+ 139:openstack/03a-IPHC/iphc.c ****       sam = IPHC_SAM_128B;
+ 279              		.loc 1 139 0
+ 280 0184 4FF00003 		mov	r3, #0
+ 281 0188 87F86730 		strb	r3, [r7, #103]
+ 140:openstack/03a-IPHC/iphc.c ****       dam = IPHC_DAM_ELIDED; //poipoi xv not true, should not be elided.
+ 282              		.loc 1 140 0
+ 283 018c 4FF00303 		mov	r3, #3
+ 284 0190 87F86630 		strb	r3, [r7, #102]
+ 141:openstack/03a-IPHC/iphc.c ****       p_dest = NULL;
+ 285              		.loc 1 141 0
+ 286 0194 4FF00003 		mov	r3, #0
+ 287 0198 FB66     		str	r3, [r7, #108]
+ 142:openstack/03a-IPHC/iphc.c ****       p_src = &(msg->l3_sourceAdd);
+ 288              		.loc 1 142 0
+ 289 019a FB68     		ldr	r3, [r7, #12]
+ 290 019c 03F12603 		add	r3, r3, #38
+ 291 01a0 BB66     		str	r3, [r7, #104]
+ 292              	.L11:
+ 143:openstack/03a-IPHC/iphc.c ****      }
+ 144:openstack/03a-IPHC/iphc.c ****    }
+ 145:openstack/03a-IPHC/iphc.c ****    //check if we are forwarding a packet and it comes with the next header compressed. We want to p
+ 146:openstack/03a-IPHC/iphc.c ****    
+ 147:openstack/03a-IPHC/iphc.c ****    if ((fw_SendOrfw_Rcv==PCKTFORWARD) && ipv6_header->next_header_compressed) nh=IPHC_NH_COMPRESSED
+ 293              		.loc 1 147 0
+ 294 01a2 97F88030 		ldrb	r3, [r7, #128]	@ zero_extendqisi2
+ 295 01a6 012B     		cmp	r3, #1
+ 296 01a8 07D1     		bne	.L13
+ 297              		.loc 1 147 0 is_stmt 0 discriminator 1
+ 298 01aa BB68     		ldr	r3, [r7, #8]
+ 299 01ac 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 300 01ae 002B     		cmp	r3, #0
+ 301 01b0 03D0     		beq	.L13
+ 302 01b2 4FF00103 		mov	r3, #1
+ 303 01b6 87F86530 		strb	r3, [r7, #101]
+ 304              	.L13:
+ 148:openstack/03a-IPHC/iphc.c ****    
+ 149:openstack/03a-IPHC/iphc.c ****    // decrement the packet's hop limit
+ 150:openstack/03a-IPHC/iphc.c ****    ipv6_header->hop_limit--;
+ 305              		.loc 1 150 0 is_stmt 1
+ 306 01ba BB68     		ldr	r3, [r7, #8]
+ 307 01bc 9B7A     		ldrb	r3, [r3, #10]	@ zero_extendqisi2
+ 308 01be 03F1FF33 		add	r3, r3, #-1
+ 309 01c2 DAB2     		uxtb	r2, r3
+ 310 01c4 BB68     		ldr	r3, [r7, #8]
+ 311 01c6 9A72     		strb	r2, [r3, #10]
+ 151:openstack/03a-IPHC/iphc.c ****    
+ 152:openstack/03a-IPHC/iphc.c ****    //prepend Option hop by hop header except when src routing and dst is not 0xffff
+ 153:openstack/03a-IPHC/iphc.c ****    //-- this is a little trick as src routing is using an option header set to 0x00
+ 154:openstack/03a-IPHC/iphc.c ****    next_header=msg->l4_protocol;
+ 312              		.loc 1 154 0
+ 313 01c8 FB68     		ldr	r3, [r7, #12]
+ 314 01ca 5B7A     		ldrb	r3, [r3, #9]
+ 315 01cc 87F86330 		strb	r3, [r7, #99]
+ 155:openstack/03a-IPHC/iphc.c ****    #ifndef FLOW_LABEL_RPL_DOMAIN
+ 156:openstack/03a-IPHC/iphc.c ****    if (rpl_option->optionType==RPL_HOPBYHOP_HEADER_OPTION_TYPE 
+ 157:openstack/03a-IPHC/iphc.c ****        && packetfunctions_isBroadcastMulticast(&(msg->l3_destinationAdd))==FALSE
+ 158:openstack/03a-IPHC/iphc.c ****        ){
+ 159:openstack/03a-IPHC/iphc.c ****       iphc_prependIPv6HopByHopHeader(msg, msg->l4_protocol, nh, rpl_option);
+ 160:openstack/03a-IPHC/iphc.c ****       //change nh to point to the newly added header
+ 161:openstack/03a-IPHC/iphc.c ****       next_header=IANA_IPv6HOPOPT;// use 0x00 as NH to indicate option header -- see rfc 2460
+ 162:openstack/03a-IPHC/iphc.c ****    }
+ 163:openstack/03a-IPHC/iphc.c ****    #endif
+ 164:openstack/03a-IPHC/iphc.c ****    //then regular header
+ 165:openstack/03a-IPHC/iphc.c **** 
+ 166:openstack/03a-IPHC/iphc.c **** #ifdef FLOW_LABEL_RPL_DOMAIN
+ 167:openstack/03a-IPHC/iphc.c ****    if(ipv6_header->next_header!=IANA_IPv6ROUTE  && packetfunctions_isBroadcastMulticast(&(msg->l3_d
+ 316              		.loc 1 167 0
+ 317 01d0 BB68     		ldr	r3, [r7, #8]
+ 318 01d2 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 319 01d4 2B2B     		cmp	r3, #43
+ 320 01d6 10D0     		beq	.L14
+ 321              		.loc 1 167 0 is_stmt 0 discriminator 1
+ 322 01d8 FB68     		ldr	r3, [r7, #12]
+ 323 01da 03F11503 		add	r3, r3, #21
+ 324 01de 1846     		mov	r0, r3
+ 325 01e0 FFF7FEFF 		bl	packetfunctions_isBroadcastMulticast
+ 326 01e4 0346     		mov	r3, r0
+ 327 01e6 83F00103 		eor	r3, r3, #1
+ 328 01ea DBB2     		uxtb	r3, r3
+ 329 01ec 002B     		cmp	r3, #0
+ 330 01ee 04D0     		beq	.L14
+ 168:openstack/03a-IPHC/iphc.c **** 	   //only for upstream traffic and not DIOs
+ 169:openstack/03a-IPHC/iphc.c **** 	   tf=IPHC_TF_3B;
+ 331              		.loc 1 169 0 is_stmt 1
+ 332 01f0 4FF00103 		mov	r3, #1
+ 333 01f4 87F86430 		strb	r3, [r7, #100]
+ 334 01f8 03E0     		b	.L15
+ 335              	.L14:
+ 170:openstack/03a-IPHC/iphc.c ****    }else {
+ 171:openstack/03a-IPHC/iphc.c **** 	   tf=IPHC_TF_ELIDED;
+ 336              		.loc 1 171 0
+ 337 01fa 4FF00303 		mov	r3, #3
+ 338 01fe 87F86430 		strb	r3, [r7, #100]
+ 339              	.L15:
+ 172:openstack/03a-IPHC/iphc.c ****    }
+ 173:openstack/03a-IPHC/iphc.c **** #endif
+ 174:openstack/03a-IPHC/iphc.c **** 
+ 175:openstack/03a-IPHC/iphc.c ****    if (iphc_prependIPv6Header(msg,
+ 340              		.loc 1 175 0
+ 341 0202 3B68     		ldr	r3, [r7, #0]
+ 342 0204 1A68     		ldr	r2, [r3, #0]
+ 343 0206 97F86530 		ldrb	r3, [r7, #101]	@ zero_extendqisi2
+ 344 020a 002B     		cmp	r3, #0
+ 345 020c 0CBF     		ite	eq
+ 346 020e 0023     		moveq	r3, #0
+ 347 0210 0123     		movne	r3, #1
+ 348 0212 DBB2     		uxtb	r3, r3
+ 176:openstack/03a-IPHC/iphc.c ****             tf,
+ 177:openstack/03a-IPHC/iphc.c ****             *flow_label, // value_flowlabel
+ 178:openstack/03a-IPHC/iphc.c ****             nh,
+ 179:openstack/03a-IPHC/iphc.c ****             next_header, 
+ 180:openstack/03a-IPHC/iphc.c ****             IPHC_HLIM_INLINE,
+ 181:openstack/03a-IPHC/iphc.c ****             ipv6_header->hop_limit,
+ 349              		.loc 1 181 0
+ 350 0214 B968     		ldr	r1, [r7, #8]
+ 175:openstack/03a-IPHC/iphc.c ****    if (iphc_prependIPv6Header(msg,
+ 351              		.loc 1 175 0
+ 352 0216 887A     		ldrb	r0, [r1, #10]	@ zero_extendqisi2
+ 353 0218 97F86410 		ldrb	r1, [r7, #100]	@ zero_extendqisi2
+ 354 021c 97F86340 		ldrb	r4, [r7, #99]	@ zero_extendqisi2
+ 355 0220 0094     		str	r4, [sp, #0]
+ 356 0222 4FF00004 		mov	r4, #0
+ 357 0226 0194     		str	r4, [sp, #4]
+ 358 0228 0290     		str	r0, [sp, #8]
+ 359 022a 4FF00000 		mov	r0, #0
+ 360 022e 0390     		str	r0, [sp, #12]
+ 361 0230 4FF00000 		mov	r0, #0
+ 362 0234 0490     		str	r0, [sp, #16]
+ 363 0236 97F86700 		ldrb	r0, [r7, #103]	@ zero_extendqisi2
+ 364 023a 0590     		str	r0, [sp, #20]
+ 365 023c 4FF00000 		mov	r0, #0
+ 366 0240 0690     		str	r0, [sp, #24]
+ 367 0242 4FF00000 		mov	r0, #0
+ 368 0246 0790     		str	r0, [sp, #28]
+ 369 0248 97F86600 		ldrb	r0, [r7, #102]	@ zero_extendqisi2
+ 370 024c 0890     		str	r0, [sp, #32]
+ 371 024e F86E     		ldr	r0, [r7, #108]
+ 372 0250 0990     		str	r0, [sp, #36]
+ 373 0252 B86E     		ldr	r0, [r7, #104]
+ 374 0254 0A90     		str	r0, [sp, #40]
+ 375 0256 97F88000 		ldrb	r0, [r7, #128]	@ zero_extendqisi2
+ 376 025a 0B90     		str	r0, [sp, #44]
+ 377 025c F868     		ldr	r0, [r7, #12]
+ 378 025e FFF7FEFF 		bl	iphc_prependIPv6Header
+ 379 0262 0346     		mov	r3, r0
+ 380 0264 012B     		cmp	r3, #1
+ 381 0266 02D1     		bne	.L16
+ 182:openstack/03a-IPHC/iphc.c ****             IPHC_CID_NO,
+ 183:openstack/03a-IPHC/iphc.c ****             IPHC_SAC_STATELESS,
+ 184:openstack/03a-IPHC/iphc.c ****             sam,
+ 185:openstack/03a-IPHC/iphc.c ****             IPHC_M_NO,
+ 186:openstack/03a-IPHC/iphc.c ****             IPHC_DAC_STATELESS,
+ 187:openstack/03a-IPHC/iphc.c ****             dam,
+ 188:openstack/03a-IPHC/iphc.c ****             p_dest,
+ 189:openstack/03a-IPHC/iphc.c ****             p_src,            
+ 190:openstack/03a-IPHC/iphc.c ****             fw_SendOrfw_Rcv  
+ 191:openstack/03a-IPHC/iphc.c ****             )==E_FAIL) {
+ 192:openstack/03a-IPHC/iphc.c ****       return E_FAIL;
+ 382              		.loc 1 192 0
+ 383 0268 4FF00103 		mov	r3, #1
+ 384 026c 03E0     		b	.L17
+ 385              	.L16:
+ 193:openstack/03a-IPHC/iphc.c ****    }
+ 194:openstack/03a-IPHC/iphc.c ****    
+ 195:openstack/03a-IPHC/iphc.c ****    return sixtop_send(msg);
+ 386              		.loc 1 195 0
+ 387 026e F868     		ldr	r0, [r7, #12]
+ 388 0270 FFF7FEFF 		bl	sixtop_send
+ 389 0274 0346     		mov	r3, r0
+ 390              	.L17:
+ 196:openstack/03a-IPHC/iphc.c **** }
+ 391              		.loc 1 196 0
+ 392 0276 1846     		mov	r0, r3
+ 393 0278 07F17407 		add	r7, r7, #116
+ 394 027c BD46     		mov	sp, r7
+ 395 027e 90BD     		pop	{r4, r7, pc}
+ 396              		.cfi_endproc
+ 397              	.LFE1:
+ 399              		.align	2
+ 400              		.global	iphc_sendFromBridge
+ 401              		.thumb
+ 402              		.thumb_func
+ 404              	iphc_sendFromBridge:
+ 405              	.LFB2:
+ 197:openstack/03a-IPHC/iphc.c **** 
+ 198:openstack/03a-IPHC/iphc.c **** //send from bridge: 6LoWPAN header already added by OpenLBR, send as is
+ 199:openstack/03a-IPHC/iphc.c **** owerror_t iphc_sendFromBridge(OpenQueueEntry_t *msg) {
+ 406              		.loc 1 199 0
+ 407              		.cfi_startproc
+ 408              		@ args = 0, pretend = 0, frame = 8
+ 409              		@ frame_needed = 1, uses_anonymous_args = 0
+ 410 0280 80B5     		push	{r7, lr}
+ 411              	.LCFI5:
+ 412              		.cfi_def_cfa_offset 8
+ 413              		.cfi_offset 7, -8
+ 414              		.cfi_offset 14, -4
+ 415 0282 82B0     		sub	sp, sp, #8
+ 416              	.LCFI6:
+ 417              		.cfi_def_cfa_offset 16
+ 418 0284 00AF     		add	r7, sp, #0
+ 419              	.LCFI7:
+ 420              		.cfi_def_cfa_register 7
+ 421 0286 7860     		str	r0, [r7, #4]
+ 200:openstack/03a-IPHC/iphc.c ****    msg->owner = COMPONENT_IPHC;
+ 422              		.loc 1 200 0
+ 423 0288 7B68     		ldr	r3, [r7, #4]
+ 424 028a 4FF01102 		mov	r2, #17
+ 425 028e 5A70     		strb	r2, [r3, #1]
+ 201:openstack/03a-IPHC/iphc.c ****    // error checking
+ 202:openstack/03a-IPHC/iphc.c ****    if (idmanager_getIsDAGroot()==FALSE) {
+ 426              		.loc 1 202 0
+ 427 0290 FFF7FEFF 		bl	idmanager_getIsDAGroot
+ 428 0294 0346     		mov	r3, r0
+ 429 0296 83F00103 		eor	r3, r3, #1
+ 430 029a DBB2     		uxtb	r3, r3
+ 431 029c 002B     		cmp	r3, #0
+ 432 029e 0CD0     		beq	.L19
+ 203:openstack/03a-IPHC/iphc.c ****       openserial_printCritical(COMPONENT_IPHC,ERR_BRIDGE_MISMATCH,
+ 433              		.loc 1 203 0
+ 434 02a0 4FF01100 		mov	r0, #17
+ 435 02a4 4FF03201 		mov	r1, #50
+ 436 02a8 4FF00102 		mov	r2, #1
+ 437 02ac 4FF00003 		mov	r3, #0
+ 438 02b0 FFF7FEFF 		bl	openserial_printCritical
+ 204:openstack/03a-IPHC/iphc.c ****                             (errorparameter_t)1,
+ 205:openstack/03a-IPHC/iphc.c ****                             (errorparameter_t)0);
+ 206:openstack/03a-IPHC/iphc.c ****       return E_FAIL;
+ 439              		.loc 1 206 0
+ 440 02b4 4FF00103 		mov	r3, #1
+ 441 02b8 03E0     		b	.L20
+ 442              	.L19:
+ 207:openstack/03a-IPHC/iphc.c ****    }
+ 208:openstack/03a-IPHC/iphc.c ****    return sixtop_send(msg);
+ 443              		.loc 1 208 0
+ 444 02ba 7868     		ldr	r0, [r7, #4]
+ 445 02bc FFF7FEFF 		bl	sixtop_send
+ 446 02c0 0346     		mov	r3, r0
+ 447              	.L20:
+ 209:openstack/03a-IPHC/iphc.c **** }
+ 448              		.loc 1 209 0
+ 449 02c2 1846     		mov	r0, r3
+ 450 02c4 07F10807 		add	r7, r7, #8
+ 451 02c8 BD46     		mov	sp, r7
+ 452 02ca 80BD     		pop	{r7, pc}
+ 453              		.cfi_endproc
+ 454              	.LFE2:
+ 456              		.align	2
+ 457              		.global	iphc_sendDone
+ 458              		.thumb
+ 459              		.thumb_func
+ 461              	iphc_sendDone:
+ 462              	.LFB3:
+ 210:openstack/03a-IPHC/iphc.c **** 
+ 211:openstack/03a-IPHC/iphc.c **** void iphc_sendDone(OpenQueueEntry_t* msg, owerror_t error) {
+ 463              		.loc 1 211 0
+ 464              		.cfi_startproc
+ 465              		@ args = 0, pretend = 0, frame = 8
+ 466              		@ frame_needed = 1, uses_anonymous_args = 0
+ 467 02cc 80B5     		push	{r7, lr}
+ 468              	.LCFI8:
+ 469              		.cfi_def_cfa_offset 8
+ 470              		.cfi_offset 7, -8
+ 471              		.cfi_offset 14, -4
+ 472 02ce 82B0     		sub	sp, sp, #8
+ 473              	.LCFI9:
+ 474              		.cfi_def_cfa_offset 16
+ 475 02d0 00AF     		add	r7, sp, #0
+ 476              	.LCFI10:
+ 477              		.cfi_def_cfa_register 7
+ 478 02d2 7860     		str	r0, [r7, #4]
+ 479 02d4 0B46     		mov	r3, r1
+ 480 02d6 FB70     		strb	r3, [r7, #3]
+ 212:openstack/03a-IPHC/iphc.c ****    msg->owner = COMPONENT_IPHC;
+ 481              		.loc 1 212 0
+ 482 02d8 7B68     		ldr	r3, [r7, #4]
+ 483 02da 4FF01102 		mov	r2, #17
+ 484 02de 5A70     		strb	r2, [r3, #1]
+ 213:openstack/03a-IPHC/iphc.c ****    if (msg->creator==COMPONENT_OPENBRIDGE) {
+ 485              		.loc 1 213 0
+ 486 02e0 7B68     		ldr	r3, [r7, #4]
+ 487 02e2 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 488 02e4 102B     		cmp	r3, #16
+ 489 02e6 05D1     		bne	.L22
+ 214:openstack/03a-IPHC/iphc.c ****       openbridge_sendDone(msg,error);
+ 490              		.loc 1 214 0
+ 491 02e8 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 492 02ea 7868     		ldr	r0, [r7, #4]
+ 493 02ec 1946     		mov	r1, r3
+ 494 02ee FFF7FEFF 		bl	openbridge_sendDone
+ 495 02f2 04E0     		b	.L21
+ 496              	.L22:
+ 215:openstack/03a-IPHC/iphc.c ****    } else {
+ 216:openstack/03a-IPHC/iphc.c ****       forwarding_sendDone(msg,error);
+ 497              		.loc 1 216 0
+ 498 02f4 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 499 02f6 7868     		ldr	r0, [r7, #4]
+ 500 02f8 1946     		mov	r1, r3
+ 501 02fa FFF7FEFF 		bl	forwarding_sendDone
+ 502              	.L21:
+ 217:openstack/03a-IPHC/iphc.c ****    }
+ 218:openstack/03a-IPHC/iphc.c **** }
+ 503              		.loc 1 218 0
+ 504 02fe 07F10807 		add	r7, r7, #8
+ 505 0302 BD46     		mov	sp, r7
+ 506 0304 80BD     		pop	{r7, pc}
+ 507              		.cfi_endproc
+ 508              	.LFE3:
+ 510 0306 00BF     		.align	2
+ 511              		.global	iphc_receive
+ 512              		.thumb
+ 513              		.thumb_func
+ 515              	iphc_receive:
+ 516              	.LFB4:
+ 219:openstack/03a-IPHC/iphc.c **** 
+ 220:openstack/03a-IPHC/iphc.c **** void iphc_receive(OpenQueueEntry_t* msg) {
+ 517              		.loc 1 220 0
+ 518              		.cfi_startproc
+ 519              		@ args = 0, pretend = 0, frame = 72
+ 520              		@ frame_needed = 1, uses_anonymous_args = 0
+ 521 0308 80B5     		push	{r7, lr}
+ 522              	.LCFI11:
+ 523              		.cfi_def_cfa_offset 8
+ 524              		.cfi_offset 7, -8
+ 525              		.cfi_offset 14, -4
+ 526 030a 92B0     		sub	sp, sp, #72
+ 527              	.LCFI12:
+ 528              		.cfi_def_cfa_offset 80
+ 529 030c 00AF     		add	r7, sp, #0
+ 530              	.LCFI13:
+ 531              		.cfi_def_cfa_register 7
+ 532 030e 7860     		str	r0, [r7, #4]
+ 221:openstack/03a-IPHC/iphc.c ****    ipv6_header_iht      ipv6_header;
+ 222:openstack/03a-IPHC/iphc.c ****    ipv6_hopbyhop_iht    ipv6_hop_header;
+ 223:openstack/03a-IPHC/iphc.c ****    rpl_option_ht        rpl_option;
+ 224:openstack/03a-IPHC/iphc.c ****    
+ 225:openstack/03a-IPHC/iphc.c ****    msg->owner      = COMPONENT_IPHC;
+ 533              		.loc 1 225 0
+ 534 0310 7B68     		ldr	r3, [r7, #4]
+ 535 0312 4FF01102 		mov	r2, #17
+ 536 0316 5A70     		strb	r2, [r3, #1]
+ 226:openstack/03a-IPHC/iphc.c ****    
+ 227:openstack/03a-IPHC/iphc.c ****    // then regular header
+ 228:openstack/03a-IPHC/iphc.c ****    iphc_retrieveIPv6Header(msg,&ipv6_header);
+ 537              		.loc 1 228 0
+ 538 0318 07F11803 		add	r3, r7, #24
+ 539 031c 7868     		ldr	r0, [r7, #4]
+ 540 031e 1946     		mov	r1, r3
+ 541 0320 FFF7FEFF 		bl	iphc_retrieveIPv6Header
+ 229:openstack/03a-IPHC/iphc.c ****    
+ 230:openstack/03a-IPHC/iphc.c ****    if (idmanager_getIsDAGroot()==FALSE ||
+ 542              		.loc 1 230 0
+ 543 0324 FFF7FEFF 		bl	idmanager_getIsDAGroot
+ 544 0328 0346     		mov	r3, r0
+ 545 032a 83F00103 		eor	r3, r3, #1
+ 546 032e DBB2     		uxtb	r3, r3
+ 547 0330 002B     		cmp	r3, #0
+ 548 0332 09D1     		bne	.L25
+ 231:openstack/03a-IPHC/iphc.c ****       packetfunctions_isBroadcastMulticast(&(ipv6_header.dest))) {
+ 549              		.loc 1 231 0 discriminator 1
+ 550 0334 07F11803 		add	r3, r7, #24
+ 551 0338 03F11C03 		add	r3, r3, #28
+ 552 033c 1846     		mov	r0, r3
+ 553 033e FFF7FEFF 		bl	packetfunctions_isBroadcastMulticast
+ 554 0342 0346     		mov	r3, r0
+ 230:openstack/03a-IPHC/iphc.c ****    if (idmanager_getIsDAGroot()==FALSE ||
+ 555              		.loc 1 230 0 discriminator 1
+ 556 0344 002B     		cmp	r3, #0
+ 557 0346 24D0     		beq	.L26
+ 558              	.L25:
+ 232:openstack/03a-IPHC/iphc.c ****       packetfunctions_tossHeader(msg,ipv6_header.header_length);
+ 559              		.loc 1 232 0
+ 560 0348 97F84530 		ldrb	r3, [r7, #69]	@ zero_extendqisi2
+ 561 034c 7868     		ldr	r0, [r7, #4]
+ 562 034e 1946     		mov	r1, r3
+ 563 0350 FFF7FEFF 		bl	packetfunctions_tossHeader
+ 233:openstack/03a-IPHC/iphc.c ****       
+ 234:openstack/03a-IPHC/iphc.c ****       if (ipv6_header.next_header==IANA_IPv6HOPOPT) {
+ 564              		.loc 1 234 0
+ 565 0354 97F82130 		ldrb	r3, [r7, #33]	@ zero_extendqisi2
+ 566 0358 002B     		cmp	r3, #0
+ 567 035a 10D1     		bne	.L27
+ 235:openstack/03a-IPHC/iphc.c ****          
+ 236:openstack/03a-IPHC/iphc.c ****          // retrieve hop-by-hop header (includes RPL option)
+ 237:openstack/03a-IPHC/iphc.c ****          iphc_retrieveIPv6HopByHopHeader(
+ 568              		.loc 1 237 0
+ 569 035c 07F11002 		add	r2, r7, #16
+ 570 0360 07F10803 		add	r3, r7, #8
+ 571 0364 7868     		ldr	r0, [r7, #4]
+ 572 0366 1146     		mov	r1, r2
+ 573 0368 1A46     		mov	r2, r3
+ 574 036a FFF7FEFF 		bl	iphc_retrieveIPv6HopByHopHeader
+ 238:openstack/03a-IPHC/iphc.c ****             msg,
+ 239:openstack/03a-IPHC/iphc.c ****             &ipv6_hop_header,
+ 240:openstack/03a-IPHC/iphc.c ****             &rpl_option
+ 241:openstack/03a-IPHC/iphc.c ****          );
+ 242:openstack/03a-IPHC/iphc.c ****          
+ 243:openstack/03a-IPHC/iphc.c ****          // toss the headers
+ 244:openstack/03a-IPHC/iphc.c ****          packetfunctions_tossHeader(
+ 245:openstack/03a-IPHC/iphc.c ****             msg,
+ 246:openstack/03a-IPHC/iphc.c ****             IPv6HOP_HDR_LEN+ipv6_hop_header.HdrExtLen
+ 575              		.loc 1 246 0
+ 576 036e 3B7D     		ldrb	r3, [r7, #20]	@ zero_extendqisi2
+ 244:openstack/03a-IPHC/iphc.c ****          packetfunctions_tossHeader(
+ 577              		.loc 1 244 0
+ 578 0370 03F10303 		add	r3, r3, #3
+ 579 0374 DBB2     		uxtb	r3, r3
+ 580 0376 7868     		ldr	r0, [r7, #4]
+ 581 0378 1946     		mov	r1, r3
+ 582 037a FFF7FEFF 		bl	packetfunctions_tossHeader
+ 583              	.L27:
+ 247:openstack/03a-IPHC/iphc.c ****          );
+ 248:openstack/03a-IPHC/iphc.c ****       }
+ 249:openstack/03a-IPHC/iphc.c ****       
+ 250:openstack/03a-IPHC/iphc.c ****       // send up the stack
+ 251:openstack/03a-IPHC/iphc.c ****       forwarding_receive(
+ 584              		.loc 1 251 0
+ 585 037e 07F11801 		add	r1, r7, #24
+ 586 0382 07F11002 		add	r2, r7, #16
+ 587 0386 07F10803 		add	r3, r7, #8
+ 588 038a 7868     		ldr	r0, [r7, #4]
+ 589 038c FFF7FEFF 		bl	forwarding_receive
+ 590 0390 02E0     		b	.L24
+ 591              	.L26:
+ 252:openstack/03a-IPHC/iphc.c ****          msg,
+ 253:openstack/03a-IPHC/iphc.c ****          &ipv6_header,
+ 254:openstack/03a-IPHC/iphc.c ****          &ipv6_hop_header,
+ 255:openstack/03a-IPHC/iphc.c ****          &rpl_option
+ 256:openstack/03a-IPHC/iphc.c ****       );
+ 257:openstack/03a-IPHC/iphc.c ****    } else {
+ 258:openstack/03a-IPHC/iphc.c ****       openbridge_receive(msg);                   //out to the OpenVisualizer
+ 592              		.loc 1 258 0
+ 593 0392 7868     		ldr	r0, [r7, #4]
+ 594 0394 FFF7FEFF 		bl	openbridge_receive
+ 595              	.L24:
+ 259:openstack/03a-IPHC/iphc.c ****    }
+ 260:openstack/03a-IPHC/iphc.c **** }
+ 596              		.loc 1 260 0
+ 597 0398 07F14807 		add	r7, r7, #72
+ 598 039c BD46     		mov	sp, r7
+ 599 039e 80BD     		pop	{r7, pc}
+ 600              		.cfi_endproc
+ 601              	.LFE4:
+ 603              		.align	2
+ 604              		.global	iphc_prependIPv6Header
+ 605              		.thumb
+ 606              		.thumb_func
+ 608              	iphc_prependIPv6Header:
+ 609              	.LFB5:
+ 261:openstack/03a-IPHC/iphc.c **** 
+ 262:openstack/03a-IPHC/iphc.c **** //=========================== private =========================================
+ 263:openstack/03a-IPHC/iphc.c **** 
+ 264:openstack/03a-IPHC/iphc.c **** //===== IPv6 header
+ 265:openstack/03a-IPHC/iphc.c **** 
+ 266:openstack/03a-IPHC/iphc.c **** /**
+ 267:openstack/03a-IPHC/iphc.c **** \brief Prepend an IPv6 header to a message.
+ 268:openstack/03a-IPHC/iphc.c **** */
+ 269:openstack/03a-IPHC/iphc.c **** owerror_t iphc_prependIPv6Header(
+ 270:openstack/03a-IPHC/iphc.c ****       OpenQueueEntry_t* msg,
+ 271:openstack/03a-IPHC/iphc.c ****       uint8_t           tf,
+ 272:openstack/03a-IPHC/iphc.c ****       uint32_t          value_flowLabel,
+ 273:openstack/03a-IPHC/iphc.c ****       bool              nh,
+ 274:openstack/03a-IPHC/iphc.c ****       uint8_t           value_nextHeader,
+ 275:openstack/03a-IPHC/iphc.c ****       uint8_t           hlim,
+ 276:openstack/03a-IPHC/iphc.c ****       uint8_t           value_hopLimit,
+ 277:openstack/03a-IPHC/iphc.c ****       bool              cid,
+ 278:openstack/03a-IPHC/iphc.c ****       bool              sac,
+ 279:openstack/03a-IPHC/iphc.c ****       uint8_t           sam,
+ 280:openstack/03a-IPHC/iphc.c ****       bool              m,
+ 281:openstack/03a-IPHC/iphc.c ****       bool              dac,
+ 282:openstack/03a-IPHC/iphc.c ****       uint8_t           dam,
+ 283:openstack/03a-IPHC/iphc.c ****       open_addr_t*      value_dest,
+ 284:openstack/03a-IPHC/iphc.c ****       open_addr_t*      value_src,
+ 285:openstack/03a-IPHC/iphc.c ****       uint8_t           fw_SendOrfw_Rcv
+ 286:openstack/03a-IPHC/iphc.c ****    ) {
+ 610              		.loc 1 286 0
+ 611              		.cfi_startproc
+ 612              		@ args = 48, pretend = 0, frame = 24
+ 613              		@ frame_needed = 1, uses_anonymous_args = 0
+ 614 03a0 80B5     		push	{r7, lr}
+ 615              	.LCFI14:
+ 616              		.cfi_def_cfa_offset 8
+ 617              		.cfi_offset 7, -8
+ 618              		.cfi_offset 14, -4
+ 619 03a2 86B0     		sub	sp, sp, #24
+ 620              	.LCFI15:
+ 621              		.cfi_def_cfa_offset 32
+ 622 03a4 00AF     		add	r7, sp, #0
+ 623              	.LCFI16:
+ 624              		.cfi_def_cfa_register 7
+ 625 03a6 F860     		str	r0, [r7, #12]
+ 626 03a8 7A60     		str	r2, [r7, #4]
+ 627 03aa 0A46     		mov	r2, r1
+ 628 03ac FA72     		strb	r2, [r7, #11]
+ 629 03ae BB72     		strb	r3, [r7, #10]
+ 287:openstack/03a-IPHC/iphc.c ****    
+ 288:openstack/03a-IPHC/iphc.c ****    uint8_t temp_8b;
+ 289:openstack/03a-IPHC/iphc.c ****    
+ 290:openstack/03a-IPHC/iphc.c ****    // destination address
+ 291:openstack/03a-IPHC/iphc.c ****    switch (dam) {
+ 630              		.loc 1 291 0
+ 631 03b0 97F84030 		ldrb	r3, [r7, #64]	@ zero_extendqisi2
+ 632 03b4 032B     		cmp	r3, #3
+ 633 03b6 56D8     		bhi	.L30
+ 634 03b8 01A2     		adr	r2, .L35
+ 635 03ba 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 636 03be 00BF     		.align	2
+ 637              	.L35:
+ 638 03c0 35040000 		.word	.L31+1
+ 639 03c4 03040000 		.word	.L32+1
+ 640 03c8 D1030000 		.word	.L33+1
+ 641 03cc 83040000 		.word	.L72+1
+ 642              	.L33:
+ 292:openstack/03a-IPHC/iphc.c ****       case IPHC_DAM_ELIDED:
+ 293:openstack/03a-IPHC/iphc.c ****          break;
+ 294:openstack/03a-IPHC/iphc.c ****       case IPHC_DAM_16B:
+ 295:openstack/03a-IPHC/iphc.c ****          if (value_dest->type!=ADDR_16B) {
+ 643              		.loc 1 295 0
+ 644 03d0 7B6C     		ldr	r3, [r7, #68]
+ 645 03d2 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 646 03d4 012B     		cmp	r3, #1
+ 647 03d6 0DD0     		beq	.L37
+ 296:openstack/03a-IPHC/iphc.c ****             openserial_printCritical(
+ 297:openstack/03a-IPHC/iphc.c ****                COMPONENT_IPHC,
+ 298:openstack/03a-IPHC/iphc.c ****                ERR_WRONG_ADDR_TYPE,
+ 299:openstack/03a-IPHC/iphc.c ****                (errorparameter_t)value_dest->type,
+ 648              		.loc 1 299 0
+ 649 03d8 7B6C     		ldr	r3, [r7, #68]
+ 650 03da 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 296:openstack/03a-IPHC/iphc.c ****             openserial_printCritical(
+ 651              		.loc 1 296 0
+ 652 03dc 4FF01100 		mov	r0, #17
+ 653 03e0 4FF03101 		mov	r1, #49
+ 654 03e4 1A46     		mov	r2, r3
+ 655 03e6 4FF00003 		mov	r3, #0
+ 656 03ea FFF7FEFF 		bl	openserial_printCritical
+ 300:openstack/03a-IPHC/iphc.c ****                (errorparameter_t)0
+ 301:openstack/03a-IPHC/iphc.c ****             );
+ 302:openstack/03a-IPHC/iphc.c ****             return E_FAIL;
+ 657              		.loc 1 302 0
+ 658 03ee 4FF00103 		mov	r3, #1
+ 659 03f2 DEE1     		b	.L38
+ 660              	.L37:
+ 303:openstack/03a-IPHC/iphc.c ****          };
+ 304:openstack/03a-IPHC/iphc.c ****          packetfunctions_writeAddress(msg,value_dest,OW_BIG_ENDIAN);
+ 661              		.loc 1 304 0
+ 662 03f4 F868     		ldr	r0, [r7, #12]
+ 663 03f6 796C     		ldr	r1, [r7, #68]
+ 664 03f8 4FF00002 		mov	r2, #0
+ 665 03fc FFF7FEFF 		bl	packetfunctions_writeAddress
+ 305:openstack/03a-IPHC/iphc.c ****          break;
+ 666              		.loc 1 305 0
+ 667 0400 40E0     		b	.L36
+ 668              	.L32:
+ 306:openstack/03a-IPHC/iphc.c ****       case IPHC_DAM_64B:
+ 307:openstack/03a-IPHC/iphc.c ****          if (value_dest->type!=ADDR_64B) {
+ 669              		.loc 1 307 0
+ 670 0402 7B6C     		ldr	r3, [r7, #68]
+ 671 0404 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 672 0406 022B     		cmp	r3, #2
+ 673 0408 0DD0     		beq	.L39
+ 308:openstack/03a-IPHC/iphc.c ****             openserial_printCritical(
+ 309:openstack/03a-IPHC/iphc.c ****                COMPONENT_IPHC,
+ 310:openstack/03a-IPHC/iphc.c ****                ERR_WRONG_ADDR_TYPE,
+ 311:openstack/03a-IPHC/iphc.c ****                (errorparameter_t)value_dest->type,
+ 674              		.loc 1 311 0
+ 675 040a 7B6C     		ldr	r3, [r7, #68]
+ 676 040c 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 308:openstack/03a-IPHC/iphc.c ****             openserial_printCritical(
+ 677              		.loc 1 308 0
+ 678 040e 4FF01100 		mov	r0, #17
+ 679 0412 4FF03101 		mov	r1, #49
+ 680 0416 1A46     		mov	r2, r3
+ 681 0418 4FF00103 		mov	r3, #1
+ 682 041c FFF7FEFF 		bl	openserial_printCritical
+ 312:openstack/03a-IPHC/iphc.c ****                (errorparameter_t)1
+ 313:openstack/03a-IPHC/iphc.c ****             );
+ 314:openstack/03a-IPHC/iphc.c ****             return E_FAIL;
+ 683              		.loc 1 314 0
+ 684 0420 4FF00103 		mov	r3, #1
+ 685 0424 C5E1     		b	.L38
+ 686              	.L39:
+ 315:openstack/03a-IPHC/iphc.c ****          };
+ 316:openstack/03a-IPHC/iphc.c ****          packetfunctions_writeAddress(msg,value_dest,OW_BIG_ENDIAN);
+ 687              		.loc 1 316 0
+ 688 0426 F868     		ldr	r0, [r7, #12]
+ 689 0428 796C     		ldr	r1, [r7, #68]
+ 690 042a 4FF00002 		mov	r2, #0
+ 691 042e FFF7FEFF 		bl	packetfunctions_writeAddress
+ 317:openstack/03a-IPHC/iphc.c ****          break;
+ 692              		.loc 1 317 0
+ 693 0432 27E0     		b	.L36
+ 694              	.L31:
+ 318:openstack/03a-IPHC/iphc.c ****       case IPHC_DAM_128B:
+ 319:openstack/03a-IPHC/iphc.c ****          if (value_dest->type!=ADDR_128B) {
+ 695              		.loc 1 319 0
+ 696 0434 7B6C     		ldr	r3, [r7, #68]
+ 697 0436 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 698 0438 032B     		cmp	r3, #3
+ 699 043a 0DD0     		beq	.L40
+ 320:openstack/03a-IPHC/iphc.c ****             openserial_printCritical(
+ 321:openstack/03a-IPHC/iphc.c ****                COMPONENT_IPHC,
+ 322:openstack/03a-IPHC/iphc.c ****                ERR_WRONG_ADDR_TYPE,
+ 323:openstack/03a-IPHC/iphc.c ****                (errorparameter_t)value_dest->type,
+ 700              		.loc 1 323 0
+ 701 043c 7B6C     		ldr	r3, [r7, #68]
+ 702 043e 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 320:openstack/03a-IPHC/iphc.c ****             openserial_printCritical(
+ 703              		.loc 1 320 0
+ 704 0440 4FF01100 		mov	r0, #17
+ 705 0444 4FF03101 		mov	r1, #49
+ 706 0448 1A46     		mov	r2, r3
+ 707 044a 4FF00203 		mov	r3, #2
+ 708 044e FFF7FEFF 		bl	openserial_printCritical
+ 324:openstack/03a-IPHC/iphc.c ****                (errorparameter_t)2
+ 325:openstack/03a-IPHC/iphc.c ****             );
+ 326:openstack/03a-IPHC/iphc.c ****             return E_FAIL;
+ 709              		.loc 1 326 0
+ 710 0452 4FF00103 		mov	r3, #1
+ 711 0456 ACE1     		b	.L38
+ 712              	.L40:
+ 327:openstack/03a-IPHC/iphc.c ****          };
+ 328:openstack/03a-IPHC/iphc.c ****          packetfunctions_writeAddress(msg,value_dest,OW_BIG_ENDIAN);
+ 713              		.loc 1 328 0
+ 714 0458 F868     		ldr	r0, [r7, #12]
+ 715 045a 796C     		ldr	r1, [r7, #68]
+ 716 045c 4FF00002 		mov	r2, #0
+ 717 0460 FFF7FEFF 		bl	packetfunctions_writeAddress
+ 329:openstack/03a-IPHC/iphc.c ****          break;
+ 718              		.loc 1 329 0
+ 719 0464 0EE0     		b	.L36
+ 720              	.L30:
+ 330:openstack/03a-IPHC/iphc.c ****       default:
+ 331:openstack/03a-IPHC/iphc.c ****          openserial_printCritical(
+ 721              		.loc 1 331 0
+ 722 0466 97F84030 		ldrb	r3, [r7, #64]	@ zero_extendqisi2
+ 723 046a 9BB2     		uxth	r3, r3
+ 724 046c 4FF01100 		mov	r0, #17
+ 725 0470 4FF00C01 		mov	r1, #12
+ 726 0474 4FF00002 		mov	r2, #0
+ 727 0478 FFF7FEFF 		bl	openserial_printCritical
+ 332:openstack/03a-IPHC/iphc.c ****             COMPONENT_IPHC,
+ 333:openstack/03a-IPHC/iphc.c ****             ERR_6LOWPAN_UNSUPPORTED,
+ 334:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)0,
+ 335:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)dam
+ 336:openstack/03a-IPHC/iphc.c ****          );
+ 337:openstack/03a-IPHC/iphc.c ****          return E_FAIL;
+ 728              		.loc 1 337 0
+ 729 047c 4FF00103 		mov	r3, #1
+ 730 0480 97E1     		b	.L38
+ 731              	.L72:
+ 293:openstack/03a-IPHC/iphc.c ****          break;
+ 732              		.loc 1 293 0
+ 733 0482 00BF     		nop
+ 734              	.L36:
+ 338:openstack/03a-IPHC/iphc.c ****    }
+ 339:openstack/03a-IPHC/iphc.c ****    
+ 340:openstack/03a-IPHC/iphc.c ****    // source address
+ 341:openstack/03a-IPHC/iphc.c ****    switch (sam) {
+ 735              		.loc 1 341 0
+ 736 0484 97F83430 		ldrb	r3, [r7, #52]	@ zero_extendqisi2
+ 737 0488 032B     		cmp	r3, #3
+ 738 048a 00F29B80 		bhi	.L41
+ 739 048e 01A2     		adr	r2, .L46
+ 740 0490 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 741              		.align	2
+ 742              	.L46:
+ 743 0494 57050000 		.word	.L42+1
+ 744 0498 FF040000 		.word	.L43+1
+ 745 049c A5040000 		.word	.L44+1
+ 746 04a0 E1050000 		.word	.L73+1
+ 747              	.L44:
+ 342:openstack/03a-IPHC/iphc.c ****       case IPHC_SAM_ELIDED:
+ 343:openstack/03a-IPHC/iphc.c ****          break;
+ 344:openstack/03a-IPHC/iphc.c ****       case IPHC_SAM_16B:
+ 345:openstack/03a-IPHC/iphc.c ****          if(fw_SendOrfw_Rcv==PCKTSEND) {
+ 748              		.loc 1 345 0
+ 749 04a4 97F84C30 		ldrb	r3, [r7, #76]	@ zero_extendqisi2
+ 750 04a8 022B     		cmp	r3, #2
+ 751 04aa 0AD1     		bne	.L48
+ 346:openstack/03a-IPHC/iphc.c ****             packetfunctions_writeAddress(msg, (idmanager_getMyID(ADDR_16B)),OW_BIG_ENDIAN);
+ 752              		.loc 1 346 0
+ 753 04ac 4FF00100 		mov	r0, #1
+ 754 04b0 FFF7FEFF 		bl	idmanager_getMyID
+ 755 04b4 0346     		mov	r3, r0
+ 756 04b6 F868     		ldr	r0, [r7, #12]
+ 757 04b8 1946     		mov	r1, r3
+ 758 04ba 4FF00002 		mov	r2, #0
+ 759 04be FFF7FEFF 		bl	packetfunctions_writeAddress
+ 760              	.L48:
+ 347:openstack/03a-IPHC/iphc.c ****          }
+ 348:openstack/03a-IPHC/iphc.c ****          if(fw_SendOrfw_Rcv==PCKTFORWARD) {
+ 761              		.loc 1 348 0
+ 762 04c2 97F84C30 		ldrb	r3, [r7, #76]	@ zero_extendqisi2
+ 763 04c6 012B     		cmp	r3, #1
+ 764 04c8 40F08C80 		bne	.L74
+ 349:openstack/03a-IPHC/iphc.c ****             if (value_src->type!=ADDR_16B) {
+ 765              		.loc 1 349 0
+ 766 04cc BB6C     		ldr	r3, [r7, #72]
+ 767 04ce 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 768 04d0 012B     		cmp	r3, #1
+ 769 04d2 0DD0     		beq	.L50
+ 350:openstack/03a-IPHC/iphc.c ****                openserial_printCritical(
+ 351:openstack/03a-IPHC/iphc.c ****                   COMPONENT_IPHC,
+ 352:openstack/03a-IPHC/iphc.c ****                   ERR_WRONG_ADDR_TYPE,
+ 353:openstack/03a-IPHC/iphc.c ****                   (errorparameter_t)value_src->type,
+ 770              		.loc 1 353 0
+ 771 04d4 BB6C     		ldr	r3, [r7, #72]
+ 772 04d6 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 350:openstack/03a-IPHC/iphc.c ****                openserial_printCritical(
+ 773              		.loc 1 350 0
+ 774 04d8 4FF01100 		mov	r0, #17
+ 775 04dc 4FF03101 		mov	r1, #49
+ 776 04e0 1A46     		mov	r2, r3
+ 777 04e2 4FF00003 		mov	r3, #0
+ 778 04e6 FFF7FEFF 		bl	openserial_printCritical
+ 354:openstack/03a-IPHC/iphc.c ****                   (errorparameter_t)0
+ 355:openstack/03a-IPHC/iphc.c ****                );
+ 356:openstack/03a-IPHC/iphc.c ****                return E_FAIL;
+ 779              		.loc 1 356 0
+ 780 04ea 4FF00103 		mov	r3, #1
+ 781 04ee 60E1     		b	.L38
+ 782              	.L50:
+ 357:openstack/03a-IPHC/iphc.c ****             } 
+ 358:openstack/03a-IPHC/iphc.c ****             packetfunctions_writeAddress(msg,value_src,OW_BIG_ENDIAN);
+ 783              		.loc 1 358 0
+ 784 04f0 F868     		ldr	r0, [r7, #12]
+ 785 04f2 B96C     		ldr	r1, [r7, #72]
+ 786 04f4 4FF00002 		mov	r2, #0
+ 787 04f8 FFF7FEFF 		bl	packetfunctions_writeAddress
+ 359:openstack/03a-IPHC/iphc.c ****          }
+ 360:openstack/03a-IPHC/iphc.c ****          break;
+ 788              		.loc 1 360 0
+ 789 04fc 72E0     		b	.L74
+ 790              	.L43:
+ 361:openstack/03a-IPHC/iphc.c ****       case IPHC_SAM_64B:
+ 362:openstack/03a-IPHC/iphc.c ****          if(fw_SendOrfw_Rcv==PCKTSEND) {
+ 791              		.loc 1 362 0
+ 792 04fe 97F84C30 		ldrb	r3, [r7, #76]	@ zero_extendqisi2
+ 793 0502 022B     		cmp	r3, #2
+ 794 0504 0AD1     		bne	.L51
+ 363:openstack/03a-IPHC/iphc.c ****             packetfunctions_writeAddress(msg, (idmanager_getMyID(ADDR_64B)),OW_BIG_ENDIAN);
+ 795              		.loc 1 363 0
+ 796 0506 4FF00200 		mov	r0, #2
+ 797 050a FFF7FEFF 		bl	idmanager_getMyID
+ 798 050e 0346     		mov	r3, r0
+ 799 0510 F868     		ldr	r0, [r7, #12]
+ 800 0512 1946     		mov	r1, r3
+ 801 0514 4FF00002 		mov	r2, #0
+ 802 0518 FFF7FEFF 		bl	packetfunctions_writeAddress
+ 803              	.L51:
+ 364:openstack/03a-IPHC/iphc.c ****          }
+ 365:openstack/03a-IPHC/iphc.c ****          if(fw_SendOrfw_Rcv==PCKTFORWARD) {
+ 804              		.loc 1 365 0
+ 805 051c 97F84C30 		ldrb	r3, [r7, #76]	@ zero_extendqisi2
+ 806 0520 012B     		cmp	r3, #1
+ 807 0522 61D1     		bne	.L75
+ 366:openstack/03a-IPHC/iphc.c ****             if (value_src->type!=ADDR_64B) {
+ 808              		.loc 1 366 0
+ 809 0524 BB6C     		ldr	r3, [r7, #72]
+ 810 0526 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 811 0528 022B     		cmp	r3, #2
+ 812 052a 0DD0     		beq	.L53
+ 367:openstack/03a-IPHC/iphc.c ****                openserial_printCritical(
+ 368:openstack/03a-IPHC/iphc.c ****                   COMPONENT_IPHC,
+ 369:openstack/03a-IPHC/iphc.c ****                   ERR_WRONG_ADDR_TYPE,
+ 370:openstack/03a-IPHC/iphc.c ****                   (errorparameter_t)value_src->type,
+ 813              		.loc 1 370 0
+ 814 052c BB6C     		ldr	r3, [r7, #72]
+ 815 052e 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 367:openstack/03a-IPHC/iphc.c ****                openserial_printCritical(
+ 816              		.loc 1 367 0
+ 817 0530 4FF01100 		mov	r0, #17
+ 818 0534 4FF03101 		mov	r1, #49
+ 819 0538 1A46     		mov	r2, r3
+ 820 053a 4FF00103 		mov	r3, #1
+ 821 053e FFF7FEFF 		bl	openserial_printCritical
+ 371:openstack/03a-IPHC/iphc.c ****                   (errorparameter_t)1
+ 372:openstack/03a-IPHC/iphc.c ****                );
+ 373:openstack/03a-IPHC/iphc.c ****                return E_FAIL;
+ 822              		.loc 1 373 0
+ 823 0542 4FF00103 		mov	r3, #1
+ 824 0546 34E1     		b	.L38
+ 825              	.L53:
+ 374:openstack/03a-IPHC/iphc.c ****             }      
+ 375:openstack/03a-IPHC/iphc.c ****             packetfunctions_writeAddress(msg, value_src,OW_BIG_ENDIAN);
+ 826              		.loc 1 375 0
+ 827 0548 F868     		ldr	r0, [r7, #12]
+ 828 054a B96C     		ldr	r1, [r7, #72]
+ 829 054c 4FF00002 		mov	r2, #0
+ 830 0550 FFF7FEFF 		bl	packetfunctions_writeAddress
+ 376:openstack/03a-IPHC/iphc.c ****          }
+ 377:openstack/03a-IPHC/iphc.c ****          break;
+ 831              		.loc 1 377 0
+ 832 0554 48E0     		b	.L75
+ 833              	.L42:
+ 378:openstack/03a-IPHC/iphc.c ****       case IPHC_SAM_128B:
+ 379:openstack/03a-IPHC/iphc.c ****          if(fw_SendOrfw_Rcv==PCKTSEND) {
+ 834              		.loc 1 379 0
+ 835 0556 97F84C30 		ldrb	r3, [r7, #76]	@ zero_extendqisi2
+ 836 055a 022B     		cmp	r3, #2
+ 837 055c 15D1     		bne	.L54
+ 380:openstack/03a-IPHC/iphc.c ****             packetfunctions_writeAddress(msg, (idmanager_getMyID(ADDR_64B)),OW_BIG_ENDIAN);
+ 838              		.loc 1 380 0
+ 839 055e 4FF00200 		mov	r0, #2
+ 840 0562 FFF7FEFF 		bl	idmanager_getMyID
+ 841 0566 0346     		mov	r3, r0
+ 842 0568 F868     		ldr	r0, [r7, #12]
+ 843 056a 1946     		mov	r1, r3
+ 844 056c 4FF00002 		mov	r2, #0
+ 845 0570 FFF7FEFF 		bl	packetfunctions_writeAddress
+ 381:openstack/03a-IPHC/iphc.c ****             packetfunctions_writeAddress(msg, (idmanager_getMyID(ADDR_PREFIX)),OW_BIG_ENDIAN);
+ 846              		.loc 1 381 0
+ 847 0574 4FF00500 		mov	r0, #5
+ 848 0578 FFF7FEFF 		bl	idmanager_getMyID
+ 849 057c 0346     		mov	r3, r0
+ 850 057e F868     		ldr	r0, [r7, #12]
+ 851 0580 1946     		mov	r1, r3
+ 852 0582 4FF00002 		mov	r2, #0
+ 853 0586 FFF7FEFF 		bl	packetfunctions_writeAddress
+ 854              	.L54:
+ 382:openstack/03a-IPHC/iphc.c ****          }
+ 383:openstack/03a-IPHC/iphc.c ****          if(fw_SendOrfw_Rcv==PCKTFORWARD) {
+ 855              		.loc 1 383 0
+ 856 058a 97F84C30 		ldrb	r3, [r7, #76]	@ zero_extendqisi2
+ 857 058e 012B     		cmp	r3, #1
+ 858 0590 2CD1     		bne	.L76
+ 384:openstack/03a-IPHC/iphc.c ****             if (value_src->type!=ADDR_128B) {
+ 859              		.loc 1 384 0
+ 860 0592 BB6C     		ldr	r3, [r7, #72]
+ 861 0594 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 862 0596 032B     		cmp	r3, #3
+ 863 0598 0DD0     		beq	.L56
+ 385:openstack/03a-IPHC/iphc.c ****                openserial_printCritical(
+ 386:openstack/03a-IPHC/iphc.c ****                   COMPONENT_IPHC,
+ 387:openstack/03a-IPHC/iphc.c ****                   ERR_WRONG_ADDR_TYPE,
+ 388:openstack/03a-IPHC/iphc.c ****                   (errorparameter_t)value_src->type,
+ 864              		.loc 1 388 0
+ 865 059a BB6C     		ldr	r3, [r7, #72]
+ 866 059c 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 385:openstack/03a-IPHC/iphc.c ****                openserial_printCritical(
+ 867              		.loc 1 385 0
+ 868 059e 4FF01100 		mov	r0, #17
+ 869 05a2 4FF03101 		mov	r1, #49
+ 870 05a6 1A46     		mov	r2, r3
+ 871 05a8 4FF00203 		mov	r3, #2
+ 872 05ac FFF7FEFF 		bl	openserial_printCritical
+ 389:openstack/03a-IPHC/iphc.c ****                   (errorparameter_t)2
+ 390:openstack/03a-IPHC/iphc.c ****                );
+ 391:openstack/03a-IPHC/iphc.c ****                return E_FAIL;
+ 873              		.loc 1 391 0
+ 874 05b0 4FF00103 		mov	r3, #1
+ 875 05b4 FDE0     		b	.L38
+ 876              	.L56:
+ 392:openstack/03a-IPHC/iphc.c ****             }
+ 393:openstack/03a-IPHC/iphc.c ****             packetfunctions_writeAddress(msg,value_src,OW_BIG_ENDIAN);
+ 877              		.loc 1 393 0
+ 878 05b6 F868     		ldr	r0, [r7, #12]
+ 879 05b8 B96C     		ldr	r1, [r7, #72]
+ 880 05ba 4FF00002 		mov	r2, #0
+ 881 05be FFF7FEFF 		bl	packetfunctions_writeAddress
+ 394:openstack/03a-IPHC/iphc.c ****          }
+ 395:openstack/03a-IPHC/iphc.c ****          break;
+ 882              		.loc 1 395 0
+ 883 05c2 13E0     		b	.L76
+ 884              	.L41:
+ 396:openstack/03a-IPHC/iphc.c ****       default:
+ 397:openstack/03a-IPHC/iphc.c ****          openserial_printCritical(
+ 885              		.loc 1 397 0
+ 886 05c4 97F83430 		ldrb	r3, [r7, #52]	@ zero_extendqisi2
+ 887 05c8 9BB2     		uxth	r3, r3
+ 888 05ca 4FF01100 		mov	r0, #17
+ 889 05ce 4FF00C01 		mov	r1, #12
+ 890 05d2 4FF00102 		mov	r2, #1
+ 891 05d6 FFF7FEFF 		bl	openserial_printCritical
+ 398:openstack/03a-IPHC/iphc.c ****             COMPONENT_IPHC,
+ 399:openstack/03a-IPHC/iphc.c ****             ERR_6LOWPAN_UNSUPPORTED,
+ 400:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)1,
+ 401:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)sam
+ 402:openstack/03a-IPHC/iphc.c ****          );
+ 403:openstack/03a-IPHC/iphc.c ****          return E_FAIL;
+ 892              		.loc 1 403 0
+ 893 05da 4FF00103 		mov	r3, #1
+ 894 05de E8E0     		b	.L38
+ 895              	.L73:
+ 343:openstack/03a-IPHC/iphc.c ****          break;
+ 896              		.loc 1 343 0
+ 897 05e0 00BF     		nop
+ 898 05e2 04E0     		b	.L47
+ 899              	.L74:
+ 360:openstack/03a-IPHC/iphc.c ****          break;
+ 900              		.loc 1 360 0
+ 901 05e4 00BF     		nop
+ 902 05e6 02E0     		b	.L47
+ 903              	.L75:
+ 377:openstack/03a-IPHC/iphc.c ****          break;
+ 904              		.loc 1 377 0
+ 905 05e8 00BF     		nop
+ 906 05ea 00E0     		b	.L47
+ 907              	.L76:
+ 395:openstack/03a-IPHC/iphc.c ****          break;
+ 908              		.loc 1 395 0
+ 909 05ec 00BF     		nop
+ 910              	.L47:
+ 404:openstack/03a-IPHC/iphc.c ****    }
+ 405:openstack/03a-IPHC/iphc.c ****    
+ 406:openstack/03a-IPHC/iphc.c ****    // hop limit
+ 407:openstack/03a-IPHC/iphc.c ****    switch (hlim) {
+ 911              		.loc 1 407 0
+ 912 05ee 97F82430 		ldrb	r3, [r7, #36]	@ zero_extendqisi2
+ 913 05f2 002B     		cmp	r3, #0
+ 914 05f4 04D0     		beq	.L58
+ 915 05f6 002B     		cmp	r3, #0
+ 916 05f8 0EDB     		blt	.L57
+ 917 05fa 032B     		cmp	r3, #3
+ 918 05fc 0CDC     		bgt	.L57
+ 919 05fe 0AE0     		b	.L69
+ 920              	.L58:
+ 408:openstack/03a-IPHC/iphc.c ****       case IPHC_HLIM_INLINE:
+ 409:openstack/03a-IPHC/iphc.c ****          packetfunctions_reserveHeaderSize(msg,sizeof(uint8_t));
+ 921              		.loc 1 409 0
+ 922 0600 F868     		ldr	r0, [r7, #12]
+ 923 0602 4FF00101 		mov	r1, #1
+ 924 0606 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 410:openstack/03a-IPHC/iphc.c ****          *((uint8_t*)(msg->payload)) = value_hopLimit;
+ 925              		.loc 1 410 0
+ 926 060a FB68     		ldr	r3, [r7, #12]
+ 927 060c 5B68     		ldr	r3, [r3, #4]
+ 928 060e 97F82820 		ldrb	r2, [r7, #40]
+ 929 0612 1A70     		strb	r2, [r3, #0]
+ 411:openstack/03a-IPHC/iphc.c ****          break;
+ 930              		.loc 1 411 0
+ 931 0614 0EE0     		b	.L60
+ 932              	.L69:
+ 412:openstack/03a-IPHC/iphc.c ****       case IPHC_HLIM_1:
+ 413:openstack/03a-IPHC/iphc.c ****       case IPHC_HLIM_64:
+ 414:openstack/03a-IPHC/iphc.c ****       case IPHC_HLIM_255:
+ 415:openstack/03a-IPHC/iphc.c ****          break;
+ 933              		.loc 1 415 0
+ 934 0616 0DE0     		b	.L60
+ 935              	.L57:
+ 416:openstack/03a-IPHC/iphc.c ****       default:
+ 417:openstack/03a-IPHC/iphc.c ****          openserial_printCritical(
+ 936              		.loc 1 417 0
+ 937 0618 97F82430 		ldrb	r3, [r7, #36]	@ zero_extendqisi2
+ 938 061c 9BB2     		uxth	r3, r3
+ 939 061e 4FF01100 		mov	r0, #17
+ 940 0622 4FF00C01 		mov	r1, #12
+ 941 0626 4FF00202 		mov	r2, #2
+ 942 062a FFF7FEFF 		bl	openserial_printCritical
+ 418:openstack/03a-IPHC/iphc.c ****             COMPONENT_IPHC,
+ 419:openstack/03a-IPHC/iphc.c ****             ERR_6LOWPAN_UNSUPPORTED,
+ 420:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)2,
+ 421:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)hlim
+ 422:openstack/03a-IPHC/iphc.c ****          );
+ 423:openstack/03a-IPHC/iphc.c ****          return E_FAIL;
+ 943              		.loc 1 423 0
+ 944 062e 4FF00103 		mov	r3, #1
+ 945 0632 BEE0     		b	.L38
+ 946              	.L60:
+ 424:openstack/03a-IPHC/iphc.c ****    }
+ 425:openstack/03a-IPHC/iphc.c ****    
+ 426:openstack/03a-IPHC/iphc.c ****    // next header
+ 427:openstack/03a-IPHC/iphc.c ****    switch (nh) {
+ 947              		.loc 1 427 0
+ 948 0634 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 949 0636 002B     		cmp	r3, #0
+ 950 0638 02D0     		beq	.L62
+ 951 063a 012B     		cmp	r3, #1
+ 952 063c 18D0     		beq	.L77
+ 953 063e 0AE0     		b	.L70
+ 954              	.L62:
+ 428:openstack/03a-IPHC/iphc.c ****       case IPHC_NH_INLINE:
+ 429:openstack/03a-IPHC/iphc.c ****          packetfunctions_reserveHeaderSize(msg,sizeof(uint8_t));
+ 955              		.loc 1 429 0
+ 956 0640 F868     		ldr	r0, [r7, #12]
+ 957 0642 4FF00101 		mov	r1, #1
+ 958 0646 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 430:openstack/03a-IPHC/iphc.c ****          *((uint8_t*)(msg->payload)) = value_nextHeader;
+ 959              		.loc 1 430 0
+ 960 064a FB68     		ldr	r3, [r7, #12]
+ 961 064c 5B68     		ldr	r3, [r3, #4]
+ 962 064e 97F82020 		ldrb	r2, [r7, #32]
+ 963 0652 1A70     		strb	r2, [r3, #0]
+ 431:openstack/03a-IPHC/iphc.c ****          break;
+ 964              		.loc 1 431 0
+ 965 0654 0DE0     		b	.L64
+ 966              	.L70:
+ 432:openstack/03a-IPHC/iphc.c ****       case IPHC_NH_COMPRESSED:
+ 433:openstack/03a-IPHC/iphc.c ****          //do nothing, the next header will be there
+ 434:openstack/03a-IPHC/iphc.c ****         break;
+ 435:openstack/03a-IPHC/iphc.c ****       default:
+ 436:openstack/03a-IPHC/iphc.c ****          openserial_printCritical(
+ 967              		.loc 1 436 0
+ 968 0656 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 969 0658 9BB2     		uxth	r3, r3
+ 970 065a 4FF01100 		mov	r0, #17
+ 971 065e 4FF00C01 		mov	r1, #12
+ 972 0662 4FF00302 		mov	r2, #3
+ 973 0666 FFF7FEFF 		bl	openserial_printCritical
+ 437:openstack/03a-IPHC/iphc.c ****             COMPONENT_IPHC,
+ 438:openstack/03a-IPHC/iphc.c ****             ERR_6LOWPAN_UNSUPPORTED,
+ 439:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)3,
+ 440:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)nh
+ 441:openstack/03a-IPHC/iphc.c ****          );
+ 442:openstack/03a-IPHC/iphc.c ****          return E_FAIL;
+ 974              		.loc 1 442 0
+ 975 066a 4FF00103 		mov	r3, #1
+ 976 066e A0E0     		b	.L38
+ 977              	.L77:
+ 434:openstack/03a-IPHC/iphc.c ****         break;
+ 978              		.loc 1 434 0
+ 979 0670 00BF     		nop
+ 980              	.L64:
+ 443:openstack/03a-IPHC/iphc.c ****    }
+ 444:openstack/03a-IPHC/iphc.c ****    
+ 445:openstack/03a-IPHC/iphc.c ****    // flowlabel
+ 446:openstack/03a-IPHC/iphc.c ****    switch (tf) {
+ 981              		.loc 1 446 0
+ 982 0672 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 983 0674 012B     		cmp	r3, #1
+ 984 0676 02D0     		beq	.L66
+ 985 0678 032B     		cmp	r3, #3
+ 986 067a 34D0     		beq	.L78
+ 987 067c 26E0     		b	.L71
+ 988              	.L66:
+ 447:openstack/03a-IPHC/iphc.c ****       case IPHC_TF_3B:
+ 448:openstack/03a-IPHC/iphc.c ****              packetfunctions_reserveHeaderSize(msg,sizeof(uint8_t));
+ 989              		.loc 1 448 0
+ 990 067e F868     		ldr	r0, [r7, #12]
+ 991 0680 4FF00101 		mov	r1, #1
+ 992 0684 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 449:openstack/03a-IPHC/iphc.c **** 			 *((uint8_t*)(msg->payload)) = ((uint32_t)(value_flowLabel & 0x000000ff) >> 0);
+ 993              		.loc 1 449 0
+ 994 0688 FB68     		ldr	r3, [r7, #12]
+ 995 068a 5B68     		ldr	r3, [r3, #4]
+ 996 068c 7A68     		ldr	r2, [r7, #4]
+ 997 068e D2B2     		uxtb	r2, r2
+ 998 0690 1A70     		strb	r2, [r3, #0]
+ 450:openstack/03a-IPHC/iphc.c **** 			 packetfunctions_reserveHeaderSize(msg,sizeof(uint8_t));
+ 999              		.loc 1 450 0
+ 1000 0692 F868     		ldr	r0, [r7, #12]
+ 1001 0694 4FF00101 		mov	r1, #1
+ 1002 0698 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 451:openstack/03a-IPHC/iphc.c **** 			 *((uint8_t*)(msg->payload)) = ((uint32_t)(value_flowLabel & 0x0000ff00) >> 8);
+ 1003              		.loc 1 451 0
+ 1004 069c FB68     		ldr	r3, [r7, #12]
+ 1005 069e 5B68     		ldr	r3, [r3, #4]
+ 1006 06a0 7A68     		ldr	r2, [r7, #4]
+ 1007 06a2 02F47F42 		and	r2, r2, #65280
+ 1008 06a6 4FEA1222 		lsr	r2, r2, #8
+ 1009 06aa D2B2     		uxtb	r2, r2
+ 1010 06ac 1A70     		strb	r2, [r3, #0]
+ 452:openstack/03a-IPHC/iphc.c **** 			 packetfunctions_reserveHeaderSize(msg,sizeof(uint8_t));
+ 1011              		.loc 1 452 0
+ 1012 06ae F868     		ldr	r0, [r7, #12]
+ 1013 06b0 4FF00101 		mov	r1, #1
+ 1014 06b4 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 453:openstack/03a-IPHC/iphc.c **** 			 *((uint8_t*)(msg->payload)) = ((uint32_t)(value_flowLabel & 0x00ff0000) >> 16);
+ 1015              		.loc 1 453 0
+ 1016 06b8 FB68     		ldr	r3, [r7, #12]
+ 1017 06ba 5B68     		ldr	r3, [r3, #4]
+ 1018 06bc 7A68     		ldr	r2, [r7, #4]
+ 1019 06be 02F47F02 		and	r2, r2, #16711680
+ 1020 06c2 4FEA1242 		lsr	r2, r2, #16
+ 1021 06c6 D2B2     		uxtb	r2, r2
+ 1022 06c8 1A70     		strb	r2, [r3, #0]
+ 454:openstack/03a-IPHC/iphc.c ****          break;            
+ 1023              		.loc 1 454 0
+ 1024 06ca 0DE0     		b	.L68
+ 1025              	.L71:
+ 455:openstack/03a-IPHC/iphc.c ****       case IPHC_TF_ELIDED:
+ 456:openstack/03a-IPHC/iphc.c ****          break;
+ 457:openstack/03a-IPHC/iphc.c ****       case IPHC_TF_4B:
+ 458:openstack/03a-IPHC/iphc.c ****          //unsupported
+ 459:openstack/03a-IPHC/iphc.c ****       case IPHC_TF_1B:
+ 460:openstack/03a-IPHC/iphc.c ****          //unsupported
+ 461:openstack/03a-IPHC/iphc.c ****       default:
+ 462:openstack/03a-IPHC/iphc.c ****          openserial_printCritical(
+ 1026              		.loc 1 462 0
+ 1027 06cc FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1028 06ce 9BB2     		uxth	r3, r3
+ 1029 06d0 4FF01100 		mov	r0, #17
+ 1030 06d4 4FF00C01 		mov	r1, #12
+ 1031 06d8 4FF00402 		mov	r2, #4
+ 1032 06dc FFF7FEFF 		bl	openserial_printCritical
+ 463:openstack/03a-IPHC/iphc.c ****             COMPONENT_IPHC,
+ 464:openstack/03a-IPHC/iphc.c ****             ERR_6LOWPAN_UNSUPPORTED,
+ 465:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)4,
+ 466:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)tf
+ 467:openstack/03a-IPHC/iphc.c ****          );
+ 468:openstack/03a-IPHC/iphc.c ****          return E_FAIL;
+ 1033              		.loc 1 468 0
+ 1034 06e0 4FF00103 		mov	r3, #1
+ 1035 06e4 65E0     		b	.L38
+ 1036              	.L78:
+ 456:openstack/03a-IPHC/iphc.c ****          break;
+ 1037              		.loc 1 456 0
+ 1038 06e6 00BF     		nop
+ 1039              	.L68:
+ 469:openstack/03a-IPHC/iphc.c ****    }
+ 470:openstack/03a-IPHC/iphc.c ****    
+ 471:openstack/03a-IPHC/iphc.c ****    // header
+ 472:openstack/03a-IPHC/iphc.c ****    temp_8b    = 0;
+ 1040              		.loc 1 472 0
+ 1041 06e8 4FF00003 		mov	r3, #0
+ 1042 06ec FB75     		strb	r3, [r7, #23]
+ 473:openstack/03a-IPHC/iphc.c ****    temp_8b   |= cid                    << IPHC_CID;
+ 1043              		.loc 1 473 0
+ 1044 06ee 97F82C30 		ldrb	r3, [r7, #44]	@ zero_extendqisi2
+ 1045 06f2 4FEAC313 		lsl	r3, r3, #7
+ 1046 06f6 DAB2     		uxtb	r2, r3
+ 1047 06f8 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 1048 06fa 1343     		orrs	r3, r3, r2
+ 1049 06fc DBB2     		uxtb	r3, r3
+ 1050 06fe FB75     		strb	r3, [r7, #23]
+ 474:openstack/03a-IPHC/iphc.c ****    temp_8b   |= sac                    << IPHC_SAC;
+ 1051              		.loc 1 474 0
+ 1052 0700 97F83030 		ldrb	r3, [r7, #48]	@ zero_extendqisi2
+ 1053 0704 4FEA8313 		lsl	r3, r3, #6
+ 1054 0708 DAB2     		uxtb	r2, r3
+ 1055 070a FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 1056 070c 1343     		orrs	r3, r3, r2
+ 1057 070e DBB2     		uxtb	r3, r3
+ 1058 0710 FB75     		strb	r3, [r7, #23]
+ 475:openstack/03a-IPHC/iphc.c ****    temp_8b   |= sam                    << IPHC_SAM;
+ 1059              		.loc 1 475 0
+ 1060 0712 97F83430 		ldrb	r3, [r7, #52]	@ zero_extendqisi2
+ 1061 0716 4FEA0313 		lsl	r3, r3, #4
+ 1062 071a DAB2     		uxtb	r2, r3
+ 1063 071c FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 1064 071e 1343     		orrs	r3, r3, r2
+ 1065 0720 DBB2     		uxtb	r3, r3
+ 1066 0722 FB75     		strb	r3, [r7, #23]
+ 476:openstack/03a-IPHC/iphc.c ****    temp_8b   |= m                      << IPHC_M;
+ 1067              		.loc 1 476 0
+ 1068 0724 97F83830 		ldrb	r3, [r7, #56]	@ zero_extendqisi2
+ 1069 0728 4FEAC303 		lsl	r3, r3, #3
+ 1070 072c DAB2     		uxtb	r2, r3
+ 1071 072e FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 1072 0730 1343     		orrs	r3, r3, r2
+ 1073 0732 DBB2     		uxtb	r3, r3
+ 1074 0734 FB75     		strb	r3, [r7, #23]
+ 477:openstack/03a-IPHC/iphc.c ****    temp_8b   |= dac                    << IPHC_DAC;
+ 1075              		.loc 1 477 0
+ 1076 0736 97F83C30 		ldrb	r3, [r7, #60]	@ zero_extendqisi2
+ 1077 073a 4FEA8303 		lsl	r3, r3, #2
+ 1078 073e DAB2     		uxtb	r2, r3
+ 1079 0740 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 1080 0742 1343     		orrs	r3, r3, r2
+ 1081 0744 DBB2     		uxtb	r3, r3
+ 1082 0746 FB75     		strb	r3, [r7, #23]
+ 478:openstack/03a-IPHC/iphc.c ****    temp_8b   |= dam                    << IPHC_DAM;
+ 1083              		.loc 1 478 0
+ 1084 0748 FA7D     		ldrb	r2, [r7, #23]
+ 1085 074a 97F84030 		ldrb	r3, [r7, #64]
+ 1086 074e 1343     		orrs	r3, r3, r2
+ 1087 0750 FB75     		strb	r3, [r7, #23]
+ 479:openstack/03a-IPHC/iphc.c ****    packetfunctions_reserveHeaderSize(msg,sizeof(uint8_t));
+ 1088              		.loc 1 479 0
+ 1089 0752 F868     		ldr	r0, [r7, #12]
+ 1090 0754 4FF00101 		mov	r1, #1
+ 1091 0758 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 480:openstack/03a-IPHC/iphc.c ****    *((uint8_t*)(msg->payload)) = temp_8b;
+ 1092              		.loc 1 480 0
+ 1093 075c FB68     		ldr	r3, [r7, #12]
+ 1094 075e 5B68     		ldr	r3, [r3, #4]
+ 1095 0760 FA7D     		ldrb	r2, [r7, #23]
+ 1096 0762 1A70     		strb	r2, [r3, #0]
+ 481:openstack/03a-IPHC/iphc.c ****    temp_8b    = 0;
+ 1097              		.loc 1 481 0
+ 1098 0764 4FF00003 		mov	r3, #0
+ 1099 0768 FB75     		strb	r3, [r7, #23]
+ 482:openstack/03a-IPHC/iphc.c ****    temp_8b   |= IPHC_DISPATCH_IPHC     << IPHC_DISPATCH;
+ 1100              		.loc 1 482 0
+ 1101 076a FB7D     		ldrb	r3, [r7, #23]
+ 1102 076c 43F06003 		orr	r3, r3, #96
+ 1103 0770 FB75     		strb	r3, [r7, #23]
+ 483:openstack/03a-IPHC/iphc.c ****    temp_8b   |= tf                     << IPHC_TF;
+ 1104              		.loc 1 483 0
+ 1105 0772 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1106 0774 4FEAC303 		lsl	r3, r3, #3
+ 1107 0778 DAB2     		uxtb	r2, r3
+ 1108 077a FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 1109 077c 1343     		orrs	r3, r3, r2
+ 1110 077e DBB2     		uxtb	r3, r3
+ 1111 0780 FB75     		strb	r3, [r7, #23]
+ 484:openstack/03a-IPHC/iphc.c ****    temp_8b   |= nh                     << IPHC_NH;
+ 1112              		.loc 1 484 0
+ 1113 0782 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 1114 0784 4FEA8303 		lsl	r3, r3, #2
+ 1115 0788 DAB2     		uxtb	r2, r3
+ 1116 078a FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 1117 078c 1343     		orrs	r3, r3, r2
+ 1118 078e DBB2     		uxtb	r3, r3
+ 1119 0790 FB75     		strb	r3, [r7, #23]
+ 485:openstack/03a-IPHC/iphc.c ****    temp_8b   |= hlim                   << IPHC_HLIM;
+ 1120              		.loc 1 485 0
+ 1121 0792 FA7D     		ldrb	r2, [r7, #23]
+ 1122 0794 97F82430 		ldrb	r3, [r7, #36]
+ 1123 0798 1343     		orrs	r3, r3, r2
+ 1124 079a FB75     		strb	r3, [r7, #23]
+ 486:openstack/03a-IPHC/iphc.c ****    packetfunctions_reserveHeaderSize(msg,sizeof(uint8_t));
+ 1125              		.loc 1 486 0
+ 1126 079c F868     		ldr	r0, [r7, #12]
+ 1127 079e 4FF00101 		mov	r1, #1
+ 1128 07a2 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 487:openstack/03a-IPHC/iphc.c ****    *((uint8_t*)(msg->payload)) = temp_8b;
+ 1129              		.loc 1 487 0
+ 1130 07a6 FB68     		ldr	r3, [r7, #12]
+ 1131 07a8 5B68     		ldr	r3, [r3, #4]
+ 1132 07aa FA7D     		ldrb	r2, [r7, #23]
+ 1133 07ac 1A70     		strb	r2, [r3, #0]
+ 488:openstack/03a-IPHC/iphc.c ****    
+ 489:openstack/03a-IPHC/iphc.c ****    return E_SUCCESS;
+ 1134              		.loc 1 489 0
+ 1135 07ae 4FF00003 		mov	r3, #0
+ 1136              	.L38:
+ 490:openstack/03a-IPHC/iphc.c **** }
+ 1137              		.loc 1 490 0
+ 1138 07b2 1846     		mov	r0, r3
+ 1139 07b4 07F11807 		add	r7, r7, #24
+ 1140 07b8 BD46     		mov	sp, r7
+ 1141 07ba 80BD     		pop	{r7, pc}
+ 1142              		.cfi_endproc
+ 1143              	.LFE5:
+ 1145              		.align	2
+ 1146              		.global	iphc_retrieveIPv6Header
+ 1147              		.thumb
+ 1148              		.thumb_func
+ 1150              	iphc_retrieveIPv6Header:
+ 1151              	.LFB6:
+ 491:openstack/03a-IPHC/iphc.c **** 
+ 492:openstack/03a-IPHC/iphc.c **** /**
+ 493:openstack/03a-IPHC/iphc.c **** \brief Retrieve an IPv6 header from a message.
+ 494:openstack/03a-IPHC/iphc.c **** */
+ 495:openstack/03a-IPHC/iphc.c **** void iphc_retrieveIPv6Header(OpenQueueEntry_t* msg, ipv6_header_iht* ipv6_header) {
+ 1152              		.loc 1 495 0
+ 1153              		.cfi_startproc
+ 1154              		@ args = 0, pretend = 0, frame = 56
+ 1155              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1156 07bc 90B5     		push	{r4, r7, lr}
+ 1157              	.LCFI17:
+ 1158              		.cfi_def_cfa_offset 12
+ 1159              		.cfi_offset 4, -12
+ 1160              		.cfi_offset 7, -8
+ 1161              		.cfi_offset 14, -4
+ 1162 07be 8FB0     		sub	sp, sp, #60
+ 1163              	.LCFI18:
+ 1164              		.cfi_def_cfa_offset 72
+ 1165 07c0 00AF     		add	r7, sp, #0
+ 1166              	.LCFI19:
+ 1167              		.cfi_def_cfa_register 7
+ 1168 07c2 7860     		str	r0, [r7, #4]
+ 1169 07c4 3960     		str	r1, [r7, #0]
+ 496:openstack/03a-IPHC/iphc.c ****    uint8_t         temp_8b;
+ 497:openstack/03a-IPHC/iphc.c ****    open_addr_t     temp_addr_16b;
+ 498:openstack/03a-IPHC/iphc.c ****    open_addr_t     temp_addr_64b;
+ 499:openstack/03a-IPHC/iphc.c ****    uint8_t         dispatch;
+ 500:openstack/03a-IPHC/iphc.c ****    uint8_t         tf;
+ 501:openstack/03a-IPHC/iphc.c ****    bool            nh;
+ 502:openstack/03a-IPHC/iphc.c ****    uint8_t         hlim;
+ 503:openstack/03a-IPHC/iphc.c ****    uint8_t         sam;
+ 504:openstack/03a-IPHC/iphc.c ****    uint8_t         dam;
+ 505:openstack/03a-IPHC/iphc.c ****    
+ 506:openstack/03a-IPHC/iphc.c ****    ipv6_header->header_length = 0;
+ 1170              		.loc 1 506 0
+ 1171 07c6 3B68     		ldr	r3, [r7, #0]
+ 1172 07c8 4FF00002 		mov	r2, #0
+ 1173 07cc 83F82D20 		strb	r2, [r3, #45]
+ 507:openstack/03a-IPHC/iphc.c ****    
+ 508:openstack/03a-IPHC/iphc.c ****    // header
+ 509:openstack/03a-IPHC/iphc.c ****    temp_8b    = *((uint8_t*)(msg->payload)+ipv6_header->header_length);
+ 1174              		.loc 1 509 0
+ 1175 07d0 7B68     		ldr	r3, [r7, #4]
+ 1176 07d2 5A68     		ldr	r2, [r3, #4]
+ 1177 07d4 3B68     		ldr	r3, [r7, #0]
+ 1178 07d6 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1179 07da D318     		adds	r3, r2, r3
+ 1180 07dc 1B78     		ldrb	r3, [r3, #0]
+ 1181 07de 87F83730 		strb	r3, [r7, #55]
+ 510:openstack/03a-IPHC/iphc.c ****    dispatch   = (temp_8b >> IPHC_DISPATCH)  & 0x07;   // 3b
+ 1182              		.loc 1 510 0
+ 1183 07e2 97F83730 		ldrb	r3, [r7, #55]	@ zero_extendqisi2
+ 1184 07e6 4FEA5313 		lsr	r3, r3, #5
+ 1185 07ea 87F83630 		strb	r3, [r7, #54]
+ 511:openstack/03a-IPHC/iphc.c ****    tf         = (temp_8b >> IPHC_TF)        & 0x03;   // 2b
+ 1186              		.loc 1 511 0
+ 1187 07ee 97F83730 		ldrb	r3, [r7, #55]	@ zero_extendqisi2
+ 1188 07f2 4FEAD303 		lsr	r3, r3, #3
+ 1189 07f6 DBB2     		uxtb	r3, r3
+ 1190 07f8 03F00303 		and	r3, r3, #3
+ 1191 07fc 87F83530 		strb	r3, [r7, #53]
+ 512:openstack/03a-IPHC/iphc.c ****    nh         = (temp_8b >> IPHC_NH)        & 0x01;   // 1b
+ 1192              		.loc 1 512 0
+ 1193 0800 97F83730 		ldrb	r3, [r7, #55]	@ zero_extendqisi2
+ 1194 0804 4FEA9303 		lsr	r3, r3, #2
+ 1195 0808 DBB2     		uxtb	r3, r3
+ 1196 080a 03F00103 		and	r3, r3, #1
+ 1197 080e 002B     		cmp	r3, #0
+ 1198 0810 0CBF     		ite	eq
+ 1199 0812 0023     		moveq	r3, #0
+ 1200 0814 0123     		movne	r3, #1
+ 1201 0816 87F83430 		strb	r3, [r7, #52]
+ 513:openstack/03a-IPHC/iphc.c ****    hlim       = (temp_8b >> IPHC_HLIM)      & 0x03;   // 2b
+ 1202              		.loc 1 513 0
+ 1203 081a 97F83730 		ldrb	r3, [r7, #55]
+ 1204 081e 03F00303 		and	r3, r3, #3
+ 1205 0822 87F83330 		strb	r3, [r7, #51]
+ 514:openstack/03a-IPHC/iphc.c ****    ipv6_header->header_length += sizeof(uint8_t);
+ 1206              		.loc 1 514 0
+ 1207 0826 3B68     		ldr	r3, [r7, #0]
+ 1208 0828 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1209 082c 03F10103 		add	r3, r3, #1
+ 1210 0830 DAB2     		uxtb	r2, r3
+ 1211 0832 3B68     		ldr	r3, [r7, #0]
+ 1212 0834 83F82D20 		strb	r2, [r3, #45]
+ 515:openstack/03a-IPHC/iphc.c ****    temp_8b    = *((uint8_t*)(msg->payload)+ipv6_header->header_length);
+ 1213              		.loc 1 515 0
+ 1214 0838 7B68     		ldr	r3, [r7, #4]
+ 1215 083a 5A68     		ldr	r2, [r3, #4]
+ 1216 083c 3B68     		ldr	r3, [r7, #0]
+ 1217 083e 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1218 0842 D318     		adds	r3, r2, r3
+ 1219 0844 1B78     		ldrb	r3, [r3, #0]
+ 1220 0846 87F83730 		strb	r3, [r7, #55]
+ 516:openstack/03a-IPHC/iphc.c ****    // cid unused
+ 517:openstack/03a-IPHC/iphc.c ****    // sac unused
+ 518:openstack/03a-IPHC/iphc.c ****    sam        = (temp_8b >> IPHC_SAM)       & 0x03;   // 2b
+ 1221              		.loc 1 518 0
+ 1222 084a 97F83730 		ldrb	r3, [r7, #55]	@ zero_extendqisi2
+ 1223 084e 4FEA1313 		lsr	r3, r3, #4
+ 1224 0852 DBB2     		uxtb	r3, r3
+ 1225 0854 03F00303 		and	r3, r3, #3
+ 1226 0858 87F83230 		strb	r3, [r7, #50]
+ 519:openstack/03a-IPHC/iphc.c ****    // m unused
+ 520:openstack/03a-IPHC/iphc.c ****    // dac unused
+ 521:openstack/03a-IPHC/iphc.c ****    dam        = (temp_8b >> IPHC_DAM)       & 0x03;   // 2b
+ 1227              		.loc 1 521 0
+ 1228 085c 97F83730 		ldrb	r3, [r7, #55]
+ 1229 0860 03F00303 		and	r3, r3, #3
+ 1230 0864 87F83130 		strb	r3, [r7, #49]
+ 522:openstack/03a-IPHC/iphc.c ****    ipv6_header->header_length += sizeof(uint8_t);
+ 1231              		.loc 1 522 0
+ 1232 0868 3B68     		ldr	r3, [r7, #0]
+ 1233 086a 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1234 086e 03F10103 		add	r3, r3, #1
+ 1235 0872 DAB2     		uxtb	r2, r3
+ 1236 0874 3B68     		ldr	r3, [r7, #0]
+ 1237 0876 83F82D20 		strb	r2, [r3, #45]
+ 523:openstack/03a-IPHC/iphc.c ****    
+ 524:openstack/03a-IPHC/iphc.c ****    // dispatch
+ 525:openstack/03a-IPHC/iphc.c ****    switch (dispatch) {
+ 1238              		.loc 1 525 0
+ 1239 087a 97F83630 		ldrb	r3, [r7, #54]	@ zero_extendqisi2
+ 1240 087e 032B     		cmp	r3, #3
+ 1241 0880 0BD0     		beq	.L118
+ 526:openstack/03a-IPHC/iphc.c ****       case IPHC_DISPATCH_IPHC:
+ 527:openstack/03a-IPHC/iphc.c ****          break;
+ 528:openstack/03a-IPHC/iphc.c ****       default:
+ 529:openstack/03a-IPHC/iphc.c ****          openserial_printError(
+ 1242              		.loc 1 529 0
+ 1243 0882 97F83630 		ldrb	r3, [r7, #54]	@ zero_extendqisi2
+ 1244 0886 9BB2     		uxth	r3, r3
+ 1245 0888 4FF01100 		mov	r0, #17
+ 1246 088c 4FF00C01 		mov	r1, #12
+ 1247 0890 4FF00502 		mov	r2, #5
+ 1248 0894 FFF7FEFF 		bl	openserial_printError
+ 530:openstack/03a-IPHC/iphc.c ****             COMPONENT_IPHC,
+ 531:openstack/03a-IPHC/iphc.c ****             ERR_6LOWPAN_UNSUPPORTED,
+ 532:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)5,
+ 533:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)dispatch
+ 534:openstack/03a-IPHC/iphc.c ****          );
+ 535:openstack/03a-IPHC/iphc.c ****          break;
+ 1249              		.loc 1 535 0
+ 1250 0898 00E0     		b	.L82
+ 1251              	.L118:
+ 527:openstack/03a-IPHC/iphc.c ****          break;
+ 1252              		.loc 1 527 0
+ 1253 089a 00BF     		nop
+ 1254              	.L82:
+ 536:openstack/03a-IPHC/iphc.c ****    }
+ 537:openstack/03a-IPHC/iphc.c ****    
+ 538:openstack/03a-IPHC/iphc.c ****    // flowlabel
+ 539:openstack/03a-IPHC/iphc.c ****    switch (tf) {
+ 1255              		.loc 1 539 0
+ 1256 089c 97F83530 		ldrb	r3, [r7, #53]	@ zero_extendqisi2
+ 1257 08a0 012B     		cmp	r3, #1
+ 1258 08a2 02D0     		beq	.L84
+ 1259 08a4 032B     		cmp	r3, #3
+ 1260 08a6 48D0     		beq	.L85
+ 1261 08a8 4CE0     		b	.L116
+ 1262              	.L84:
+ 540:openstack/03a-IPHC/iphc.c ****       case IPHC_TF_3B:
+ 541:openstack/03a-IPHC/iphc.c **** 
+ 542:openstack/03a-IPHC/iphc.c ****          ipv6_header->flow_label        = 0;
+ 1263              		.loc 1 542 0
+ 1264 08aa 3B68     		ldr	r3, [r7, #0]
+ 1265 08ac 4FF00002 		mov	r2, #0
+ 1266 08b0 5A60     		str	r2, [r3, #4]
+ 543:openstack/03a-IPHC/iphc.c ****          ipv6_header->flow_label       |= ((uint32_t) *((uint8_t*)(msg->payload)+ipv6_header->heade
+ 1267              		.loc 1 543 0
+ 1268 08b2 3B68     		ldr	r3, [r7, #0]
+ 1269 08b4 5A68     		ldr	r2, [r3, #4]
+ 1270 08b6 7B68     		ldr	r3, [r7, #4]
+ 1271 08b8 5968     		ldr	r1, [r3, #4]
+ 1272 08ba 3B68     		ldr	r3, [r7, #0]
+ 1273 08bc 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1274 08c0 CB18     		adds	r3, r1, r3
+ 1275 08c2 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1276 08c4 1A43     		orrs	r2, r2, r3
+ 1277 08c6 3B68     		ldr	r3, [r7, #0]
+ 1278 08c8 5A60     		str	r2, [r3, #4]
+ 544:openstack/03a-IPHC/iphc.c ****          ipv6_header->header_length    += sizeof(uint8_t);
+ 1279              		.loc 1 544 0
+ 1280 08ca 3B68     		ldr	r3, [r7, #0]
+ 1281 08cc 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1282 08d0 03F10103 		add	r3, r3, #1
+ 1283 08d4 DAB2     		uxtb	r2, r3
+ 1284 08d6 3B68     		ldr	r3, [r7, #0]
+ 1285 08d8 83F82D20 		strb	r2, [r3, #45]
+ 545:openstack/03a-IPHC/iphc.c ****          ipv6_header->flow_label       |= ((uint32_t) *((uint8_t*)(msg->payload)+ipv6_header->heade
+ 1286              		.loc 1 545 0
+ 1287 08dc 3B68     		ldr	r3, [r7, #0]
+ 1288 08de 5A68     		ldr	r2, [r3, #4]
+ 1289 08e0 7B68     		ldr	r3, [r7, #4]
+ 1290 08e2 5968     		ldr	r1, [r3, #4]
+ 1291 08e4 3B68     		ldr	r3, [r7, #0]
+ 1292 08e6 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1293 08ea CB18     		adds	r3, r1, r3
+ 1294 08ec 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1295 08ee 4FEA0323 		lsl	r3, r3, #8
+ 1296 08f2 1A43     		orrs	r2, r2, r3
+ 1297 08f4 3B68     		ldr	r3, [r7, #0]
+ 1298 08f6 5A60     		str	r2, [r3, #4]
+ 546:openstack/03a-IPHC/iphc.c ****          ipv6_header->header_length    += sizeof(uint8_t);
+ 1299              		.loc 1 546 0
+ 1300 08f8 3B68     		ldr	r3, [r7, #0]
+ 1301 08fa 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1302 08fe 03F10103 		add	r3, r3, #1
+ 1303 0902 DAB2     		uxtb	r2, r3
+ 1304 0904 3B68     		ldr	r3, [r7, #0]
+ 1305 0906 83F82D20 		strb	r2, [r3, #45]
+ 547:openstack/03a-IPHC/iphc.c ****          ipv6_header->flow_label       |= ((uint32_t) *((uint8_t*)(msg->payload)+ipv6_header->heade
+ 1306              		.loc 1 547 0
+ 1307 090a 3B68     		ldr	r3, [r7, #0]
+ 1308 090c 5A68     		ldr	r2, [r3, #4]
+ 1309 090e 7B68     		ldr	r3, [r7, #4]
+ 1310 0910 5968     		ldr	r1, [r3, #4]
+ 1311 0912 3B68     		ldr	r3, [r7, #0]
+ 1312 0914 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1313 0918 CB18     		adds	r3, r1, r3
+ 1314 091a 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1315 091c 4FEA0343 		lsl	r3, r3, #16
+ 1316 0920 1A43     		orrs	r2, r2, r3
+ 1317 0922 3B68     		ldr	r3, [r7, #0]
+ 1318 0924 5A60     		str	r2, [r3, #4]
+ 548:openstack/03a-IPHC/iphc.c ****          ipv6_header->header_length    += sizeof(uint8_t);
+ 1319              		.loc 1 548 0
+ 1320 0926 3B68     		ldr	r3, [r7, #0]
+ 1321 0928 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1322 092c 03F10103 		add	r3, r3, #1
+ 1323 0930 DAB2     		uxtb	r2, r3
+ 1324 0932 3B68     		ldr	r3, [r7, #0]
+ 1325 0934 83F82D20 		strb	r2, [r3, #45]
+ 549:openstack/03a-IPHC/iphc.c ****          break;            
+ 1326              		.loc 1 549 0
+ 1327 0938 10E0     		b	.L86
+ 1328              	.L85:
+ 550:openstack/03a-IPHC/iphc.c ****       case IPHC_TF_ELIDED:
+ 551:openstack/03a-IPHC/iphc.c ****          ipv6_header->flow_label        = 0;
+ 1329              		.loc 1 551 0
+ 1330 093a 3B68     		ldr	r3, [r7, #0]
+ 1331 093c 4FF00002 		mov	r2, #0
+ 1332 0940 5A60     		str	r2, [r3, #4]
+ 552:openstack/03a-IPHC/iphc.c ****          break;
+ 1333              		.loc 1 552 0
+ 1334 0942 0BE0     		b	.L86
+ 1335              	.L116:
+ 553:openstack/03a-IPHC/iphc.c ****       case IPHC_TF_4B:
+ 554:openstack/03a-IPHC/iphc.c ****          //unsupported
+ 555:openstack/03a-IPHC/iphc.c ****       case IPHC_TF_1B:
+ 556:openstack/03a-IPHC/iphc.c ****          //unsupported
+ 557:openstack/03a-IPHC/iphc.c ****       default:
+ 558:openstack/03a-IPHC/iphc.c ****          openserial_printError(
+ 1336              		.loc 1 558 0
+ 1337 0944 97F83530 		ldrb	r3, [r7, #53]	@ zero_extendqisi2
+ 1338 0948 9BB2     		uxth	r3, r3
+ 1339 094a 4FF01100 		mov	r0, #17
+ 1340 094e 4FF00C01 		mov	r1, #12
+ 1341 0952 4FF00602 		mov	r2, #6
+ 1342 0956 FFF7FEFF 		bl	openserial_printError
+ 559:openstack/03a-IPHC/iphc.c ****             COMPONENT_IPHC,
+ 560:openstack/03a-IPHC/iphc.c ****             ERR_6LOWPAN_UNSUPPORTED,
+ 561:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)6,
+ 562:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)tf
+ 563:openstack/03a-IPHC/iphc.c ****          );
+ 564:openstack/03a-IPHC/iphc.c ****          break;
+ 1343              		.loc 1 564 0
+ 1344 095a 00BF     		nop
+ 1345              	.L86:
+ 565:openstack/03a-IPHC/iphc.c ****    }
+ 566:openstack/03a-IPHC/iphc.c ****    
+ 567:openstack/03a-IPHC/iphc.c ****    // next header
+ 568:openstack/03a-IPHC/iphc.c ****    switch (nh) {
+ 1346              		.loc 1 568 0
+ 1347 095c 97F83430 		ldrb	r3, [r7, #52]	@ zero_extendqisi2
+ 1348 0960 002B     		cmp	r3, #0
+ 1349 0962 02D0     		beq	.L88
+ 1350 0964 012B     		cmp	r3, #1
+ 1351 0966 17D0     		beq	.L89
+ 1352 0968 1BE0     		b	.L117
+ 1353              	.L88:
+ 569:openstack/03a-IPHC/iphc.c ****       case IPHC_NH_INLINE:
+ 570:openstack/03a-IPHC/iphc.c ****          // Full 8 bits for Next Header are carried in-line
+ 571:openstack/03a-IPHC/iphc.c ****          ipv6_header->next_header_compressed = FALSE;
+ 1354              		.loc 1 571 0
+ 1355 096a 3B68     		ldr	r3, [r7, #0]
+ 1356 096c 4FF00002 		mov	r2, #0
+ 1357 0970 1A72     		strb	r2, [r3, #8]
+ 572:openstack/03a-IPHC/iphc.c ****          ipv6_header->next_header            = *((uint8_t*)(msg->payload)+ipv6_header->header_lengt
+ 1358              		.loc 1 572 0
+ 1359 0972 7B68     		ldr	r3, [r7, #4]
+ 1360 0974 5A68     		ldr	r2, [r3, #4]
+ 1361 0976 3B68     		ldr	r3, [r7, #0]
+ 1362 0978 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1363 097c D318     		adds	r3, r2, r3
+ 1364 097e 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1365 0980 3B68     		ldr	r3, [r7, #0]
+ 1366 0982 5A72     		strb	r2, [r3, #9]
+ 573:openstack/03a-IPHC/iphc.c ****          ipv6_header->header_length         += sizeof(uint8_t);
+ 1367              		.loc 1 573 0
+ 1368 0984 3B68     		ldr	r3, [r7, #0]
+ 1369 0986 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1370 098a 03F10103 		add	r3, r3, #1
+ 1371 098e DAB2     		uxtb	r2, r3
+ 1372 0990 3B68     		ldr	r3, [r7, #0]
+ 1373 0992 83F82D20 		strb	r2, [r3, #45]
+ 574:openstack/03a-IPHC/iphc.c ****       
+ 575:openstack/03a-IPHC/iphc.c ****          break;
+ 1374              		.loc 1 575 0
+ 1375 0996 10E0     		b	.L90
+ 1376              	.L89:
+ 576:openstack/03a-IPHC/iphc.c ****       case IPHC_NH_COMPRESSED:
+ 577:openstack/03a-IPHC/iphc.c ****          // the Next header field is compressed and the next header is encoded
+ 578:openstack/03a-IPHC/iphc.c ****          // using LOWPAN_NHC, which is discussed in Section 4.1 of RFC6282
+ 579:openstack/03a-IPHC/iphc.c ****          // we don't parse anything here, but will look at the (compressed)
+ 580:openstack/03a-IPHC/iphc.c ****          // next header after having parsed all address fields.
+ 581:openstack/03a-IPHC/iphc.c ****          ipv6_header->next_header_compressed = TRUE;
+ 1377              		.loc 1 581 0
+ 1378 0998 3B68     		ldr	r3, [r7, #0]
+ 1379 099a 4FF00102 		mov	r2, #1
+ 1380 099e 1A72     		strb	r2, [r3, #8]
+ 582:openstack/03a-IPHC/iphc.c ****          break;
+ 1381              		.loc 1 582 0
+ 1382 09a0 0BE0     		b	.L90
+ 1383              	.L117:
+ 583:openstack/03a-IPHC/iphc.c ****       default:
+ 584:openstack/03a-IPHC/iphc.c ****          openserial_printError(
+ 1384              		.loc 1 584 0
+ 1385 09a2 97F83430 		ldrb	r3, [r7, #52]	@ zero_extendqisi2
+ 1386 09a6 9BB2     		uxth	r3, r3
+ 1387 09a8 4FF01100 		mov	r0, #17
+ 1388 09ac 4FF00C01 		mov	r1, #12
+ 1389 09b0 4FF00702 		mov	r2, #7
+ 1390 09b4 FFF7FEFF 		bl	openserial_printError
+ 585:openstack/03a-IPHC/iphc.c ****             COMPONENT_IPHC,
+ 586:openstack/03a-IPHC/iphc.c ****             ERR_6LOWPAN_UNSUPPORTED,
+ 587:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)7,
+ 588:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)nh
+ 589:openstack/03a-IPHC/iphc.c ****          );
+ 590:openstack/03a-IPHC/iphc.c ****          break;
+ 1391              		.loc 1 590 0
+ 1392 09b8 00BF     		nop
+ 1393              	.L90:
+ 591:openstack/03a-IPHC/iphc.c ****    }
+ 592:openstack/03a-IPHC/iphc.c ****    
+ 593:openstack/03a-IPHC/iphc.c ****    // hop limit
+ 594:openstack/03a-IPHC/iphc.c ****    switch (hlim) {
+ 1394              		.loc 1 594 0
+ 1395 09ba 97F83330 		ldrb	r3, [r7, #51]	@ zero_extendqisi2
+ 1396 09be 032B     		cmp	r3, #3
+ 1397 09c0 2CD8     		bhi	.L91
+ 1398 09c2 01A2     		adr	r2, .L96
+ 1399 09c4 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 1400              		.align	2
+ 1401              	.L96:
+ 1402 09c8 D9090000 		.word	.L92+1
+ 1403 09cc FF090000 		.word	.L93+1
+ 1404 09d0 090A0000 		.word	.L94+1
+ 1405 09d4 130A0000 		.word	.L95+1
+ 1406              	.L92:
+ 595:openstack/03a-IPHC/iphc.c ****       case IPHC_HLIM_INLINE:
+ 596:openstack/03a-IPHC/iphc.c ****          ipv6_header->hop_limit         = *((uint8_t*)(msg->payload+ipv6_header->header_length));
+ 1407              		.loc 1 596 0
+ 1408 09d8 7B68     		ldr	r3, [r7, #4]
+ 1409 09da 5A68     		ldr	r2, [r3, #4]
+ 1410 09dc 3B68     		ldr	r3, [r7, #0]
+ 1411 09de 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1412 09e2 D318     		adds	r3, r2, r3
+ 1413 09e4 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1414 09e6 3B68     		ldr	r3, [r7, #0]
+ 1415 09e8 9A72     		strb	r2, [r3, #10]
+ 597:openstack/03a-IPHC/iphc.c ****          ipv6_header->header_length    += sizeof(uint8_t);
+ 1416              		.loc 1 597 0
+ 1417 09ea 3B68     		ldr	r3, [r7, #0]
+ 1418 09ec 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1419 09f0 03F10103 		add	r3, r3, #1
+ 1420 09f4 DAB2     		uxtb	r2, r3
+ 1421 09f6 3B68     		ldr	r3, [r7, #0]
+ 1422 09f8 83F82D20 		strb	r2, [r3, #45]
+ 598:openstack/03a-IPHC/iphc.c ****          break;
+ 1423              		.loc 1 598 0
+ 1424 09fc 1AE0     		b	.L97
+ 1425              	.L93:
+ 599:openstack/03a-IPHC/iphc.c ****       case IPHC_HLIM_1:
+ 600:openstack/03a-IPHC/iphc.c ****          ipv6_header->hop_limit         = 1;
+ 1426              		.loc 1 600 0
+ 1427 09fe 3B68     		ldr	r3, [r7, #0]
+ 1428 0a00 4FF00102 		mov	r2, #1
+ 1429 0a04 9A72     		strb	r2, [r3, #10]
+ 601:openstack/03a-IPHC/iphc.c ****          break;
+ 1430              		.loc 1 601 0
+ 1431 0a06 15E0     		b	.L97
+ 1432              	.L94:
+ 602:openstack/03a-IPHC/iphc.c ****       case IPHC_HLIM_64:
+ 603:openstack/03a-IPHC/iphc.c ****          ipv6_header->hop_limit         = 64;
+ 1433              		.loc 1 603 0
+ 1434 0a08 3B68     		ldr	r3, [r7, #0]
+ 1435 0a0a 4FF04002 		mov	r2, #64
+ 1436 0a0e 9A72     		strb	r2, [r3, #10]
+ 604:openstack/03a-IPHC/iphc.c ****          break;
+ 1437              		.loc 1 604 0
+ 1438 0a10 10E0     		b	.L97
+ 1439              	.L95:
+ 605:openstack/03a-IPHC/iphc.c ****       case IPHC_HLIM_255:
+ 606:openstack/03a-IPHC/iphc.c ****          ipv6_header->hop_limit         = 255;
+ 1440              		.loc 1 606 0
+ 1441 0a12 3B68     		ldr	r3, [r7, #0]
+ 1442 0a14 4FF0FF02 		mov	r2, #255
+ 1443 0a18 9A72     		strb	r2, [r3, #10]
+ 607:openstack/03a-IPHC/iphc.c ****          break;
+ 1444              		.loc 1 607 0
+ 1445 0a1a 0BE0     		b	.L97
+ 1446              	.L91:
+ 608:openstack/03a-IPHC/iphc.c ****       default:
+ 609:openstack/03a-IPHC/iphc.c ****          openserial_printError(
+ 1447              		.loc 1 609 0
+ 1448 0a1c 97F83330 		ldrb	r3, [r7, #51]	@ zero_extendqisi2
+ 1449 0a20 9BB2     		uxth	r3, r3
+ 1450 0a22 4FF01100 		mov	r0, #17
+ 1451 0a26 4FF00C01 		mov	r1, #12
+ 1452 0a2a 4FF00802 		mov	r2, #8
+ 1453 0a2e FFF7FEFF 		bl	openserial_printError
+ 610:openstack/03a-IPHC/iphc.c ****             COMPONENT_IPHC,
+ 611:openstack/03a-IPHC/iphc.c ****             ERR_6LOWPAN_UNSUPPORTED,
+ 612:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)8,
+ 613:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)hlim
+ 614:openstack/03a-IPHC/iphc.c ****          );
+ 615:openstack/03a-IPHC/iphc.c ****          break;
+ 1454              		.loc 1 615 0
+ 1455 0a32 00BF     		nop
+ 1456              	.L97:
+ 616:openstack/03a-IPHC/iphc.c ****    }
+ 617:openstack/03a-IPHC/iphc.c ****    
+ 618:openstack/03a-IPHC/iphc.c ****    // source address
+ 619:openstack/03a-IPHC/iphc.c ****    switch (sam) {
+ 1457              		.loc 1 619 0
+ 1458 0a34 97F83230 		ldrb	r3, [r7, #50]	@ zero_extendqisi2
+ 1459 0a38 032B     		cmp	r3, #3
+ 1460 0a3a 00F29180 		bhi	.L98
+ 1461 0a3e 01A2     		adr	r2, .L103
+ 1462 0a40 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 1463              		.align	2
+ 1464              	.L103:
+ 1465 0a44 2B0B0000 		.word	.L99+1
+ 1466 0a48 D90A0000 		.word	.L100+1
+ 1467 0a4c 770A0000 		.word	.L101+1
+ 1468 0a50 550A0000 		.word	.L102+1
+ 1469              	.L102:
+ 620:openstack/03a-IPHC/iphc.c ****       case IPHC_SAM_ELIDED:
+ 621:openstack/03a-IPHC/iphc.c ****          packetfunctions_mac64bToIp128b(idmanager_getMyID(ADDR_PREFIX),&(msg->l2_nextORpreviousHop)
+ 1470              		.loc 1 621 0
+ 1471 0a54 4FF00500 		mov	r0, #5
+ 1472 0a58 FFF7FEFF 		bl	idmanager_getMyID
+ 1473 0a5c 0146     		mov	r1, r0
+ 1474 0a5e 7B68     		ldr	r3, [r7, #4]
+ 1475 0a60 03F13802 		add	r2, r3, #56
+ 1476 0a64 3B68     		ldr	r3, [r7, #0]
+ 1477 0a66 03F10B03 		add	r3, r3, #11
+ 1478 0a6a 0846     		mov	r0, r1
+ 1479 0a6c 1146     		mov	r1, r2
+ 1480 0a6e 1A46     		mov	r2, r3
+ 1481 0a70 FFF7FEFF 		bl	packetfunctions_mac64bToIp128b
+ 622:openstack/03a-IPHC/iphc.c ****          break;
+ 1482              		.loc 1 622 0
+ 1483 0a74 80E0     		b	.L104
+ 1484              	.L101:
+ 623:openstack/03a-IPHC/iphc.c ****       case IPHC_SAM_16B:
+ 624:openstack/03a-IPHC/iphc.c ****          packetfunctions_readAddress(((uint8_t*)(msg->payload+ipv6_header->header_length)),ADDR_16B
+ 1485              		.loc 1 624 0
+ 1486 0a76 7B68     		ldr	r3, [r7, #4]
+ 1487 0a78 5A68     		ldr	r2, [r3, #4]
+ 1488 0a7a 3B68     		ldr	r3, [r7, #0]
+ 1489 0a7c 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1490 0a80 D218     		adds	r2, r2, r3
+ 1491 0a82 07F12003 		add	r3, r7, #32
+ 1492 0a86 1046     		mov	r0, r2
+ 1493 0a88 4FF00101 		mov	r1, #1
+ 1494 0a8c 1A46     		mov	r2, r3
+ 1495 0a8e 4FF00003 		mov	r3, #0
+ 1496 0a92 FFF7FEFF 		bl	packetfunctions_readAddress
+ 625:openstack/03a-IPHC/iphc.c ****          ipv6_header->header_length += 2*sizeof(uint8_t);
+ 1497              		.loc 1 625 0
+ 1498 0a96 3B68     		ldr	r3, [r7, #0]
+ 1499 0a98 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1500 0a9c 03F10203 		add	r3, r3, #2
+ 1501 0aa0 DAB2     		uxtb	r2, r3
+ 1502 0aa2 3B68     		ldr	r3, [r7, #0]
+ 1503 0aa4 83F82D20 		strb	r2, [r3, #45]
+ 626:openstack/03a-IPHC/iphc.c ****          packetfunctions_mac16bToMac64b(&temp_addr_16b,&temp_addr_64b);
+ 1504              		.loc 1 626 0
+ 1505 0aa8 07F12002 		add	r2, r7, #32
+ 1506 0aac 07F10C03 		add	r3, r7, #12
+ 1507 0ab0 1046     		mov	r0, r2
+ 1508 0ab2 1946     		mov	r1, r3
+ 1509 0ab4 FFF7FEFF 		bl	packetfunctions_mac16bToMac64b
+ 627:openstack/03a-IPHC/iphc.c ****          packetfunctions_mac64bToIp128b(idmanager_getMyID(ADDR_PREFIX),&temp_addr_64b,&ipv6_header-
+ 1510              		.loc 1 627 0
+ 1511 0ab8 4FF00500 		mov	r0, #5
+ 1512 0abc FFF7FEFF 		bl	idmanager_getMyID
+ 1513 0ac0 0146     		mov	r1, r0
+ 1514 0ac2 3B68     		ldr	r3, [r7, #0]
+ 1515 0ac4 03F10B03 		add	r3, r3, #11
+ 1516 0ac8 07F10C02 		add	r2, r7, #12
+ 1517 0acc 0846     		mov	r0, r1
+ 1518 0ace 1146     		mov	r1, r2
+ 1519 0ad0 1A46     		mov	r2, r3
+ 1520 0ad2 FFF7FEFF 		bl	packetfunctions_mac64bToIp128b
+ 628:openstack/03a-IPHC/iphc.c ****          break;
+ 1521              		.loc 1 628 0
+ 1522 0ad6 4FE0     		b	.L104
+ 1523              	.L100:
+ 629:openstack/03a-IPHC/iphc.c ****       case IPHC_SAM_64B:
+ 630:openstack/03a-IPHC/iphc.c ****          packetfunctions_readAddress(((uint8_t*)(msg->payload+ipv6_header->header_length)),ADDR_64B
+ 1524              		.loc 1 630 0
+ 1525 0ad8 7B68     		ldr	r3, [r7, #4]
+ 1526 0ada 5A68     		ldr	r2, [r3, #4]
+ 1527 0adc 3B68     		ldr	r3, [r7, #0]
+ 1528 0ade 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1529 0ae2 D218     		adds	r2, r2, r3
+ 1530 0ae4 07F10C03 		add	r3, r7, #12
+ 1531 0ae8 1046     		mov	r0, r2
+ 1532 0aea 4FF00201 		mov	r1, #2
+ 1533 0aee 1A46     		mov	r2, r3
+ 1534 0af0 4FF00003 		mov	r3, #0
+ 1535 0af4 FFF7FEFF 		bl	packetfunctions_readAddress
+ 631:openstack/03a-IPHC/iphc.c ****          ipv6_header->header_length += 8*sizeof(uint8_t);
+ 1536              		.loc 1 631 0
+ 1537 0af8 3B68     		ldr	r3, [r7, #0]
+ 1538 0afa 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1539 0afe 03F10803 		add	r3, r3, #8
+ 1540 0b02 DAB2     		uxtb	r2, r3
+ 1541 0b04 3B68     		ldr	r3, [r7, #0]
+ 1542 0b06 83F82D20 		strb	r2, [r3, #45]
+ 632:openstack/03a-IPHC/iphc.c ****          packetfunctions_mac64bToIp128b(idmanager_getMyID(ADDR_PREFIX),&temp_addr_64b,&ipv6_header-
+ 1543              		.loc 1 632 0
+ 1544 0b0a 4FF00500 		mov	r0, #5
+ 1545 0b0e FFF7FEFF 		bl	idmanager_getMyID
+ 1546 0b12 0146     		mov	r1, r0
+ 1547 0b14 3B68     		ldr	r3, [r7, #0]
+ 1548 0b16 03F10B03 		add	r3, r3, #11
+ 1549 0b1a 07F10C02 		add	r2, r7, #12
+ 1550 0b1e 0846     		mov	r0, r1
+ 1551 0b20 1146     		mov	r1, r2
+ 1552 0b22 1A46     		mov	r2, r3
+ 1553 0b24 FFF7FEFF 		bl	packetfunctions_mac64bToIp128b
+ 633:openstack/03a-IPHC/iphc.c ****          break;
+ 1554              		.loc 1 633 0
+ 1555 0b28 26E0     		b	.L104
+ 1556              	.L99:
+ 634:openstack/03a-IPHC/iphc.c ****       case IPHC_SAM_128B:
+ 635:openstack/03a-IPHC/iphc.c ****          packetfunctions_readAddress(((uint8_t*)(msg->payload+ipv6_header->header_length)),ADDR_128
+ 1557              		.loc 1 635 0
+ 1558 0b2a 7B68     		ldr	r3, [r7, #4]
+ 1559 0b2c 5A68     		ldr	r2, [r3, #4]
+ 1560 0b2e 3B68     		ldr	r3, [r7, #0]
+ 1561 0b30 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1562 0b34 D218     		adds	r2, r2, r3
+ 1563 0b36 3B68     		ldr	r3, [r7, #0]
+ 1564 0b38 03F10B03 		add	r3, r3, #11
+ 1565 0b3c 1046     		mov	r0, r2
+ 1566 0b3e 4FF00301 		mov	r1, #3
+ 1567 0b42 1A46     		mov	r2, r3
+ 1568 0b44 4FF00003 		mov	r3, #0
+ 1569 0b48 FFF7FEFF 		bl	packetfunctions_readAddress
+ 636:openstack/03a-IPHC/iphc.c ****          ipv6_header->header_length += 16*sizeof(uint8_t);
+ 1570              		.loc 1 636 0
+ 1571 0b4c 3B68     		ldr	r3, [r7, #0]
+ 1572 0b4e 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1573 0b52 03F11003 		add	r3, r3, #16
+ 1574 0b56 DAB2     		uxtb	r2, r3
+ 1575 0b58 3B68     		ldr	r3, [r7, #0]
+ 1576 0b5a 83F82D20 		strb	r2, [r3, #45]
+ 637:openstack/03a-IPHC/iphc.c ****          break;
+ 1577              		.loc 1 637 0
+ 1578 0b5e 0BE0     		b	.L104
+ 1579              	.L98:
+ 638:openstack/03a-IPHC/iphc.c ****       default:
+ 639:openstack/03a-IPHC/iphc.c ****          openserial_printError(
+ 1580              		.loc 1 639 0
+ 1581 0b60 97F83230 		ldrb	r3, [r7, #50]	@ zero_extendqisi2
+ 1582 0b64 9BB2     		uxth	r3, r3
+ 1583 0b66 4FF01100 		mov	r0, #17
+ 1584 0b6a 4FF00C01 		mov	r1, #12
+ 1585 0b6e 4FF00902 		mov	r2, #9
+ 1586 0b72 FFF7FEFF 		bl	openserial_printError
+ 640:openstack/03a-IPHC/iphc.c ****             COMPONENT_IPHC,
+ 641:openstack/03a-IPHC/iphc.c ****             ERR_6LOWPAN_UNSUPPORTED,
+ 642:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)9,
+ 643:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)sam
+ 644:openstack/03a-IPHC/iphc.c ****          );
+ 645:openstack/03a-IPHC/iphc.c ****          break;
+ 1587              		.loc 1 645 0
+ 1588 0b76 00BF     		nop
+ 1589              	.L104:
+ 646:openstack/03a-IPHC/iphc.c ****    }
+ 647:openstack/03a-IPHC/iphc.c ****    
+ 648:openstack/03a-IPHC/iphc.c ****    // destination address
+ 649:openstack/03a-IPHC/iphc.c ****    switch (dam) {
+ 1590              		.loc 1 649 0
+ 1591 0b78 97F83130 		ldrb	r3, [r7, #49]	@ zero_extendqisi2
+ 1592 0b7c 032B     		cmp	r3, #3
+ 1593 0b7e 00F29380 		bhi	.L105
+ 1594 0b82 01A2     		adr	r2, .L110
+ 1595 0b84 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 1596              		.align	2
+ 1597              	.L110:
+ 1598 0b88 730C0000 		.word	.L106+1
+ 1599 0b8c 210C0000 		.word	.L107+1
+ 1600 0b90 BF0B0000 		.word	.L108+1
+ 1601 0b94 990B0000 		.word	.L109+1
+ 1602              	.L109:
+ 650:openstack/03a-IPHC/iphc.c ****       case IPHC_DAM_ELIDED:
+ 651:openstack/03a-IPHC/iphc.c ****          packetfunctions_mac64bToIp128b(idmanager_getMyID(ADDR_PREFIX),idmanager_getMyID(ADDR_64B),
+ 1603              		.loc 1 651 0
+ 1604 0b98 4FF00500 		mov	r0, #5
+ 1605 0b9c FFF7FEFF 		bl	idmanager_getMyID
+ 1606 0ba0 0446     		mov	r4, r0
+ 1607 0ba2 4FF00200 		mov	r0, #2
+ 1608 0ba6 FFF7FEFF 		bl	idmanager_getMyID
+ 1609 0baa 0246     		mov	r2, r0
+ 1610 0bac 3B68     		ldr	r3, [r7, #0]
+ 1611 0bae 03F11C03 		add	r3, r3, #28
+ 1612 0bb2 2046     		mov	r0, r4
+ 1613 0bb4 1146     		mov	r1, r2
+ 1614 0bb6 1A46     		mov	r2, r3
+ 1615 0bb8 FFF7FEFF 		bl	packetfunctions_mac64bToIp128b
+ 652:openstack/03a-IPHC/iphc.c ****          break;
+ 1616              		.loc 1 652 0
+ 1617 0bbc 80E0     		b	.L111
+ 1618              	.L108:
+ 653:openstack/03a-IPHC/iphc.c ****       case IPHC_DAM_16B:
+ 654:openstack/03a-IPHC/iphc.c ****          packetfunctions_readAddress(((uint8_t*)(msg->payload+ipv6_header->header_length)),ADDR_16B
+ 1619              		.loc 1 654 0
+ 1620 0bbe 7B68     		ldr	r3, [r7, #4]
+ 1621 0bc0 5A68     		ldr	r2, [r3, #4]
+ 1622 0bc2 3B68     		ldr	r3, [r7, #0]
+ 1623 0bc4 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1624 0bc8 D218     		adds	r2, r2, r3
+ 1625 0bca 07F12003 		add	r3, r7, #32
+ 1626 0bce 1046     		mov	r0, r2
+ 1627 0bd0 4FF00101 		mov	r1, #1
+ 1628 0bd4 1A46     		mov	r2, r3
+ 1629 0bd6 4FF00003 		mov	r3, #0
+ 1630 0bda FFF7FEFF 		bl	packetfunctions_readAddress
+ 655:openstack/03a-IPHC/iphc.c ****          ipv6_header->header_length += 2*sizeof(uint8_t);
+ 1631              		.loc 1 655 0
+ 1632 0bde 3B68     		ldr	r3, [r7, #0]
+ 1633 0be0 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1634 0be4 03F10203 		add	r3, r3, #2
+ 1635 0be8 DAB2     		uxtb	r2, r3
+ 1636 0bea 3B68     		ldr	r3, [r7, #0]
+ 1637 0bec 83F82D20 		strb	r2, [r3, #45]
+ 656:openstack/03a-IPHC/iphc.c ****          packetfunctions_mac16bToMac64b(&temp_addr_16b,&temp_addr_64b);
+ 1638              		.loc 1 656 0
+ 1639 0bf0 07F12002 		add	r2, r7, #32
+ 1640 0bf4 07F10C03 		add	r3, r7, #12
+ 1641 0bf8 1046     		mov	r0, r2
+ 1642 0bfa 1946     		mov	r1, r3
+ 1643 0bfc FFF7FEFF 		bl	packetfunctions_mac16bToMac64b
+ 657:openstack/03a-IPHC/iphc.c ****          packetfunctions_mac64bToIp128b(idmanager_getMyID(ADDR_PREFIX),&temp_addr_64b,&ipv6_header-
+ 1644              		.loc 1 657 0
+ 1645 0c00 4FF00500 		mov	r0, #5
+ 1646 0c04 FFF7FEFF 		bl	idmanager_getMyID
+ 1647 0c08 0146     		mov	r1, r0
+ 1648 0c0a 3B68     		ldr	r3, [r7, #0]
+ 1649 0c0c 03F11C03 		add	r3, r3, #28
+ 1650 0c10 07F10C02 		add	r2, r7, #12
+ 1651 0c14 0846     		mov	r0, r1
+ 1652 0c16 1146     		mov	r1, r2
+ 1653 0c18 1A46     		mov	r2, r3
+ 1654 0c1a FFF7FEFF 		bl	packetfunctions_mac64bToIp128b
+ 658:openstack/03a-IPHC/iphc.c ****          break;
+ 1655              		.loc 1 658 0
+ 1656 0c1e 4FE0     		b	.L111
+ 1657              	.L107:
+ 659:openstack/03a-IPHC/iphc.c ****       case IPHC_DAM_64B:
+ 660:openstack/03a-IPHC/iphc.c ****          packetfunctions_readAddress(((uint8_t*)(msg->payload+ipv6_header->header_length)),ADDR_64B
+ 1658              		.loc 1 660 0
+ 1659 0c20 7B68     		ldr	r3, [r7, #4]
+ 1660 0c22 5A68     		ldr	r2, [r3, #4]
+ 1661 0c24 3B68     		ldr	r3, [r7, #0]
+ 1662 0c26 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1663 0c2a D218     		adds	r2, r2, r3
+ 1664 0c2c 07F10C03 		add	r3, r7, #12
+ 1665 0c30 1046     		mov	r0, r2
+ 1666 0c32 4FF00201 		mov	r1, #2
+ 1667 0c36 1A46     		mov	r2, r3
+ 1668 0c38 4FF00003 		mov	r3, #0
+ 1669 0c3c FFF7FEFF 		bl	packetfunctions_readAddress
+ 661:openstack/03a-IPHC/iphc.c ****          ipv6_header->header_length += 8*sizeof(uint8_t);
+ 1670              		.loc 1 661 0
+ 1671 0c40 3B68     		ldr	r3, [r7, #0]
+ 1672 0c42 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1673 0c46 03F10803 		add	r3, r3, #8
+ 1674 0c4a DAB2     		uxtb	r2, r3
+ 1675 0c4c 3B68     		ldr	r3, [r7, #0]
+ 1676 0c4e 83F82D20 		strb	r2, [r3, #45]
+ 662:openstack/03a-IPHC/iphc.c ****          packetfunctions_mac64bToIp128b(idmanager_getMyID(ADDR_PREFIX),&temp_addr_64b,&ipv6_header-
+ 1677              		.loc 1 662 0
+ 1678 0c52 4FF00500 		mov	r0, #5
+ 1679 0c56 FFF7FEFF 		bl	idmanager_getMyID
+ 1680 0c5a 0146     		mov	r1, r0
+ 1681 0c5c 3B68     		ldr	r3, [r7, #0]
+ 1682 0c5e 03F11C03 		add	r3, r3, #28
+ 1683 0c62 07F10C02 		add	r2, r7, #12
+ 1684 0c66 0846     		mov	r0, r1
+ 1685 0c68 1146     		mov	r1, r2
+ 1686 0c6a 1A46     		mov	r2, r3
+ 1687 0c6c FFF7FEFF 		bl	packetfunctions_mac64bToIp128b
+ 663:openstack/03a-IPHC/iphc.c ****          break;
+ 1688              		.loc 1 663 0
+ 1689 0c70 26E0     		b	.L111
+ 1690              	.L106:
+ 664:openstack/03a-IPHC/iphc.c ****       case IPHC_DAM_128B:
+ 665:openstack/03a-IPHC/iphc.c ****          packetfunctions_readAddress(((uint8_t*)(msg->payload+ipv6_header->header_length)),ADDR_128
+ 1691              		.loc 1 665 0
+ 1692 0c72 7B68     		ldr	r3, [r7, #4]
+ 1693 0c74 5A68     		ldr	r2, [r3, #4]
+ 1694 0c76 3B68     		ldr	r3, [r7, #0]
+ 1695 0c78 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1696 0c7c D218     		adds	r2, r2, r3
+ 1697 0c7e 3B68     		ldr	r3, [r7, #0]
+ 1698 0c80 03F11C03 		add	r3, r3, #28
+ 1699 0c84 1046     		mov	r0, r2
+ 1700 0c86 4FF00301 		mov	r1, #3
+ 1701 0c8a 1A46     		mov	r2, r3
+ 1702 0c8c 4FF00003 		mov	r3, #0
+ 1703 0c90 FFF7FEFF 		bl	packetfunctions_readAddress
+ 666:openstack/03a-IPHC/iphc.c ****          ipv6_header->header_length += 16*sizeof(uint8_t);
+ 1704              		.loc 1 666 0
+ 1705 0c94 3B68     		ldr	r3, [r7, #0]
+ 1706 0c96 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1707 0c9a 03F11003 		add	r3, r3, #16
+ 1708 0c9e DAB2     		uxtb	r2, r3
+ 1709 0ca0 3B68     		ldr	r3, [r7, #0]
+ 1710 0ca2 83F82D20 		strb	r2, [r3, #45]
+ 667:openstack/03a-IPHC/iphc.c ****          break;
+ 1711              		.loc 1 667 0
+ 1712 0ca6 0BE0     		b	.L111
+ 1713              	.L105:
+ 668:openstack/03a-IPHC/iphc.c ****       default:
+ 669:openstack/03a-IPHC/iphc.c ****          openserial_printError(
+ 1714              		.loc 1 669 0
+ 1715 0ca8 97F83130 		ldrb	r3, [r7, #49]	@ zero_extendqisi2
+ 1716 0cac 9BB2     		uxth	r3, r3
+ 1717 0cae 4FF01100 		mov	r0, #17
+ 1718 0cb2 4FF00C01 		mov	r1, #12
+ 1719 0cb6 4FF00A02 		mov	r2, #10
+ 1720 0cba FFF7FEFF 		bl	openserial_printError
+ 670:openstack/03a-IPHC/iphc.c ****             COMPONENT_IPHC,
+ 671:openstack/03a-IPHC/iphc.c ****             ERR_6LOWPAN_UNSUPPORTED,
+ 672:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)10,
+ 673:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)dam
+ 674:openstack/03a-IPHC/iphc.c ****          );
+ 675:openstack/03a-IPHC/iphc.c ****          break;
+ 1721              		.loc 1 675 0
+ 1722 0cbe 00BF     		nop
+ 1723              	.L111:
+ 676:openstack/03a-IPHC/iphc.c ****    }
+ 677:openstack/03a-IPHC/iphc.c ****    
+ 678:openstack/03a-IPHC/iphc.c ****    if (ipv6_header->next_header_compressed==TRUE) {
+ 1724              		.loc 1 678 0
+ 1725 0cc0 3B68     		ldr	r3, [r7, #0]
+ 1726 0cc2 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 1727 0cc4 002B     		cmp	r3, #0
+ 1728 0cc6 41D0     		beq	.L79
+ 679:openstack/03a-IPHC/iphc.c ****       // During the parsing of the nh field, we found that the next header was
+ 680:openstack/03a-IPHC/iphc.c ****       // compressed. We now identify which next (compressed) header this is, and
+ 681:openstack/03a-IPHC/iphc.c ****       // populate the ipv6_header->next_header field accordingly. It's the role of
+ 682:openstack/03a-IPHC/iphc.c ****       // the appropriate transport module to decompress the header.
+ 683:openstack/03a-IPHC/iphc.c ****       
+ 684:openstack/03a-IPHC/iphc.c ****       temp_8b   = *((uint8_t*)(msg->payload)+ipv6_header->header_length);
+ 1729              		.loc 1 684 0
+ 1730 0cc8 7B68     		ldr	r3, [r7, #4]
+ 1731 0cca 5A68     		ldr	r2, [r3, #4]
+ 1732 0ccc 3B68     		ldr	r3, [r7, #0]
+ 1733 0cce 93F82D30 		ldrb	r3, [r3, #45]	@ zero_extendqisi2
+ 1734 0cd2 D318     		adds	r3, r2, r3
+ 1735 0cd4 1B78     		ldrb	r3, [r3, #0]
+ 1736 0cd6 87F83730 		strb	r3, [r7, #55]
+ 685:openstack/03a-IPHC/iphc.c ****       
+ 686:openstack/03a-IPHC/iphc.c ****       if        ( (temp_8b & NHC_UDP_MASK) == NHC_UDP_ID) {
+ 1737              		.loc 1 686 0
+ 1738 0cda 97F83730 		ldrb	r3, [r7, #55]	@ zero_extendqisi2
+ 1739 0cde 03F0F803 		and	r3, r3, #248
+ 1740 0ce2 F02B     		cmp	r3, #240
+ 1741 0ce4 04D1     		bne	.L113
+ 687:openstack/03a-IPHC/iphc.c ****          ipv6_header->next_header = IANA_UDP;
+ 1742              		.loc 1 687 0
+ 1743 0ce6 3B68     		ldr	r3, [r7, #0]
+ 1744 0ce8 4FF01102 		mov	r2, #17
+ 1745 0cec 5A72     		strb	r2, [r3, #9]
+ 1746 0cee 2DE0     		b	.L79
+ 1747              	.L113:
+ 688:openstack/03a-IPHC/iphc.c ****       } else if ( (temp_8b & NHC_IPv6EXT_MASK) == NHC_IPv6EXT_ID){
+ 1748              		.loc 1 688 0
+ 1749 0cf0 97F83730 		ldrb	r3, [r7, #55]	@ zero_extendqisi2
+ 1750 0cf4 03F0F003 		and	r3, r3, #240
+ 1751 0cf8 E02B     		cmp	r3, #224
+ 1752 0cfa 19D1     		bne	.L114
+ 689:openstack/03a-IPHC/iphc.c ****          if( (temp_8b & NHC_IPv6HOP_MASK) == NHC_IPv6HOP_VAL){
+ 1753              		.loc 1 689 0
+ 1754 0cfc 97F83730 		ldrb	r3, [r7, #55]	@ zero_extendqisi2
+ 1755 0d00 03F00E03 		and	r3, r3, #14
+ 1756 0d04 0E2B     		cmp	r3, #14
+ 1757 0d06 04D1     		bne	.L115
+ 690:openstack/03a-IPHC/iphc.c ****             // hop-by-hop header
+ 691:openstack/03a-IPHC/iphc.c ****             ipv6_header->next_header = IANA_IPv6HOPOPT;
+ 1758              		.loc 1 691 0
+ 1759 0d08 3B68     		ldr	r3, [r7, #0]
+ 1760 0d0a 4FF00002 		mov	r2, #0
+ 1761 0d0e 5A72     		strb	r2, [r3, #9]
+ 1762 0d10 1CE0     		b	.L79
+ 1763              	.L115:
+ 692:openstack/03a-IPHC/iphc.c ****          } else {
+ 693:openstack/03a-IPHC/iphc.c ****             // the next header could be another IPv6 extension header
+ 694:openstack/03a-IPHC/iphc.c ****             ipv6_header->next_header = IANA_UNDEFINED;
+ 1764              		.loc 1 694 0
+ 1765 0d12 3B68     		ldr	r3, [r7, #0]
+ 1766 0d14 4FF0FA02 		mov	r2, #250
+ 1767 0d18 5A72     		strb	r2, [r3, #9]
+ 695:openstack/03a-IPHC/iphc.c ****             openserial_printError(
+ 696:openstack/03a-IPHC/iphc.c ****                COMPONENT_IPHC,
+ 697:openstack/03a-IPHC/iphc.c ****                ERR_6LOWPAN_UNSUPPORTED,
+ 698:openstack/03a-IPHC/iphc.c ****                (errorparameter_t)11,
+ 699:openstack/03a-IPHC/iphc.c ****                (errorparameter_t)ipv6_header->next_header
+ 1768              		.loc 1 699 0
+ 1769 0d1a 3B68     		ldr	r3, [r7, #0]
+ 1770 0d1c 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 695:openstack/03a-IPHC/iphc.c ****             openserial_printError(
+ 1771              		.loc 1 695 0
+ 1772 0d1e 4FF01100 		mov	r0, #17
+ 1773 0d22 4FF00C01 		mov	r1, #12
+ 1774 0d26 4FF00B02 		mov	r2, #11
+ 1775 0d2a FFF7FEFF 		bl	openserial_printError
+ 1776 0d2e 0DE0     		b	.L79
+ 1777              	.L114:
+ 700:openstack/03a-IPHC/iphc.c ****             );
+ 701:openstack/03a-IPHC/iphc.c ****          }
+ 702:openstack/03a-IPHC/iphc.c ****       } else {
+ 703:openstack/03a-IPHC/iphc.c ****          // the next header could be an IPv6 extension header, or malformed
+ 704:openstack/03a-IPHC/iphc.c ****          ipv6_header->next_header = IANA_UNDEFINED;
+ 1778              		.loc 1 704 0
+ 1779 0d30 3B68     		ldr	r3, [r7, #0]
+ 1780 0d32 4FF0FA02 		mov	r2, #250
+ 1781 0d36 5A72     		strb	r2, [r3, #9]
+ 705:openstack/03a-IPHC/iphc.c ****          openserial_printError(
+ 706:openstack/03a-IPHC/iphc.c ****             COMPONENT_IPHC,
+ 707:openstack/03a-IPHC/iphc.c ****             ERR_6LOWPAN_UNSUPPORTED,
+ 708:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)12,
+ 709:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)ipv6_header->next_header
+ 1782              		.loc 1 709 0
+ 1783 0d38 3B68     		ldr	r3, [r7, #0]
+ 1784 0d3a 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 705:openstack/03a-IPHC/iphc.c ****          openserial_printError(
+ 1785              		.loc 1 705 0
+ 1786 0d3c 4FF01100 		mov	r0, #17
+ 1787 0d40 4FF00C01 		mov	r1, #12
+ 1788 0d44 4FF00C02 		mov	r2, #12
+ 1789 0d48 FFF7FEFF 		bl	openserial_printError
+ 1790              	.L79:
+ 710:openstack/03a-IPHC/iphc.c ****          );
+ 711:openstack/03a-IPHC/iphc.c ****       }
+ 712:openstack/03a-IPHC/iphc.c ****    }
+ 713:openstack/03a-IPHC/iphc.c **** }
+ 1791              		.loc 1 713 0
+ 1792 0d4c 07F13C07 		add	r7, r7, #60
+ 1793 0d50 BD46     		mov	sp, r7
+ 1794 0d52 90BD     		pop	{r4, r7, pc}
+ 1795              		.cfi_endproc
+ 1796              	.LFE6:
+ 1798              		.align	2
+ 1799              		.global	iphc_prependIPv6HopByHopHeader
+ 1800              		.thumb
+ 1801              		.thumb_func
+ 1803              	iphc_prependIPv6HopByHopHeader:
+ 1804              	.LFB7:
+ 714:openstack/03a-IPHC/iphc.c **** 
+ 715:openstack/03a-IPHC/iphc.c **** //===== IPv6 hop-by-hop header
+ 716:openstack/03a-IPHC/iphc.c **** 
+ 717:openstack/03a-IPHC/iphc.c **** /**
+ 718:openstack/03a-IPHC/iphc.c **** \brief Prepend an IPv6 hop-by-hop header to a message.
+ 719:openstack/03a-IPHC/iphc.c **** 
+ 720:openstack/03a-IPHC/iphc.c **** \note The field are written in reverse order.
+ 721:openstack/03a-IPHC/iphc.c **** 
+ 722:openstack/03a-IPHC/iphc.c **** \param[in,out] msg             The message to prepend the header to.
+ 723:openstack/03a-IPHC/iphc.c **** \param[in]     nextheader      The next header value to use.
+ 724:openstack/03a-IPHC/iphc.c **** \param[in]     nh              Whether the next header is inline or compressed.
+ 725:openstack/03a-IPHC/iphc.c **** \param[in]     rpl_option      The RPL option to include.
+ 726:openstack/03a-IPHC/iphc.c **** */
+ 727:openstack/03a-IPHC/iphc.c **** void iphc_prependIPv6HopByHopHeader(
+ 728:openstack/03a-IPHC/iphc.c ****       OpenQueueEntry_t* msg,
+ 729:openstack/03a-IPHC/iphc.c ****       uint8_t           nextheader,
+ 730:openstack/03a-IPHC/iphc.c ****       uint8_t           nh,
+ 731:openstack/03a-IPHC/iphc.c ****       rpl_option_ht*    rpl_option
+ 732:openstack/03a-IPHC/iphc.c ****    ){
+ 1805              		.loc 1 732 0
+ 1806              		.cfi_startproc
+ 1807              		@ args = 0, pretend = 0, frame = 16
+ 1808              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1809              		@ link register save eliminated.
+ 1810 0d54 80B4     		push	{r7}
+ 1811              	.LCFI20:
+ 1812              		.cfi_def_cfa_offset 4
+ 1813              		.cfi_offset 7, -4
+ 1814 0d56 85B0     		sub	sp, sp, #20
+ 1815              	.LCFI21:
+ 1816              		.cfi_def_cfa_offset 24
+ 1817 0d58 00AF     		add	r7, sp, #0
+ 1818              	.LCFI22:
+ 1819              		.cfi_def_cfa_register 7
+ 1820 0d5a F860     		str	r0, [r7, #12]
+ 1821 0d5c 7B60     		str	r3, [r7, #4]
+ 1822 0d5e 0B46     		mov	r3, r1
+ 1823 0d60 FB72     		strb	r3, [r7, #11]
+ 1824 0d62 1346     		mov	r3, r2
+ 1825 0d64 BB72     		strb	r3, [r7, #10]
+ 733:openstack/03a-IPHC/iphc.c **** #ifndef FLOW_LABEL_RPL_DOMAIN
+ 734:openstack/03a-IPHC/iphc.c ****    // RPL option
+ 735:openstack/03a-IPHC/iphc.c ****    packetfunctions_reserveHeaderSize(msg,sizeof(rpl_option_ht));
+ 736:openstack/03a-IPHC/iphc.c ****    memcpy(msg->payload,rpl_option,sizeof(rpl_option_ht));
+ 737:openstack/03a-IPHC/iphc.c ****    
+ 738:openstack/03a-IPHC/iphc.c ****    // header length (http://tools.ietf.org/html/rfc6282#section-4.2)
+ 739:openstack/03a-IPHC/iphc.c ****    packetfunctions_reserveHeaderSize(msg,sizeof(uint8_t));
+ 740:openstack/03a-IPHC/iphc.c ****    *((uint8_t*)(msg->payload)) = sizeof(rpl_option_ht);
+ 741:openstack/03a-IPHC/iphc.c ****    
+ 742:openstack/03a-IPHC/iphc.c ****    // next header
+ 743:openstack/03a-IPHC/iphc.c ****    switch (nh) {
+ 744:openstack/03a-IPHC/iphc.c ****       case IPHC_NH_INLINE:
+ 745:openstack/03a-IPHC/iphc.c ****          // inline next header field
+ 746:openstack/03a-IPHC/iphc.c ****          packetfunctions_reserveHeaderSize(msg,sizeof(uint8_t));
+ 747:openstack/03a-IPHC/iphc.c ****          *((uint8_t*)(msg->payload)) = nextheader;
+ 748:openstack/03a-IPHC/iphc.c ****        
+ 749:openstack/03a-IPHC/iphc.c ****          // append NHC field on the extension header should be 1110 0000
+ 750:openstack/03a-IPHC/iphc.c ****          packetfunctions_reserveHeaderSize(msg,sizeof(uint8_t));
+ 751:openstack/03a-IPHC/iphc.c ****          *((uint8_t*)(msg->payload)) = NHC_IPv6EXT_ID;
+ 752:openstack/03a-IPHC/iphc.c ****          break;
+ 753:openstack/03a-IPHC/iphc.c ****       case IPHC_NH_COMPRESSED:
+ 754:openstack/03a-IPHC/iphc.c ****          packetfunctions_reserveHeaderSize(msg,sizeof(uint8_t));
+ 755:openstack/03a-IPHC/iphc.c ****          *((uint8_t*)(msg->payload)) = NHC_IPv6EXT_ID | 0x01; // mark last bit as 1
+ 756:openstack/03a-IPHC/iphc.c ****          break;
+ 757:openstack/03a-IPHC/iphc.c ****       default:
+ 758:openstack/03a-IPHC/iphc.c ****          openserial_printCritical(
+ 759:openstack/03a-IPHC/iphc.c ****             COMPONENT_IPHC,
+ 760:openstack/03a-IPHC/iphc.c ****             ERR_6LOWPAN_UNSUPPORTED,
+ 761:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)3,
+ 762:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)nh
+ 763:openstack/03a-IPHC/iphc.c ****          );
+ 764:openstack/03a-IPHC/iphc.c ****    }
+ 765:openstack/03a-IPHC/iphc.c **** #endif
+ 766:openstack/03a-IPHC/iphc.c **** }
+ 1826              		.loc 1 766 0
+ 1827 0d66 07F11407 		add	r7, r7, #20
+ 1828 0d6a BD46     		mov	sp, r7
+ 1829 0d6c 80BC     		pop	{r7}
+ 1830 0d6e 7047     		bx	lr
+ 1831              		.cfi_endproc
+ 1832              	.LFE7:
+ 1834              		.align	2
+ 1835              		.global	iphc_retrieveIPv6HopByHopHeader
+ 1836              		.thumb
+ 1837              		.thumb_func
+ 1839              	iphc_retrieveIPv6HopByHopHeader:
+ 1840              	.LFB8:
+ 767:openstack/03a-IPHC/iphc.c **** 
+ 768:openstack/03a-IPHC/iphc.c **** /**
+ 769:openstack/03a-IPHC/iphc.c **** \brief Retrieve an IPv6 hop-by-hop header from a message.
+ 770:openstack/03a-IPHC/iphc.c **** 
+ 771:openstack/03a-IPHC/iphc.c **** \param[in,out] msg             The message to retrieve the header from.
+ 772:openstack/03a-IPHC/iphc.c **** \param[out]    hopbyhop_header Pointer to the structure to hold the retrieved
+ 773:openstack/03a-IPHC/iphc.c ****    hop-by-hop option.
+ 774:openstack/03a-IPHC/iphc.c **** \param[out]    rpl_option      Pointer to the structure to hold the retrieved
+ 775:openstack/03a-IPHC/iphc.c ****    RPL option.
+ 776:openstack/03a-IPHC/iphc.c **** */
+ 777:openstack/03a-IPHC/iphc.c **** void iphc_retrieveIPv6HopByHopHeader(
+ 778:openstack/03a-IPHC/iphc.c ****       OpenQueueEntry_t*      msg,
+ 779:openstack/03a-IPHC/iphc.c ****       ipv6_hopbyhop_iht*     hopbyhop_header,
+ 780:openstack/03a-IPHC/iphc.c ****       rpl_option_ht*         rpl_option
+ 781:openstack/03a-IPHC/iphc.c ****    ){
+ 1841              		.loc 1 781 0
+ 1842              		.cfi_startproc
+ 1843              		@ args = 0, pretend = 0, frame = 16
+ 1844              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1845              		@ link register save eliminated.
+ 1846 0d70 80B4     		push	{r7}
+ 1847              	.LCFI23:
+ 1848              		.cfi_def_cfa_offset 4
+ 1849              		.cfi_offset 7, -4
+ 1850 0d72 85B0     		sub	sp, sp, #20
+ 1851              	.LCFI24:
+ 1852              		.cfi_def_cfa_offset 24
+ 1853 0d74 00AF     		add	r7, sp, #0
+ 1854              	.LCFI25:
+ 1855              		.cfi_def_cfa_register 7
+ 1856 0d76 F860     		str	r0, [r7, #12]
+ 1857 0d78 B960     		str	r1, [r7, #8]
+ 1858 0d7a 7A60     		str	r2, [r7, #4]
+ 782:openstack/03a-IPHC/iphc.c **** #ifndef FLOW_LABEL_RPL_DOMAIN
+ 783:openstack/03a-IPHC/iphc.c ****    uint8_t temp_8b;
+ 784:openstack/03a-IPHC/iphc.c ****    
+ 785:openstack/03a-IPHC/iphc.c ****    // initialize the header length (will increment at each field)
+ 786:openstack/03a-IPHC/iphc.c ****    hopbyhop_header->headerlen     = 0;
+ 787:openstack/03a-IPHC/iphc.c ****    
+ 788:openstack/03a-IPHC/iphc.c ****    hopbyhop_header->lowpan_nhc    = *((uint8_t*)(msg->payload)+ hopbyhop_header->headerlen);
+ 789:openstack/03a-IPHC/iphc.c ****    hopbyhop_header->headerlen    += sizeof(uint8_t);
+ 790:openstack/03a-IPHC/iphc.c ****    
+ 791:openstack/03a-IPHC/iphc.c ****    // next header
+ 792:openstack/03a-IPHC/iphc.c ****    switch (hopbyhop_header->lowpan_nhc & NHC_HOP_NH_MASK) {
+ 793:openstack/03a-IPHC/iphc.c ****       case IPHC_NH_INLINE:
+ 794:openstack/03a-IPHC/iphc.c ****          // full 8 bits for Next Header are carried in-line
+ 795:openstack/03a-IPHC/iphc.c ****          
+ 796:openstack/03a-IPHC/iphc.c ****          hopbyhop_header->next_header_compressed = FALSE;
+ 797:openstack/03a-IPHC/iphc.c ****          hopbyhop_header->nextHeader             = *((uint8_t*)(msg->payload)+hopbyhop_header->head
+ 798:openstack/03a-IPHC/iphc.c ****          hopbyhop_header->headerlen             += sizeof(uint8_t);
+ 799:openstack/03a-IPHC/iphc.c ****          break;
+ 800:openstack/03a-IPHC/iphc.c ****       case IPHC_NH_COMPRESSED:
+ 801:openstack/03a-IPHC/iphc.c ****          // The Next header field is compressed and the next header is encoded
+ 802:openstack/03a-IPHC/iphc.c ****          // using LOWPAN_NHC, which is discussed in Section 4.1 of RFC6282.
+ 803:openstack/03a-IPHC/iphc.c ****          // We don't parse anything here; we will look at the (compressed)
+ 804:openstack/03a-IPHC/iphc.c ****          // next header after having parsed all address fields.
+ 805:openstack/03a-IPHC/iphc.c ****          
+ 806:openstack/03a-IPHC/iphc.c ****          hopbyhop_header->next_header_compressed = TRUE;
+ 807:openstack/03a-IPHC/iphc.c ****          break;
+ 808:openstack/03a-IPHC/iphc.c ****       default:
+ 809:openstack/03a-IPHC/iphc.c ****          openserial_printError(
+ 810:openstack/03a-IPHC/iphc.c ****             COMPONENT_IPHC,
+ 811:openstack/03a-IPHC/iphc.c ****             ERR_6LOWPAN_UNSUPPORTED,
+ 812:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)7,
+ 813:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)hopbyhop_header->lowpan_nhc);
+ 814:openstack/03a-IPHC/iphc.c ****          break;
+ 815:openstack/03a-IPHC/iphc.c ****    }
+ 816:openstack/03a-IPHC/iphc.c ****    
+ 817:openstack/03a-IPHC/iphc.c ****    // option length
+ 818:openstack/03a-IPHC/iphc.c ****    hopbyhop_header->HdrExtLen     = *((uint8_t*)(msg->payload)+hopbyhop_header->headerlen);
+ 819:openstack/03a-IPHC/iphc.c ****    hopbyhop_header->headerlen    += sizeof(uint8_t);  
+ 820:openstack/03a-IPHC/iphc.c ****    
+ 821:openstack/03a-IPHC/iphc.c ****    // RPL option
+ 822:openstack/03a-IPHC/iphc.c ****    memcpy(rpl_option,((uint8_t*)(msg->payload)+hopbyhop_header->headerlen),sizeof(rpl_option_ht));
+ 823:openstack/03a-IPHC/iphc.c ****    hopbyhop_header->headerlen+= sizeof(rpl_option_ht);  
+ 824:openstack/03a-IPHC/iphc.c ****    
+ 825:openstack/03a-IPHC/iphc.c ****    // next header
+ 826:openstack/03a-IPHC/iphc.c ****    if (hopbyhop_header->next_header_compressed==TRUE) {
+ 827:openstack/03a-IPHC/iphc.c ****       // During the parsing of the nh field, we found that the next header was
+ 828:openstack/03a-IPHC/iphc.c ****       // compressed. We now identify which next (compressed) header this is,
+ 829:openstack/03a-IPHC/iphc.c ****       // and populate the hopbyhop_header.nextHeader field accordingly. It's
+ 830:openstack/03a-IPHC/iphc.c ****       // the role of the appropriate transport module to decompress the header.
+ 831:openstack/03a-IPHC/iphc.c ****       
+ 832:openstack/03a-IPHC/iphc.c ****       temp_8b   = *((uint8_t*)(msg->payload)+ hopbyhop_header->headerlen);
+ 833:openstack/03a-IPHC/iphc.c ****       
+ 834:openstack/03a-IPHC/iphc.c ****       if ( (temp_8b & NHC_UDP_MASK) == NHC_UDP_ID) {
+ 835:openstack/03a-IPHC/iphc.c ****          hopbyhop_header->nextHeader = IANA_UDP;
+ 836:openstack/03a-IPHC/iphc.c ****       } else {
+ 837:openstack/03a-IPHC/iphc.c ****          // the next header could be an IPv6 extension header, or malformed
+ 838:openstack/03a-IPHC/iphc.c ****          hopbyhop_header->nextHeader = IANA_UNDEFINED;
+ 839:openstack/03a-IPHC/iphc.c ****          
+ 840:openstack/03a-IPHC/iphc.c ****          openserial_printError(
+ 841:openstack/03a-IPHC/iphc.c ****             COMPONENT_IPHC,
+ 842:openstack/03a-IPHC/iphc.c ****             ERR_6LOWPAN_UNSUPPORTED,
+ 843:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)14,
+ 844:openstack/03a-IPHC/iphc.c ****             (errorparameter_t)hopbyhop_header->nextHeader
+ 845:openstack/03a-IPHC/iphc.c ****          );
+ 846:openstack/03a-IPHC/iphc.c ****       }
+ 847:openstack/03a-IPHC/iphc.c ****    }
+ 848:openstack/03a-IPHC/iphc.c **** #endif
+ 849:openstack/03a-IPHC/iphc.c **** }
+ 1859              		.loc 1 849 0
+ 1860 0d7c 07F11407 		add	r7, r7, #20
+ 1861 0d80 BD46     		mov	sp, r7
+ 1862 0d82 80BC     		pop	{r7}
+ 1863 0d84 7047     		bx	lr
+ 1864              		.cfi_endproc
+ 1865              	.LFE8:
+ 1867              	.Letext0:
+ 1868              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+ 1869              		.file 3 "inc/opendefs.h"
+ 1870              		.file 4 "openstack/03a-IPHC/iphc.h"
+ 1871              		.file 5 "openstack/03b-IPv6/forwarding.h"
+ 1872              		.file 6 "bsp/boards/OpenMote-CC2538/board_info.h"
+ 1873              		.file 7 "openstack/03b-IPv6/icmpv6rpl.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 iphc.c
+     /tmp/ccN2KfHZ.s:19     .rodata:00000000 $d
+     /tmp/ccN2KfHZ.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccN2KfHZ.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccN2KfHZ.s:32     .rodata:00000010 infouCName
+     /tmp/ccN2KfHZ.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccN2KfHZ.s:42     .rodata:00000024 infoStackName
+     /tmp/ccN2KfHZ.s:47     .rodata:00000030 all_routers_multicast
+     /tmp/ccN2KfHZ.s:65     .text:00000000 $t
+     /tmp/ccN2KfHZ.s:70     .text:00000000 iphc_init
+     /tmp/ccN2KfHZ.s:97     .text:0000000c iphc_sendFromForwarding
+     /tmp/ccN2KfHZ.s:608    .text:000003a0 iphc_prependIPv6Header
+     /tmp/ccN2KfHZ.s:404    .text:00000280 iphc_sendFromBridge
+     /tmp/ccN2KfHZ.s:461    .text:000002cc iphc_sendDone
+     /tmp/ccN2KfHZ.s:515    .text:00000308 iphc_receive
+     /tmp/ccN2KfHZ.s:1150   .text:000007bc iphc_retrieveIPv6Header
+     /tmp/ccN2KfHZ.s:1839   .text:00000d70 iphc_retrieveIPv6HopByHopHeader
+     /tmp/ccN2KfHZ.s:638    .text:000003c0 $d
+     /tmp/ccN2KfHZ.s:644    .text:000003d0 $t
+     /tmp/ccN2KfHZ.s:743    .text:00000494 $d
+     /tmp/ccN2KfHZ.s:749    .text:000004a4 $t
+     /tmp/ccN2KfHZ.s:1402   .text:000009c8 $d
+     /tmp/ccN2KfHZ.s:1408   .text:000009d8 $t
+     /tmp/ccN2KfHZ.s:1465   .text:00000a44 $d
+     /tmp/ccN2KfHZ.s:1471   .text:00000a54 $t
+     /tmp/ccN2KfHZ.s:1598   .text:00000b88 $d
+     /tmp/ccN2KfHZ.s:1604   .text:00000b98 $t
+     /tmp/ccN2KfHZ.s:1803   .text:00000d54 iphc_prependIPv6HopByHopHeader
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.toolchain_defs.h.2.e4ebbe6e0a48032a9b79077dc42e1ffd
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
+                           .group:00000000 wm4.iphc.h.2.17b9b21c04d4f545c9a7ba404755c4d8
+                           .group:00000000 wm4.idmanager.h.2.8c0e2159b32ef3125cbb1e984805cbfe
+                           .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
+                           .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
+                           .group:00000000 wm4.icmpv6rpl.h.2.0ce84dbe8c203c7079b39e7e96c7c01e
+                           .group:00000000 wm4.neighbors.h.15.9f35f180a0332d1bc442efb0ec51905c
+
+UNDEFINED SYMBOLS
+idmanager_getIsDAGroot
+packetfunctions_isAllRoutersMulticast
+openserial_printCritical
+openserial_printError
+packetfunctions_ip128bToMac64b
+packetfunctions_sameAddress
+neighbors_isStableNeighbor
+packetfunctions_isBroadcastMulticast
+sixtop_send
+openbridge_sendDone
+forwarding_sendDone
+packetfunctions_tossHeader
+forwarding_receive
+openbridge_receive
+packetfunctions_writeAddress
+idmanager_getMyID
+packetfunctions_reserveHeaderSize
+packetfunctions_mac64bToIp128b
+packetfunctions_readAddress
+packetfunctions_mac16bToMac64b

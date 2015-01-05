@@ -1,0 +1,582 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"sht21.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.align	2
+  19              		.global	sht21_init
+  20              		.thumb
+  21              		.thumb_func
+  23              	sht21_init:
+  24              	.LFB0:
+  25              		.file 1 "drivers/OpenMote-CC2538/sht21.c"
+   1:drivers/OpenMote-CC2538/sht21.c **** /**
+   2:drivers/OpenMote-CC2538/sht21.c ****  * \file
+   3:drivers/OpenMote-CC2538/sht21.c ****  *         Device drivers for SHT21 temperature and humidity sensor in OpenMote-CC2538.
+   4:drivers/OpenMote-CC2538/sht21.c ****  * \author
+   5:drivers/OpenMote-CC2538/sht21.c ****  *         Pere Tuset, OpenMote <peretuset@openmote.com>
+   6:drivers/OpenMote-CC2538/sht21.c ****  */
+   7:drivers/OpenMote-CC2538/sht21.c **** 
+   8:drivers/OpenMote-CC2538/sht21.c **** #include "i2c.h"
+   9:drivers/OpenMote-CC2538/sht21.c **** #include "sht21.h"
+  10:drivers/OpenMote-CC2538/sht21.c **** 
+  11:drivers/OpenMote-CC2538/sht21.c **** //=========================== define ==========================================
+  12:drivers/OpenMote-CC2538/sht21.c **** 
+  13:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_ADDRESS                   ( 0x40 )
+  14:drivers/OpenMote-CC2538/sht21.c **** 
+  15:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_USER_REG_READ             ( 0xE7 )
+  16:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_USER_REG_WRITE            ( 0xE6 )
+  17:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_USER_REG_RESERVED_BITS    ( 0x38 )
+  18:drivers/OpenMote-CC2538/sht21.c **** 
+  19:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_RESOLUTION_12b_14b        ( (0 << 7) | (0 << 0) )
+  20:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_RESOLUTION_8b_12b         ( (0 << 7) | (1 << 0) )
+  21:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_RESOLUTION_10b_13b        ( (1 << 7) | (0 << 0) )
+  22:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_RESOLUTION_11b_11b        ( (1 << 7) | (1 << 0) )
+  23:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_BATTERY_ABOVE_2V25        ( 0 << 6 )
+  24:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_BATTERY_BELOW_2V25        ( 1 << 6 )
+  25:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_ONCHIP_HEATER_ENABLE      ( 1 << 2 )
+  26:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_ONCHIP_HEATER_DISABLE     ( 0 << 2 )
+  27:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_OTP_RELOAD_ENABLE         ( 0 << 1 )
+  28:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_OTP_RELOAD_DISABLE        ( 1 << 1 )
+  29:drivers/OpenMote-CC2538/sht21.c **** 
+  30:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_TEMPERATURE_HM_CMD        ( 0xE3 )
+  31:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_HUMIDITY_HM_CMD           ( 0xE5 )
+  32:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_TEMPERATURE_NHM_CMD       ( 0xF3 )
+  33:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_HUMIDITY_NHM_CMD          ( 0xF5 )
+  34:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_RESET_CMD                 ( 0xFE )
+  35:drivers/OpenMote-CC2538/sht21.c **** 
+  36:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_DEFAULT_CONFIG            ( SHT21_RESOLUTION_12b_14b | \
+  37:drivers/OpenMote-CC2538/sht21.c ****                                           SHT21_ONCHIP_HEATER_DISABLE | \
+  38:drivers/OpenMote-CC2538/sht21.c ****                                           SHT21_BATTERY_ABOVE_2V25 | \
+  39:drivers/OpenMote-CC2538/sht21.c ****                                           SHT21_OTP_RELOAD_DISABLE )
+  40:drivers/OpenMote-CC2538/sht21.c **** 
+  41:drivers/OpenMote-CC2538/sht21.c **** #define SHT21_USER_CONFIG               ( SHT21_RESOLUTION_8b_12b | \
+  42:drivers/OpenMote-CC2538/sht21.c ****                                           SHT21_ONCHIP_HEATER_DISABLE | \
+  43:drivers/OpenMote-CC2538/sht21.c ****                                           SHT21_BATTERY_ABOVE_2V25 | \
+  44:drivers/OpenMote-CC2538/sht21.c ****                                           SHT21_OTP_RELOAD_DISABLE )
+  45:drivers/OpenMote-CC2538/sht21.c **** 
+  46:drivers/OpenMote-CC2538/sht21.c **** //=========================== variables =======================================
+  47:drivers/OpenMote-CC2538/sht21.c **** 
+  48:drivers/OpenMote-CC2538/sht21.c **** 
+  49:drivers/OpenMote-CC2538/sht21.c **** //=========================== prototypes ======================================
+  50:drivers/OpenMote-CC2538/sht21.c **** 
+  51:drivers/OpenMote-CC2538/sht21.c **** 
+  52:drivers/OpenMote-CC2538/sht21.c **** //=========================== public ==========================================
+  53:drivers/OpenMote-CC2538/sht21.c **** 
+  54:drivers/OpenMote-CC2538/sht21.c **** void sht21_init(void)
+  55:drivers/OpenMote-CC2538/sht21.c **** {
+  26              		.loc 1 55 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 8
+  29              		@ frame_needed = 1, uses_anonymous_args = 0
+  30 0000 80B5     		push	{r7, lr}
+  31              	.LCFI0:
+  32              		.cfi_def_cfa_offset 8
+  33              		.cfi_offset 7, -8
+  34              		.cfi_offset 14, -4
+  35 0002 82B0     		sub	sp, sp, #8
+  36              	.LCFI1:
+  37              		.cfi_def_cfa_offset 16
+  38 0004 00AF     		add	r7, sp, #0
+  39              	.LCFI2:
+  40              		.cfi_def_cfa_register 7
+  56:drivers/OpenMote-CC2538/sht21.c ****     uint8_t config[2];
+  57:drivers/OpenMote-CC2538/sht21.c **** 
+  58:drivers/OpenMote-CC2538/sht21.c ****     // Setup the configuration vector, the first position holds address
+  59:drivers/OpenMote-CC2538/sht21.c ****     // and the second position holds the actual configuration
+  60:drivers/OpenMote-CC2538/sht21.c ****     config[0] = SHT21_USER_REG_WRITE;
+  41              		.loc 1 60 0
+  42 0006 4FF0E603 		mov	r3, #230
+  43 000a 3B71     		strb	r3, [r7, #4]
+  61:drivers/OpenMote-CC2538/sht21.c ****     config[1] = 0;
+  44              		.loc 1 61 0
+  45 000c 4FF00003 		mov	r3, #0
+  46 0010 7B71     		strb	r3, [r7, #5]
+  62:drivers/OpenMote-CC2538/sht21.c **** 
+  63:drivers/OpenMote-CC2538/sht21.c ****     // Read the current configuration according to the datasheet (pag. 9, fig. 18)
+  64:drivers/OpenMote-CC2538/sht21.c ****     i2c_write_byte(SHT21_ADDRESS, SHT21_USER_REG_READ);
+  47              		.loc 1 64 0
+  48 0012 4FF04000 		mov	r0, #64
+  49 0016 4FF0E701 		mov	r1, #231
+  50 001a FFF7FEFF 		bl	i2c_write_byte
+  65:drivers/OpenMote-CC2538/sht21.c ****     i2c_read_byte(SHT21_ADDRESS, &config[1]);
+  51              		.loc 1 65 0
+  52 001e 07F10403 		add	r3, r7, #4
+  53 0022 03F10103 		add	r3, r3, #1
+  54 0026 4FF04000 		mov	r0, #64
+  55 002a 1946     		mov	r1, r3
+  56 002c FFF7FEFF 		bl	i2c_read_byte
+  66:drivers/OpenMote-CC2538/sht21.c **** 
+  67:drivers/OpenMote-CC2538/sht21.c ****     // Clean all the configuration bits except those reserved
+  68:drivers/OpenMote-CC2538/sht21.c ****     config[1] &= SHT21_USER_REG_RESERVED_BITS;
+  57              		.loc 1 68 0
+  58 0030 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+  59 0032 03F03803 		and	r3, r3, #56
+  60 0036 DBB2     		uxtb	r3, r3
+  61 0038 7B71     		strb	r3, [r7, #5]
+  69:drivers/OpenMote-CC2538/sht21.c **** 
+  70:drivers/OpenMote-CC2538/sht21.c ****     // Set the configuration bits without changing those reserved
+  71:drivers/OpenMote-CC2538/sht21.c ****     config[1] |= SHT21_USER_CONFIG;
+  62              		.loc 1 71 0
+  63 003a 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+  64 003c 43F00303 		orr	r3, r3, #3
+  65 0040 DBB2     		uxtb	r3, r3
+  66 0042 7B71     		strb	r3, [r7, #5]
+  72:drivers/OpenMote-CC2538/sht21.c **** 
+  73:drivers/OpenMote-CC2538/sht21.c ****     i2c_write_bytes(SHT21_ADDRESS, config, sizeof(config));
+  67              		.loc 1 73 0
+  68 0044 07F10403 		add	r3, r7, #4
+  69 0048 4FF04000 		mov	r0, #64
+  70 004c 1946     		mov	r1, r3
+  71 004e 4FF00202 		mov	r2, #2
+  72 0052 FFF7FEFF 		bl	i2c_write_bytes
+  74:drivers/OpenMote-CC2538/sht21.c **** }
+  73              		.loc 1 74 0
+  74 0056 07F10807 		add	r7, r7, #8
+  75 005a BD46     		mov	sp, r7
+  76 005c 80BD     		pop	{r7, pc}
+  77              		.cfi_endproc
+  78              	.LFE0:
+  80 005e 00BF     		.align	2
+  81              		.global	sht21_reset
+  82              		.thumb
+  83              		.thumb_func
+  85              	sht21_reset:
+  86              	.LFB1:
+  75:drivers/OpenMote-CC2538/sht21.c **** 
+  76:drivers/OpenMote-CC2538/sht21.c **** void sht21_reset(void)
+  77:drivers/OpenMote-CC2538/sht21.c **** {
+  87              		.loc 1 77 0
+  88              		.cfi_startproc
+  89              		@ args = 0, pretend = 0, frame = 0
+  90              		@ frame_needed = 1, uses_anonymous_args = 0
+  91 0060 80B5     		push	{r7, lr}
+  92              	.LCFI3:
+  93              		.cfi_def_cfa_offset 8
+  94              		.cfi_offset 7, -8
+  95              		.cfi_offset 14, -4
+  96 0062 00AF     		add	r7, sp, #0
+  97              	.LCFI4:
+  98              		.cfi_def_cfa_register 7
+  78:drivers/OpenMote-CC2538/sht21.c ****     // Send a soft-reset command according to the datasheet (pag. 9, fig. 17)
+  79:drivers/OpenMote-CC2538/sht21.c ****     i2c_write_byte(SHT21_ADDRESS, SHT21_RESET_CMD);
+  99              		.loc 1 79 0
+ 100 0064 4FF04000 		mov	r0, #64
+ 101 0068 4FF0FE01 		mov	r1, #254
+ 102 006c FFF7FEFF 		bl	i2c_write_byte
+  80:drivers/OpenMote-CC2538/sht21.c **** }
+ 103              		.loc 1 80 0
+ 104 0070 80BD     		pop	{r7, pc}
+ 105              		.cfi_endproc
+ 106              	.LFE1:
+ 108 0072 00BF     		.align	2
+ 109              		.global	sht21_is_present
+ 110              		.thumb
+ 111              		.thumb_func
+ 113              	sht21_is_present:
+ 114              	.LFB2:
+  81:drivers/OpenMote-CC2538/sht21.c **** 
+  82:drivers/OpenMote-CC2538/sht21.c **** uint8_t sht21_is_present(void)
+  83:drivers/OpenMote-CC2538/sht21.c **** {
+ 115              		.loc 1 83 0
+ 116              		.cfi_startproc
+ 117              		@ args = 0, pretend = 0, frame = 8
+ 118              		@ frame_needed = 1, uses_anonymous_args = 0
+ 119 0074 80B5     		push	{r7, lr}
+ 120              	.LCFI5:
+ 121              		.cfi_def_cfa_offset 8
+ 122              		.cfi_offset 7, -8
+ 123              		.cfi_offset 14, -4
+ 124 0076 82B0     		sub	sp, sp, #8
+ 125              	.LCFI6:
+ 126              		.cfi_def_cfa_offset 16
+ 127 0078 00AF     		add	r7, sp, #0
+ 128              	.LCFI7:
+ 129              		.cfi_def_cfa_register 7
+  84:drivers/OpenMote-CC2538/sht21.c ****     uint8_t is_present;
+  85:drivers/OpenMote-CC2538/sht21.c **** 
+  86:drivers/OpenMote-CC2538/sht21.c ****     // Read the current configuration according to the datasheet (pag. 9, fig. 18)
+  87:drivers/OpenMote-CC2538/sht21.c ****     i2c_write_byte(SHT21_ADDRESS, SHT21_USER_REG_READ);
+ 130              		.loc 1 87 0
+ 131 007a 4FF04000 		mov	r0, #64
+ 132 007e 4FF0E701 		mov	r1, #231
+ 133 0082 FFF7FEFF 		bl	i2c_write_byte
+  88:drivers/OpenMote-CC2538/sht21.c ****     i2c_read_byte(SHT21_ADDRESS, &is_present);
+ 134              		.loc 1 88 0
+ 135 0086 07F10703 		add	r3, r7, #7
+ 136 008a 4FF04000 		mov	r0, #64
+ 137 008e 1946     		mov	r1, r3
+ 138 0090 FFF7FEFF 		bl	i2c_read_byte
+  89:drivers/OpenMote-CC2538/sht21.c **** 
+  90:drivers/OpenMote-CC2538/sht21.c ****     // Clear the reserved bits according to the datasheet (pag. 9, tab. 8)
+  91:drivers/OpenMote-CC2538/sht21.c ****     is_present &= ~SHT21_USER_REG_RESERVED_BITS;
+ 139              		.loc 1 91 0
+ 140 0094 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 141 0096 23F03803 		bic	r3, r3, #56
+ 142 009a DBB2     		uxtb	r3, r3
+ 143 009c FB71     		strb	r3, [r7, #7]
+  92:drivers/OpenMote-CC2538/sht21.c **** 
+  93:drivers/OpenMote-CC2538/sht21.c ****     return (is_present == SHT21_DEFAULT_CONFIG);
+ 144              		.loc 1 93 0
+ 145 009e FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 146 00a0 022B     		cmp	r3, #2
+ 147 00a2 14BF     		ite	ne
+ 148 00a4 0023     		movne	r3, #0
+ 149 00a6 0123     		moveq	r3, #1
+ 150 00a8 DBB2     		uxtb	r3, r3
+  94:drivers/OpenMote-CC2538/sht21.c **** }
+ 151              		.loc 1 94 0
+ 152 00aa 1846     		mov	r0, r3
+ 153 00ac 07F10807 		add	r7, r7, #8
+ 154 00b0 BD46     		mov	sp, r7
+ 155 00b2 80BD     		pop	{r7, pc}
+ 156              		.cfi_endproc
+ 157              	.LFE2:
+ 159              		.align	2
+ 160              		.global	sht21_read_temperature
+ 161              		.thumb
+ 162              		.thumb_func
+ 164              	sht21_read_temperature:
+ 165              	.LFB3:
+  95:drivers/OpenMote-CC2538/sht21.c **** 
+  96:drivers/OpenMote-CC2538/sht21.c **** uint16_t sht21_read_temperature(void)
+  97:drivers/OpenMote-CC2538/sht21.c **** {
+ 166              		.loc 1 97 0
+ 167              		.cfi_startproc
+ 168              		@ args = 0, pretend = 0, frame = 8
+ 169              		@ frame_needed = 1, uses_anonymous_args = 0
+ 170 00b4 80B5     		push	{r7, lr}
+ 171              	.LCFI8:
+ 172              		.cfi_def_cfa_offset 8
+ 173              		.cfi_offset 7, -8
+ 174              		.cfi_offset 14, -4
+ 175 00b6 82B0     		sub	sp, sp, #8
+ 176              	.LCFI9:
+ 177              		.cfi_def_cfa_offset 16
+ 178 00b8 00AF     		add	r7, sp, #0
+ 179              	.LCFI10:
+ 180              		.cfi_def_cfa_register 7
+  98:drivers/OpenMote-CC2538/sht21.c ****     uint8_t sht21_temperature[2];
+  99:drivers/OpenMote-CC2538/sht21.c ****     uint16_t temperature;
+ 100:drivers/OpenMote-CC2538/sht21.c **** 
+ 101:drivers/OpenMote-CC2538/sht21.c ****     // Read the current temperature according to the datasheet (pag. 8, fig. 15)
+ 102:drivers/OpenMote-CC2538/sht21.c ****     i2c_write_byte(SHT21_ADDRESS, SHT21_TEMPERATURE_HM_CMD);
+ 181              		.loc 1 102 0
+ 182 00ba 4FF04000 		mov	r0, #64
+ 183 00be 4FF0E301 		mov	r1, #227
+ 184 00c2 FFF7FEFF 		bl	i2c_write_byte
+ 103:drivers/OpenMote-CC2538/sht21.c ****     i2c_read_bytes(SHT21_ADDRESS, sht21_temperature, sizeof(sht21_temperature));
+ 185              		.loc 1 103 0
+ 186 00c6 07F10403 		add	r3, r7, #4
+ 187 00ca 4FF04000 		mov	r0, #64
+ 188 00ce 1946     		mov	r1, r3
+ 189 00d0 4FF00202 		mov	r2, #2
+ 190 00d4 FFF7FEFF 		bl	i2c_read_bytes
+ 104:drivers/OpenMote-CC2538/sht21.c ****     
+ 105:drivers/OpenMote-CC2538/sht21.c ****     temperature = (sht21_temperature[1] << 8) | sht21_temperature[0];
+ 191              		.loc 1 105 0
+ 192 00d8 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 193 00da 4FEA0323 		lsl	r3, r3, #8
+ 194 00de 9AB2     		uxth	r2, r3
+ 195 00e0 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 196 00e2 1343     		orrs	r3, r3, r2
+ 197 00e4 9BB2     		uxth	r3, r3
+ 198 00e6 FB80     		strh	r3, [r7, #6]	@ movhi
+ 106:drivers/OpenMote-CC2538/sht21.c ****     
+ 107:drivers/OpenMote-CC2538/sht21.c ****     return temperature;
+ 199              		.loc 1 107 0
+ 200 00e8 FB88     		ldrh	r3, [r7, #6]
+ 108:drivers/OpenMote-CC2538/sht21.c **** }
+ 201              		.loc 1 108 0
+ 202 00ea 1846     		mov	r0, r3
+ 203 00ec 07F10807 		add	r7, r7, #8
+ 204 00f0 BD46     		mov	sp, r7
+ 205 00f2 80BD     		pop	{r7, pc}
+ 206              		.cfi_endproc
+ 207              	.LFE3:
+ 209              		.global	__aeabi_f2d
+ 210              		.global	__aeabi_i2d
+ 211              		.global	__aeabi_dmul
+ 212              		.global	__aeabi_ddiv
+ 213              		.global	__aeabi_dadd
+ 214              		.global	__aeabi_d2f
+ 215              		.align	2
+ 216              		.global	sht21_convert_temperature
+ 217              		.thumb
+ 218              		.thumb_func
+ 220              	sht21_convert_temperature:
+ 221              	.LFB4:
+ 109:drivers/OpenMote-CC2538/sht21.c **** 
+ 110:drivers/OpenMote-CC2538/sht21.c **** float sht21_convert_temperature(uint16_t temperature)
+ 111:drivers/OpenMote-CC2538/sht21.c **** {
+ 222              		.loc 1 111 0
+ 223              		.cfi_startproc
+ 224              		@ args = 0, pretend = 0, frame = 16
+ 225              		@ frame_needed = 1, uses_anonymous_args = 0
+ 226 00f4 B0B5     		push	{r4, r5, r7, lr}
+ 227              	.LCFI11:
+ 228              		.cfi_def_cfa_offset 16
+ 229              		.cfi_offset 4, -16
+ 230              		.cfi_offset 5, -12
+ 231              		.cfi_offset 7, -8
+ 232              		.cfi_offset 14, -4
+ 233 00f6 84B0     		sub	sp, sp, #16
+ 234              	.LCFI12:
+ 235              		.cfi_def_cfa_offset 32
+ 236 00f8 00AF     		add	r7, sp, #0
+ 237              	.LCFI13:
+ 238              		.cfi_def_cfa_register 7
+ 239 00fa 0346     		mov	r3, r0
+ 240 00fc FB80     		strh	r3, [r7, #6]	@ movhi
+ 112:drivers/OpenMote-CC2538/sht21.c ****     float result;
+ 113:drivers/OpenMote-CC2538/sht21.c ****     
+ 114:drivers/OpenMote-CC2538/sht21.c ****     result = -46.85;
+ 241              		.loc 1 114 0
+ 242 00fe 46F26663 		movw	r3, #26214
+ 243 0102 CCF23B23 		movt	r3, 49723
+ 244 0106 FB60     		str	r3, [r7, #12]	@ float
+ 115:drivers/OpenMote-CC2538/sht21.c ****     result += 175.72 * temperature / 65536;
+ 245              		.loc 1 115 0
+ 246 0108 F868     		ldr	r0, [r7, #12]	@ float
+ 247 010a FFF7FEFF 		bl	__aeabi_f2d
+ 248 010e 0446     		mov	r4, r0
+ 249 0110 0D46     		mov	r5, r1
+ 250 0112 FB88     		ldrh	r3, [r7, #6]
+ 251 0114 1846     		mov	r0, r3
+ 252 0116 FFF7FEFF 		bl	__aeabi_i2d
+ 253 011a 0246     		mov	r2, r0
+ 254 011c 0B46     		mov	r3, r1
+ 255 011e 1046     		mov	r0, r2
+ 256 0120 1946     		mov	r1, r3
+ 257 0122 13A3     		adr	r3, .L9
+ 258 0124 D3E90023 		ldrd	r2, [r3]
+ 259 0128 FFF7FEFF 		bl	__aeabi_dmul
+ 260 012c 0246     		mov	r2, r0
+ 261 012e 0B46     		mov	r3, r1
+ 262 0130 1046     		mov	r0, r2
+ 263 0132 1946     		mov	r1, r3
+ 264 0134 4FF00002 		mov	r2, #0
+ 265 0138 4FF00003 		mov	r3, #0
+ 266 013c C4F2F003 		movt	r3, 16624
+ 267 0140 FFF7FEFF 		bl	__aeabi_ddiv
+ 268 0144 0246     		mov	r2, r0
+ 269 0146 0B46     		mov	r3, r1
+ 270 0148 2046     		mov	r0, r4
+ 271 014a 2946     		mov	r1, r5
+ 272 014c FFF7FEFF 		bl	__aeabi_dadd
+ 273 0150 0246     		mov	r2, r0
+ 274 0152 0B46     		mov	r3, r1
+ 275 0154 1046     		mov	r0, r2
+ 276 0156 1946     		mov	r1, r3
+ 277 0158 FFF7FEFF 		bl	__aeabi_d2f
+ 278 015c 0346     		mov	r3, r0
+ 279 015e FB60     		str	r3, [r7, #12]	@ float
+ 116:drivers/OpenMote-CC2538/sht21.c ****     
+ 117:drivers/OpenMote-CC2538/sht21.c ****     return result;
+ 280              		.loc 1 117 0
+ 281 0160 FB68     		ldr	r3, [r7, #12]	@ float
+ 118:drivers/OpenMote-CC2538/sht21.c **** }
+ 282              		.loc 1 118 0
+ 283 0162 1846     		mov	r0, r3
+ 284 0164 07F11007 		add	r7, r7, #16
+ 285 0168 BD46     		mov	sp, r7
+ 286 016a B0BD     		pop	{r4, r5, r7, pc}
+ 287              	.L10:
+ 288 016c AFF30080 		.align	3
+ 289              	.L9:
+ 290 0170 D7A3703D 		.word	1030792151
+ 291 0174 0AF76540 		.word	1080424202
+ 292              		.cfi_endproc
+ 293              	.LFE4:
+ 295              		.align	2
+ 296              		.global	sht21_read_humidity
+ 297              		.thumb
+ 298              		.thumb_func
+ 300              	sht21_read_humidity:
+ 301              	.LFB5:
+ 119:drivers/OpenMote-CC2538/sht21.c **** 
+ 120:drivers/OpenMote-CC2538/sht21.c **** uint16_t sht21_read_humidity(void)
+ 121:drivers/OpenMote-CC2538/sht21.c **** {
+ 302              		.loc 1 121 0
+ 303              		.cfi_startproc
+ 304              		@ args = 0, pretend = 0, frame = 8
+ 305              		@ frame_needed = 1, uses_anonymous_args = 0
+ 306 0178 80B5     		push	{r7, lr}
+ 307              	.LCFI14:
+ 308              		.cfi_def_cfa_offset 8
+ 309              		.cfi_offset 7, -8
+ 310              		.cfi_offset 14, -4
+ 311 017a 82B0     		sub	sp, sp, #8
+ 312              	.LCFI15:
+ 313              		.cfi_def_cfa_offset 16
+ 314 017c 00AF     		add	r7, sp, #0
+ 315              	.LCFI16:
+ 316              		.cfi_def_cfa_register 7
+ 122:drivers/OpenMote-CC2538/sht21.c ****     uint8_t sht21_humidity[2];
+ 123:drivers/OpenMote-CC2538/sht21.c ****     uint16_t humidity;
+ 124:drivers/OpenMote-CC2538/sht21.c **** 
+ 125:drivers/OpenMote-CC2538/sht21.c ****     // Read the current humidity according to the datasheet (pag. 8, fig. 15)
+ 126:drivers/OpenMote-CC2538/sht21.c ****     i2c_write_byte(SHT21_ADDRESS, SHT21_HUMIDITY_HM_CMD);
+ 317              		.loc 1 126 0
+ 318 017e 4FF04000 		mov	r0, #64
+ 319 0182 4FF0E501 		mov	r1, #229
+ 320 0186 FFF7FEFF 		bl	i2c_write_byte
+ 127:drivers/OpenMote-CC2538/sht21.c ****     i2c_read_bytes(SHT21_ADDRESS, sht21_humidity, sizeof(sht21_humidity));
+ 321              		.loc 1 127 0
+ 322 018a 07F10403 		add	r3, r7, #4
+ 323 018e 4FF04000 		mov	r0, #64
+ 324 0192 1946     		mov	r1, r3
+ 325 0194 4FF00202 		mov	r2, #2
+ 326 0198 FFF7FEFF 		bl	i2c_read_bytes
+ 128:drivers/OpenMote-CC2538/sht21.c **** 
+ 129:drivers/OpenMote-CC2538/sht21.c ****     humidity = (sht21_humidity[1] << 8) | sht21_humidity[0];
+ 327              		.loc 1 129 0
+ 328 019c 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 329 019e 4FEA0323 		lsl	r3, r3, #8
+ 330 01a2 9AB2     		uxth	r2, r3
+ 331 01a4 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 332 01a6 1343     		orrs	r3, r3, r2
+ 333 01a8 9BB2     		uxth	r3, r3
+ 334 01aa FB80     		strh	r3, [r7, #6]	@ movhi
+ 130:drivers/OpenMote-CC2538/sht21.c **** 
+ 131:drivers/OpenMote-CC2538/sht21.c ****     return humidity;
+ 335              		.loc 1 131 0
+ 336 01ac FB88     		ldrh	r3, [r7, #6]
+ 132:drivers/OpenMote-CC2538/sht21.c **** }
+ 337              		.loc 1 132 0
+ 338 01ae 1846     		mov	r0, r3
+ 339 01b0 07F10807 		add	r7, r7, #8
+ 340 01b4 BD46     		mov	sp, r7
+ 341 01b6 80BD     		pop	{r7, pc}
+ 342              		.cfi_endproc
+ 343              	.LFE5:
+ 345              		.align	2
+ 346              		.global	sht21_convert_humidity
+ 347              		.thumb
+ 348              		.thumb_func
+ 350              	sht21_convert_humidity:
+ 351              	.LFB6:
+ 133:drivers/OpenMote-CC2538/sht21.c **** 
+ 134:drivers/OpenMote-CC2538/sht21.c **** float sht21_convert_humidity(uint16_t humidity)
+ 135:drivers/OpenMote-CC2538/sht21.c **** {
+ 352              		.loc 1 135 0
+ 353              		.cfi_startproc
+ 354              		@ args = 0, pretend = 0, frame = 16
+ 355              		@ frame_needed = 1, uses_anonymous_args = 0
+ 356 01b8 B0B5     		push	{r4, r5, r7, lr}
+ 357              	.LCFI17:
+ 358              		.cfi_def_cfa_offset 16
+ 359              		.cfi_offset 4, -16
+ 360              		.cfi_offset 5, -12
+ 361              		.cfi_offset 7, -8
+ 362              		.cfi_offset 14, -4
+ 363 01ba 84B0     		sub	sp, sp, #16
+ 364              	.LCFI18:
+ 365              		.cfi_def_cfa_offset 32
+ 366 01bc 00AF     		add	r7, sp, #0
+ 367              	.LCFI19:
+ 368              		.cfi_def_cfa_register 7
+ 369 01be 0346     		mov	r3, r0
+ 370 01c0 FB80     		strh	r3, [r7, #6]	@ movhi
+ 136:drivers/OpenMote-CC2538/sht21.c ****     float result;
+ 137:drivers/OpenMote-CC2538/sht21.c ****     
+ 138:drivers/OpenMote-CC2538/sht21.c ****     result = -6.0;
+ 371              		.loc 1 138 0
+ 372 01c2 4FF00003 		mov	r3, #0
+ 373 01c6 CCF2C003 		movt	r3, 49344
+ 374 01ca FB60     		str	r3, [r7, #12]	@ float
+ 139:drivers/OpenMote-CC2538/sht21.c ****     result += 125.0 * humidity / 65536;
+ 375              		.loc 1 139 0
+ 376 01cc F868     		ldr	r0, [r7, #12]	@ float
+ 377 01ce FFF7FEFF 		bl	__aeabi_f2d
+ 378 01d2 0446     		mov	r4, r0
+ 379 01d4 0D46     		mov	r5, r1
+ 380 01d6 FB88     		ldrh	r3, [r7, #6]
+ 381 01d8 1846     		mov	r0, r3
+ 382 01da FFF7FEFF 		bl	__aeabi_i2d
+ 383 01de 0246     		mov	r2, r0
+ 384 01e0 0B46     		mov	r3, r1
+ 385 01e2 1046     		mov	r0, r2
+ 386 01e4 1946     		mov	r1, r3
+ 387 01e6 4FF00002 		mov	r2, #0
+ 388 01ea 4FF48043 		mov	r3, #16384
+ 389 01ee C4F25F03 		movt	r3, 16479
+ 390 01f2 FFF7FEFF 		bl	__aeabi_dmul
+ 391 01f6 0246     		mov	r2, r0
+ 392 01f8 0B46     		mov	r3, r1
+ 393 01fa 1046     		mov	r0, r2
+ 394 01fc 1946     		mov	r1, r3
+ 395 01fe 4FF00002 		mov	r2, #0
+ 396 0202 4FF00003 		mov	r3, #0
+ 397 0206 C4F2F003 		movt	r3, 16624
+ 398 020a FFF7FEFF 		bl	__aeabi_ddiv
+ 399 020e 0246     		mov	r2, r0
+ 400 0210 0B46     		mov	r3, r1
+ 401 0212 2046     		mov	r0, r4
+ 402 0214 2946     		mov	r1, r5
+ 403 0216 FFF7FEFF 		bl	__aeabi_dadd
+ 404 021a 0246     		mov	r2, r0
+ 405 021c 0B46     		mov	r3, r1
+ 406 021e 1046     		mov	r0, r2
+ 407 0220 1946     		mov	r1, r3
+ 408 0222 FFF7FEFF 		bl	__aeabi_d2f
+ 409 0226 0346     		mov	r3, r0
+ 410 0228 FB60     		str	r3, [r7, #12]	@ float
+ 140:drivers/OpenMote-CC2538/sht21.c ****     
+ 141:drivers/OpenMote-CC2538/sht21.c ****     return result;
+ 411              		.loc 1 141 0
+ 412 022a FB68     		ldr	r3, [r7, #12]	@ float
+ 142:drivers/OpenMote-CC2538/sht21.c **** }
+ 413              		.loc 1 142 0
+ 414 022c 1846     		mov	r0, r3
+ 415 022e 07F11007 		add	r7, r7, #16
+ 416 0232 BD46     		mov	sp, r7
+ 417 0234 B0BD     		pop	{r4, r5, r7, pc}
+ 418              		.cfi_endproc
+ 419              	.LFE6:
+ 421              	.Letext0:
+ 422              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+DEFINED SYMBOLS
+                            *ABS*:00000000 sht21.c
+     /tmp/ccmTSd77.s:18     .text:00000000 $t
+     /tmp/ccmTSd77.s:23     .text:00000000 sht21_init
+     /tmp/ccmTSd77.s:85     .text:00000060 sht21_reset
+     /tmp/ccmTSd77.s:113    .text:00000074 sht21_is_present
+     /tmp/ccmTSd77.s:164    .text:000000b4 sht21_read_temperature
+     /tmp/ccmTSd77.s:220    .text:000000f4 sht21_convert_temperature
+     /tmp/ccmTSd77.s:290    .text:00000170 $d
+     /tmp/ccmTSd77.s:295    .text:00000178 $t
+     /tmp/ccmTSd77.s:300    .text:00000178 sht21_read_humidity
+     /tmp/ccmTSd77.s:350    .text:000001b8 sht21_convert_humidity
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.i2c.h.15.8e849f5fcf39557ec3e120a857902900
+
+UNDEFINED SYMBOLS
+i2c_write_byte
+i2c_read_byte
+i2c_write_bytes
+i2c_read_bytes
+__aeabi_f2d
+__aeabi_i2d
+__aeabi_dmul
+__aeabi_ddiv
+__aeabi_dadd
+__aeabi_d2f

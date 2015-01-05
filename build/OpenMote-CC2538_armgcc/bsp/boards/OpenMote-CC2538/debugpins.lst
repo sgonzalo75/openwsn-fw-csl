@@ -1,0 +1,813 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"debugpins.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.text
+  40              		.align	2
+  41              		.global	debugpins_init
+  42              		.thumb
+  43              		.thumb_func
+  45              	debugpins_init:
+  46              	.LFB0:
+  47              		.file 1 "bsp/boards/OpenMote-CC2538/debugpins.c"
+   1:bsp/boards/OpenMote-CC2538/debugpins.c **** /**
+   2:bsp/boards/OpenMote-CC2538/debugpins.c ****  * Author: Xavier Vilajosana (xvilajosana@eecs.berkeley.edu)
+   3:bsp/boards/OpenMote-CC2538/debugpins.c ****  *         Pere Tuset (peretuset@openmote.com)
+   4:bsp/boards/OpenMote-CC2538/debugpins.c ****  * Date:   July 2013
+   5:bsp/boards/OpenMote-CC2538/debugpins.c ****  * Description: CC2538-specific definition of the "debugpins" bsp module.
+   6:bsp/boards/OpenMote-CC2538/debugpins.c ****  */
+   7:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+   8:bsp/boards/OpenMote-CC2538/debugpins.c **** #include <headers/hw_memmap.h>
+   9:bsp/boards/OpenMote-CC2538/debugpins.c **** #include <headers/hw_types.h>
+  10:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  11:bsp/boards/OpenMote-CC2538/debugpins.c **** #include "debugpins.h"
+  12:bsp/boards/OpenMote-CC2538/debugpins.c **** #include "gpio.h"
+  13:bsp/boards/OpenMote-CC2538/debugpins.c **** #include "board.h"
+  14:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  15:bsp/boards/OpenMote-CC2538/debugpins.c **** //=========================== defines =========================================
+  16:bsp/boards/OpenMote-CC2538/debugpins.c **** // Board dbPINS defines
+  17:bsp/boards/OpenMote-CC2538/debugpins.c **** #define BSP_PINA_BASE           GPIO_A_BASE
+  18:bsp/boards/OpenMote-CC2538/debugpins.c **** #define BSP_PIND_BASE           GPIO_D_BASE
+  19:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  20:bsp/boards/OpenMote-CC2538/debugpins.c **** #define BSP_PINA_4              GPIO_PIN_4      //!< PA4 -- frame -RF1.5
+  21:bsp/boards/OpenMote-CC2538/debugpins.c **** #define BSP_PINA_5              GPIO_PIN_5      //!< PA5 -- isr   -RF1.11
+  22:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  23:bsp/boards/OpenMote-CC2538/debugpins.c **** #define BSP_PIND_3              GPIO_PIN_3      //!< PD3 -- slot  -RF1.6
+  24:bsp/boards/OpenMote-CC2538/debugpins.c **** #define BSP_PIND_2              GPIO_PIN_2      //!< PD2 -- fsm   -RF1.8
+  25:bsp/boards/OpenMote-CC2538/debugpins.c **** #define BSP_PIND_1              GPIO_PIN_1      //!< PD1 -- task  -RF1.10
+  26:bsp/boards/OpenMote-CC2538/debugpins.c **** #define BSP_PIND_0              GPIO_PIN_0      //!< PD0 -- radio -RF1-12
+  27:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  28:bsp/boards/OpenMote-CC2538/debugpins.c **** //=========================== variables =======================================
+  29:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  30:bsp/boards/OpenMote-CC2538/debugpins.c **** //=========================== prototypes ======================================
+  31:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  32:bsp/boards/OpenMote-CC2538/debugpins.c **** void bspDBpinToggle(uint32_t base,uint8_t ui8Pin);
+  33:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  34:bsp/boards/OpenMote-CC2538/debugpins.c **** //=========================== public ==========================================
+  35:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  36:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_init() {
+  48              		.loc 1 36 0
+  49              		.cfi_startproc
+  50              		@ args = 0, pretend = 0, frame = 0
+  51              		@ frame_needed = 1, uses_anonymous_args = 0
+  52 0000 80B5     		push	{r7, lr}
+  53              	.LCFI0:
+  54              		.cfi_def_cfa_offset 8
+  55              		.cfi_offset 7, -8
+  56              		.cfi_offset 14, -4
+  57 0002 00AF     		add	r7, sp, #0
+  58              	.LCFI1:
+  59              		.cfi_def_cfa_register 7
+  37:bsp/boards/OpenMote-CC2538/debugpins.c ****    GPIOPinTypeGPIOOutput(BSP_PINA_BASE, BSP_PINA_4 | BSP_PINA_5);
+  60              		.loc 1 37 0
+  61 0004 4FF41040 		mov	r0, #36864
+  62 0008 C4F20D00 		movt	r0, 16397
+  63 000c 4FF03001 		mov	r1, #48
+  64 0010 FFF7FEFF 		bl	GPIOPinTypeGPIOOutput
+  38:bsp/boards/OpenMote-CC2538/debugpins.c ****    GPIOPinTypeGPIOOutput(BSP_PIND_BASE, BSP_PIND_3 | BSP_PIND_2 | BSP_PIND_1 | BSP_PIND_0);
+  65              		.loc 1 38 0
+  66 0014 4FF44040 		mov	r0, #49152
+  67 0018 C4F20D00 		movt	r0, 16397
+  68 001c 4FF00F01 		mov	r1, #15
+  69 0020 FFF7FEFF 		bl	GPIOPinTypeGPIOOutput
+  39:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  40:bsp/boards/OpenMote-CC2538/debugpins.c ****    GPIOPinWrite(BSP_PINA_BASE, (BSP_PINA_4 | BSP_PINA_5), 0x00);
+  70              		.loc 1 40 0
+  71 0024 4FF41040 		mov	r0, #36864
+  72 0028 C4F20D00 		movt	r0, 16397
+  73 002c 4FF03001 		mov	r1, #48
+  74 0030 4FF00002 		mov	r2, #0
+  75 0034 FFF7FEFF 		bl	GPIOPinWrite
+  41:bsp/boards/OpenMote-CC2538/debugpins.c ****    GPIOPinWrite(BSP_PIND_BASE, (BSP_PIND_3 | BSP_PIND_2 | BSP_PIND_1 | BSP_PIND_0), 0);
+  76              		.loc 1 41 0
+  77 0038 4FF44040 		mov	r0, #49152
+  78 003c C4F20D00 		movt	r0, 16397
+  79 0040 4FF00F01 		mov	r1, #15
+  80 0044 4FF00002 		mov	r2, #0
+  81 0048 FFF7FEFF 		bl	GPIOPinWrite
+  42:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+  82              		.loc 1 42 0
+  83 004c 80BD     		pop	{r7, pc}
+  84              		.cfi_endproc
+  85              	.LFE0:
+  87 004e 00BF     		.align	2
+  88              		.global	debugpins_frame_toggle
+  89              		.thumb
+  90              		.thumb_func
+  92              	debugpins_frame_toggle:
+  93              	.LFB1:
+  43:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  44:bsp/boards/OpenMote-CC2538/debugpins.c **** // PA4
+  45:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_frame_toggle() {
+  94              		.loc 1 45 0
+  95              		.cfi_startproc
+  96              		@ args = 0, pretend = 0, frame = 0
+  97              		@ frame_needed = 1, uses_anonymous_args = 0
+  98 0050 80B5     		push	{r7, lr}
+  99              	.LCFI2:
+ 100              		.cfi_def_cfa_offset 8
+ 101              		.cfi_offset 7, -8
+ 102              		.cfi_offset 14, -4
+ 103 0052 00AF     		add	r7, sp, #0
+ 104              	.LCFI3:
+ 105              		.cfi_def_cfa_register 7
+  46:bsp/boards/OpenMote-CC2538/debugpins.c ****    bspDBpinToggle(BSP_PINA_BASE, BSP_PINA_4);
+ 106              		.loc 1 46 0
+ 107 0054 4FF41040 		mov	r0, #36864
+ 108 0058 C4F20D00 		movt	r0, 16397
+ 109 005c 4FF01001 		mov	r1, #16
+ 110 0060 FFF7FEFF 		bl	bspDBpinToggle
+  47:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 111              		.loc 1 47 0
+ 112 0064 80BD     		pop	{r7, pc}
+ 113              		.cfi_endproc
+ 114              	.LFE1:
+ 116 0066 00BF     		.align	2
+ 117              		.global	debugpins_frame_clr
+ 118              		.thumb
+ 119              		.thumb_func
+ 121              	debugpins_frame_clr:
+ 122              	.LFB2:
+  48:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_frame_clr() {
+ 123              		.loc 1 48 0
+ 124              		.cfi_startproc
+ 125              		@ args = 0, pretend = 0, frame = 0
+ 126              		@ frame_needed = 1, uses_anonymous_args = 0
+ 127 0068 80B5     		push	{r7, lr}
+ 128              	.LCFI4:
+ 129              		.cfi_def_cfa_offset 8
+ 130              		.cfi_offset 7, -8
+ 131              		.cfi_offset 14, -4
+ 132 006a 00AF     		add	r7, sp, #0
+ 133              	.LCFI5:
+ 134              		.cfi_def_cfa_register 7
+  49:bsp/boards/OpenMote-CC2538/debugpins.c ****     GPIOPinWrite(BSP_PINA_BASE, BSP_PINA_4, 0);
+ 135              		.loc 1 49 0
+ 136 006c 4FF41040 		mov	r0, #36864
+ 137 0070 C4F20D00 		movt	r0, 16397
+ 138 0074 4FF01001 		mov	r1, #16
+ 139 0078 4FF00002 		mov	r2, #0
+ 140 007c FFF7FEFF 		bl	GPIOPinWrite
+  50:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 141              		.loc 1 50 0
+ 142 0080 80BD     		pop	{r7, pc}
+ 143              		.cfi_endproc
+ 144              	.LFE2:
+ 146 0082 00BF     		.align	2
+ 147              		.global	debugpins_frame_set
+ 148              		.thumb
+ 149              		.thumb_func
+ 151              	debugpins_frame_set:
+ 152              	.LFB3:
+  51:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_frame_set() {
+ 153              		.loc 1 51 0
+ 154              		.cfi_startproc
+ 155              		@ args = 0, pretend = 0, frame = 0
+ 156              		@ frame_needed = 1, uses_anonymous_args = 0
+ 157 0084 80B5     		push	{r7, lr}
+ 158              	.LCFI6:
+ 159              		.cfi_def_cfa_offset 8
+ 160              		.cfi_offset 7, -8
+ 161              		.cfi_offset 14, -4
+ 162 0086 00AF     		add	r7, sp, #0
+ 163              	.LCFI7:
+ 164              		.cfi_def_cfa_register 7
+  52:bsp/boards/OpenMote-CC2538/debugpins.c ****    GPIOPinWrite(BSP_PINA_BASE, BSP_PINA_4, BSP_PINA_4);
+ 165              		.loc 1 52 0
+ 166 0088 4FF41040 		mov	r0, #36864
+ 167 008c C4F20D00 		movt	r0, 16397
+ 168 0090 4FF01001 		mov	r1, #16
+ 169 0094 4FF01002 		mov	r2, #16
+ 170 0098 FFF7FEFF 		bl	GPIOPinWrite
+  53:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 171              		.loc 1 53 0
+ 172 009c 80BD     		pop	{r7, pc}
+ 173              		.cfi_endproc
+ 174              	.LFE3:
+ 176 009e 00BF     		.align	2
+ 177              		.global	debugpins_slot_toggle
+ 178              		.thumb
+ 179              		.thumb_func
+ 181              	debugpins_slot_toggle:
+ 182              	.LFB4:
+  54:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  55:bsp/boards/OpenMote-CC2538/debugpins.c **** // PD3
+  56:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_slot_toggle() {
+ 183              		.loc 1 56 0
+ 184              		.cfi_startproc
+ 185              		@ args = 0, pretend = 0, frame = 0
+ 186              		@ frame_needed = 1, uses_anonymous_args = 0
+ 187 00a0 80B5     		push	{r7, lr}
+ 188              	.LCFI8:
+ 189              		.cfi_def_cfa_offset 8
+ 190              		.cfi_offset 7, -8
+ 191              		.cfi_offset 14, -4
+ 192 00a2 00AF     		add	r7, sp, #0
+ 193              	.LCFI9:
+ 194              		.cfi_def_cfa_register 7
+  57:bsp/boards/OpenMote-CC2538/debugpins.c **** 	bspDBpinToggle(BSP_PIND_BASE, BSP_PIND_3);
+ 195              		.loc 1 57 0
+ 196 00a4 4FF44040 		mov	r0, #49152
+ 197 00a8 C4F20D00 		movt	r0, 16397
+ 198 00ac 4FF00801 		mov	r1, #8
+ 199 00b0 FFF7FEFF 		bl	bspDBpinToggle
+  58:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 200              		.loc 1 58 0
+ 201 00b4 80BD     		pop	{r7, pc}
+ 202              		.cfi_endproc
+ 203              	.LFE4:
+ 205 00b6 00BF     		.align	2
+ 206              		.global	debugpins_slot_clr
+ 207              		.thumb
+ 208              		.thumb_func
+ 210              	debugpins_slot_clr:
+ 211              	.LFB5:
+  59:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_slot_clr() {
+ 212              		.loc 1 59 0
+ 213              		.cfi_startproc
+ 214              		@ args = 0, pretend = 0, frame = 0
+ 215              		@ frame_needed = 1, uses_anonymous_args = 0
+ 216 00b8 80B5     		push	{r7, lr}
+ 217              	.LCFI10:
+ 218              		.cfi_def_cfa_offset 8
+ 219              		.cfi_offset 7, -8
+ 220              		.cfi_offset 14, -4
+ 221 00ba 00AF     		add	r7, sp, #0
+ 222              	.LCFI11:
+ 223              		.cfi_def_cfa_register 7
+  60:bsp/boards/OpenMote-CC2538/debugpins.c **** 	GPIOPinWrite(BSP_PIND_BASE, BSP_PIND_3, 0);
+ 224              		.loc 1 60 0
+ 225 00bc 4FF44040 		mov	r0, #49152
+ 226 00c0 C4F20D00 		movt	r0, 16397
+ 227 00c4 4FF00801 		mov	r1, #8
+ 228 00c8 4FF00002 		mov	r2, #0
+ 229 00cc FFF7FEFF 		bl	GPIOPinWrite
+  61:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 230              		.loc 1 61 0
+ 231 00d0 80BD     		pop	{r7, pc}
+ 232              		.cfi_endproc
+ 233              	.LFE5:
+ 235 00d2 00BF     		.align	2
+ 236              		.global	debugpins_slot_set
+ 237              		.thumb
+ 238              		.thumb_func
+ 240              	debugpins_slot_set:
+ 241              	.LFB6:
+  62:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_slot_set() {
+ 242              		.loc 1 62 0
+ 243              		.cfi_startproc
+ 244              		@ args = 0, pretend = 0, frame = 0
+ 245              		@ frame_needed = 1, uses_anonymous_args = 0
+ 246 00d4 80B5     		push	{r7, lr}
+ 247              	.LCFI12:
+ 248              		.cfi_def_cfa_offset 8
+ 249              		.cfi_offset 7, -8
+ 250              		.cfi_offset 14, -4
+ 251 00d6 00AF     		add	r7, sp, #0
+ 252              	.LCFI13:
+ 253              		.cfi_def_cfa_register 7
+  63:bsp/boards/OpenMote-CC2538/debugpins.c **** 	GPIOPinWrite(BSP_PIND_BASE, BSP_PIND_3, BSP_PIND_3);
+ 254              		.loc 1 63 0
+ 255 00d8 4FF44040 		mov	r0, #49152
+ 256 00dc C4F20D00 		movt	r0, 16397
+ 257 00e0 4FF00801 		mov	r1, #8
+ 258 00e4 4FF00802 		mov	r2, #8
+ 259 00e8 FFF7FEFF 		bl	GPIOPinWrite
+  64:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 260              		.loc 1 64 0
+ 261 00ec 80BD     		pop	{r7, pc}
+ 262              		.cfi_endproc
+ 263              	.LFE6:
+ 265 00ee 00BF     		.align	2
+ 266              		.global	debugpins_fsm_toggle
+ 267              		.thumb
+ 268              		.thumb_func
+ 270              	debugpins_fsm_toggle:
+ 271              	.LFB7:
+  65:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  66:bsp/boards/OpenMote-CC2538/debugpins.c **** // PD2
+  67:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_fsm_toggle() {
+ 272              		.loc 1 67 0
+ 273              		.cfi_startproc
+ 274              		@ args = 0, pretend = 0, frame = 0
+ 275              		@ frame_needed = 1, uses_anonymous_args = 0
+ 276 00f0 80B5     		push	{r7, lr}
+ 277              	.LCFI14:
+ 278              		.cfi_def_cfa_offset 8
+ 279              		.cfi_offset 7, -8
+ 280              		.cfi_offset 14, -4
+ 281 00f2 00AF     		add	r7, sp, #0
+ 282              	.LCFI15:
+ 283              		.cfi_def_cfa_register 7
+  68:bsp/boards/OpenMote-CC2538/debugpins.c **** 	bspDBpinToggle(BSP_PIND_BASE, BSP_PIND_2);
+ 284              		.loc 1 68 0
+ 285 00f4 4FF44040 		mov	r0, #49152
+ 286 00f8 C4F20D00 		movt	r0, 16397
+ 287 00fc 4FF00401 		mov	r1, #4
+ 288 0100 FFF7FEFF 		bl	bspDBpinToggle
+  69:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 289              		.loc 1 69 0
+ 290 0104 80BD     		pop	{r7, pc}
+ 291              		.cfi_endproc
+ 292              	.LFE7:
+ 294 0106 00BF     		.align	2
+ 295              		.global	debugpins_fsm_clr
+ 296              		.thumb
+ 297              		.thumb_func
+ 299              	debugpins_fsm_clr:
+ 300              	.LFB8:
+  70:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_fsm_clr() {
+ 301              		.loc 1 70 0
+ 302              		.cfi_startproc
+ 303              		@ args = 0, pretend = 0, frame = 0
+ 304              		@ frame_needed = 1, uses_anonymous_args = 0
+ 305 0108 80B5     		push	{r7, lr}
+ 306              	.LCFI16:
+ 307              		.cfi_def_cfa_offset 8
+ 308              		.cfi_offset 7, -8
+ 309              		.cfi_offset 14, -4
+ 310 010a 00AF     		add	r7, sp, #0
+ 311              	.LCFI17:
+ 312              		.cfi_def_cfa_register 7
+  71:bsp/boards/OpenMote-CC2538/debugpins.c **** 	GPIOPinWrite(BSP_PIND_BASE, BSP_PIND_2, 0);
+ 313              		.loc 1 71 0
+ 314 010c 4FF44040 		mov	r0, #49152
+ 315 0110 C4F20D00 		movt	r0, 16397
+ 316 0114 4FF00401 		mov	r1, #4
+ 317 0118 4FF00002 		mov	r2, #0
+ 318 011c FFF7FEFF 		bl	GPIOPinWrite
+  72:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 319              		.loc 1 72 0
+ 320 0120 80BD     		pop	{r7, pc}
+ 321              		.cfi_endproc
+ 322              	.LFE8:
+ 324 0122 00BF     		.align	2
+ 325              		.global	debugpins_fsm_set
+ 326              		.thumb
+ 327              		.thumb_func
+ 329              	debugpins_fsm_set:
+ 330              	.LFB9:
+  73:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_fsm_set() {
+ 331              		.loc 1 73 0
+ 332              		.cfi_startproc
+ 333              		@ args = 0, pretend = 0, frame = 0
+ 334              		@ frame_needed = 1, uses_anonymous_args = 0
+ 335 0124 80B5     		push	{r7, lr}
+ 336              	.LCFI18:
+ 337              		.cfi_def_cfa_offset 8
+ 338              		.cfi_offset 7, -8
+ 339              		.cfi_offset 14, -4
+ 340 0126 00AF     		add	r7, sp, #0
+ 341              	.LCFI19:
+ 342              		.cfi_def_cfa_register 7
+  74:bsp/boards/OpenMote-CC2538/debugpins.c **** 	GPIOPinWrite(BSP_PIND_BASE, BSP_PIND_2, BSP_PIND_2);
+ 343              		.loc 1 74 0
+ 344 0128 4FF44040 		mov	r0, #49152
+ 345 012c C4F20D00 		movt	r0, 16397
+ 346 0130 4FF00401 		mov	r1, #4
+ 347 0134 4FF00402 		mov	r2, #4
+ 348 0138 FFF7FEFF 		bl	GPIOPinWrite
+  75:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 349              		.loc 1 75 0
+ 350 013c 80BD     		pop	{r7, pc}
+ 351              		.cfi_endproc
+ 352              	.LFE9:
+ 354 013e 00BF     		.align	2
+ 355              		.global	debugpins_task_toggle
+ 356              		.thumb
+ 357              		.thumb_func
+ 359              	debugpins_task_toggle:
+ 360              	.LFB10:
+  76:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  77:bsp/boards/OpenMote-CC2538/debugpins.c **** // PD1
+  78:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_task_toggle() {
+ 361              		.loc 1 78 0
+ 362              		.cfi_startproc
+ 363              		@ args = 0, pretend = 0, frame = 0
+ 364              		@ frame_needed = 1, uses_anonymous_args = 0
+ 365 0140 80B5     		push	{r7, lr}
+ 366              	.LCFI20:
+ 367              		.cfi_def_cfa_offset 8
+ 368              		.cfi_offset 7, -8
+ 369              		.cfi_offset 14, -4
+ 370 0142 00AF     		add	r7, sp, #0
+ 371              	.LCFI21:
+ 372              		.cfi_def_cfa_register 7
+  79:bsp/boards/OpenMote-CC2538/debugpins.c **** 	bspDBpinToggle(BSP_PIND_BASE,BSP_PIND_1);
+ 373              		.loc 1 79 0
+ 374 0144 4FF44040 		mov	r0, #49152
+ 375 0148 C4F20D00 		movt	r0, 16397
+ 376 014c 4FF00201 		mov	r1, #2
+ 377 0150 FFF7FEFF 		bl	bspDBpinToggle
+  80:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 378              		.loc 1 80 0
+ 379 0154 80BD     		pop	{r7, pc}
+ 380              		.cfi_endproc
+ 381              	.LFE10:
+ 383 0156 00BF     		.align	2
+ 384              		.global	debugpins_task_clr
+ 385              		.thumb
+ 386              		.thumb_func
+ 388              	debugpins_task_clr:
+ 389              	.LFB11:
+  81:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_task_clr() {
+ 390              		.loc 1 81 0
+ 391              		.cfi_startproc
+ 392              		@ args = 0, pretend = 0, frame = 0
+ 393              		@ frame_needed = 1, uses_anonymous_args = 0
+ 394 0158 80B5     		push	{r7, lr}
+ 395              	.LCFI22:
+ 396              		.cfi_def_cfa_offset 8
+ 397              		.cfi_offset 7, -8
+ 398              		.cfi_offset 14, -4
+ 399 015a 00AF     		add	r7, sp, #0
+ 400              	.LCFI23:
+ 401              		.cfi_def_cfa_register 7
+  82:bsp/boards/OpenMote-CC2538/debugpins.c **** 	GPIOPinWrite(BSP_PIND_BASE, BSP_PIND_1, 0);
+ 402              		.loc 1 82 0
+ 403 015c 4FF44040 		mov	r0, #49152
+ 404 0160 C4F20D00 		movt	r0, 16397
+ 405 0164 4FF00201 		mov	r1, #2
+ 406 0168 4FF00002 		mov	r2, #0
+ 407 016c FFF7FEFF 		bl	GPIOPinWrite
+  83:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 408              		.loc 1 83 0
+ 409 0170 80BD     		pop	{r7, pc}
+ 410              		.cfi_endproc
+ 411              	.LFE11:
+ 413 0172 00BF     		.align	2
+ 414              		.global	debugpins_task_set
+ 415              		.thumb
+ 416              		.thumb_func
+ 418              	debugpins_task_set:
+ 419              	.LFB12:
+  84:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_task_set() {
+ 420              		.loc 1 84 0
+ 421              		.cfi_startproc
+ 422              		@ args = 0, pretend = 0, frame = 0
+ 423              		@ frame_needed = 1, uses_anonymous_args = 0
+ 424 0174 80B5     		push	{r7, lr}
+ 425              	.LCFI24:
+ 426              		.cfi_def_cfa_offset 8
+ 427              		.cfi_offset 7, -8
+ 428              		.cfi_offset 14, -4
+ 429 0176 00AF     		add	r7, sp, #0
+ 430              	.LCFI25:
+ 431              		.cfi_def_cfa_register 7
+  85:bsp/boards/OpenMote-CC2538/debugpins.c **** 	GPIOPinWrite(BSP_PIND_BASE, BSP_PIND_1, BSP_PIND_1);
+ 432              		.loc 1 85 0
+ 433 0178 4FF44040 		mov	r0, #49152
+ 434 017c C4F20D00 		movt	r0, 16397
+ 435 0180 4FF00201 		mov	r1, #2
+ 436 0184 4FF00202 		mov	r2, #2
+ 437 0188 FFF7FEFF 		bl	GPIOPinWrite
+  86:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 438              		.loc 1 86 0
+ 439 018c 80BD     		pop	{r7, pc}
+ 440              		.cfi_endproc
+ 441              	.LFE12:
+ 443 018e 00BF     		.align	2
+ 444              		.global	debugpins_isr_toggle
+ 445              		.thumb
+ 446              		.thumb_func
+ 448              	debugpins_isr_toggle:
+ 449              	.LFB13:
+  87:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  88:bsp/boards/OpenMote-CC2538/debugpins.c **** // PA5
+  89:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_isr_toggle() {
+ 450              		.loc 1 89 0
+ 451              		.cfi_startproc
+ 452              		@ args = 0, pretend = 0, frame = 0
+ 453              		@ frame_needed = 1, uses_anonymous_args = 0
+ 454 0190 80B5     		push	{r7, lr}
+ 455              	.LCFI26:
+ 456              		.cfi_def_cfa_offset 8
+ 457              		.cfi_offset 7, -8
+ 458              		.cfi_offset 14, -4
+ 459 0192 00AF     		add	r7, sp, #0
+ 460              	.LCFI27:
+ 461              		.cfi_def_cfa_register 7
+  90:bsp/boards/OpenMote-CC2538/debugpins.c **** 	bspDBpinToggle(BSP_PINA_BASE, BSP_PINA_5);
+ 462              		.loc 1 90 0
+ 463 0194 4FF41040 		mov	r0, #36864
+ 464 0198 C4F20D00 		movt	r0, 16397
+ 465 019c 4FF02001 		mov	r1, #32
+ 466 01a0 FFF7FEFF 		bl	bspDBpinToggle
+  91:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 467              		.loc 1 91 0
+ 468 01a4 80BD     		pop	{r7, pc}
+ 469              		.cfi_endproc
+ 470              	.LFE13:
+ 472 01a6 00BF     		.align	2
+ 473              		.global	debugpins_isr_clr
+ 474              		.thumb
+ 475              		.thumb_func
+ 477              	debugpins_isr_clr:
+ 478              	.LFB14:
+  92:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_isr_clr() {
+ 479              		.loc 1 92 0
+ 480              		.cfi_startproc
+ 481              		@ args = 0, pretend = 0, frame = 0
+ 482              		@ frame_needed = 1, uses_anonymous_args = 0
+ 483 01a8 80B5     		push	{r7, lr}
+ 484              	.LCFI28:
+ 485              		.cfi_def_cfa_offset 8
+ 486              		.cfi_offset 7, -8
+ 487              		.cfi_offset 14, -4
+ 488 01aa 00AF     		add	r7, sp, #0
+ 489              	.LCFI29:
+ 490              		.cfi_def_cfa_register 7
+  93:bsp/boards/OpenMote-CC2538/debugpins.c **** 	GPIOPinWrite(BSP_PINA_BASE, BSP_PINA_5, 0);
+ 491              		.loc 1 93 0
+ 492 01ac 4FF41040 		mov	r0, #36864
+ 493 01b0 C4F20D00 		movt	r0, 16397
+ 494 01b4 4FF02001 		mov	r1, #32
+ 495 01b8 4FF00002 		mov	r2, #0
+ 496 01bc FFF7FEFF 		bl	GPIOPinWrite
+  94:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 497              		.loc 1 94 0
+ 498 01c0 80BD     		pop	{r7, pc}
+ 499              		.cfi_endproc
+ 500              	.LFE14:
+ 502 01c2 00BF     		.align	2
+ 503              		.global	debugpins_isr_set
+ 504              		.thumb
+ 505              		.thumb_func
+ 507              	debugpins_isr_set:
+ 508              	.LFB15:
+  95:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_isr_set() {
+ 509              		.loc 1 95 0
+ 510              		.cfi_startproc
+ 511              		@ args = 0, pretend = 0, frame = 0
+ 512              		@ frame_needed = 1, uses_anonymous_args = 0
+ 513 01c4 80B5     		push	{r7, lr}
+ 514              	.LCFI30:
+ 515              		.cfi_def_cfa_offset 8
+ 516              		.cfi_offset 7, -8
+ 517              		.cfi_offset 14, -4
+ 518 01c6 00AF     		add	r7, sp, #0
+ 519              	.LCFI31:
+ 520              		.cfi_def_cfa_register 7
+  96:bsp/boards/OpenMote-CC2538/debugpins.c **** 	GPIOPinWrite(BSP_PINA_BASE, BSP_PINA_5, BSP_PINA_5);
+ 521              		.loc 1 96 0
+ 522 01c8 4FF41040 		mov	r0, #36864
+ 523 01cc C4F20D00 		movt	r0, 16397
+ 524 01d0 4FF02001 		mov	r1, #32
+ 525 01d4 4FF02002 		mov	r2, #32
+ 526 01d8 FFF7FEFF 		bl	GPIOPinWrite
+  97:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 527              		.loc 1 97 0
+ 528 01dc 80BD     		pop	{r7, pc}
+ 529              		.cfi_endproc
+ 530              	.LFE15:
+ 532 01de 00BF     		.align	2
+ 533              		.global	debugpins_radio_toggle
+ 534              		.thumb
+ 535              		.thumb_func
+ 537              	debugpins_radio_toggle:
+ 538              	.LFB16:
+  98:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+  99:bsp/boards/OpenMote-CC2538/debugpins.c **** // PD0
+ 100:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_radio_toggle() {
+ 539              		.loc 1 100 0
+ 540              		.cfi_startproc
+ 541              		@ args = 0, pretend = 0, frame = 0
+ 542              		@ frame_needed = 1, uses_anonymous_args = 0
+ 543 01e0 80B5     		push	{r7, lr}
+ 544              	.LCFI32:
+ 545              		.cfi_def_cfa_offset 8
+ 546              		.cfi_offset 7, -8
+ 547              		.cfi_offset 14, -4
+ 548 01e2 00AF     		add	r7, sp, #0
+ 549              	.LCFI33:
+ 550              		.cfi_def_cfa_register 7
+ 101:bsp/boards/OpenMote-CC2538/debugpins.c **** 	bspDBpinToggle(BSP_PIND_BASE, BSP_PIND_0);
+ 551              		.loc 1 101 0
+ 552 01e4 4FF44040 		mov	r0, #49152
+ 553 01e8 C4F20D00 		movt	r0, 16397
+ 554 01ec 4FF00101 		mov	r1, #1
+ 555 01f0 FFF7FEFF 		bl	bspDBpinToggle
+ 102:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 556              		.loc 1 102 0
+ 557 01f4 80BD     		pop	{r7, pc}
+ 558              		.cfi_endproc
+ 559              	.LFE16:
+ 561 01f6 00BF     		.align	2
+ 562              		.global	debugpins_radio_clr
+ 563              		.thumb
+ 564              		.thumb_func
+ 566              	debugpins_radio_clr:
+ 567              	.LFB17:
+ 103:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_radio_clr() {
+ 568              		.loc 1 103 0
+ 569              		.cfi_startproc
+ 570              		@ args = 0, pretend = 0, frame = 0
+ 571              		@ frame_needed = 1, uses_anonymous_args = 0
+ 572 01f8 80B5     		push	{r7, lr}
+ 573              	.LCFI34:
+ 574              		.cfi_def_cfa_offset 8
+ 575              		.cfi_offset 7, -8
+ 576              		.cfi_offset 14, -4
+ 577 01fa 00AF     		add	r7, sp, #0
+ 578              	.LCFI35:
+ 579              		.cfi_def_cfa_register 7
+ 104:bsp/boards/OpenMote-CC2538/debugpins.c **** 	GPIOPinWrite(BSP_PIND_BASE, BSP_PIND_0, 0);
+ 580              		.loc 1 104 0
+ 581 01fc 4FF44040 		mov	r0, #49152
+ 582 0200 C4F20D00 		movt	r0, 16397
+ 583 0204 4FF00101 		mov	r1, #1
+ 584 0208 4FF00002 		mov	r2, #0
+ 585 020c FFF7FEFF 		bl	GPIOPinWrite
+ 105:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 586              		.loc 1 105 0
+ 587 0210 80BD     		pop	{r7, pc}
+ 588              		.cfi_endproc
+ 589              	.LFE17:
+ 591 0212 00BF     		.align	2
+ 592              		.global	debugpins_radio_set
+ 593              		.thumb
+ 594              		.thumb_func
+ 596              	debugpins_radio_set:
+ 597              	.LFB18:
+ 106:bsp/boards/OpenMote-CC2538/debugpins.c **** void debugpins_radio_set() {
+ 598              		.loc 1 106 0
+ 599              		.cfi_startproc
+ 600              		@ args = 0, pretend = 0, frame = 0
+ 601              		@ frame_needed = 1, uses_anonymous_args = 0
+ 602 0214 80B5     		push	{r7, lr}
+ 603              	.LCFI36:
+ 604              		.cfi_def_cfa_offset 8
+ 605              		.cfi_offset 7, -8
+ 606              		.cfi_offset 14, -4
+ 607 0216 00AF     		add	r7, sp, #0
+ 608              	.LCFI37:
+ 609              		.cfi_def_cfa_register 7
+ 107:bsp/boards/OpenMote-CC2538/debugpins.c **** 	GPIOPinWrite(BSP_PIND_BASE, BSP_PIND_0, BSP_PIND_0);
+ 610              		.loc 1 107 0
+ 611 0218 4FF44040 		mov	r0, #49152
+ 612 021c C4F20D00 		movt	r0, 16397
+ 613 0220 4FF00101 		mov	r1, #1
+ 614 0224 4FF00102 		mov	r2, #1
+ 615 0228 FFF7FEFF 		bl	GPIOPinWrite
+ 108:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 616              		.loc 1 108 0
+ 617 022c 80BD     		pop	{r7, pc}
+ 618              		.cfi_endproc
+ 619              	.LFE18:
+ 621 022e 00BF     		.align	2
+ 622              		.global	bspDBpinToggle
+ 623              		.thumb
+ 624              		.thumb_func
+ 626              	bspDBpinToggle:
+ 627              	.LFB19:
+ 109:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+ 110:bsp/boards/OpenMote-CC2538/debugpins.c **** //------------ private ------------//
+ 111:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+ 112:bsp/boards/OpenMote-CC2538/debugpins.c **** void bspDBpinToggle(uint32_t base, uint8_t ui8Pin)
+ 113:bsp/boards/OpenMote-CC2538/debugpins.c **** {
+ 628              		.loc 1 113 0
+ 629              		.cfi_startproc
+ 630              		@ args = 0, pretend = 0, frame = 16
+ 631              		@ frame_needed = 1, uses_anonymous_args = 0
+ 632 0230 80B5     		push	{r7, lr}
+ 633              	.LCFI38:
+ 634              		.cfi_def_cfa_offset 8
+ 635              		.cfi_offset 7, -8
+ 636              		.cfi_offset 14, -4
+ 637 0232 84B0     		sub	sp, sp, #16
+ 638              	.LCFI39:
+ 639              		.cfi_def_cfa_offset 24
+ 640 0234 00AF     		add	r7, sp, #0
+ 641              	.LCFI40:
+ 642              		.cfi_def_cfa_register 7
+ 643 0236 7860     		str	r0, [r7, #4]
+ 644 0238 0B46     		mov	r3, r1
+ 645 023a FB70     		strb	r3, [r7, #3]
+ 114:bsp/boards/OpenMote-CC2538/debugpins.c ****     //
+ 115:bsp/boards/OpenMote-CC2538/debugpins.c ****     // Get current pin values of selected bits
+ 116:bsp/boards/OpenMote-CC2538/debugpins.c ****     //
+ 117:bsp/boards/OpenMote-CC2538/debugpins.c ****     uint32_t ui32Toggle = GPIOPinRead(base, ui8Pin);
+ 646              		.loc 1 117 0
+ 647 023c FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 648 023e 7868     		ldr	r0, [r7, #4]
+ 649 0240 1946     		mov	r1, r3
+ 650 0242 FFF7FEFF 		bl	GPIOPinRead
+ 651 0246 F860     		str	r0, [r7, #12]
+ 118:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+ 119:bsp/boards/OpenMote-CC2538/debugpins.c ****     //
+ 120:bsp/boards/OpenMote-CC2538/debugpins.c ****     // Invert selected bits
+ 121:bsp/boards/OpenMote-CC2538/debugpins.c ****     //
+ 122:bsp/boards/OpenMote-CC2538/debugpins.c ****     ui32Toggle = (~ui32Toggle) & ui8Pin;
+ 652              		.loc 1 122 0
+ 653 0248 FB68     		ldr	r3, [r7, #12]
+ 654 024a 6FEA0302 		mvn	r2, r3
+ 655 024e FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 656 0250 1340     		ands	r3, r3, r2
+ 657 0252 FB60     		str	r3, [r7, #12]
+ 123:bsp/boards/OpenMote-CC2538/debugpins.c **** 
+ 124:bsp/boards/OpenMote-CC2538/debugpins.c ****     //
+ 125:bsp/boards/OpenMote-CC2538/debugpins.c ****     // Set GPIO
+ 126:bsp/boards/OpenMote-CC2538/debugpins.c ****     //
+ 127:bsp/boards/OpenMote-CC2538/debugpins.c ****     GPIOPinWrite(base, ui8Pin, ui32Toggle);
+ 658              		.loc 1 127 0
+ 659 0254 FB68     		ldr	r3, [r7, #12]
+ 660 0256 DBB2     		uxtb	r3, r3
+ 661 0258 FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 662 025a 7868     		ldr	r0, [r7, #4]
+ 663 025c 1146     		mov	r1, r2
+ 664 025e 1A46     		mov	r2, r3
+ 665 0260 FFF7FEFF 		bl	GPIOPinWrite
+ 128:bsp/boards/OpenMote-CC2538/debugpins.c **** }
+ 666              		.loc 1 128 0
+ 667 0264 07F11007 		add	r7, r7, #16
+ 668 0268 BD46     		mov	sp, r7
+ 669 026a 80BD     		pop	{r7, pc}
+ 670              		.cfi_endproc
+ 671              	.LFE19:
+ 673              	.Letext0:
+ 674              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+ 675              		.file 3 "bsp/boards/OpenMote-CC2538/board_info.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 debugpins.c
+     /tmp/cc1xjE7g.s:19     .rodata:00000000 $d
+     /tmp/cc1xjE7g.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cc1xjE7g.s:27     .rodata:00000008 infoBoardname
+     /tmp/cc1xjE7g.s:32     .rodata:00000010 infouCName
+     /tmp/cc1xjE7g.s:37     .rodata:00000018 infoRadioName
+     /tmp/cc1xjE7g.s:40     .text:00000000 $t
+     /tmp/cc1xjE7g.s:45     .text:00000000 debugpins_init
+     /tmp/cc1xjE7g.s:92     .text:00000050 debugpins_frame_toggle
+     /tmp/cc1xjE7g.s:626    .text:00000230 bspDBpinToggle
+     /tmp/cc1xjE7g.s:121    .text:00000068 debugpins_frame_clr
+     /tmp/cc1xjE7g.s:151    .text:00000084 debugpins_frame_set
+     /tmp/cc1xjE7g.s:181    .text:000000a0 debugpins_slot_toggle
+     /tmp/cc1xjE7g.s:210    .text:000000b8 debugpins_slot_clr
+     /tmp/cc1xjE7g.s:240    .text:000000d4 debugpins_slot_set
+     /tmp/cc1xjE7g.s:270    .text:000000f0 debugpins_fsm_toggle
+     /tmp/cc1xjE7g.s:299    .text:00000108 debugpins_fsm_clr
+     /tmp/cc1xjE7g.s:329    .text:00000124 debugpins_fsm_set
+     /tmp/cc1xjE7g.s:359    .text:00000140 debugpins_task_toggle
+     /tmp/cc1xjE7g.s:388    .text:00000158 debugpins_task_clr
+     /tmp/cc1xjE7g.s:418    .text:00000174 debugpins_task_set
+     /tmp/cc1xjE7g.s:448    .text:00000190 debugpins_isr_toggle
+     /tmp/cc1xjE7g.s:477    .text:000001a8 debugpins_isr_clr
+     /tmp/cc1xjE7g.s:507    .text:000001c4 debugpins_isr_set
+     /tmp/cc1xjE7g.s:537    .text:000001e0 debugpins_radio_toggle
+     /tmp/cc1xjE7g.s:566    .text:000001f8 debugpins_radio_clr
+     /tmp/cc1xjE7g.s:596    .text:00000214 debugpins_radio_set
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.hw_memmap.h.39.19283c377d449c9bca5fdd8ccb62628c
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.gpio.h.41.604fa3d9f70fb140a75ada50bffeaeff
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.toolchain_defs.h.2.59a5259f74cb714abc17e042354ff20f
+
+UNDEFINED SYMBOLS
+GPIOPinTypeGPIOOutput
+GPIOPinWrite
+GPIOPinRead

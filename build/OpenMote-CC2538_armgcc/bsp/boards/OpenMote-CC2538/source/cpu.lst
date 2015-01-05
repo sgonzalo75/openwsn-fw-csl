@@ -1,0 +1,728 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"cpu.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.align	2
+  19              		.global	CPUcpsid
+  20              		.thumb
+  21              		.thumb_func
+  23              	CPUcpsid:
+  24              	.LFB0:
+  25              		.file 1 "bsp/boards/OpenMote-CC2538/source/cpu.c"
+   1:bsp/boards/OpenMote-CC2538/source/cpu.c **** /******************************************************************************
+   2:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  Filename:       cpu.c
+   3:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  Revised:        $Date: 2013-01-21 15:25:21 +0100 (Mon, 21 Jan 2013) $
+   4:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  Revision:       $Revision: 9178 $
+   5:bsp/boards/OpenMote-CC2538/source/cpu.c **** *
+   6:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  Description:    Instruction wrappers for special CPU instructions needed by
+   7:bsp/boards/OpenMote-CC2538/source/cpu.c **** *                  the drivers.
+   8:bsp/boards/OpenMote-CC2538/source/cpu.c **** *
+   9:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
+  10:bsp/boards/OpenMote-CC2538/source/cpu.c **** *
+  11:bsp/boards/OpenMote-CC2538/source/cpu.c **** *
+  12:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  Redistribution and use in source and binary forms, with or without
+  13:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  modification, are permitted provided that the following conditions
+  14:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  are met:
+  15:bsp/boards/OpenMote-CC2538/source/cpu.c **** *
+  16:bsp/boards/OpenMote-CC2538/source/cpu.c **** *    Redistributions of source code must retain the above copyright
+  17:bsp/boards/OpenMote-CC2538/source/cpu.c **** *    notice, this list of conditions and the following disclaimer.
+  18:bsp/boards/OpenMote-CC2538/source/cpu.c **** *
+  19:bsp/boards/OpenMote-CC2538/source/cpu.c **** *    Redistributions in binary form must reproduce the above copyright
+  20:bsp/boards/OpenMote-CC2538/source/cpu.c **** *    notice, this list of conditions and the following disclaimer in the
+  21:bsp/boards/OpenMote-CC2538/source/cpu.c **** *    documentation and/or other materials provided with the distribution.
+  22:bsp/boards/OpenMote-CC2538/source/cpu.c **** *
+  23:bsp/boards/OpenMote-CC2538/source/cpu.c **** *    Neither the name of Texas Instruments Incorporated nor the names of
+  24:bsp/boards/OpenMote-CC2538/source/cpu.c **** *    its contributors may be used to endorse or promote products derived
+  25:bsp/boards/OpenMote-CC2538/source/cpu.c **** *    from this software without specific prior written permission.
+  26:bsp/boards/OpenMote-CC2538/source/cpu.c **** *
+  27:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  28:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  29:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  30:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  31:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  32:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  33:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  34:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  35:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  36:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  37:bsp/boards/OpenMote-CC2538/source/cpu.c **** *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  38:bsp/boards/OpenMote-CC2538/source/cpu.c **** *
+  39:bsp/boards/OpenMote-CC2538/source/cpu.c **** ******************************************************************************/
+  40:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+  41:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+  42:bsp/boards/OpenMote-CC2538/source/cpu.c **** #include "cpu.h"
+  43:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+  44:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+  45:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+  46:bsp/boards/OpenMote-CC2538/source/cpu.c **** // Wrapper function for the CPSID instruction.  Returns the state of PRIMASK
+  47:bsp/boards/OpenMote-CC2538/source/cpu.c **** // on entry.
+  48:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+  49:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+  50:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__GNUC__)
+  51:bsp/boards/OpenMote-CC2538/source/cpu.c **** uint32_t __attribute__((naked))
+  52:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUcpsid(void)
+  53:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+  26              		.loc 1 53 0
+  27              		.cfi_startproc
+  28              		@ Naked Function: prologue and epilogue provided by programmer.
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 1, uses_anonymous_args = 0
+  54:bsp/boards/OpenMote-CC2538/source/cpu.c ****     uint32_t ui32Ret;
+  55:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+  56:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+  57:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Read PRIMASK and disable interrupts.
+  58:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+  59:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+  31              		.loc 1 59 0
+  32              	@ 59 "bsp/boards/OpenMote-CC2538/source/cpu.c" 1
+  33 0000 EFF31080 		    mrs     r0, PRIMASK
+  34 0004 72B6     	    cpsid   i
+  35 0006 7047     	    bx      lr
+  36              	
+  37              	@ 0 "" 2
+  60:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    cpsid   i\n"
+  61:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    bx      lr\n"
+  62:bsp/boards/OpenMote-CC2538/source/cpu.c ****           : "=r" (ui32Ret));
+  63:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+  64:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+  65:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // The return is handled in the inline assembly, but the compiler will
+  66:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // still complain if there is not an explicit return here (despite the fact
+  67:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // that this does not result in any code being produced because of the
+  68:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // naked attribute).
+  69:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+  70:bsp/boards/OpenMote-CC2538/source/cpu.c ****     return(ui32Ret);
+  38              		.loc 1 70 0
+  39              		.thumb
+  40 0008 2346     		mov	r3, r4
+  71:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+  41              		.loc 1 71 0
+  42 000a 1846     		mov	r0, r3
+  43              		.cfi_endproc
+  44              	.LFE0:
+  46              		.align	2
+  47              		.global	CPUprimask
+  48              		.thumb
+  49              		.thumb_func
+  51              	CPUprimask:
+  52              	.LFB1:
+  72:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+  73:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if (__ICCARM__)
+  74:bsp/boards/OpenMote-CC2538/source/cpu.c **** uint32_t
+  75:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUcpsid(void)
+  76:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+  77:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+  78:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Read PRIMASK and disable interrupts.
+  79:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+  80:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+  81:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    cpsid   i\n");
+  82:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+  83:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+  84:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // "Warning[Pe940]: missing return statement at end of non-void function"
+  85:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // is suppressed here to avoid putting a "bx lr" in the inline assembly
+  86:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // above and a superfluous return statement here.
+  87:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+  88:bsp/boards/OpenMote-CC2538/source/cpu.c **** #pragma diag_suppress=Pe940
+  89:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+  90:bsp/boards/OpenMote-CC2538/source/cpu.c **** #pragma diag_default=Pe940
+  91:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+  92:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__KEIL__) || defined(__ARMCC_VERSION)
+  93:bsp/boards/OpenMote-CC2538/source/cpu.c **** __asm uint32_t
+  94:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUcpsid(void)
+  95:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+  96:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+  97:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Read PRIMASK and disable interrupts.
+  98:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+  99:bsp/boards/OpenMote-CC2538/source/cpu.c ****     mrs     r0, PRIMASK;
+ 100:bsp/boards/OpenMote-CC2538/source/cpu.c ****     cpsid   i;
+ 101:bsp/boards/OpenMote-CC2538/source/cpu.c ****     bx      lr
+ 102:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 103:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 104:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__TI_COMPILER_VERSION__)
+ 105:bsp/boards/OpenMote-CC2538/source/cpu.c **** uint32_t
+ 106:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUcpsid(void)
+ 107:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 108:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 109:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Read PRIMASK and disable interrupts.
+ 110:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 111:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+ 112:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    cpsid   i\n"
+ 113:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    bx      lr\n");
+ 114:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 115:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 116:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // The following keeps the compiler happy, because it wants to see a
+ 117:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // return value from this function.  It will generate code to return
+ 118:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // a zero.  However, the real return is the "bx lr" above, so the
+ 119:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // return(0) is never executed and the function returns with the value
+ 120:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // you expect in R0.
+ 121:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 122:bsp/boards/OpenMote-CC2538/source/cpu.c ****     return(0);
+ 123:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 124:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 125:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 126:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+ 127:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+ 128:bsp/boards/OpenMote-CC2538/source/cpu.c **** // Wrapper function returning the state of PRIMASK (indicating whether
+ 129:bsp/boards/OpenMote-CC2538/source/cpu.c **** // interrupts are enabled or disabled).
+ 130:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+ 131:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+ 132:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__GNUC__)
+ 133:bsp/boards/OpenMote-CC2538/source/cpu.c **** uint32_t __attribute__((naked))
+ 134:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUprimask(void)
+ 135:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+  53              		.loc 1 135 0
+  54              		.cfi_startproc
+  55              		@ Naked Function: prologue and epilogue provided by programmer.
+  56              		@ args = 0, pretend = 0, frame = 0
+  57              		@ frame_needed = 1, uses_anonymous_args = 0
+ 136:bsp/boards/OpenMote-CC2538/source/cpu.c ****     uint32_t ui32Ret;
+ 137:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 138:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 139:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Read PRIMASK and disable interrupts.
+ 140:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 141:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+  58              		.loc 1 141 0
+  59              	@ 141 "bsp/boards/OpenMote-CC2538/source/cpu.c" 1
+  60 000c EFF31080 		    mrs     r0, PRIMASK
+  61 0010 7047     	    bx      lr
+  62              	
+  63              	@ 0 "" 2
+ 142:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    bx      lr\n"
+ 143:bsp/boards/OpenMote-CC2538/source/cpu.c ****           : "=r" (ui32Ret));
+ 144:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 145:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 146:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // The return is handled in the inline assembly, but the compiler will
+ 147:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // still complain if there is not an explicit return here (despite the fact
+ 148:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // that this does not result in any code being produced because of the
+ 149:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // naked attribute).
+ 150:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 151:bsp/boards/OpenMote-CC2538/source/cpu.c ****     return(ui32Ret);
+  64              		.loc 1 151 0
+  65              		.thumb
+  66 0012 2346     		mov	r3, r4
+ 152:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+  67              		.loc 1 152 0
+  68 0014 1846     		mov	r0, r3
+  69              		.cfi_endproc
+  70              	.LFE1:
+  72 0016 00BF     		.align	2
+  73              		.global	CPUcpsie
+  74              		.thumb
+  75              		.thumb_func
+  77              	CPUcpsie:
+  78              	.LFB2:
+ 153:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 154:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if (__ICCARM__)
+ 155:bsp/boards/OpenMote-CC2538/source/cpu.c **** uint32_t
+ 156:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUprimask(void)
+ 157:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 158:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 159:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Read PRIMASK and disable interrupts.
+ 160:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 161:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    mrs     r0, PRIMASK\n");
+ 162:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 163:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 164:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // "Warning[Pe940]: missing return statement at end of non-void function"
+ 165:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // is suppressed here to avoid putting a "bx lr" in the inline assembly
+ 166:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // above and a superfluous return statement here.
+ 167:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 168:bsp/boards/OpenMote-CC2538/source/cpu.c **** #pragma diag_suppress=Pe940
+ 169:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 170:bsp/boards/OpenMote-CC2538/source/cpu.c **** #pragma diag_default=Pe940
+ 171:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 172:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__KEIL__) || defined(__ARMCC_VERSION)
+ 173:bsp/boards/OpenMote-CC2538/source/cpu.c **** __asm uint32_t
+ 174:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUprimask(void)
+ 175:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 176:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 177:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Read PRIMASK and disable interrupts.
+ 178:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 179:bsp/boards/OpenMote-CC2538/source/cpu.c ****     mrs     r0, PRIMASK;
+ 180:bsp/boards/OpenMote-CC2538/source/cpu.c ****     bx      lr
+ 181:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 182:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 183:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__TI_COMPILER_VERSION__)
+ 184:bsp/boards/OpenMote-CC2538/source/cpu.c **** uint32_t
+ 185:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUprimask(void)
+ 186:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 187:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 188:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Read PRIMASK and disable interrupts.
+ 189:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 190:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+ 191:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    bx      lr\n");
+ 192:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 193:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 194:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // The following keeps the compiler happy, because it wants to see a
+ 195:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // return value from this function.  It will generate code to return
+ 196:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // a zero.  However, the real return is the "bx lr" above, so the
+ 197:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // return(0) is never executed and the function returns with the value
+ 198:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // you expect in R0.
+ 199:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 200:bsp/boards/OpenMote-CC2538/source/cpu.c ****     return(0);
+ 201:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 202:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 203:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 204:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+ 205:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+ 206:bsp/boards/OpenMote-CC2538/source/cpu.c **** // Wrapper function for the CPSIE instruction.  Returns the state of PRIMASK
+ 207:bsp/boards/OpenMote-CC2538/source/cpu.c **** // on entry.
+ 208:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+ 209:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+ 210:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__GNUC__)
+ 211:bsp/boards/OpenMote-CC2538/source/cpu.c **** uint32_t __attribute__((naked))
+ 212:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUcpsie(void)
+ 213:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+  79              		.loc 1 213 0
+  80              		.cfi_startproc
+  81              		@ Naked Function: prologue and epilogue provided by programmer.
+  82              		@ args = 0, pretend = 0, frame = 0
+  83              		@ frame_needed = 1, uses_anonymous_args = 0
+ 214:bsp/boards/OpenMote-CC2538/source/cpu.c ****     uint32_t ui32Ret;
+ 215:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 216:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 217:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Read PRIMASK and enable interrupts.
+ 218:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 219:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+  84              		.loc 1 219 0
+  85              	@ 219 "bsp/boards/OpenMote-CC2538/source/cpu.c" 1
+  86 0018 EFF31080 		    mrs     r0, PRIMASK
+  87 001c 62B6     	    cpsie   i
+  88 001e 7047     	    bx      lr
+  89              	
+  90              	@ 0 "" 2
+ 220:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    cpsie   i\n"
+ 221:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    bx      lr\n"
+ 222:bsp/boards/OpenMote-CC2538/source/cpu.c ****           : "=r" (ui32Ret));
+ 223:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 224:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 225:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // The return is handled in the inline assembly, but the compiler will
+ 226:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // still complain if there is not an explicit return here (despite the fact
+ 227:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // that this does not result in any code being produced because of the
+ 228:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // naked attribute).
+ 229:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 230:bsp/boards/OpenMote-CC2538/source/cpu.c ****     return(ui32Ret);
+  91              		.loc 1 230 0
+  92              		.thumb
+  93 0020 2346     		mov	r3, r4
+ 231:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+  94              		.loc 1 231 0
+  95 0022 1846     		mov	r0, r3
+  96              		.cfi_endproc
+  97              	.LFE2:
+  99              		.align	2
+ 100              		.global	CPUwfi
+ 101              		.thumb
+ 102              		.thumb_func
+ 104              	CPUwfi:
+ 105              	.LFB3:
+ 232:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 233:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if (__ICCARM__)
+ 234:bsp/boards/OpenMote-CC2538/source/cpu.c **** uint32_t
+ 235:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUcpsie(void)
+ 236:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 237:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 238:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Read PRIMASK and enable interrupts.
+ 239:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 240:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+ 241:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    cpsie   i\n");
+ 242:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 243:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 244:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // "Warning[Pe940]: missing return statement at end of non-void function"
+ 245:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // is suppressed here to avoid putting a "bx lr" in the inline assembly
+ 246:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // above and a superfluous return statement here.
+ 247:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 248:bsp/boards/OpenMote-CC2538/source/cpu.c **** #pragma diag_suppress=Pe940
+ 249:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 250:bsp/boards/OpenMote-CC2538/source/cpu.c **** #pragma diag_default=Pe940
+ 251:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 252:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__KEIL__) || defined(__ARMCC_VERSION)
+ 253:bsp/boards/OpenMote-CC2538/source/cpu.c **** __asm uint32_t
+ 254:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUcpsie(void)
+ 255:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 256:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 257:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Read PRIMASK and enable interrupts.
+ 258:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 259:bsp/boards/OpenMote-CC2538/source/cpu.c ****     mrs     r0, PRIMASK;
+ 260:bsp/boards/OpenMote-CC2538/source/cpu.c ****     cpsie   i;
+ 261:bsp/boards/OpenMote-CC2538/source/cpu.c ****     bx      lr
+ 262:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 263:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 264:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__TI_COMPILER_VERSION__)
+ 265:bsp/boards/OpenMote-CC2538/source/cpu.c **** uint32_t
+ 266:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUcpsie(void)
+ 267:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 268:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 269:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Read PRIMASK and enable interrupts.
+ 270:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 271:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    mrs     r0, PRIMASK\n"
+ 272:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    cpsie   i\n"
+ 273:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    bx      lr\n");
+ 274:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 275:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 276:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // The following keeps the compiler happy, because it wants to see a
+ 277:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // return value from this function.  It will generate code to return
+ 278:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // a zero.  However, the real return is the "bx lr" above, so the
+ 279:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // return(0) is never executed and the function returns with the value
+ 280:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // you expect in R0.
+ 281:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 282:bsp/boards/OpenMote-CC2538/source/cpu.c ****     return(0);
+ 283:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 284:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 285:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 286:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+ 287:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+ 288:bsp/boards/OpenMote-CC2538/source/cpu.c **** // Wrapper function for the WFI instruction.
+ 289:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+ 290:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+ 291:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__GNUC__)
+ 292:bsp/boards/OpenMote-CC2538/source/cpu.c **** void __attribute__((naked))
+ 293:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUwfi(void)
+ 294:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 106              		.loc 1 294 0
+ 107              		.cfi_startproc
+ 108              		@ Naked Function: prologue and epilogue provided by programmer.
+ 109              		@ args = 0, pretend = 0, frame = 0
+ 110              		@ frame_needed = 1, uses_anonymous_args = 0
+ 295:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 296:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Wait for the next interrupt.
+ 297:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 298:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    wfi\n"
+ 111              		.loc 1 298 0
+ 112              	@ 298 "bsp/boards/OpenMote-CC2538/source/cpu.c" 1
+ 113 0024 30BF     		    wfi
+ 114 0026 7047     	    bx      lr
+ 115              	
+ 116              	@ 0 "" 2
+ 299:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    bx      lr\n");
+ 300:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 117              		.loc 1 300 0
+ 118              		.thumb
+ 119              		.cfi_endproc
+ 120              	.LFE3:
+ 122              		.align	2
+ 123              		.global	CPUwfe
+ 124              		.thumb
+ 125              		.thumb_func
+ 127              	CPUwfe:
+ 128              	.LFB4:
+ 301:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 302:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if (__ICCARM__)
+ 303:bsp/boards/OpenMote-CC2538/source/cpu.c **** void
+ 304:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUwfi(void)
+ 305:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 306:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 307:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Wait for the next interrupt.
+ 308:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 309:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    wfi\n");
+ 310:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 311:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 312:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__KEIL__) || defined(__ARMCC_VERSION)
+ 313:bsp/boards/OpenMote-CC2538/source/cpu.c **** __asm void
+ 314:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUwfi(void)
+ 315:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 316:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 317:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Wait for the next interrupt.
+ 318:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 319:bsp/boards/OpenMote-CC2538/source/cpu.c ****     wfi;
+ 320:bsp/boards/OpenMote-CC2538/source/cpu.c ****     bx      lr
+ 321:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 322:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 323:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__TI_COMPILER_VERSION__)
+ 324:bsp/boards/OpenMote-CC2538/source/cpu.c **** void
+ 325:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUwfi(void)
+ 326:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 327:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 328:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Wait for the next interrupt.
+ 329:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 330:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    wfi\n");
+ 331:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 332:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 333:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 334:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+ 335:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+ 336:bsp/boards/OpenMote-CC2538/source/cpu.c **** // Wrapper function for the WFE instruction.
+ 337:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+ 338:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+ 339:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__GNUC__)
+ 340:bsp/boards/OpenMote-CC2538/source/cpu.c **** void __attribute__((naked))
+ 341:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUwfe(void)
+ 342:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 129              		.loc 1 342 0
+ 130              		.cfi_startproc
+ 131              		@ Naked Function: prologue and epilogue provided by programmer.
+ 132              		@ args = 0, pretend = 0, frame = 0
+ 133              		@ frame_needed = 1, uses_anonymous_args = 0
+ 343:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 344:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Wait for the next event
+ 345:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 346:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    wfe\n"
+ 134              		.loc 1 346 0
+ 135              	@ 346 "bsp/boards/OpenMote-CC2538/source/cpu.c" 1
+ 136 0028 20BF     		    wfe
+ 137 002a 7047     	    bx      lr
+ 138              	
+ 139              	@ 0 "" 2
+ 347:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    bx      lr\n");
+ 348:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 140              		.loc 1 348 0
+ 141              		.thumb
+ 142              		.cfi_endproc
+ 143              	.LFE4:
+ 145              		.align	2
+ 146              		.global	CPUsev
+ 147              		.thumb
+ 148              		.thumb_func
+ 150              	CPUsev:
+ 151              	.LFB5:
+ 349:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 350:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if (__ICCARM__)
+ 351:bsp/boards/OpenMote-CC2538/source/cpu.c **** void
+ 352:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUwfe(void)
+ 353:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 354:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 355:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Wait for the next event
+ 356:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 357:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    wfe\n");
+ 358:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 359:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 360:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__KEIL__) || defined(__ARMCC_VERSION)
+ 361:bsp/boards/OpenMote-CC2538/source/cpu.c **** __asm void
+ 362:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUwfe(void)
+ 363:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 364:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 365:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Wait for the next event
+ 366:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 367:bsp/boards/OpenMote-CC2538/source/cpu.c ****     wfe;
+ 368:bsp/boards/OpenMote-CC2538/source/cpu.c ****     bx      lr
+ 369:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 370:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 371:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__TI_COMPILER_VERSION__)
+ 372:bsp/boards/OpenMote-CC2538/source/cpu.c **** void
+ 373:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUwfe(void)
+ 374:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 375:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 376:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Wait for the next event
+ 377:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 378:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    wfe\n");
+ 379:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 380:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 381:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 382:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+ 383:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+ 384:bsp/boards/OpenMote-CC2538/source/cpu.c **** // Wrapper function for the SEV instruction (Send event).
+ 385:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+ 386:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+ 387:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__GNUC__)
+ 388:bsp/boards/OpenMote-CC2538/source/cpu.c **** void __attribute__((naked))
+ 389:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUsev(void)
+ 390:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 152              		.loc 1 390 0
+ 153              		.cfi_startproc
+ 154              		@ Naked Function: prologue and epilogue provided by programmer.
+ 155              		@ args = 0, pretend = 0, frame = 0
+ 156              		@ frame_needed = 1, uses_anonymous_args = 0
+ 391:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 392:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Send event
+ 393:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 394:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    sev\n"
+ 157              		.loc 1 394 0
+ 158              	@ 394 "bsp/boards/OpenMote-CC2538/source/cpu.c" 1
+ 159 002c 40BF     		    sev
+ 160 002e 7047     	    bx      lr
+ 161              	
+ 162              	@ 0 "" 2
+ 395:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    bx      lr\n");
+ 396:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 163              		.loc 1 396 0
+ 164              		.thumb
+ 165              		.cfi_endproc
+ 166              	.LFE5:
+ 168              		.align	2
+ 169              		.global	CPUbasepriSet
+ 170              		.thumb
+ 171              		.thumb_func
+ 173              	CPUbasepriSet:
+ 174              	.LFB6:
+ 397:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 398:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if (__ICCARM__)
+ 399:bsp/boards/OpenMote-CC2538/source/cpu.c **** void
+ 400:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUsev(void)
+ 401:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 402:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 403:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Send event
+ 404:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 405:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    sev\n");
+ 406:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 407:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 408:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__KEIL__) || defined(__ARMCC_VERSION)
+ 409:bsp/boards/OpenMote-CC2538/source/cpu.c **** __asm void
+ 410:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUsev(void)
+ 411:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 412:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 413:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Send event
+ 414:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 415:bsp/boards/OpenMote-CC2538/source/cpu.c ****     sev;
+ 416:bsp/boards/OpenMote-CC2538/source/cpu.c ****     bx      lr
+ 417:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 418:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 419:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__TI_COMPILER_VERSION__)
+ 420:bsp/boards/OpenMote-CC2538/source/cpu.c **** void
+ 421:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUsev(void)
+ 422:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 423:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 424:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Send event
+ 425:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 426:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    sev\n");
+ 427:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 428:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 429:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 430:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+ 431:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+ 432:bsp/boards/OpenMote-CC2538/source/cpu.c **** // Wrapper function for writing the BASEPRI register.
+ 433:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+ 434:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+ 435:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__GNUC__)
+ 436:bsp/boards/OpenMote-CC2538/source/cpu.c **** void __attribute__((naked))
+ 437:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUbasepriSet(uint32_t ui32NewBasepri)
+ 438:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 175              		.loc 1 438 0
+ 176              		.cfi_startproc
+ 177              		@ Naked Function: prologue and epilogue provided by programmer.
+ 178              		@ args = 0, pretend = 0, frame = 0
+ 179              		@ frame_needed = 1, uses_anonymous_args = 0
+ 439:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 440:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 441:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Set the BASEPRI register
+ 442:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 443:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    msr     BASEPRI, r0\n"
+ 180              		.loc 1 443 0
+ 181              	@ 443 "bsp/boards/OpenMote-CC2538/source/cpu.c" 1
+ 182 0030 80F31188 		    msr     BASEPRI, r0
+ 183 0034 7047     	    bx      lr
+ 184              	
+ 185              	@ 0 "" 2
+ 444:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    bx      lr\n");
+ 445:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 186              		.loc 1 445 0
+ 187              		.thumb
+ 188              		.cfi_endproc
+ 189              	.LFE6:
+ 191 0036 00BF     		.align	2
+ 192              		.global	CPUbasepriGet
+ 193              		.thumb
+ 194              		.thumb_func
+ 196              	CPUbasepriGet:
+ 197              	.LFB7:
+ 446:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 447:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if (__ICCARM__)
+ 448:bsp/boards/OpenMote-CC2538/source/cpu.c **** void
+ 449:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUbasepriSet(uint32_t ui32NewBasepri)
+ 450:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 451:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 452:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Set the BASEPRI register
+ 453:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 454:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    msr     BASEPRI, r0\n");
+ 455:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 456:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 457:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__KEIL__) || defined(__ARMCC_VERSION)
+ 458:bsp/boards/OpenMote-CC2538/source/cpu.c **** __asm void
+ 459:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUbasepriSet(uint32_t ui32NewBasepri)
+ 460:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 461:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 462:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Set the BASEPRI register
+ 463:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 464:bsp/boards/OpenMote-CC2538/source/cpu.c ****     msr     BASEPRI, r0;
+ 465:bsp/boards/OpenMote-CC2538/source/cpu.c ****     bx      lr
+ 466:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 467:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 468:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__TI_COMPILER_VERSION__)
+ 469:bsp/boards/OpenMote-CC2538/source/cpu.c **** void
+ 470:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUbasepriSet(uint32_t ui32NewBasepri)
+ 471:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 472:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 473:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Set the BASEPRI register
+ 474:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 475:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    msr     BASEPRI, r0\n");
+ 476:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 477:bsp/boards/OpenMote-CC2538/source/cpu.c **** #endif
+ 478:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 479:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+ 480:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+ 481:bsp/boards/OpenMote-CC2538/source/cpu.c **** // Wrapper function for reading the BASEPRI register.
+ 482:bsp/boards/OpenMote-CC2538/source/cpu.c **** //
+ 483:bsp/boards/OpenMote-CC2538/source/cpu.c **** //*****************************************************************************
+ 484:bsp/boards/OpenMote-CC2538/source/cpu.c **** #if defined(__GNUC__)
+ 485:bsp/boards/OpenMote-CC2538/source/cpu.c **** uint32_t __attribute__((naked))
+ 486:bsp/boards/OpenMote-CC2538/source/cpu.c **** CPUbasepriGet(void)
+ 487:bsp/boards/OpenMote-CC2538/source/cpu.c **** {
+ 198              		.loc 1 487 0
+ 199              		.cfi_startproc
+ 200              		@ Naked Function: prologue and epilogue provided by programmer.
+ 201              		@ args = 0, pretend = 0, frame = 0
+ 202              		@ frame_needed = 1, uses_anonymous_args = 0
+ 488:bsp/boards/OpenMote-CC2538/source/cpu.c ****     uint32_t ui32Ret;
+ 489:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 490:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 491:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // Read BASEPRI
+ 492:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 493:bsp/boards/OpenMote-CC2538/source/cpu.c ****     __asm("    mrs     r0, BASEPRI\n"
+ 203              		.loc 1 493 0
+ 204              	@ 493 "bsp/boards/OpenMote-CC2538/source/cpu.c" 1
+ 205 0038 EFF31180 		    mrs     r0, BASEPRI
+ 206 003c 7047     	    bx      lr
+ 207              	
+ 208              	@ 0 "" 2
+ 494:bsp/boards/OpenMote-CC2538/source/cpu.c ****           "    bx      lr\n"
+ 495:bsp/boards/OpenMote-CC2538/source/cpu.c ****           : "=r" (ui32Ret));
+ 496:bsp/boards/OpenMote-CC2538/source/cpu.c **** 
+ 497:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 498:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // The return is handled in the inline assembly, but the compiler will
+ 499:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // still complain if there is not an explicit return here (despite the fact
+ 500:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // that this does not result in any code being produced because of the
+ 501:bsp/boards/OpenMote-CC2538/source/cpu.c ****     // naked attribute).
+ 502:bsp/boards/OpenMote-CC2538/source/cpu.c ****     //
+ 503:bsp/boards/OpenMote-CC2538/source/cpu.c ****     return(ui32Ret);
+ 209              		.loc 1 503 0
+ 210              		.thumb
+ 211 003e 2346     		mov	r3, r4
+ 504:bsp/boards/OpenMote-CC2538/source/cpu.c **** }
+ 212              		.loc 1 504 0
+ 213 0040 1846     		mov	r0, r3
+ 214              		.cfi_endproc
+ 215              	.LFE7:
+ 217              	.Letext0:
+ 218              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+DEFINED SYMBOLS
+                            *ABS*:00000000 cpu.c
+     /tmp/ccRQSzW9.s:18     .text:00000000 $t
+     /tmp/ccRQSzW9.s:23     .text:00000000 CPUcpsid
+     /tmp/ccRQSzW9.s:51     .text:0000000c CPUprimask
+     /tmp/ccRQSzW9.s:77     .text:00000018 CPUcpsie
+     /tmp/ccRQSzW9.s:104    .text:00000024 CPUwfi
+     /tmp/ccRQSzW9.s:127    .text:00000028 CPUwfe
+     /tmp/ccRQSzW9.s:150    .text:0000002c CPUsev
+     /tmp/ccRQSzW9.s:173    .text:00000030 CPUbasepriSet
+     /tmp/ccRQSzW9.s:196    .text:00000038 CPUbasepriGet
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+
+NO UNDEFINED SYMBOLS

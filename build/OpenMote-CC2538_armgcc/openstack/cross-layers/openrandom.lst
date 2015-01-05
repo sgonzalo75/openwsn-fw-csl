@@ -1,0 +1,258 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"openrandom.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.align	2
+  42              	infoStackName:
+  43 0024 4F70656E 		.ascii	"OpenWSN \000"
+  43      57534E20 
+  43      00
+  44              		.comm	random_vars,2,4
+  45 002d 000000   		.text
+  46              		.align	2
+  47              		.global	openrandom_init
+  48              		.thumb
+  49              		.thumb_func
+  51              	openrandom_init:
+  52              	.LFB0:
+  53              		.file 1 "openstack/cross-layers/openrandom.c"
+   1:openstack/cross-layers/openrandom.c **** #include "opendefs.h"
+   2:openstack/cross-layers/openrandom.c **** #include "openrandom.h"
+   3:openstack/cross-layers/openrandom.c **** #include "idmanager.h"
+   4:openstack/cross-layers/openrandom.c **** 
+   5:openstack/cross-layers/openrandom.c **** //=========================== variables =======================================
+   6:openstack/cross-layers/openrandom.c **** 
+   7:openstack/cross-layers/openrandom.c **** random_vars_t random_vars;
+   8:openstack/cross-layers/openrandom.c **** 
+   9:openstack/cross-layers/openrandom.c **** //=========================== prototypes ======================================
+  10:openstack/cross-layers/openrandom.c **** 
+  11:openstack/cross-layers/openrandom.c **** //=========================== public ==========================================
+  12:openstack/cross-layers/openrandom.c **** 
+  13:openstack/cross-layers/openrandom.c **** void openrandom_init() {
+  54              		.loc 1 13 0
+  55              		.cfi_startproc
+  56              		@ args = 0, pretend = 0, frame = 0
+  57              		@ frame_needed = 1, uses_anonymous_args = 0
+  58 0000 98B5     		push	{r3, r4, r7, lr}
+  59              	.LCFI0:
+  60              		.cfi_def_cfa_offset 16
+  61              		.cfi_offset 3, -16
+  62              		.cfi_offset 4, -12
+  63              		.cfi_offset 7, -8
+  64              		.cfi_offset 14, -4
+  65 0002 00AF     		add	r7, sp, #0
+  66              	.LCFI1:
+  67              		.cfi_def_cfa_register 7
+  14:openstack/cross-layers/openrandom.c ****    // seed the random number generator with the last 2 bytes of the MAC address
+  15:openstack/cross-layers/openrandom.c ****    random_vars.shift_reg  = 0;
+  68              		.loc 1 15 0
+  69 0004 40F20003 		movw	r3, #:lower16:random_vars
+  70 0008 C0F20003 		movt	r3, #:upper16:random_vars
+  71 000c 4FF00002 		mov	r2, #0
+  72 0010 1A80     		strh	r2, [r3, #0]	@ movhi
+  16:openstack/cross-layers/openrandom.c ****    random_vars.shift_reg += idmanager_getMyID(ADDR_16B)->addr_16b[0]*256;
+  73              		.loc 1 16 0
+  74 0012 40F20003 		movw	r3, #:lower16:random_vars
+  75 0016 C0F20003 		movt	r3, #:upper16:random_vars
+  76 001a 1C88     		ldrh	r4, [r3, #0]
+  77 001c 4FF00100 		mov	r0, #1
+  78 0020 FFF7FEFF 		bl	idmanager_getMyID
+  79 0024 0346     		mov	r3, r0
+  80 0026 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+  81 0028 4FEA0323 		lsl	r3, r3, #8
+  82 002c 9BB2     		uxth	r3, r3
+  83 002e E318     		adds	r3, r4, r3
+  84 0030 9AB2     		uxth	r2, r3
+  85 0032 40F20003 		movw	r3, #:lower16:random_vars
+  86 0036 C0F20003 		movt	r3, #:upper16:random_vars
+  87 003a 1A80     		strh	r2, [r3, #0]	@ movhi
+  17:openstack/cross-layers/openrandom.c ****    random_vars.shift_reg += idmanager_getMyID(ADDR_16B)->addr_16b[1];
+  88              		.loc 1 17 0
+  89 003c 40F20003 		movw	r3, #:lower16:random_vars
+  90 0040 C0F20003 		movt	r3, #:upper16:random_vars
+  91 0044 1C88     		ldrh	r4, [r3, #0]
+  92 0046 4FF00100 		mov	r0, #1
+  93 004a FFF7FEFF 		bl	idmanager_getMyID
+  94 004e 0346     		mov	r3, r0
+  95 0050 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+  96 0052 E318     		adds	r3, r4, r3
+  97 0054 9AB2     		uxth	r2, r3
+  98 0056 40F20003 		movw	r3, #:lower16:random_vars
+  99 005a C0F20003 		movt	r3, #:upper16:random_vars
+ 100 005e 1A80     		strh	r2, [r3, #0]	@ movhi
+  18:openstack/cross-layers/openrandom.c **** }
+ 101              		.loc 1 18 0
+ 102 0060 98BD     		pop	{r3, r4, r7, pc}
+ 103              		.cfi_endproc
+ 104              	.LFE0:
+ 106 0062 00BF     		.align	2
+ 107              		.global	openrandom_get16b
+ 108              		.thumb
+ 109              		.thumb_func
+ 111              	openrandom_get16b:
+ 112              	.LFB1:
+  19:openstack/cross-layers/openrandom.c **** 
+  20:openstack/cross-layers/openrandom.c **** uint16_t openrandom_get16b() {
+ 113              		.loc 1 20 0
+ 114              		.cfi_startproc
+ 115              		@ args = 0, pretend = 0, frame = 8
+ 116              		@ frame_needed = 1, uses_anonymous_args = 0
+ 117              		@ link register save eliminated.
+ 118 0064 80B4     		push	{r7}
+ 119              	.LCFI2:
+ 120              		.cfi_def_cfa_offset 4
+ 121              		.cfi_offset 7, -4
+ 122 0066 83B0     		sub	sp, sp, #12
+ 123              	.LCFI3:
+ 124              		.cfi_def_cfa_offset 16
+ 125 0068 00AF     		add	r7, sp, #0
+ 126              	.LCFI4:
+ 127              		.cfi_def_cfa_register 7
+  21:openstack/cross-layers/openrandom.c ****    uint8_t  i;
+  22:openstack/cross-layers/openrandom.c ****    uint16_t random_value;
+  23:openstack/cross-layers/openrandom.c ****    random_value = 0;
+ 128              		.loc 1 23 0
+ 129 006a 4FF00003 		mov	r3, #0
+ 130 006e BB80     		strh	r3, [r7, #4]	@ movhi
+  24:openstack/cross-layers/openrandom.c ****    for(i=0;i<16;i++) {
+ 131              		.loc 1 24 0
+ 132 0070 4FF00003 		mov	r3, #0
+ 133 0074 FB71     		strb	r3, [r7, #7]
+ 134 0076 34E0     		b	.L3
+ 135              	.L4:
+  25:openstack/cross-layers/openrandom.c ****       // Galois shift register
+  26:openstack/cross-layers/openrandom.c ****       // taps: 16 14 13 11
+  27:openstack/cross-layers/openrandom.c ****       // characteristic polynomial: x^16 + x^14 + x^13 + x^11 + 1
+  28:openstack/cross-layers/openrandom.c ****       random_value          |= (random_vars.shift_reg & 0x01)<<i;
+ 136              		.loc 1 28 0 discriminator 2
+ 137 0078 40F20003 		movw	r3, #:lower16:random_vars
+ 138 007c C0F20003 		movt	r3, #:upper16:random_vars
+ 139 0080 1B88     		ldrh	r3, [r3, #0]
+ 140 0082 03F00102 		and	r2, r3, #1
+ 141 0086 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 142 0088 02FA03F3 		lsl	r3, r2, r3
+ 143 008c 9AB2     		uxth	r2, r3
+ 144 008e BB88     		ldrh	r3, [r7, #4]
+ 145 0090 1343     		orrs	r3, r3, r2
+ 146 0092 9BB2     		uxth	r3, r3
+ 147 0094 BB80     		strh	r3, [r7, #4]	@ movhi
+  29:openstack/cross-layers/openrandom.c ****       random_vars.shift_reg  = (random_vars.shift_reg>>1)^(-(int16_t)(random_vars.shift_reg & 1)&0x
+ 148              		.loc 1 29 0 discriminator 2
+ 149 0096 40F20003 		movw	r3, #:lower16:random_vars
+ 150 009a C0F20003 		movt	r3, #:upper16:random_vars
+ 151 009e 1B88     		ldrh	r3, [r3, #0]
+ 152 00a0 4FEA5303 		lsr	r3, r3, #1
+ 153 00a4 9BB2     		uxth	r3, r3
+ 154 00a6 9AB2     		uxth	r2, r3
+ 155 00a8 40F20003 		movw	r3, #:lower16:random_vars
+ 156 00ac C0F20003 		movt	r3, #:upper16:random_vars
+ 157 00b0 1B88     		ldrh	r3, [r3, #0]
+ 158 00b2 03F00103 		and	r3, r3, #1
+ 159 00b6 9BB2     		uxth	r3, r3
+ 160 00b8 C3F10003 		rsb	r3, r3, #0
+ 161 00bc 9BB2     		uxth	r3, r3
+ 162 00be 9BB2     		uxth	r3, r3
+ 163 00c0 23F49743 		bic	r3, r3, #19328
+ 164 00c4 23F07F03 		bic	r3, r3, #127
+ 165 00c8 9BB2     		uxth	r3, r3
+ 166 00ca 5340     		eors	r3, r3, r2
+ 167 00cc 9BB2     		uxth	r3, r3
+ 168 00ce 9AB2     		uxth	r2, r3
+ 169 00d0 40F20003 		movw	r3, #:lower16:random_vars
+ 170 00d4 C0F20003 		movt	r3, #:upper16:random_vars
+ 171 00d8 1A80     		strh	r2, [r3, #0]	@ movhi
+  24:openstack/cross-layers/openrandom.c ****    for(i=0;i<16;i++) {
+ 172              		.loc 1 24 0 discriminator 2
+ 173 00da FB79     		ldrb	r3, [r7, #7]
+ 174 00dc 03F10103 		add	r3, r3, #1
+ 175 00e0 FB71     		strb	r3, [r7, #7]
+ 176              	.L3:
+  24:openstack/cross-layers/openrandom.c ****    for(i=0;i<16;i++) {
+ 177              		.loc 1 24 0 is_stmt 0 discriminator 1
+ 178 00e2 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 179 00e4 0F2B     		cmp	r3, #15
+ 180 00e6 C7D9     		bls	.L4
+  30:openstack/cross-layers/openrandom.c ****    }
+  31:openstack/cross-layers/openrandom.c ****    return random_value;
+ 181              		.loc 1 31 0 is_stmt 1
+ 182 00e8 BB88     		ldrh	r3, [r7, #4]
+  32:openstack/cross-layers/openrandom.c **** }
+ 183              		.loc 1 32 0
+ 184 00ea 1846     		mov	r0, r3
+ 185 00ec 07F10C07 		add	r7, r7, #12
+ 186 00f0 BD46     		mov	sp, r7
+ 187 00f2 80BC     		pop	{r7}
+ 188 00f4 7047     		bx	lr
+ 189              		.cfi_endproc
+ 190              	.LFE1:
+ 192              	.Letext0:
+ 193              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+ 194              		.file 3 "openstack/cross-layers/openrandom.h"
+ 195              		.file 4 "bsp/boards/OpenMote-CC2538/board_info.h"
+ 196              		.file 5 "inc/opendefs.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 openrandom.c
+     /tmp/ccRZLxAW.s:19     .rodata:00000000 $d
+     /tmp/ccRZLxAW.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccRZLxAW.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccRZLxAW.s:32     .rodata:00000010 infouCName
+     /tmp/ccRZLxAW.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccRZLxAW.s:42     .rodata:00000024 infoStackName
+                            *COM*:00000002 random_vars
+     /tmp/ccRZLxAW.s:46     .text:00000000 $t
+     /tmp/ccRZLxAW.s:51     .text:00000000 openrandom_init
+     /tmp/ccRZLxAW.s:111    .text:00000064 openrandom_get16b
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.toolchain_defs.h.2.e4ebbe6e0a48032a9b79077dc42e1ffd
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
+                           .group:00000000 wm4.idmanager.h.2.8c0e2159b32ef3125cbb1e984805cbfe
+
+UNDEFINED SYMBOLS
+idmanager_getMyID

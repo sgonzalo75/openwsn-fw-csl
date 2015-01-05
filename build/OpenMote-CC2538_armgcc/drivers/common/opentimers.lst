@@ -1,0 +1,2063 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"opentimers.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.align	2
+  42              	infoStackName:
+  43 0024 4F70656E 		.ascii	"OpenWSN \000"
+  43      57534E20 
+  43      00
+  44              		.comm	opentimers_vars,208,4
+  45 002d 000000   		.text
+  46              		.align	2
+  47              		.global	opentimers_init
+  48              		.thumb
+  49              		.thumb_func
+  51              	opentimers_init:
+  52              	.LFB0:
+  53              		.file 1 "drivers/common/opentimers.c"
+   1:drivers/common/opentimers.c **** /**
+   2:drivers/common/opentimers.c **** \brief Definition of the "opentimers" driver.
+   3:drivers/common/opentimers.c **** 
+   4:drivers/common/opentimers.c **** This driver uses a single hardware timer, which it virtualizes to support
+   5:drivers/common/opentimers.c **** at most MAX_NUM_TIMERS timers.
+   6:drivers/common/opentimers.c **** 
+   7:drivers/common/opentimers.c **** \author Xavi Vilajosana <xvilajosana@eecs.berkeley.edu>, March 2012.
+   8:drivers/common/opentimers.c ****  */
+   9:drivers/common/opentimers.c **** 
+  10:drivers/common/opentimers.c **** #include "opendefs.h"
+  11:drivers/common/opentimers.c **** #include "opentimers.h"
+  12:drivers/common/opentimers.c **** #include "bsp_timer.h"
+  13:drivers/common/opentimers.c **** #include "leds.h"
+  14:drivers/common/opentimers.c **** 
+  15:drivers/common/opentimers.c **** //=========================== define ==========================================
+  16:drivers/common/opentimers.c **** 
+  17:drivers/common/opentimers.c **** //=========================== variables =======================================
+  18:drivers/common/opentimers.c **** 
+  19:drivers/common/opentimers.c **** opentimers_vars_t opentimers_vars;
+  20:drivers/common/opentimers.c **** //uint32_t counter; //counts the elapsed time.
+  21:drivers/common/opentimers.c **** 
+  22:drivers/common/opentimers.c **** //=========================== prototypes ======================================
+  23:drivers/common/opentimers.c **** 
+  24:drivers/common/opentimers.c **** void opentimers_timer_callback(void);
+  25:drivers/common/opentimers.c **** 
+  26:drivers/common/opentimers.c **** //=========================== public ==========================================
+  27:drivers/common/opentimers.c **** 
+  28:drivers/common/opentimers.c **** /**
+  29:drivers/common/opentimers.c **** \brief Initialize this module.
+  30:drivers/common/opentimers.c **** 
+  31:drivers/common/opentimers.c **** Initializes data structures and hardware timer.
+  32:drivers/common/opentimers.c ****  */
+  33:drivers/common/opentimers.c **** void opentimers_init(){
+  54              		.loc 1 33 0
+  55              		.cfi_startproc
+  56              		@ args = 0, pretend = 0, frame = 8
+  57              		@ frame_needed = 1, uses_anonymous_args = 0
+  58 0000 80B5     		push	{r7, lr}
+  59              	.LCFI0:
+  60              		.cfi_def_cfa_offset 8
+  61              		.cfi_offset 7, -8
+  62              		.cfi_offset 14, -4
+  63 0002 82B0     		sub	sp, sp, #8
+  64              	.LCFI1:
+  65              		.cfi_def_cfa_offset 16
+  66 0004 00AF     		add	r7, sp, #0
+  67              	.LCFI2:
+  68              		.cfi_def_cfa_register 7
+  34:drivers/common/opentimers.c ****    uint8_t i;
+  35:drivers/common/opentimers.c **** 
+  36:drivers/common/opentimers.c ****    // initialize local variables
+  37:drivers/common/opentimers.c ****    opentimers_vars.running=FALSE;
+  69              		.loc 1 37 0
+  70 0006 40F20003 		movw	r3, #:lower16:opentimers_vars
+  71 000a C0F20003 		movt	r3, #:upper16:opentimers_vars
+  72 000e 4FF00002 		mov	r2, #0
+  73 0012 83F8C820 		strb	r2, [r3, #200]
+  38:drivers/common/opentimers.c ****    for (i=0;i<MAX_NUM_TIMERS;i++) {
+  74              		.loc 1 38 0
+  75 0016 4FF00003 		mov	r3, #0
+  76 001a FB71     		strb	r3, [r7, #7]
+  77 001c 67E0     		b	.L2
+  78              	.L3:
+  39:drivers/common/opentimers.c ****       opentimers_vars.timersBuf[i].period_ticks       = 0;
+  79              		.loc 1 39 0 discriminator 2
+  80 001e F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+  81 0020 40F20002 		movw	r2, #:lower16:opentimers_vars
+  82 0024 C0F20002 		movt	r2, #:upper16:opentimers_vars
+  83 0028 0B46     		mov	r3, r1
+  84 002a 4FEA8303 		lsl	r3, r3, #2
+  85 002e 5B18     		adds	r3, r3, r1
+  86 0030 4FEA8303 		lsl	r3, r3, #2
+  87 0034 D318     		adds	r3, r2, r3
+  88 0036 4FF00002 		mov	r2, #0
+  89 003a 1A60     		str	r2, [r3, #0]
+  40:drivers/common/opentimers.c ****       opentimers_vars.timersBuf[i].ticks_remaining    = 0;
+  90              		.loc 1 40 0 discriminator 2
+  91 003c F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+  92 003e 40F20002 		movw	r2, #:lower16:opentimers_vars
+  93 0042 C0F20002 		movt	r2, #:upper16:opentimers_vars
+  94 0046 0B46     		mov	r3, r1
+  95 0048 4FEA8303 		lsl	r3, r3, #2
+  96 004c 5B18     		adds	r3, r3, r1
+  97 004e 4FEA8303 		lsl	r3, r3, #2
+  98 0052 D318     		adds	r3, r2, r3
+  99 0054 03F10403 		add	r3, r3, #4
+ 100 0058 4FF00002 		mov	r2, #0
+ 101 005c 1A60     		str	r2, [r3, #0]
+  41:drivers/common/opentimers.c ****       opentimers_vars.timersBuf[i].type               = TIMER_ONESHOT;
+ 102              		.loc 1 41 0 discriminator 2
+ 103 005e F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 104 0060 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 105 0064 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 106 0068 0B46     		mov	r3, r1
+ 107 006a 4FEA8303 		lsl	r3, r3, #2
+ 108 006e 5B18     		adds	r3, r3, r1
+ 109 0070 4FEA8303 		lsl	r3, r3, #2
+ 110 0074 D318     		adds	r3, r2, r3
+ 111 0076 03F10803 		add	r3, r3, #8
+ 112 007a 4FF00102 		mov	r2, #1
+ 113 007e 9A70     		strb	r2, [r3, #2]
+  42:drivers/common/opentimers.c ****       opentimers_vars.timersBuf[i].isrunning          = FALSE;
+ 114              		.loc 1 42 0 discriminator 2
+ 115 0080 F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 116 0082 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 117 0086 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 118 008a 0B46     		mov	r3, r1
+ 119 008c 4FEA8303 		lsl	r3, r3, #2
+ 120 0090 5B18     		adds	r3, r3, r1
+ 121 0092 4FEA8303 		lsl	r3, r3, #2
+ 122 0096 D318     		adds	r3, r2, r3
+ 123 0098 03F10803 		add	r3, r3, #8
+ 124 009c 4FF00002 		mov	r2, #0
+ 125 00a0 DA70     		strb	r2, [r3, #3]
+  43:drivers/common/opentimers.c ****       opentimers_vars.timersBuf[i].callback           = NULL;
+ 126              		.loc 1 43 0 discriminator 2
+ 127 00a2 F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 128 00a4 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 129 00a8 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 130 00ac 0B46     		mov	r3, r1
+ 131 00ae 4FEA8303 		lsl	r3, r3, #2
+ 132 00b2 5B18     		adds	r3, r3, r1
+ 133 00b4 4FEA8303 		lsl	r3, r3, #2
+ 134 00b8 D318     		adds	r3, r2, r3
+ 135 00ba 03F10C03 		add	r3, r3, #12
+ 136 00be 4FF00002 		mov	r2, #0
+ 137 00c2 1A60     		str	r2, [r3, #0]
+  44:drivers/common/opentimers.c ****       opentimers_vars.timersBuf[i].hasExpired         = FALSE;
+ 138              		.loc 1 44 0 discriminator 2
+ 139 00c4 F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 140 00c6 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 141 00ca C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 142 00ce 0B46     		mov	r3, r1
+ 143 00d0 4FEA8303 		lsl	r3, r3, #2
+ 144 00d4 5B18     		adds	r3, r3, r1
+ 145 00d6 4FEA8303 		lsl	r3, r3, #2
+ 146 00da D318     		adds	r3, r2, r3
+ 147 00dc 03F11003 		add	r3, r3, #16
+ 148 00e0 4FF00002 		mov	r2, #0
+ 149 00e4 1A70     		strb	r2, [r3, #0]
+  38:drivers/common/opentimers.c ****    for (i=0;i<MAX_NUM_TIMERS;i++) {
+ 150              		.loc 1 38 0 discriminator 2
+ 151 00e6 FB79     		ldrb	r3, [r7, #7]
+ 152 00e8 03F10103 		add	r3, r3, #1
+ 153 00ec FB71     		strb	r3, [r7, #7]
+ 154              	.L2:
+  38:drivers/common/opentimers.c ****    for (i=0;i<MAX_NUM_TIMERS;i++) {
+ 155              		.loc 1 38 0 is_stmt 0 discriminator 1
+ 156 00ee FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 157 00f0 092B     		cmp	r3, #9
+ 158 00f2 94D9     		bls	.L3
+  45:drivers/common/opentimers.c ****    }
+  46:drivers/common/opentimers.c **** 
+  47:drivers/common/opentimers.c ****    // set callback for bsp_timers module
+  48:drivers/common/opentimers.c ****    bsp_timer_set_callback(opentimers_timer_callback);
+ 159              		.loc 1 48 0 is_stmt 1
+ 160 00f4 40F20000 		movw	r0, #:lower16:opentimers_timer_callback
+ 161 00f8 C0F20000 		movt	r0, #:upper16:opentimers_timer_callback
+ 162 00fc FFF7FEFF 		bl	bsp_timer_set_callback
+  49:drivers/common/opentimers.c **** }
+ 163              		.loc 1 49 0
+ 164 0100 07F10807 		add	r7, r7, #8
+ 165 0104 BD46     		mov	sp, r7
+ 166 0106 80BD     		pop	{r7, pc}
+ 167              		.cfi_endproc
+ 168              	.LFE0:
+ 170              		.align	2
+ 171              		.global	opentimers_start
+ 172              		.thumb
+ 173              		.thumb_func
+ 175              	opentimers_start:
+ 176              	.LFB1:
+  50:drivers/common/opentimers.c **** 
+  51:drivers/common/opentimers.c **** /**
+  52:drivers/common/opentimers.c **** \brief Start a timer.
+  53:drivers/common/opentimers.c **** 
+  54:drivers/common/opentimers.c **** The timer works as follows:
+  55:drivers/common/opentimers.c **** - currentTimeout is the number of ticks before the next timer expires.
+  56:drivers/common/opentimers.c **** - if a new timer is inserted, we check that it is not earlier than the soonest
+  57:drivers/common/opentimers.c **** - if it is earliest, replace it
+  58:drivers/common/opentimers.c **** - if not, insert it in the list
+  59:drivers/common/opentimers.c **** 
+  60:drivers/common/opentimers.c **** \param duration Number milli-seconds after which the timer will fire.
+  61:drivers/common/opentimers.c **** \param type     Type of timer:
+  62:drivers/common/opentimers.c ****    - #TIMER_PERIODIC for a periodic timer.
+  63:drivers/common/opentimers.c ****    - #TIMER_ONESHOT for a on-shot timer.
+  64:drivers/common/opentimers.c **** \param timetype Units of the <tt>duration</tt>:
+  65:drivers/common/opentimers.c ****    - #TIME_MS when <tt>duration</tt> is in ms.
+  66:drivers/common/opentimers.c ****    - #TIME_TICS when <tt>duration</tt> is in clock ticks.
+  67:drivers/common/opentimers.c **** \param callback The function to call when the timer fires.
+  68:drivers/common/opentimers.c **** 
+  69:drivers/common/opentimers.c **** \returns The id of the timer (which serves as a handler to stop it) if the
+  70:drivers/common/opentimers.c ****          timer could be started.
+  71:drivers/common/opentimers.c **** \returns TOO_MANY_TIMERS_ERROR if the timer could NOT be started.
+  72:drivers/common/opentimers.c ****  */
+  73:drivers/common/opentimers.c **** opentimer_id_t opentimers_start(uint32_t duration, timer_type_t type, time_type_t timetype, opentim
+ 177              		.loc 1 73 0
+ 178              		.cfi_startproc
+ 179              		@ args = 0, pretend = 0, frame = 24
+ 180              		@ frame_needed = 1, uses_anonymous_args = 0
+ 181 0108 80B5     		push	{r7, lr}
+ 182              	.LCFI3:
+ 183              		.cfi_def_cfa_offset 8
+ 184              		.cfi_offset 7, -8
+ 185              		.cfi_offset 14, -4
+ 186 010a 86B0     		sub	sp, sp, #24
+ 187              	.LCFI4:
+ 188              		.cfi_def_cfa_offset 32
+ 189 010c 00AF     		add	r7, sp, #0
+ 190              	.LCFI5:
+ 191              		.cfi_def_cfa_register 7
+ 192 010e F860     		str	r0, [r7, #12]
+ 193 0110 7B60     		str	r3, [r7, #4]
+ 194 0112 0B46     		mov	r3, r1
+ 195 0114 FB72     		strb	r3, [r7, #11]
+ 196 0116 1346     		mov	r3, r2
+ 197 0118 BB72     		strb	r3, [r7, #10]
+  74:drivers/common/opentimers.c **** 
+  75:drivers/common/opentimers.c ****    uint8_t  id;
+  76:drivers/common/opentimers.c **** 
+  77:drivers/common/opentimers.c ****    // find an unused timer
+  78:drivers/common/opentimers.c ****    for (id=0; id<MAX_NUM_TIMERS && opentimers_vars.timersBuf[id].isrunning==TRUE; id++);
+ 198              		.loc 1 78 0
+ 199 011a 4FF00003 		mov	r3, #0
+ 200 011e FB75     		strb	r3, [r7, #23]
+ 201 0120 03E0     		b	.L5
+ 202              	.L7:
+ 203              		.loc 1 78 0 is_stmt 0 discriminator 1
+ 204 0122 FB7D     		ldrb	r3, [r7, #23]
+ 205 0124 03F10103 		add	r3, r3, #1
+ 206 0128 FB75     		strb	r3, [r7, #23]
+ 207              	.L5:
+ 208 012a FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 209 012c 092B     		cmp	r3, #9
+ 210 012e 10D8     		bhi	.L6
+ 211              		.loc 1 78 0 discriminator 2
+ 212 0130 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 213 0132 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 214 0136 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 215 013a 0B46     		mov	r3, r1
+ 216 013c 4FEA8303 		lsl	r3, r3, #2
+ 217 0140 5B18     		adds	r3, r3, r1
+ 218 0142 4FEA8303 		lsl	r3, r3, #2
+ 219 0146 D318     		adds	r3, r2, r3
+ 220 0148 03F10803 		add	r3, r3, #8
+ 221 014c DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 222 014e 002B     		cmp	r3, #0
+ 223 0150 E7D1     		bne	.L7
+ 224              	.L6:
+  79:drivers/common/opentimers.c **** 
+  80:drivers/common/opentimers.c ****    if (id<MAX_NUM_TIMERS) {
+ 225              		.loc 1 80 0 is_stmt 1
+ 226 0152 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 227 0154 092B     		cmp	r3, #9
+ 228 0156 00F25081 		bhi	.L8
+  81:drivers/common/opentimers.c ****       // we found an unused timer
+  82:drivers/common/opentimers.c **** 
+  83:drivers/common/opentimers.c ****       // register the timer
+  84:drivers/common/opentimers.c ****       if (timetype==TIME_MS) {
+ 229              		.loc 1 84 0
+ 230 015a BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 231 015c 002B     		cmp	r3, #0
+ 232 015e 2DD1     		bne	.L9
+  85:drivers/common/opentimers.c ****          opentimers_vars.timersBuf[id].period_ticks      = duration*PORT_TICS_PER_MS;
+ 233              		.loc 1 85 0
+ 234 0160 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 235 0162 FA68     		ldr	r2, [r7, #12]
+ 236 0164 1346     		mov	r3, r2
+ 237 0166 4FEA4313 		lsl	r3, r3, #5
+ 238 016a 9818     		adds	r0, r3, r2
+ 239 016c 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 240 0170 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 241 0174 0B46     		mov	r3, r1
+ 242 0176 4FEA8303 		lsl	r3, r3, #2
+ 243 017a 5B18     		adds	r3, r3, r1
+ 244 017c 4FEA8303 		lsl	r3, r3, #2
+ 245 0180 D318     		adds	r3, r2, r3
+ 246 0182 1860     		str	r0, [r3, #0]
+  86:drivers/common/opentimers.c ****          opentimers_vars.timersBuf[id].wraps_remaining   = (duration*PORT_TICS_PER_MS/MAX_TICKS_IN_
+ 247              		.loc 1 86 0
+ 248 0184 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 249 0186 FA68     		ldr	r2, [r7, #12]
+ 250 0188 1346     		mov	r3, r2
+ 251 018a 4FEA4313 		lsl	r3, r3, #5
+ 252 018e 9B18     		adds	r3, r3, r2
+ 253 0190 B3F1FF3F 		cmp	r3, #-1
+ 254 0194 34BF     		ite	cc
+ 255 0196 0023     		movcc	r3, #0
+ 256 0198 0123     		movcs	r3, #1
+ 257 019a 98B2     		uxth	r0, r3
+ 258 019c 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 259 01a0 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 260 01a4 0B46     		mov	r3, r1
+ 261 01a6 4FEA8303 		lsl	r3, r3, #2
+ 262 01aa 5B18     		adds	r3, r3, r1
+ 263 01ac 4FEA8303 		lsl	r3, r3, #2
+ 264 01b0 D318     		adds	r3, r2, r3
+ 265 01b2 03F10803 		add	r3, r3, #8
+ 266 01b6 0246     		mov	r2, r0	@ movhi
+ 267 01b8 1A80     		strh	r2, [r3, #0]	@ movhi
+ 268 01ba 29E0     		b	.L10
+ 269              	.L9:
+  87:drivers/common/opentimers.c ****       } else if (timetype==TIME_TICS) {
+ 270              		.loc 1 87 0
+ 271 01bc BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 272 01be 012B     		cmp	r3, #1
+ 273 01c0 25D1     		bne	.L11
+  88:drivers/common/opentimers.c ****          opentimers_vars.timersBuf[id].period_ticks      = duration;
+ 274              		.loc 1 88 0
+ 275 01c2 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 276 01c4 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 277 01c8 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 278 01cc 0B46     		mov	r3, r1
+ 279 01ce 4FEA8303 		lsl	r3, r3, #2
+ 280 01d2 5B18     		adds	r3, r3, r1
+ 281 01d4 4FEA8303 		lsl	r3, r3, #2
+ 282 01d8 D318     		adds	r3, r2, r3
+ 283 01da FA68     		ldr	r2, [r7, #12]
+ 284 01dc 1A60     		str	r2, [r3, #0]
+  89:drivers/common/opentimers.c ****          opentimers_vars.timersBuf[id].wraps_remaining   = (duration/MAX_TICKS_IN_SINGLE_CLOCK);//6
+ 285              		.loc 1 89 0
+ 286 01de F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 287 01e0 FB68     		ldr	r3, [r7, #12]
+ 288 01e2 B3F1FF3F 		cmp	r3, #-1
+ 289 01e6 34BF     		ite	cc
+ 290 01e8 0023     		movcc	r3, #0
+ 291 01ea 0123     		movcs	r3, #1
+ 292 01ec 98B2     		uxth	r0, r3
+ 293 01ee 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 294 01f2 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 295 01f6 0B46     		mov	r3, r1
+ 296 01f8 4FEA8303 		lsl	r3, r3, #2
+ 297 01fc 5B18     		adds	r3, r3, r1
+ 298 01fe 4FEA8303 		lsl	r3, r3, #2
+ 299 0202 D318     		adds	r3, r2, r3
+ 300 0204 03F10803 		add	r3, r3, #8
+ 301 0208 0246     		mov	r2, r0	@ movhi
+ 302 020a 1A80     		strh	r2, [r3, #0]	@ movhi
+ 303 020c 00E0     		b	.L10
+ 304              	.L11:
+  90:drivers/common/opentimers.c ****       } else {
+  91:drivers/common/opentimers.c ****          while (1); //error
+ 305              		.loc 1 91 0 discriminator 1
+ 306 020e FEE7     		b	.L11
+ 307              	.L10:
+  92:drivers/common/opentimers.c ****       }
+  93:drivers/common/opentimers.c ****       //if the number of ticks falls below a 16bit value, use it, otherwise set to max 16bit value
+  94:drivers/common/opentimers.c ****       if(opentimers_vars.timersBuf[id].wraps_remaining==0){
+ 308              		.loc 1 94 0
+ 309 0210 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 310 0212 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 311 0216 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 312 021a 0B46     		mov	r3, r1
+ 313 021c 4FEA8303 		lsl	r3, r3, #2
+ 314 0220 5B18     		adds	r3, r3, r1
+ 315 0222 4FEA8303 		lsl	r3, r3, #2
+ 316 0226 D318     		adds	r3, r2, r3
+ 317 0228 03F10803 		add	r3, r3, #8
+ 318 022c 1B88     		ldrh	r3, [r3, #0]
+ 319 022e 002B     		cmp	r3, #0
+ 320 0230 30D1     		bne	.L12
+  95:drivers/common/opentimers.c ****          if (timetype==TIME_MS){ 
+ 321              		.loc 1 95 0
+ 322 0232 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 323 0234 002B     		cmp	r3, #0
+ 324 0236 14D1     		bne	.L13
+  96:drivers/common/opentimers.c ****             opentimers_vars.timersBuf[id].ticks_remaining   = duration*PORT_TICS_PER_MS;
+ 325              		.loc 1 96 0
+ 326 0238 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 327 023a FA68     		ldr	r2, [r7, #12]
+ 328 023c 1346     		mov	r3, r2
+ 329 023e 4FEA4313 		lsl	r3, r3, #5
+ 330 0242 9818     		adds	r0, r3, r2
+ 331 0244 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 332 0248 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 333 024c 0B46     		mov	r3, r1
+ 334 024e 4FEA8303 		lsl	r3, r3, #2
+ 335 0252 5B18     		adds	r3, r3, r1
+ 336 0254 4FEA8303 		lsl	r3, r3, #2
+ 337 0258 D318     		adds	r3, r2, r3
+ 338 025a 03F10403 		add	r3, r3, #4
+ 339 025e 1860     		str	r0, [r3, #0]
+ 340 0260 29E0     		b	.L14
+ 341              	.L13:
+  97:drivers/common/opentimers.c ****          } else if (timetype==TIME_TICS) {
+ 342              		.loc 1 97 0
+ 343 0262 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 344 0264 012B     		cmp	r3, #1
+ 345 0266 10D1     		bne	.L15
+  98:drivers/common/opentimers.c ****             opentimers_vars.timersBuf[id].ticks_remaining   = duration;
+ 346              		.loc 1 98 0
+ 347 0268 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 348 026a 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 349 026e C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 350 0272 0B46     		mov	r3, r1
+ 351 0274 4FEA8303 		lsl	r3, r3, #2
+ 352 0278 5B18     		adds	r3, r3, r1
+ 353 027a 4FEA8303 		lsl	r3, r3, #2
+ 354 027e D318     		adds	r3, r2, r3
+ 355 0280 03F10403 		add	r3, r3, #4
+ 356 0284 FA68     		ldr	r2, [r7, #12]
+ 357 0286 1A60     		str	r2, [r3, #0]
+ 358 0288 15E0     		b	.L14
+ 359              	.L15:
+  99:drivers/common/opentimers.c ****          } else {
+ 100:drivers/common/opentimers.c ****             // this should never happpen!
+ 101:drivers/common/opentimers.c ****    
+ 102:drivers/common/opentimers.c ****             // we can not print from within the drivers. Instead:
+ 103:drivers/common/opentimers.c ****             // blink the error LED
+ 104:drivers/common/opentimers.c ****             leds_error_blink();
+ 360              		.loc 1 104 0
+ 361 028a FFF7FEFF 		bl	leds_error_blink
+ 105:drivers/common/opentimers.c ****             // reset the board
+ 106:drivers/common/opentimers.c ****             board_reset();
+ 362              		.loc 1 106 0
+ 363 028e FFF7FEFF 		bl	board_reset
+ 364 0292 10E0     		b	.L14
+ 365              	.L12:
+ 107:drivers/common/opentimers.c ****          }
+ 108:drivers/common/opentimers.c ****       }else{
+ 109:drivers/common/opentimers.c ****          opentimers_vars.timersBuf[id].ticks_remaining = MAX_TICKS_IN_SINGLE_CLOCK;
+ 366              		.loc 1 109 0
+ 367 0294 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 368 0296 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 369 029a C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 370 029e 0B46     		mov	r3, r1
+ 371 02a0 4FEA8303 		lsl	r3, r3, #2
+ 372 02a4 5B18     		adds	r3, r3, r1
+ 373 02a6 4FEA8303 		lsl	r3, r3, #2
+ 374 02aa D318     		adds	r3, r2, r3
+ 375 02ac 03F10403 		add	r3, r3, #4
+ 376 02b0 4FF0FF32 		mov	r2, #-1
+ 377 02b4 1A60     		str	r2, [r3, #0]
+ 378              	.L14:
+ 110:drivers/common/opentimers.c ****       }                                                   
+ 111:drivers/common/opentimers.c ****       opentimers_vars.timersBuf[id].type              = type;
+ 379              		.loc 1 111 0
+ 380 02b6 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 381 02b8 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 382 02bc C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 383 02c0 0B46     		mov	r3, r1
+ 384 02c2 4FEA8303 		lsl	r3, r3, #2
+ 385 02c6 5B18     		adds	r3, r3, r1
+ 386 02c8 4FEA8303 		lsl	r3, r3, #2
+ 387 02cc D318     		adds	r3, r2, r3
+ 388 02ce 03F10803 		add	r3, r3, #8
+ 389 02d2 FA7A     		ldrb	r2, [r7, #11]
+ 390 02d4 9A70     		strb	r2, [r3, #2]
+ 112:drivers/common/opentimers.c ****       opentimers_vars.timersBuf[id].isrunning         = TRUE;
+ 391              		.loc 1 112 0
+ 392 02d6 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 393 02d8 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 394 02dc C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 395 02e0 0B46     		mov	r3, r1
+ 396 02e2 4FEA8303 		lsl	r3, r3, #2
+ 397 02e6 5B18     		adds	r3, r3, r1
+ 398 02e8 4FEA8303 		lsl	r3, r3, #2
+ 399 02ec D318     		adds	r3, r2, r3
+ 400 02ee 03F10803 		add	r3, r3, #8
+ 401 02f2 4FF00102 		mov	r2, #1
+ 402 02f6 DA70     		strb	r2, [r3, #3]
+ 113:drivers/common/opentimers.c ****       opentimers_vars.timersBuf[id].callback          = callback;
+ 403              		.loc 1 113 0
+ 404 02f8 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 405 02fa 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 406 02fe C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 407 0302 0B46     		mov	r3, r1
+ 408 0304 4FEA8303 		lsl	r3, r3, #2
+ 409 0308 5B18     		adds	r3, r3, r1
+ 410 030a 4FEA8303 		lsl	r3, r3, #2
+ 411 030e D318     		adds	r3, r2, r3
+ 412 0310 03F10C03 		add	r3, r3, #12
+ 413 0314 7A68     		ldr	r2, [r7, #4]
+ 414 0316 1A60     		str	r2, [r3, #0]
+ 114:drivers/common/opentimers.c ****       opentimers_vars.timersBuf[id].hasExpired        = FALSE;
+ 415              		.loc 1 114 0
+ 416 0318 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 417 031a 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 418 031e C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 419 0322 0B46     		mov	r3, r1
+ 420 0324 4FEA8303 		lsl	r3, r3, #2
+ 421 0328 5B18     		adds	r3, r3, r1
+ 422 032a 4FEA8303 		lsl	r3, r3, #2
+ 423 032e D318     		adds	r3, r2, r3
+ 424 0330 03F11003 		add	r3, r3, #16
+ 425 0334 4FF00002 		mov	r2, #0
+ 426 0338 1A70     		strb	r2, [r3, #0]
+ 115:drivers/common/opentimers.c **** 
+ 116:drivers/common/opentimers.c ****       // re-schedule the running timer, if needed
+ 117:drivers/common/opentimers.c ****       if (
+ 118:drivers/common/opentimers.c ****             (opentimers_vars.running==FALSE)
+ 427              		.loc 1 118 0
+ 428 033a 40F20003 		movw	r3, #:lower16:opentimers_vars
+ 429 033e C0F20003 		movt	r3, #:upper16:opentimers_vars
+ 430 0342 93F8C830 		ldrb	r3, [r3, #200]	@ zero_extendqisi2
+ 431 0346 83F00103 		eor	r3, r3, #1
+ 432 034a DBB2     		uxtb	r3, r3
+ 117:drivers/common/opentimers.c ****       if (
+ 433              		.loc 1 117 0
+ 434 034c 002B     		cmp	r3, #0
+ 435 034e 16D1     		bne	.L16
+ 119:drivers/common/opentimers.c ****             ||
+ 120:drivers/common/opentimers.c ****             (opentimers_vars.timersBuf[id].ticks_remaining < opentimers_vars.currentTimeout)
+ 436              		.loc 1 120 0
+ 437 0350 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 438 0352 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 439 0356 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 440 035a 0B46     		mov	r3, r1
+ 441 035c 4FEA8303 		lsl	r3, r3, #2
+ 442 0360 5B18     		adds	r3, r3, r1
+ 443 0362 4FEA8303 		lsl	r3, r3, #2
+ 444 0366 D318     		adds	r3, r2, r3
+ 445 0368 03F10403 		add	r3, r3, #4
+ 446 036c 1A68     		ldr	r2, [r3, #0]
+ 447 036e 40F20003 		movw	r3, #:lower16:opentimers_vars
+ 448 0372 C0F20003 		movt	r3, #:upper16:opentimers_vars
+ 449 0376 D3F8CC30 		ldr	r3, [r3, #204]
+ 119:drivers/common/opentimers.c ****             ||
+ 450              		.loc 1 119 0
+ 451 037a 9A42     		cmp	r2, r3
+ 452 037c 33D2     		bcs	.L17
+ 453              	.L16:
+ 121:drivers/common/opentimers.c ****       ) {  
+ 122:drivers/common/opentimers.c ****          opentimers_vars.currentTimeout            = opentimers_vars.timersBuf[id].ticks_remaining;
+ 454              		.loc 1 122 0
+ 455 037e F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 456 0380 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 457 0384 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 458 0388 0B46     		mov	r3, r1
+ 459 038a 4FEA8303 		lsl	r3, r3, #2
+ 460 038e 5B18     		adds	r3, r3, r1
+ 461 0390 4FEA8303 		lsl	r3, r3, #2
+ 462 0394 D318     		adds	r3, r2, r3
+ 463 0396 03F10403 		add	r3, r3, #4
+ 464 039a 1A68     		ldr	r2, [r3, #0]
+ 465 039c 40F20003 		movw	r3, #:lower16:opentimers_vars
+ 466 03a0 C0F20003 		movt	r3, #:upper16:opentimers_vars
+ 467 03a4 C3F8CC20 		str	r2, [r3, #204]
+ 123:drivers/common/opentimers.c ****          if (opentimers_vars.running==FALSE) {
+ 468              		.loc 1 123 0
+ 469 03a8 40F20003 		movw	r3, #:lower16:opentimers_vars
+ 470 03ac C0F20003 		movt	r3, #:upper16:opentimers_vars
+ 471 03b0 93F8C830 		ldrb	r3, [r3, #200]	@ zero_extendqisi2
+ 472 03b4 83F00103 		eor	r3, r3, #1
+ 473 03b8 DBB2     		uxtb	r3, r3
+ 474 03ba 002B     		cmp	r3, #0
+ 475 03bc 01D0     		beq	.L18
+ 124:drivers/common/opentimers.c ****             bsp_timer_reset();
+ 476              		.loc 1 124 0
+ 477 03be FFF7FEFF 		bl	bsp_timer_reset
+ 478              	.L18:
+ 125:drivers/common/opentimers.c ****          }
+ 126:drivers/common/opentimers.c ****          bsp_timer_scheduleIn(opentimers_vars.timersBuf[id].ticks_remaining);
+ 479              		.loc 1 126 0
+ 480 03c2 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 481 03c4 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 482 03c8 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 483 03cc 0B46     		mov	r3, r1
+ 484 03ce 4FEA8303 		lsl	r3, r3, #2
+ 485 03d2 5B18     		adds	r3, r3, r1
+ 486 03d4 4FEA8303 		lsl	r3, r3, #2
+ 487 03d8 D318     		adds	r3, r2, r3
+ 488 03da 03F10403 		add	r3, r3, #4
+ 489 03de 1B68     		ldr	r3, [r3, #0]
+ 490 03e0 1846     		mov	r0, r3
+ 491 03e2 FFF7FEFF 		bl	bsp_timer_scheduleIn
+ 492              	.L17:
+ 127:drivers/common/opentimers.c ****       }
+ 128:drivers/common/opentimers.c **** 
+ 129:drivers/common/opentimers.c ****       opentimers_vars.running                         = TRUE;
+ 493              		.loc 1 129 0
+ 494 03e6 40F20003 		movw	r3, #:lower16:opentimers_vars
+ 495 03ea C0F20003 		movt	r3, #:upper16:opentimers_vars
+ 496 03ee 4FF00102 		mov	r2, #1
+ 497 03f2 83F8C820 		strb	r2, [r3, #200]
+ 130:drivers/common/opentimers.c **** 
+ 131:drivers/common/opentimers.c ****    } else {
+ 132:drivers/common/opentimers.c ****       return TOO_MANY_TIMERS_ERROR;
+ 133:drivers/common/opentimers.c ****    }
+ 134:drivers/common/opentimers.c **** 
+ 135:drivers/common/opentimers.c ****    return id;
+ 498              		.loc 1 135 0
+ 499 03f6 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 500 03f8 01E0     		b	.L19
+ 501              	.L8:
+ 132:drivers/common/opentimers.c ****       return TOO_MANY_TIMERS_ERROR;
+ 502              		.loc 1 132 0
+ 503 03fa 4FF0FF03 		mov	r3, #255
+ 504              	.L19:
+ 136:drivers/common/opentimers.c **** }
+ 505              		.loc 1 136 0
+ 506 03fe 1846     		mov	r0, r3
+ 507 0400 07F11807 		add	r7, r7, #24
+ 508 0404 BD46     		mov	sp, r7
+ 509 0406 80BD     		pop	{r7, pc}
+ 510              		.cfi_endproc
+ 511              	.LFE1:
+ 513              		.align	2
+ 514              		.global	opentimers_setPeriod
+ 515              		.thumb
+ 516              		.thumb_func
+ 518              	opentimers_setPeriod:
+ 519              	.LFB2:
+ 137:drivers/common/opentimers.c **** 
+ 138:drivers/common/opentimers.c **** /**
+ 139:drivers/common/opentimers.c **** \brief Replace the period of a running timer.
+ 140:drivers/common/opentimers.c ****  */
+ 141:drivers/common/opentimers.c **** void  opentimers_setPeriod(opentimer_id_t id,time_type_t timetype,uint32_t newDuration) {
+ 520              		.loc 1 141 0
+ 521              		.cfi_startproc
+ 522              		@ args = 0, pretend = 0, frame = 8
+ 523              		@ frame_needed = 1, uses_anonymous_args = 0
+ 524 0408 80B5     		push	{r7, lr}
+ 525              	.LCFI6:
+ 526              		.cfi_def_cfa_offset 8
+ 527              		.cfi_offset 7, -8
+ 528              		.cfi_offset 14, -4
+ 529 040a 82B0     		sub	sp, sp, #8
+ 530              	.LCFI7:
+ 531              		.cfi_def_cfa_offset 16
+ 532 040c 00AF     		add	r7, sp, #0
+ 533              	.LCFI8:
+ 534              		.cfi_def_cfa_register 7
+ 535 040e 0B46     		mov	r3, r1
+ 536 0410 3A60     		str	r2, [r7, #0]
+ 537 0412 0246     		mov	r2, r0
+ 538 0414 FA71     		strb	r2, [r7, #7]
+ 539 0416 BB71     		strb	r3, [r7, #6]
+ 142:drivers/common/opentimers.c ****    if        (timetype==TIME_MS) {
+ 540              		.loc 1 142 0
+ 541 0418 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 542 041a 002B     		cmp	r3, #0
+ 543 041c 2DD1     		bne	.L21
+ 143:drivers/common/opentimers.c ****       opentimers_vars.timersBuf[id].period_ticks      = newDuration*PORT_TICS_PER_MS;
+ 544              		.loc 1 143 0
+ 545 041e F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 546 0420 3A68     		ldr	r2, [r7, #0]
+ 547 0422 1346     		mov	r3, r2
+ 548 0424 4FEA4313 		lsl	r3, r3, #5
+ 549 0428 9818     		adds	r0, r3, r2
+ 550 042a 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 551 042e C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 552 0432 0B46     		mov	r3, r1
+ 553 0434 4FEA8303 		lsl	r3, r3, #2
+ 554 0438 5B18     		adds	r3, r3, r1
+ 555 043a 4FEA8303 		lsl	r3, r3, #2
+ 556 043e D318     		adds	r3, r2, r3
+ 557 0440 1860     		str	r0, [r3, #0]
+ 144:drivers/common/opentimers.c ****       opentimers_vars.timersBuf[id].wraps_remaining   = (newDuration*PORT_TICS_PER_MS/MAX_TICKS_IN_
+ 558              		.loc 1 144 0
+ 559 0442 F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 560 0444 3A68     		ldr	r2, [r7, #0]
+ 561 0446 1346     		mov	r3, r2
+ 562 0448 4FEA4313 		lsl	r3, r3, #5
+ 563 044c 9B18     		adds	r3, r3, r2
+ 564 044e B3F1FF3F 		cmp	r3, #-1
+ 565 0452 34BF     		ite	cc
+ 566 0454 0023     		movcc	r3, #0
+ 567 0456 0123     		movcs	r3, #1
+ 568 0458 98B2     		uxth	r0, r3
+ 569 045a 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 570 045e C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 571 0462 0B46     		mov	r3, r1
+ 572 0464 4FEA8303 		lsl	r3, r3, #2
+ 573 0468 5B18     		adds	r3, r3, r1
+ 574 046a 4FEA8303 		lsl	r3, r3, #2
+ 575 046e D318     		adds	r3, r2, r3
+ 576 0470 03F10803 		add	r3, r3, #8
+ 577 0474 0246     		mov	r2, r0	@ movhi
+ 578 0476 1A80     		strh	r2, [r3, #0]	@ movhi
+ 579 0478 2CE0     		b	.L22
+ 580              	.L21:
+ 145:drivers/common/opentimers.c ****    } else if (timetype==TIME_TICS) {
+ 581              		.loc 1 145 0
+ 582 047a BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 583 047c 012B     		cmp	r3, #1
+ 584 047e 25D1     		bne	.L23
+ 146:drivers/common/opentimers.c ****       opentimers_vars.timersBuf[id].period_ticks      = newDuration;
+ 585              		.loc 1 146 0
+ 586 0480 F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 587 0482 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 588 0486 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 589 048a 0B46     		mov	r3, r1
+ 590 048c 4FEA8303 		lsl	r3, r3, #2
+ 591 0490 5B18     		adds	r3, r3, r1
+ 592 0492 4FEA8303 		lsl	r3, r3, #2
+ 593 0496 D318     		adds	r3, r2, r3
+ 594 0498 3A68     		ldr	r2, [r7, #0]
+ 595 049a 1A60     		str	r2, [r3, #0]
+ 147:drivers/common/opentimers.c ****       opentimers_vars.timersBuf[id].wraps_remaining   = (newDuration/MAX_TICKS_IN_SINGLE_CLOCK);//6
+ 596              		.loc 1 147 0
+ 597 049c F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 598 049e 3B68     		ldr	r3, [r7, #0]
+ 599 04a0 B3F1FF3F 		cmp	r3, #-1
+ 600 04a4 34BF     		ite	cc
+ 601 04a6 0023     		movcc	r3, #0
+ 602 04a8 0123     		movcs	r3, #1
+ 603 04aa 98B2     		uxth	r0, r3
+ 604 04ac 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 605 04b0 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 606 04b4 0B46     		mov	r3, r1
+ 607 04b6 4FEA8303 		lsl	r3, r3, #2
+ 608 04ba 5B18     		adds	r3, r3, r1
+ 609 04bc 4FEA8303 		lsl	r3, r3, #2
+ 610 04c0 D318     		adds	r3, r2, r3
+ 611 04c2 03F10803 		add	r3, r3, #8
+ 612 04c6 0246     		mov	r2, r0	@ movhi
+ 613 04c8 1A80     		strh	r2, [r3, #0]	@ movhi
+ 614 04ca 03E0     		b	.L22
+ 615              	.L23:
+ 148:drivers/common/opentimers.c ****    } else {
+ 149:drivers/common/opentimers.c ****       // this should never happpen!
+ 150:drivers/common/opentimers.c ****       
+ 151:drivers/common/opentimers.c ****       // we can not print from within the drivers. Instead:
+ 152:drivers/common/opentimers.c ****       // blink the error LED
+ 153:drivers/common/opentimers.c ****       leds_error_blink();
+ 616              		.loc 1 153 0
+ 617 04cc FFF7FEFF 		bl	leds_error_blink
+ 154:drivers/common/opentimers.c ****       // reset the board
+ 155:drivers/common/opentimers.c ****       board_reset();
+ 618              		.loc 1 155 0
+ 619 04d0 FFF7FEFF 		bl	board_reset
+ 620              	.L22:
+ 156:drivers/common/opentimers.c ****    }
+ 157:drivers/common/opentimers.c ****    if(opentimers_vars.timersBuf[id].wraps_remaining==0) {
+ 621              		.loc 1 157 0
+ 622 04d4 F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 623 04d6 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 624 04da C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 625 04de 0B46     		mov	r3, r1
+ 626 04e0 4FEA8303 		lsl	r3, r3, #2
+ 627 04e4 5B18     		adds	r3, r3, r1
+ 628 04e6 4FEA8303 		lsl	r3, r3, #2
+ 629 04ea D318     		adds	r3, r2, r3
+ 630 04ec 03F10803 		add	r3, r3, #8
+ 631 04f0 1B88     		ldrh	r3, [r3, #0]
+ 632 04f2 002B     		cmp	r3, #0
+ 633 04f4 2BD1     		bne	.L24
+ 158:drivers/common/opentimers.c ****       if        (timetype==TIME_MS){
+ 634              		.loc 1 158 0
+ 635 04f6 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 636 04f8 002B     		cmp	r3, #0
+ 637 04fa 14D1     		bne	.L25
+ 159:drivers/common/opentimers.c ****          opentimers_vars.timersBuf[id].ticks_remaining   = newDuration*PORT_TICS_PER_MS;
+ 638              		.loc 1 159 0
+ 639 04fc F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 640 04fe 3A68     		ldr	r2, [r7, #0]
+ 641 0500 1346     		mov	r3, r2
+ 642 0502 4FEA4313 		lsl	r3, r3, #5
+ 643 0506 9818     		adds	r0, r3, r2
+ 644 0508 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 645 050c C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 646 0510 0B46     		mov	r3, r1
+ 647 0512 4FEA8303 		lsl	r3, r3, #2
+ 648 0516 5B18     		adds	r3, r3, r1
+ 649 0518 4FEA8303 		lsl	r3, r3, #2
+ 650 051c D318     		adds	r3, r2, r3
+ 651 051e 03F10403 		add	r3, r3, #4
+ 652 0522 1860     		str	r0, [r3, #0]
+ 653 0524 24E0     		b	.L20
+ 654              	.L25:
+ 160:drivers/common/opentimers.c ****       } else if (timetype==TIME_TICS){
+ 655              		.loc 1 160 0
+ 656 0526 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 657 0528 012B     		cmp	r3, #1
+ 658 052a 21D1     		bne	.L20
+ 161:drivers/common/opentimers.c ****          opentimers_vars.timersBuf[id].ticks_remaining   = newDuration;
+ 659              		.loc 1 161 0
+ 660 052c F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 661 052e 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 662 0532 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 663 0536 0B46     		mov	r3, r1
+ 664 0538 4FEA8303 		lsl	r3, r3, #2
+ 665 053c 5B18     		adds	r3, r3, r1
+ 666 053e 4FEA8303 		lsl	r3, r3, #2
+ 667 0542 D318     		adds	r3, r2, r3
+ 668 0544 03F10403 		add	r3, r3, #4
+ 669 0548 3A68     		ldr	r2, [r7, #0]
+ 670 054a 1A60     		str	r2, [r3, #0]
+ 671 054c 10E0     		b	.L20
+ 672              	.L24:
+ 162:drivers/common/opentimers.c ****       }
+ 163:drivers/common/opentimers.c ****    } else {
+ 164:drivers/common/opentimers.c ****       opentimers_vars.timersBuf[id].ticks_remaining = MAX_TICKS_IN_SINGLE_CLOCK;
+ 673              		.loc 1 164 0
+ 674 054e F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 675 0550 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 676 0554 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 677 0558 0B46     		mov	r3, r1
+ 678 055a 4FEA8303 		lsl	r3, r3, #2
+ 679 055e 5B18     		adds	r3, r3, r1
+ 680 0560 4FEA8303 		lsl	r3, r3, #2
+ 681 0564 D318     		adds	r3, r2, r3
+ 682 0566 03F10403 		add	r3, r3, #4
+ 683 056a 4FF0FF32 		mov	r2, #-1
+ 684 056e 1A60     		str	r2, [r3, #0]
+ 685              	.L20:
+ 165:drivers/common/opentimers.c ****    }
+ 166:drivers/common/opentimers.c **** }
+ 686              		.loc 1 166 0
+ 687 0570 07F10807 		add	r7, r7, #8
+ 688 0574 BD46     		mov	sp, r7
+ 689 0576 80BD     		pop	{r7, pc}
+ 690              		.cfi_endproc
+ 691              	.LFE2:
+ 693              		.align	2
+ 694              		.global	opentimers_stop
+ 695              		.thumb
+ 696              		.thumb_func
+ 698              	opentimers_stop:
+ 699              	.LFB3:
+ 167:drivers/common/opentimers.c **** 
+ 168:drivers/common/opentimers.c **** /**
+ 169:drivers/common/opentimers.c **** \brief Stop a running timer.
+ 170:drivers/common/opentimers.c **** 
+ 171:drivers/common/opentimers.c **** Sets the timer to "not running". the system recovers even if this was the next
+ 172:drivers/common/opentimers.c **** timer to expire.
+ 173:drivers/common/opentimers.c ****  */
+ 174:drivers/common/opentimers.c **** void opentimers_stop(opentimer_id_t id) {
+ 700              		.loc 1 174 0
+ 701              		.cfi_startproc
+ 702              		@ args = 0, pretend = 0, frame = 8
+ 703              		@ frame_needed = 1, uses_anonymous_args = 0
+ 704              		@ link register save eliminated.
+ 705 0578 80B4     		push	{r7}
+ 706              	.LCFI9:
+ 707              		.cfi_def_cfa_offset 4
+ 708              		.cfi_offset 7, -4
+ 709 057a 83B0     		sub	sp, sp, #12
+ 710              	.LCFI10:
+ 711              		.cfi_def_cfa_offset 16
+ 712 057c 00AF     		add	r7, sp, #0
+ 713              	.LCFI11:
+ 714              		.cfi_def_cfa_register 7
+ 715 057e 0346     		mov	r3, r0
+ 716 0580 FB71     		strb	r3, [r7, #7]
+ 175:drivers/common/opentimers.c ****    opentimers_vars.timersBuf[id].isrunning=FALSE;
+ 717              		.loc 1 175 0
+ 718 0582 F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 719 0584 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 720 0588 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 721 058c 0B46     		mov	r3, r1
+ 722 058e 4FEA8303 		lsl	r3, r3, #2
+ 723 0592 5B18     		adds	r3, r3, r1
+ 724 0594 4FEA8303 		lsl	r3, r3, #2
+ 725 0598 D318     		adds	r3, r2, r3
+ 726 059a 03F10803 		add	r3, r3, #8
+ 727 059e 4FF00002 		mov	r2, #0
+ 728 05a2 DA70     		strb	r2, [r3, #3]
+ 176:drivers/common/opentimers.c **** }
+ 729              		.loc 1 176 0
+ 730 05a4 07F10C07 		add	r7, r7, #12
+ 731 05a8 BD46     		mov	sp, r7
+ 732 05aa 80BC     		pop	{r7}
+ 733 05ac 7047     		bx	lr
+ 734              		.cfi_endproc
+ 735              	.LFE3:
+ 737 05ae 00BF     		.align	2
+ 738              		.global	opentimers_restart
+ 739              		.thumb
+ 740              		.thumb_func
+ 742              	opentimers_restart:
+ 743              	.LFB4:
+ 177:drivers/common/opentimers.c **** 
+ 178:drivers/common/opentimers.c **** /**
+ 179:drivers/common/opentimers.c **** \brief Restart a stop timer.
+ 180:drivers/common/opentimers.c **** 
+ 181:drivers/common/opentimers.c **** Sets the timer to " running".
+ 182:drivers/common/opentimers.c ****  */
+ 183:drivers/common/opentimers.c **** void opentimers_restart(opentimer_id_t id) {
+ 744              		.loc 1 183 0
+ 745              		.cfi_startproc
+ 746              		@ args = 0, pretend = 0, frame = 8
+ 747              		@ frame_needed = 1, uses_anonymous_args = 0
+ 748              		@ link register save eliminated.
+ 749 05b0 80B4     		push	{r7}
+ 750              	.LCFI12:
+ 751              		.cfi_def_cfa_offset 4
+ 752              		.cfi_offset 7, -4
+ 753 05b2 83B0     		sub	sp, sp, #12
+ 754              	.LCFI13:
+ 755              		.cfi_def_cfa_offset 16
+ 756 05b4 00AF     		add	r7, sp, #0
+ 757              	.LCFI14:
+ 758              		.cfi_def_cfa_register 7
+ 759 05b6 0346     		mov	r3, r0
+ 760 05b8 FB71     		strb	r3, [r7, #7]
+ 184:drivers/common/opentimers.c ****    opentimers_vars.timersBuf[id].isrunning=TRUE;
+ 761              		.loc 1 184 0
+ 762 05ba F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 763 05bc 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 764 05c0 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 765 05c4 0B46     		mov	r3, r1
+ 766 05c6 4FEA8303 		lsl	r3, r3, #2
+ 767 05ca 5B18     		adds	r3, r3, r1
+ 768 05cc 4FEA8303 		lsl	r3, r3, #2
+ 769 05d0 D318     		adds	r3, r2, r3
+ 770 05d2 03F10803 		add	r3, r3, #8
+ 771 05d6 4FF00102 		mov	r2, #1
+ 772 05da DA70     		strb	r2, [r3, #3]
+ 185:drivers/common/opentimers.c **** }
+ 773              		.loc 1 185 0
+ 774 05dc 07F10C07 		add	r7, r7, #12
+ 775 05e0 BD46     		mov	sp, r7
+ 776 05e2 80BC     		pop	{r7}
+ 777 05e4 7047     		bx	lr
+ 778              		.cfi_endproc
+ 779              	.LFE4:
+ 781 05e6 00BF     		.align	2
+ 782              		.global	opentimers_timer_callback
+ 783              		.thumb
+ 784              		.thumb_func
+ 786              	opentimers_timer_callback:
+ 787              	.LFB5:
+ 186:drivers/common/opentimers.c **** 
+ 187:drivers/common/opentimers.c **** 
+ 188:drivers/common/opentimers.c **** //=========================== private =========================================
+ 189:drivers/common/opentimers.c **** 
+ 190:drivers/common/opentimers.c **** /**
+ 191:drivers/common/opentimers.c **** \brief Function called when the hardware timer expires.
+ 192:drivers/common/opentimers.c **** 
+ 193:drivers/common/opentimers.c **** Executed in interrupt mode.
+ 194:drivers/common/opentimers.c **** 
+ 195:drivers/common/opentimers.c **** This function maps the expiration event to possibly multiple timers, calls the
+ 196:drivers/common/opentimers.c **** corresponding callback(s), and restarts the hardware timer with the next timer
+ 197:drivers/common/opentimers.c **** to expire.
+ 198:drivers/common/opentimers.c ****  */
+ 199:drivers/common/opentimers.c **** void opentimers_timer_callback() {
+ 788              		.loc 1 199 0
+ 789              		.cfi_startproc
+ 790              		@ args = 0, pretend = 0, frame = 16
+ 791              		@ frame_needed = 1, uses_anonymous_args = 0
+ 792 05e8 80B5     		push	{r7, lr}
+ 793              	.LCFI15:
+ 794              		.cfi_def_cfa_offset 8
+ 795              		.cfi_offset 7, -8
+ 796              		.cfi_offset 14, -4
+ 797 05ea 84B0     		sub	sp, sp, #16
+ 798              	.LCFI16:
+ 799              		.cfi_def_cfa_offset 24
+ 800 05ec 00AF     		add	r7, sp, #0
+ 801              	.LCFI17:
+ 802              		.cfi_def_cfa_register 7
+ 200:drivers/common/opentimers.c ****    
+ 201:drivers/common/opentimers.c ****    opentimer_id_t   id;
+ 202:drivers/common/opentimers.c ****    PORT_TIMER_WIDTH min_timeout;
+ 203:drivers/common/opentimers.c ****    bool             found;
+ 204:drivers/common/opentimers.c ****     
+ 205:drivers/common/opentimers.c ****    // step 1. Identify expired timers
+ 206:drivers/common/opentimers.c ****    for(id=0; id<MAX_NUM_TIMERS; id++) {
+ 803              		.loc 1 206 0
+ 804 05ee 4FF00003 		mov	r3, #0
+ 805 05f2 FB73     		strb	r3, [r7, #15]
+ 806 05f4 DEE0     		b	.L30
+ 807              	.L35:
+ 207:drivers/common/opentimers.c ****       if (opentimers_vars.timersBuf[id].isrunning==TRUE) {
+ 808              		.loc 1 207 0
+ 809 05f6 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 810 05f8 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 811 05fc C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 812 0600 0B46     		mov	r3, r1
+ 813 0602 4FEA8303 		lsl	r3, r3, #2
+ 814 0606 5B18     		adds	r3, r3, r1
+ 815 0608 4FEA8303 		lsl	r3, r3, #2
+ 816 060c D318     		adds	r3, r2, r3
+ 817 060e 03F10803 		add	r3, r3, #8
+ 818 0612 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 819 0614 002B     		cmp	r3, #0
+ 820 0616 00F0C980 		beq	.L31
+ 208:drivers/common/opentimers.c **** 
+ 209:drivers/common/opentimers.c ****          if(opentimers_vars.currentTimeout >= opentimers_vars.timersBuf[id].ticks_remaining) {
+ 821              		.loc 1 209 0
+ 822 061a 40F20003 		movw	r3, #:lower16:opentimers_vars
+ 823 061e C0F20003 		movt	r3, #:upper16:opentimers_vars
+ 824 0622 D3F8CC00 		ldr	r0, [r3, #204]
+ 825 0626 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 826 0628 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 827 062c C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 828 0630 0B46     		mov	r3, r1
+ 829 0632 4FEA8303 		lsl	r3, r3, #2
+ 830 0636 5B18     		adds	r3, r3, r1
+ 831 0638 4FEA8303 		lsl	r3, r3, #2
+ 832 063c D318     		adds	r3, r2, r3
+ 833 063e 03F10403 		add	r3, r3, #4
+ 834 0642 1B68     		ldr	r3, [r3, #0]
+ 835 0644 9842     		cmp	r0, r3
+ 836 0646 C0F08C80 		bcc	.L32
+ 210:drivers/common/opentimers.c ****             // this timer has expired
+ 211:drivers/common/opentimers.c ****             //check to see if we have completed the whole timer, or we're just wrapping around the 
+ 212:drivers/common/opentimers.c ****             if(opentimers_vars.timersBuf[id].wraps_remaining == 0){
+ 837              		.loc 1 212 0
+ 838 064a F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 839 064c 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 840 0650 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 841 0654 0B46     		mov	r3, r1
+ 842 0656 4FEA8303 		lsl	r3, r3, #2
+ 843 065a 5B18     		adds	r3, r3, r1
+ 844 065c 4FEA8303 		lsl	r3, r3, #2
+ 845 0660 D318     		adds	r3, r2, r3
+ 846 0662 03F10803 		add	r3, r3, #8
+ 847 0666 1B88     		ldrh	r3, [r3, #0]
+ 848 0668 002B     		cmp	r3, #0
+ 849 066a 11D1     		bne	.L33
+ 213:drivers/common/opentimers.c ****                // declare as so
+ 214:drivers/common/opentimers.c ****                opentimers_vars.timersBuf[id].hasExpired  = TRUE;
+ 850              		.loc 1 214 0
+ 851 066c F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 852 066e 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 853 0672 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 854 0676 0B46     		mov	r3, r1
+ 855 0678 4FEA8303 		lsl	r3, r3, #2
+ 856 067c 5B18     		adds	r3, r3, r1
+ 857 067e 4FEA8303 		lsl	r3, r3, #2
+ 858 0682 D318     		adds	r3, r2, r3
+ 859 0684 03F11003 		add	r3, r3, #16
+ 860 0688 4FF00102 		mov	r2, #1
+ 861 068c 1A70     		strb	r2, [r3, #0]
+ 862 068e 8DE0     		b	.L31
+ 863              	.L33:
+ 215:drivers/common/opentimers.c ****             }else{
+ 216:drivers/common/opentimers.c ****                opentimers_vars.timersBuf[id].wraps_remaining--;
+ 864              		.loc 1 216 0
+ 865 0690 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 866 0692 40F20001 		movw	r1, #:lower16:opentimers_vars
+ 867 0696 C0F20001 		movt	r1, #:upper16:opentimers_vars
+ 868 069a 1346     		mov	r3, r2
+ 869 069c 4FEA8303 		lsl	r3, r3, #2
+ 870 06a0 9B18     		adds	r3, r3, r2
+ 871 06a2 4FEA8303 		lsl	r3, r3, #2
+ 872 06a6 CB18     		adds	r3, r1, r3
+ 873 06a8 03F10803 		add	r3, r3, #8
+ 874 06ac 1B88     		ldrh	r3, [r3, #0]
+ 875 06ae 03F1FF33 		add	r3, r3, #-1
+ 876 06b2 98B2     		uxth	r0, r3
+ 877 06b4 40F20001 		movw	r1, #:lower16:opentimers_vars
+ 878 06b8 C0F20001 		movt	r1, #:upper16:opentimers_vars
+ 879 06bc 1346     		mov	r3, r2
+ 880 06be 4FEA8303 		lsl	r3, r3, #2
+ 881 06c2 9B18     		adds	r3, r3, r2
+ 882 06c4 4FEA8303 		lsl	r3, r3, #2
+ 883 06c8 CB18     		adds	r3, r1, r3
+ 884 06ca 03F10803 		add	r3, r3, #8
+ 885 06ce 0246     		mov	r2, r0	@ movhi
+ 886 06d0 1A80     		strh	r2, [r3, #0]	@ movhi
+ 217:drivers/common/opentimers.c ****                if(opentimers_vars.timersBuf[id].wraps_remaining == 0){
+ 887              		.loc 1 217 0
+ 888 06d2 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 889 06d4 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 890 06d8 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 891 06dc 0B46     		mov	r3, r1
+ 892 06de 4FEA8303 		lsl	r3, r3, #2
+ 893 06e2 5B18     		adds	r3, r3, r1
+ 894 06e4 4FEA8303 		lsl	r3, r3, #2
+ 895 06e8 D318     		adds	r3, r2, r3
+ 896 06ea 03F10803 		add	r3, r3, #8
+ 897 06ee 1B88     		ldrh	r3, [r3, #0]
+ 898 06f0 002B     		cmp	r3, #0
+ 899 06f2 24D1     		bne	.L34
+ 218:drivers/common/opentimers.c ****                   //if we have fully wrapped around, then set the remainring ticks to the modulus o
+ 219:drivers/common/opentimers.c ****                   opentimers_vars.timersBuf[id].ticks_remaining = (opentimers_vars.timersBuf[id].pe
+ 900              		.loc 1 219 0
+ 901 06f4 F87B     		ldrb	r0, [r7, #15]	@ zero_extendqisi2
+ 902 06f6 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 903 06f8 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 904 06fc C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 905 0700 0B46     		mov	r3, r1
+ 906 0702 4FEA8303 		lsl	r3, r3, #2
+ 907 0706 5B18     		adds	r3, r3, r1
+ 908 0708 4FEA8303 		lsl	r3, r3, #2
+ 909 070c D318     		adds	r3, r2, r3
+ 910 070e 1B68     		ldr	r3, [r3, #0]
+ 911 0710 B3F1FF3F 		cmp	r3, #-1
+ 912 0714 34BF     		ite	cc
+ 913 0716 0022     		movcc	r2, #0
+ 914 0718 0122     		movcs	r2, #1
+ 915 071a C2F10002 		rsb	r2, r2, #0
+ 916 071e 9A1A     		subs	r2, r3, r2
+ 917 0720 40F20001 		movw	r1, #:lower16:opentimers_vars
+ 918 0724 C0F20001 		movt	r1, #:upper16:opentimers_vars
+ 919 0728 0346     		mov	r3, r0
+ 920 072a 4FEA8303 		lsl	r3, r3, #2
+ 921 072e 1B18     		adds	r3, r3, r0
+ 922 0730 4FEA8303 		lsl	r3, r3, #2
+ 923 0734 CB18     		adds	r3, r1, r3
+ 924 0736 03F10403 		add	r3, r3, #4
+ 925 073a 1A60     		str	r2, [r3, #0]
+ 926 073c 36E0     		b	.L31
+ 927              	.L34:
+ 220:drivers/common/opentimers.c ****                }else{
+ 221:drivers/common/opentimers.c ****                   opentimers_vars.timersBuf[id].ticks_remaining = MAX_TICKS_IN_SINGLE_CLOCK;
+ 928              		.loc 1 221 0
+ 929 073e F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 930 0740 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 931 0744 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 932 0748 0B46     		mov	r3, r1
+ 933 074a 4FEA8303 		lsl	r3, r3, #2
+ 934 074e 5B18     		adds	r3, r3, r1
+ 935 0750 4FEA8303 		lsl	r3, r3, #2
+ 936 0754 D318     		adds	r3, r2, r3
+ 937 0756 03F10403 		add	r3, r3, #4
+ 938 075a 4FF0FF32 		mov	r2, #-1
+ 939 075e 1A60     		str	r2, [r3, #0]
+ 940 0760 24E0     		b	.L31
+ 941              	.L32:
+ 222:drivers/common/opentimers.c ****                }
+ 223:drivers/common/opentimers.c ****             }
+ 224:drivers/common/opentimers.c ****          } else {
+ 225:drivers/common/opentimers.c ****             // this timer is not expired
+ 226:drivers/common/opentimers.c **** 
+ 227:drivers/common/opentimers.c ****             // update its counter
+ 228:drivers/common/opentimers.c ****             opentimers_vars.timersBuf[id].ticks_remaining -= opentimers_vars.currentTimeout;
+ 942              		.loc 1 228 0
+ 943 0762 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 944 0764 F87B     		ldrb	r0, [r7, #15]	@ zero_extendqisi2
+ 945 0766 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 946 076a C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 947 076e 0346     		mov	r3, r0
+ 948 0770 4FEA8303 		lsl	r3, r3, #2
+ 949 0774 1B18     		adds	r3, r3, r0
+ 950 0776 4FEA8303 		lsl	r3, r3, #2
+ 951 077a D318     		adds	r3, r2, r3
+ 952 077c 03F10403 		add	r3, r3, #4
+ 953 0780 1A68     		ldr	r2, [r3, #0]
+ 954 0782 40F20003 		movw	r3, #:lower16:opentimers_vars
+ 955 0786 C0F20003 		movt	r3, #:upper16:opentimers_vars
+ 956 078a D3F8CC30 		ldr	r3, [r3, #204]
+ 957 078e D01A     		subs	r0, r2, r3
+ 958 0790 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 959 0794 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 960 0798 0B46     		mov	r3, r1
+ 961 079a 4FEA8303 		lsl	r3, r3, #2
+ 962 079e 5B18     		adds	r3, r3, r1
+ 963 07a0 4FEA8303 		lsl	r3, r3, #2
+ 964 07a4 D318     		adds	r3, r2, r3
+ 965 07a6 03F10403 		add	r3, r3, #4
+ 966 07aa 1860     		str	r0, [r3, #0]
+ 967              	.L31:
+ 206:drivers/common/opentimers.c ****    for(id=0; id<MAX_NUM_TIMERS; id++) {
+ 968              		.loc 1 206 0
+ 969 07ac FB7B     		ldrb	r3, [r7, #15]
+ 970 07ae 03F10103 		add	r3, r3, #1
+ 971 07b2 FB73     		strb	r3, [r7, #15]
+ 972              	.L30:
+ 206:drivers/common/opentimers.c ****    for(id=0; id<MAX_NUM_TIMERS; id++) {
+ 973              		.loc 1 206 0 is_stmt 0 discriminator 1
+ 974 07b4 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 975 07b6 092B     		cmp	r3, #9
+ 976 07b8 7FF61DAF 		bls	.L35
+ 229:drivers/common/opentimers.c ****          }   
+ 230:drivers/common/opentimers.c ****       }
+ 231:drivers/common/opentimers.c ****    }
+ 232:drivers/common/opentimers.c **** 
+ 233:drivers/common/opentimers.c ****    // step 2. call callbacks of expired timers
+ 234:drivers/common/opentimers.c ****    for(id=0; id<MAX_NUM_TIMERS; id++) {
+ 977              		.loc 1 234 0 is_stmt 1
+ 978 07bc 4FF00003 		mov	r3, #0
+ 979 07c0 FB73     		strb	r3, [r7, #15]
+ 980 07c2 BBE0     		b	.L36
+ 981              	.L40:
+ 235:drivers/common/opentimers.c ****       if (opentimers_vars.timersBuf[id].hasExpired==TRUE){
+ 982              		.loc 1 235 0
+ 983 07c4 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 984 07c6 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 985 07ca C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 986 07ce 0B46     		mov	r3, r1
+ 987 07d0 4FEA8303 		lsl	r3, r3, #2
+ 988 07d4 5B18     		adds	r3, r3, r1
+ 989 07d6 4FEA8303 		lsl	r3, r3, #2
+ 990 07da D318     		adds	r3, r2, r3
+ 991 07dc 03F11003 		add	r3, r3, #16
+ 992 07e0 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 993 07e2 002B     		cmp	r3, #0
+ 994 07e4 00F0A680 		beq	.L37
+ 236:drivers/common/opentimers.c **** 
+ 237:drivers/common/opentimers.c ****          // call the callback
+ 238:drivers/common/opentimers.c ****          opentimers_vars.timersBuf[id].callback();
+ 995              		.loc 1 238 0
+ 996 07e8 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 997 07ea 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 998 07ee C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 999 07f2 0B46     		mov	r3, r1
+ 1000 07f4 4FEA8303 		lsl	r3, r3, #2
+ 1001 07f8 5B18     		adds	r3, r3, r1
+ 1002 07fa 4FEA8303 		lsl	r3, r3, #2
+ 1003 07fe D318     		adds	r3, r2, r3
+ 1004 0800 03F10C03 		add	r3, r3, #12
+ 1005 0804 1B68     		ldr	r3, [r3, #0]
+ 1006 0806 9847     		blx	r3
+ 239:drivers/common/opentimers.c ****          opentimers_vars.timersBuf[id].hasExpired     = FALSE;
+ 1007              		.loc 1 239 0
+ 1008 0808 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 1009 080a 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1010 080e C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1011 0812 0B46     		mov	r3, r1
+ 1012 0814 4FEA8303 		lsl	r3, r3, #2
+ 1013 0818 5B18     		adds	r3, r3, r1
+ 1014 081a 4FEA8303 		lsl	r3, r3, #2
+ 1015 081e D318     		adds	r3, r2, r3
+ 1016 0820 03F11003 		add	r3, r3, #16
+ 1017 0824 4FF00002 		mov	r2, #0
+ 1018 0828 1A70     		strb	r2, [r3, #0]
+ 240:drivers/common/opentimers.c **** 
+ 241:drivers/common/opentimers.c ****          // reload the timer, if applicable
+ 242:drivers/common/opentimers.c ****          if (opentimers_vars.timersBuf[id].type==TIMER_PERIODIC) {
+ 1019              		.loc 1 242 0
+ 1020 082a F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 1021 082c 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1022 0830 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1023 0834 0B46     		mov	r3, r1
+ 1024 0836 4FEA8303 		lsl	r3, r3, #2
+ 1025 083a 5B18     		adds	r3, r3, r1
+ 1026 083c 4FEA8303 		lsl	r3, r3, #2
+ 1027 0840 D318     		adds	r3, r2, r3
+ 1028 0842 03F10803 		add	r3, r3, #8
+ 1029 0846 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 1030 0848 002B     		cmp	r3, #0
+ 1031 084a 62D1     		bne	.L38
+ 243:drivers/common/opentimers.c ****             opentimers_vars.timersBuf[id].wraps_remaining   = (opentimers_vars.timersBuf[id].period
+ 1032              		.loc 1 243 0
+ 1033 084c F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 1034 084e F87B     		ldrb	r0, [r7, #15]	@ zero_extendqisi2
+ 1035 0850 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1036 0854 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1037 0858 0346     		mov	r3, r0
+ 1038 085a 4FEA8303 		lsl	r3, r3, #2
+ 1039 085e 1B18     		adds	r3, r3, r0
+ 1040 0860 4FEA8303 		lsl	r3, r3, #2
+ 1041 0864 D318     		adds	r3, r2, r3
+ 1042 0866 1B68     		ldr	r3, [r3, #0]
+ 1043 0868 B3F1FF3F 		cmp	r3, #-1
+ 1044 086c 34BF     		ite	cc
+ 1045 086e 0023     		movcc	r3, #0
+ 1046 0870 0123     		movcs	r3, #1
+ 1047 0872 98B2     		uxth	r0, r3
+ 1048 0874 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1049 0878 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1050 087c 0B46     		mov	r3, r1
+ 1051 087e 4FEA8303 		lsl	r3, r3, #2
+ 1052 0882 5B18     		adds	r3, r3, r1
+ 1053 0884 4FEA8303 		lsl	r3, r3, #2
+ 1054 0888 D318     		adds	r3, r2, r3
+ 1055 088a 03F10803 		add	r3, r3, #8
+ 1056 088e 0246     		mov	r2, r0	@ movhi
+ 1057 0890 1A80     		strh	r2, [r3, #0]	@ movhi
+ 244:drivers/common/opentimers.c ****             //if the number of ticks falls below a 16bit value, use it, otherwise set to max 16bit 
+ 245:drivers/common/opentimers.c ****             if(opentimers_vars.timersBuf[id].wraps_remaining==0)                                   
+ 1058              		.loc 1 245 0
+ 1059 0892 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 1060 0894 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1061 0898 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1062 089c 0B46     		mov	r3, r1
+ 1063 089e 4FEA8303 		lsl	r3, r3, #2
+ 1064 08a2 5B18     		adds	r3, r3, r1
+ 1065 08a4 4FEA8303 		lsl	r3, r3, #2
+ 1066 08a8 D318     		adds	r3, r2, r3
+ 1067 08aa 03F10803 		add	r3, r3, #8
+ 1068 08ae 1B88     		ldrh	r3, [r3, #0]
+ 1069 08b0 002B     		cmp	r3, #0
+ 1070 08b2 1CD1     		bne	.L39
+ 246:drivers/common/opentimers.c ****                opentimers_vars.timersBuf[id].ticks_remaining   = opentimers_vars.timersBuf[id].peri
+ 1071              		.loc 1 246 0
+ 1072 08b4 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 1073 08b6 F87B     		ldrb	r0, [r7, #15]	@ zero_extendqisi2
+ 1074 08b8 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1075 08bc C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1076 08c0 0346     		mov	r3, r0
+ 1077 08c2 4FEA8303 		lsl	r3, r3, #2
+ 1078 08c6 1B18     		adds	r3, r3, r0
+ 1079 08c8 4FEA8303 		lsl	r3, r3, #2
+ 1080 08cc D318     		adds	r3, r2, r3
+ 1081 08ce 1868     		ldr	r0, [r3, #0]
+ 1082 08d0 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1083 08d4 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1084 08d8 0B46     		mov	r3, r1
+ 1085 08da 4FEA8303 		lsl	r3, r3, #2
+ 1086 08de 5B18     		adds	r3, r3, r1
+ 1087 08e0 4FEA8303 		lsl	r3, r3, #2
+ 1088 08e4 D318     		adds	r3, r2, r3
+ 1089 08e6 03F10403 		add	r3, r3, #4
+ 1090 08ea 1860     		str	r0, [r3, #0]
+ 1091 08ec 22E0     		b	.L37
+ 1092              	.L39:
+ 247:drivers/common/opentimers.c ****             else
+ 248:drivers/common/opentimers.c ****                opentimers_vars.timersBuf[id].ticks_remaining = MAX_TICKS_IN_SINGLE_CLOCK;
+ 1093              		.loc 1 248 0
+ 1094 08ee F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 1095 08f0 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1096 08f4 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1097 08f8 0B46     		mov	r3, r1
+ 1098 08fa 4FEA8303 		lsl	r3, r3, #2
+ 1099 08fe 5B18     		adds	r3, r3, r1
+ 1100 0900 4FEA8303 		lsl	r3, r3, #2
+ 1101 0904 D318     		adds	r3, r2, r3
+ 1102 0906 03F10403 		add	r3, r3, #4
+ 1103 090a 4FF0FF32 		mov	r2, #-1
+ 1104 090e 1A60     		str	r2, [r3, #0]
+ 1105 0910 10E0     		b	.L37
+ 1106              	.L38:
+ 249:drivers/common/opentimers.c **** 
+ 250:drivers/common/opentimers.c ****          } else {
+ 251:drivers/common/opentimers.c ****             opentimers_vars.timersBuf[id].isrunning   = FALSE;
+ 1107              		.loc 1 251 0
+ 1108 0912 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 1109 0914 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1110 0918 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1111 091c 0B46     		mov	r3, r1
+ 1112 091e 4FEA8303 		lsl	r3, r3, #2
+ 1113 0922 5B18     		adds	r3, r3, r1
+ 1114 0924 4FEA8303 		lsl	r3, r3, #2
+ 1115 0928 D318     		adds	r3, r2, r3
+ 1116 092a 03F10803 		add	r3, r3, #8
+ 1117 092e 4FF00002 		mov	r2, #0
+ 1118 0932 DA70     		strb	r2, [r3, #3]
+ 1119              	.L37:
+ 234:drivers/common/opentimers.c ****    for(id=0; id<MAX_NUM_TIMERS; id++) {
+ 1120              		.loc 1 234 0
+ 1121 0934 FB7B     		ldrb	r3, [r7, #15]
+ 1122 0936 03F10103 		add	r3, r3, #1
+ 1123 093a FB73     		strb	r3, [r7, #15]
+ 1124              	.L36:
+ 234:drivers/common/opentimers.c ****    for(id=0; id<MAX_NUM_TIMERS; id++) {
+ 1125              		.loc 1 234 0 is_stmt 0 discriminator 1
+ 1126 093c FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1127 093e 092B     		cmp	r3, #9
+ 1128 0940 7FF640AF 		bls	.L40
+ 252:drivers/common/opentimers.c ****          }
+ 253:drivers/common/opentimers.c ****       }
+ 254:drivers/common/opentimers.c **** 
+ 255:drivers/common/opentimers.c ****    }
+ 256:drivers/common/opentimers.c **** 
+ 257:drivers/common/opentimers.c ****    // step 3. find the minimum remaining timeout among running timers
+ 258:drivers/common/opentimers.c ****    found = FALSE;
+ 1129              		.loc 1 258 0 is_stmt 1
+ 1130 0944 4FF00003 		mov	r3, #0
+ 1131 0948 FB71     		strb	r3, [r7, #7]
+ 259:drivers/common/opentimers.c ****    for(id=0;id<MAX_NUM_TIMERS;id++) {
+ 1132              		.loc 1 259 0
+ 1133 094a 4FF00003 		mov	r3, #0
+ 1134 094e FB73     		strb	r3, [r7, #15]
+ 1135 0950 3FE0     		b	.L41
+ 1136              	.L44:
+ 260:drivers/common/opentimers.c ****       if (
+ 261:drivers/common/opentimers.c ****             opentimers_vars.timersBuf[id].isrunning==TRUE &&
+ 1137              		.loc 1 261 0
+ 1138 0952 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 1139 0954 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1140 0958 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1141 095c 0B46     		mov	r3, r1
+ 1142 095e 4FEA8303 		lsl	r3, r3, #2
+ 1143 0962 5B18     		adds	r3, r3, r1
+ 1144 0964 4FEA8303 		lsl	r3, r3, #2
+ 1145 0968 D318     		adds	r3, r2, r3
+ 1146 096a 03F10803 		add	r3, r3, #8
+ 1147 096e DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 260:drivers/common/opentimers.c ****       if (
+ 1148              		.loc 1 260 0
+ 1149 0970 002B     		cmp	r3, #0
+ 1150 0972 2AD0     		beq	.L42
+ 262:drivers/common/opentimers.c ****             (
+ 263:drivers/common/opentimers.c ****                   found==FALSE
+ 1151              		.loc 1 263 0
+ 1152 0974 FB79     		ldrb	r3, [r7, #7]
+ 1153 0976 83F00103 		eor	r3, r3, #1
+ 1154 097a DBB2     		uxtb	r3, r3
+ 261:drivers/common/opentimers.c ****             opentimers_vars.timersBuf[id].isrunning==TRUE &&
+ 1155              		.loc 1 261 0
+ 1156 097c 002B     		cmp	r3, #0
+ 1157 097e 11D1     		bne	.L43
+ 264:drivers/common/opentimers.c ****                   ||
+ 265:drivers/common/opentimers.c ****                   opentimers_vars.timersBuf[id].ticks_remaining < min_timeout
+ 1158              		.loc 1 265 0
+ 1159 0980 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 1160 0982 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1161 0986 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1162 098a 0B46     		mov	r3, r1
+ 1163 098c 4FEA8303 		lsl	r3, r3, #2
+ 1164 0990 5B18     		adds	r3, r3, r1
+ 1165 0992 4FEA8303 		lsl	r3, r3, #2
+ 1166 0996 D318     		adds	r3, r2, r3
+ 1167 0998 03F10403 		add	r3, r3, #4
+ 1168 099c 1A68     		ldr	r2, [r3, #0]
+ 264:drivers/common/opentimers.c ****                   ||
+ 1169              		.loc 1 264 0
+ 1170 099e BB68     		ldr	r3, [r7, #8]
+ 1171 09a0 9A42     		cmp	r2, r3
+ 1172 09a2 12D2     		bcs	.L42
+ 1173              	.L43:
+ 266:drivers/common/opentimers.c ****             )
+ 267:drivers/common/opentimers.c ****       ) {
+ 268:drivers/common/opentimers.c ****          min_timeout    = opentimers_vars.timersBuf[id].ticks_remaining;
+ 1174              		.loc 1 268 0
+ 1175 09a4 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 1176 09a6 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1177 09aa C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1178 09ae 0B46     		mov	r3, r1
+ 1179 09b0 4FEA8303 		lsl	r3, r3, #2
+ 1180 09b4 5B18     		adds	r3, r3, r1
+ 1181 09b6 4FEA8303 		lsl	r3, r3, #2
+ 1182 09ba D318     		adds	r3, r2, r3
+ 1183 09bc 03F10403 		add	r3, r3, #4
+ 1184 09c0 1B68     		ldr	r3, [r3, #0]
+ 1185 09c2 BB60     		str	r3, [r7, #8]
+ 269:drivers/common/opentimers.c ****          found          = TRUE;
+ 1186              		.loc 1 269 0
+ 1187 09c4 4FF00103 		mov	r3, #1
+ 1188 09c8 FB71     		strb	r3, [r7, #7]
+ 1189              	.L42:
+ 259:drivers/common/opentimers.c ****    for(id=0;id<MAX_NUM_TIMERS;id++) {
+ 1190              		.loc 1 259 0
+ 1191 09ca FB7B     		ldrb	r3, [r7, #15]
+ 1192 09cc 03F10103 		add	r3, r3, #1
+ 1193 09d0 FB73     		strb	r3, [r7, #15]
+ 1194              	.L41:
+ 259:drivers/common/opentimers.c ****    for(id=0;id<MAX_NUM_TIMERS;id++) {
+ 1195              		.loc 1 259 0 is_stmt 0 discriminator 1
+ 1196 09d2 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1197 09d4 092B     		cmp	r3, #9
+ 1198 09d6 BCD9     		bls	.L44
+ 270:drivers/common/opentimers.c ****       }
+ 271:drivers/common/opentimers.c ****    }
+ 272:drivers/common/opentimers.c **** 
+ 273:drivers/common/opentimers.c ****    // step 4. schedule next timeout
+ 274:drivers/common/opentimers.c ****    if (found==TRUE) {
+ 1199              		.loc 1 274 0 is_stmt 1
+ 1200 09d8 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1201 09da 002B     		cmp	r3, #0
+ 1202 09dc 10D0     		beq	.L45
+ 275:drivers/common/opentimers.c ****       // at least one timer pending
+ 276:drivers/common/opentimers.c ****       opentimers_vars.currentTimeout = min_timeout;
+ 1203              		.loc 1 276 0
+ 1204 09de 40F20003 		movw	r3, #:lower16:opentimers_vars
+ 1205 09e2 C0F20003 		movt	r3, #:upper16:opentimers_vars
+ 1206 09e6 BA68     		ldr	r2, [r7, #8]
+ 1207 09e8 C3F8CC20 		str	r2, [r3, #204]
+ 277:drivers/common/opentimers.c ****       bsp_timer_scheduleIn(opentimers_vars.currentTimeout);
+ 1208              		.loc 1 277 0
+ 1209 09ec 40F20003 		movw	r3, #:lower16:opentimers_vars
+ 1210 09f0 C0F20003 		movt	r3, #:upper16:opentimers_vars
+ 1211 09f4 D3F8CC30 		ldr	r3, [r3, #204]
+ 1212 09f8 1846     		mov	r0, r3
+ 1213 09fa FFF7FEFF 		bl	bsp_timer_scheduleIn
+ 1214 09fe 07E0     		b	.L29
+ 1215              	.L45:
+ 278:drivers/common/opentimers.c ****    } else {
+ 279:drivers/common/opentimers.c ****       // no more timers pending
+ 280:drivers/common/opentimers.c ****       opentimers_vars.running = FALSE;
+ 1216              		.loc 1 280 0
+ 1217 0a00 40F20003 		movw	r3, #:lower16:opentimers_vars
+ 1218 0a04 C0F20003 		movt	r3, #:upper16:opentimers_vars
+ 1219 0a08 4FF00002 		mov	r2, #0
+ 1220 0a0c 83F8C820 		strb	r2, [r3, #200]
+ 1221              	.L29:
+ 281:drivers/common/opentimers.c ****    }
+ 282:drivers/common/opentimers.c **** }
+ 1222              		.loc 1 282 0
+ 1223 0a10 07F11007 		add	r7, r7, #16
+ 1224 0a14 BD46     		mov	sp, r7
+ 1225 0a16 80BD     		pop	{r7, pc}
+ 1226              		.cfi_endproc
+ 1227              	.LFE5:
+ 1229              		.align	2
+ 1230              		.global	opentimers_sleepTimeCompesation
+ 1231              		.thumb
+ 1232              		.thumb_func
+ 1234              	opentimers_sleepTimeCompesation:
+ 1235              	.LFB6:
+ 283:drivers/common/opentimers.c **** 
+ 284:drivers/common/opentimers.c **** void opentimers_sleepTimeCompesation(uint16_t sleepTime)
+ 285:drivers/common/opentimers.c **** {
+ 1236              		.loc 1 285 0
+ 1237              		.cfi_startproc
+ 1238              		@ args = 0, pretend = 0, frame = 24
+ 1239              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1240 0a18 80B5     		push	{r7, lr}
+ 1241              	.LCFI18:
+ 1242              		.cfi_def_cfa_offset 8
+ 1243              		.cfi_offset 7, -8
+ 1244              		.cfi_offset 14, -4
+ 1245 0a1a 86B0     		sub	sp, sp, #24
+ 1246              	.LCFI19:
+ 1247              		.cfi_def_cfa_offset 32
+ 1248 0a1c 00AF     		add	r7, sp, #0
+ 1249              	.LCFI20:
+ 1250              		.cfi_def_cfa_register 7
+ 1251 0a1e 0346     		mov	r3, r0
+ 1252 0a20 FB80     		strh	r3, [r7, #6]	@ movhi
+ 286:drivers/common/opentimers.c ****    opentimer_id_t   id;
+ 287:drivers/common/opentimers.c ****    PORT_TIMER_WIDTH min_timeout;
+ 288:drivers/common/opentimers.c ****    bool             found;
+ 289:drivers/common/opentimers.c ****    
+ 290:drivers/common/opentimers.c ****    //step 1. reCount the ticks_remain after waking up from sleep
+ 291:drivers/common/opentimers.c ****    for(id=0; id<MAX_NUM_TIMERS; id++)
+ 1253              		.loc 1 291 0
+ 1254 0a22 4FF00003 		mov	r3, #0
+ 1255 0a26 FB75     		strb	r3, [r7, #23]
+ 1256 0a28 AEE0     		b	.L48
+ 1257              	.L52:
+ 292:drivers/common/opentimers.c ****    {
+ 293:drivers/common/opentimers.c ****      if (opentimers_vars.timersBuf[id].isrunning==TRUE) 
+ 1258              		.loc 1 293 0
+ 1259 0a2a F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1260 0a2c 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1261 0a30 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1262 0a34 0B46     		mov	r3, r1
+ 1263 0a36 4FEA8303 		lsl	r3, r3, #2
+ 1264 0a3a 5B18     		adds	r3, r3, r1
+ 1265 0a3c 4FEA8303 		lsl	r3, r3, #2
+ 1266 0a40 D318     		adds	r3, r2, r3
+ 1267 0a42 03F10803 		add	r3, r3, #8
+ 1268 0a46 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 1269 0a48 002B     		cmp	r3, #0
+ 1270 0a4a 00F09980 		beq	.L49
+ 294:drivers/common/opentimers.c ****      {
+ 295:drivers/common/opentimers.c ****        if(opentimers_vars.timersBuf[id].ticks_remaining > sleepTime)
+ 1271              		.loc 1 295 0
+ 1272 0a4e F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1273 0a50 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1274 0a54 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1275 0a58 0B46     		mov	r3, r1
+ 1276 0a5a 4FEA8303 		lsl	r3, r3, #2
+ 1277 0a5e 5B18     		adds	r3, r3, r1
+ 1278 0a60 4FEA8303 		lsl	r3, r3, #2
+ 1279 0a64 D318     		adds	r3, r2, r3
+ 1280 0a66 03F10403 		add	r3, r3, #4
+ 1281 0a6a 1A68     		ldr	r2, [r3, #0]
+ 1282 0a6c FB88     		ldrh	r3, [r7, #6]
+ 1283 0a6e 9A42     		cmp	r2, r3
+ 1284 0a70 20D9     		bls	.L50
+ 296:drivers/common/opentimers.c ****        {
+ 297:drivers/common/opentimers.c ****          opentimers_vars.timersBuf[id].ticks_remaining -= sleepTime;
+ 1285              		.loc 1 297 0
+ 1286 0a72 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1287 0a74 F87D     		ldrb	r0, [r7, #23]	@ zero_extendqisi2
+ 1288 0a76 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1289 0a7a C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1290 0a7e 0346     		mov	r3, r0
+ 1291 0a80 4FEA8303 		lsl	r3, r3, #2
+ 1292 0a84 1B18     		adds	r3, r3, r0
+ 1293 0a86 4FEA8303 		lsl	r3, r3, #2
+ 1294 0a8a D318     		adds	r3, r2, r3
+ 1295 0a8c 03F10403 		add	r3, r3, #4
+ 1296 0a90 1A68     		ldr	r2, [r3, #0]
+ 1297 0a92 FB88     		ldrh	r3, [r7, #6]
+ 1298 0a94 D01A     		subs	r0, r2, r3
+ 1299 0a96 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1300 0a9a C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1301 0a9e 0B46     		mov	r3, r1
+ 1302 0aa0 4FEA8303 		lsl	r3, r3, #2
+ 1303 0aa4 5B18     		adds	r3, r3, r1
+ 1304 0aa6 4FEA8303 		lsl	r3, r3, #2
+ 1305 0aaa D318     		adds	r3, r2, r3
+ 1306 0aac 03F10403 		add	r3, r3, #4
+ 1307 0ab0 1860     		str	r0, [r3, #0]
+ 1308 0ab2 65E0     		b	.L49
+ 1309              	.L50:
+ 298:drivers/common/opentimers.c ****        }
+ 299:drivers/common/opentimers.c ****        else
+ 300:drivers/common/opentimers.c ****        {
+ 301:drivers/common/opentimers.c ****          if(opentimers_vars.timersBuf[id].wraps_remaining > 0)
+ 1310              		.loc 1 301 0
+ 1311 0ab4 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1312 0ab6 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1313 0aba C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1314 0abe 0B46     		mov	r3, r1
+ 1315 0ac0 4FEA8303 		lsl	r3, r3, #2
+ 1316 0ac4 5B18     		adds	r3, r3, r1
+ 1317 0ac6 4FEA8303 		lsl	r3, r3, #2
+ 1318 0aca D318     		adds	r3, r2, r3
+ 1319 0acc 03F10803 		add	r3, r3, #8
+ 1320 0ad0 1B88     		ldrh	r3, [r3, #0]
+ 1321 0ad2 002B     		cmp	r3, #0
+ 1322 0ad4 43D0     		beq	.L51
+ 302:drivers/common/opentimers.c ****          {
+ 303:drivers/common/opentimers.c ****            opentimers_vars.timersBuf[id].wraps_remaining--;
+ 1323              		.loc 1 303 0
+ 1324 0ad6 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 1325 0ad8 40F20001 		movw	r1, #:lower16:opentimers_vars
+ 1326 0adc C0F20001 		movt	r1, #:upper16:opentimers_vars
+ 1327 0ae0 1346     		mov	r3, r2
+ 1328 0ae2 4FEA8303 		lsl	r3, r3, #2
+ 1329 0ae6 9B18     		adds	r3, r3, r2
+ 1330 0ae8 4FEA8303 		lsl	r3, r3, #2
+ 1331 0aec CB18     		adds	r3, r1, r3
+ 1332 0aee 03F10803 		add	r3, r3, #8
+ 1333 0af2 1B88     		ldrh	r3, [r3, #0]
+ 1334 0af4 03F1FF33 		add	r3, r3, #-1
+ 1335 0af8 98B2     		uxth	r0, r3
+ 1336 0afa 40F20001 		movw	r1, #:lower16:opentimers_vars
+ 1337 0afe C0F20001 		movt	r1, #:upper16:opentimers_vars
+ 1338 0b02 1346     		mov	r3, r2
+ 1339 0b04 4FEA8303 		lsl	r3, r3, #2
+ 1340 0b08 9B18     		adds	r3, r3, r2
+ 1341 0b0a 4FEA8303 		lsl	r3, r3, #2
+ 1342 0b0e CB18     		adds	r3, r1, r3
+ 1343 0b10 03F10803 		add	r3, r3, #8
+ 1344 0b14 0246     		mov	r2, r0	@ movhi
+ 1345 0b16 1A80     		strh	r2, [r3, #0]	@ movhi
+ 304:drivers/common/opentimers.c ****            opentimers_vars.timersBuf[id].ticks_remaining += (MAX_TICKS_IN_SINGLE_CLOCK - sleepTime)
+ 1346              		.loc 1 304 0
+ 1347 0b18 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1348 0b1a F87D     		ldrb	r0, [r7, #23]	@ zero_extendqisi2
+ 1349 0b1c 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1350 0b20 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1351 0b24 0346     		mov	r3, r0
+ 1352 0b26 4FEA8303 		lsl	r3, r3, #2
+ 1353 0b2a 1B18     		adds	r3, r3, r0
+ 1354 0b2c 4FEA8303 		lsl	r3, r3, #2
+ 1355 0b30 D318     		adds	r3, r2, r3
+ 1356 0b32 03F10403 		add	r3, r3, #4
+ 1357 0b36 1A68     		ldr	r2, [r3, #0]
+ 1358 0b38 FB88     		ldrh	r3, [r7, #6]
+ 1359 0b3a 6FEA0303 		mvn	r3, r3
+ 1360 0b3e D018     		adds	r0, r2, r3
+ 1361 0b40 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1362 0b44 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1363 0b48 0B46     		mov	r3, r1
+ 1364 0b4a 4FEA8303 		lsl	r3, r3, #2
+ 1365 0b4e 5B18     		adds	r3, r3, r1
+ 1366 0b50 4FEA8303 		lsl	r3, r3, #2
+ 1367 0b54 D318     		adds	r3, r2, r3
+ 1368 0b56 03F10403 		add	r3, r3, #4
+ 1369 0b5a 1860     		str	r0, [r3, #0]
+ 1370 0b5c 10E0     		b	.L49
+ 1371              	.L51:
+ 305:drivers/common/opentimers.c ****          }
+ 306:drivers/common/opentimers.c ****          else
+ 307:drivers/common/opentimers.c ****          {
+ 308:drivers/common/opentimers.c ****            opentimers_vars.timersBuf[id].hasExpired  = TRUE;
+ 1372              		.loc 1 308 0
+ 1373 0b5e F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1374 0b60 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1375 0b64 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1376 0b68 0B46     		mov	r3, r1
+ 1377 0b6a 4FEA8303 		lsl	r3, r3, #2
+ 1378 0b6e 5B18     		adds	r3, r3, r1
+ 1379 0b70 4FEA8303 		lsl	r3, r3, #2
+ 1380 0b74 D318     		adds	r3, r2, r3
+ 1381 0b76 03F11003 		add	r3, r3, #16
+ 1382 0b7a 4FF00102 		mov	r2, #1
+ 1383 0b7e 1A70     		strb	r2, [r3, #0]
+ 1384              	.L49:
+ 291:drivers/common/opentimers.c ****    for(id=0; id<MAX_NUM_TIMERS; id++)
+ 1385              		.loc 1 291 0
+ 1386 0b80 FB7D     		ldrb	r3, [r7, #23]
+ 1387 0b82 03F10103 		add	r3, r3, #1
+ 1388 0b86 FB75     		strb	r3, [r7, #23]
+ 1389              	.L48:
+ 291:drivers/common/opentimers.c ****    for(id=0; id<MAX_NUM_TIMERS; id++)
+ 1390              		.loc 1 291 0 is_stmt 0 discriminator 1
+ 1391 0b88 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 1392 0b8a 092B     		cmp	r3, #9
+ 1393 0b8c 7FF64DAF 		bls	.L52
+ 309:drivers/common/opentimers.c ****          }
+ 310:drivers/common/opentimers.c ****        }
+ 311:drivers/common/opentimers.c ****      }
+ 312:drivers/common/opentimers.c ****    }
+ 313:drivers/common/opentimers.c ****    
+ 314:drivers/common/opentimers.c ****    // step 2. call callbacks of expired timers
+ 315:drivers/common/opentimers.c ****    for(id=0; id<MAX_NUM_TIMERS; id++) {
+ 1394              		.loc 1 315 0 is_stmt 1
+ 1395 0b90 4FF00003 		mov	r3, #0
+ 1396 0b94 FB75     		strb	r3, [r7, #23]
+ 1397 0b96 BBE0     		b	.L53
+ 1398              	.L57:
+ 316:drivers/common/opentimers.c ****       if (opentimers_vars.timersBuf[id].hasExpired==TRUE){
+ 1399              		.loc 1 316 0
+ 1400 0b98 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1401 0b9a 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1402 0b9e C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1403 0ba2 0B46     		mov	r3, r1
+ 1404 0ba4 4FEA8303 		lsl	r3, r3, #2
+ 1405 0ba8 5B18     		adds	r3, r3, r1
+ 1406 0baa 4FEA8303 		lsl	r3, r3, #2
+ 1407 0bae D318     		adds	r3, r2, r3
+ 1408 0bb0 03F11003 		add	r3, r3, #16
+ 1409 0bb4 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1410 0bb6 002B     		cmp	r3, #0
+ 1411 0bb8 00F0A680 		beq	.L54
+ 317:drivers/common/opentimers.c **** 
+ 318:drivers/common/opentimers.c ****          // call the callback
+ 319:drivers/common/opentimers.c ****          opentimers_vars.timersBuf[id].callback();
+ 1412              		.loc 1 319 0
+ 1413 0bbc F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1414 0bbe 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1415 0bc2 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1416 0bc6 0B46     		mov	r3, r1
+ 1417 0bc8 4FEA8303 		lsl	r3, r3, #2
+ 1418 0bcc 5B18     		adds	r3, r3, r1
+ 1419 0bce 4FEA8303 		lsl	r3, r3, #2
+ 1420 0bd2 D318     		adds	r3, r2, r3
+ 1421 0bd4 03F10C03 		add	r3, r3, #12
+ 1422 0bd8 1B68     		ldr	r3, [r3, #0]
+ 1423 0bda 9847     		blx	r3
+ 320:drivers/common/opentimers.c ****          opentimers_vars.timersBuf[id].hasExpired     = FALSE;
+ 1424              		.loc 1 320 0
+ 1425 0bdc F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1426 0bde 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1427 0be2 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1428 0be6 0B46     		mov	r3, r1
+ 1429 0be8 4FEA8303 		lsl	r3, r3, #2
+ 1430 0bec 5B18     		adds	r3, r3, r1
+ 1431 0bee 4FEA8303 		lsl	r3, r3, #2
+ 1432 0bf2 D318     		adds	r3, r2, r3
+ 1433 0bf4 03F11003 		add	r3, r3, #16
+ 1434 0bf8 4FF00002 		mov	r2, #0
+ 1435 0bfc 1A70     		strb	r2, [r3, #0]
+ 321:drivers/common/opentimers.c **** 
+ 322:drivers/common/opentimers.c ****          // reload the timer, if applicable
+ 323:drivers/common/opentimers.c ****          if (opentimers_vars.timersBuf[id].type==TIMER_PERIODIC) {
+ 1436              		.loc 1 323 0
+ 1437 0bfe F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1438 0c00 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1439 0c04 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1440 0c08 0B46     		mov	r3, r1
+ 1441 0c0a 4FEA8303 		lsl	r3, r3, #2
+ 1442 0c0e 5B18     		adds	r3, r3, r1
+ 1443 0c10 4FEA8303 		lsl	r3, r3, #2
+ 1444 0c14 D318     		adds	r3, r2, r3
+ 1445 0c16 03F10803 		add	r3, r3, #8
+ 1446 0c1a 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 1447 0c1c 002B     		cmp	r3, #0
+ 1448 0c1e 62D1     		bne	.L55
+ 324:drivers/common/opentimers.c ****             opentimers_vars.timersBuf[id].wraps_remaining   = (opentimers_vars.timersBuf[id].period
+ 1449              		.loc 1 324 0
+ 1450 0c20 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1451 0c22 F87D     		ldrb	r0, [r7, #23]	@ zero_extendqisi2
+ 1452 0c24 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1453 0c28 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1454 0c2c 0346     		mov	r3, r0
+ 1455 0c2e 4FEA8303 		lsl	r3, r3, #2
+ 1456 0c32 1B18     		adds	r3, r3, r0
+ 1457 0c34 4FEA8303 		lsl	r3, r3, #2
+ 1458 0c38 D318     		adds	r3, r2, r3
+ 1459 0c3a 1B68     		ldr	r3, [r3, #0]
+ 1460 0c3c B3F1FF3F 		cmp	r3, #-1
+ 1461 0c40 34BF     		ite	cc
+ 1462 0c42 0023     		movcc	r3, #0
+ 1463 0c44 0123     		movcs	r3, #1
+ 1464 0c46 98B2     		uxth	r0, r3
+ 1465 0c48 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1466 0c4c C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1467 0c50 0B46     		mov	r3, r1
+ 1468 0c52 4FEA8303 		lsl	r3, r3, #2
+ 1469 0c56 5B18     		adds	r3, r3, r1
+ 1470 0c58 4FEA8303 		lsl	r3, r3, #2
+ 1471 0c5c D318     		adds	r3, r2, r3
+ 1472 0c5e 03F10803 		add	r3, r3, #8
+ 1473 0c62 0246     		mov	r2, r0	@ movhi
+ 1474 0c64 1A80     		strh	r2, [r3, #0]	@ movhi
+ 325:drivers/common/opentimers.c ****             //if the number of ticks falls below a 16bit value, use it, otherwise set to max 16bit 
+ 326:drivers/common/opentimers.c ****             if(opentimers_vars.timersBuf[id].wraps_remaining==0)                                   
+ 1475              		.loc 1 326 0
+ 1476 0c66 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1477 0c68 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1478 0c6c C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1479 0c70 0B46     		mov	r3, r1
+ 1480 0c72 4FEA8303 		lsl	r3, r3, #2
+ 1481 0c76 5B18     		adds	r3, r3, r1
+ 1482 0c78 4FEA8303 		lsl	r3, r3, #2
+ 1483 0c7c D318     		adds	r3, r2, r3
+ 1484 0c7e 03F10803 		add	r3, r3, #8
+ 1485 0c82 1B88     		ldrh	r3, [r3, #0]
+ 1486 0c84 002B     		cmp	r3, #0
+ 1487 0c86 1CD1     		bne	.L56
+ 327:drivers/common/opentimers.c ****                opentimers_vars.timersBuf[id].ticks_remaining   = opentimers_vars.timersBuf[id].peri
+ 1488              		.loc 1 327 0
+ 1489 0c88 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1490 0c8a F87D     		ldrb	r0, [r7, #23]	@ zero_extendqisi2
+ 1491 0c8c 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1492 0c90 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1493 0c94 0346     		mov	r3, r0
+ 1494 0c96 4FEA8303 		lsl	r3, r3, #2
+ 1495 0c9a 1B18     		adds	r3, r3, r0
+ 1496 0c9c 4FEA8303 		lsl	r3, r3, #2
+ 1497 0ca0 D318     		adds	r3, r2, r3
+ 1498 0ca2 1868     		ldr	r0, [r3, #0]
+ 1499 0ca4 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1500 0ca8 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1501 0cac 0B46     		mov	r3, r1
+ 1502 0cae 4FEA8303 		lsl	r3, r3, #2
+ 1503 0cb2 5B18     		adds	r3, r3, r1
+ 1504 0cb4 4FEA8303 		lsl	r3, r3, #2
+ 1505 0cb8 D318     		adds	r3, r2, r3
+ 1506 0cba 03F10403 		add	r3, r3, #4
+ 1507 0cbe 1860     		str	r0, [r3, #0]
+ 1508 0cc0 22E0     		b	.L54
+ 1509              	.L56:
+ 328:drivers/common/opentimers.c ****             else
+ 329:drivers/common/opentimers.c ****                opentimers_vars.timersBuf[id].ticks_remaining = MAX_TICKS_IN_SINGLE_CLOCK;
+ 1510              		.loc 1 329 0
+ 1511 0cc2 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1512 0cc4 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1513 0cc8 C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1514 0ccc 0B46     		mov	r3, r1
+ 1515 0cce 4FEA8303 		lsl	r3, r3, #2
+ 1516 0cd2 5B18     		adds	r3, r3, r1
+ 1517 0cd4 4FEA8303 		lsl	r3, r3, #2
+ 1518 0cd8 D318     		adds	r3, r2, r3
+ 1519 0cda 03F10403 		add	r3, r3, #4
+ 1520 0cde 4FF0FF32 		mov	r2, #-1
+ 1521 0ce2 1A60     		str	r2, [r3, #0]
+ 1522 0ce4 10E0     		b	.L54
+ 1523              	.L55:
+ 330:drivers/common/opentimers.c **** 
+ 331:drivers/common/opentimers.c ****          } else {
+ 332:drivers/common/opentimers.c ****             opentimers_vars.timersBuf[id].isrunning   = FALSE;
+ 1524              		.loc 1 332 0
+ 1525 0ce6 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1526 0ce8 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1527 0cec C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1528 0cf0 0B46     		mov	r3, r1
+ 1529 0cf2 4FEA8303 		lsl	r3, r3, #2
+ 1530 0cf6 5B18     		adds	r3, r3, r1
+ 1531 0cf8 4FEA8303 		lsl	r3, r3, #2
+ 1532 0cfc D318     		adds	r3, r2, r3
+ 1533 0cfe 03F10803 		add	r3, r3, #8
+ 1534 0d02 4FF00002 		mov	r2, #0
+ 1535 0d06 DA70     		strb	r2, [r3, #3]
+ 1536              	.L54:
+ 315:drivers/common/opentimers.c ****    for(id=0; id<MAX_NUM_TIMERS; id++) {
+ 1537              		.loc 1 315 0
+ 1538 0d08 FB7D     		ldrb	r3, [r7, #23]
+ 1539 0d0a 03F10103 		add	r3, r3, #1
+ 1540 0d0e FB75     		strb	r3, [r7, #23]
+ 1541              	.L53:
+ 315:drivers/common/opentimers.c ****    for(id=0; id<MAX_NUM_TIMERS; id++) {
+ 1542              		.loc 1 315 0 is_stmt 0 discriminator 1
+ 1543 0d10 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 1544 0d12 092B     		cmp	r3, #9
+ 1545 0d14 7FF640AF 		bls	.L57
+ 333:drivers/common/opentimers.c ****          }
+ 334:drivers/common/opentimers.c ****       }
+ 335:drivers/common/opentimers.c **** 
+ 336:drivers/common/opentimers.c ****    }
+ 337:drivers/common/opentimers.c ****    
+ 338:drivers/common/opentimers.c ****    // step 3. find the minimum remaining timeout among running timers
+ 339:drivers/common/opentimers.c ****    found = FALSE;
+ 1546              		.loc 1 339 0 is_stmt 1
+ 1547 0d18 4FF00003 		mov	r3, #0
+ 1548 0d1c FB73     		strb	r3, [r7, #15]
+ 340:drivers/common/opentimers.c ****    for(id=0;id<MAX_NUM_TIMERS;id++) {
+ 1549              		.loc 1 340 0
+ 1550 0d1e 4FF00003 		mov	r3, #0
+ 1551 0d22 FB75     		strb	r3, [r7, #23]
+ 1552 0d24 3FE0     		b	.L58
+ 1553              	.L61:
+ 341:drivers/common/opentimers.c ****       if (
+ 342:drivers/common/opentimers.c ****             opentimers_vars.timersBuf[id].isrunning==TRUE &&
+ 1554              		.loc 1 342 0
+ 1555 0d26 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1556 0d28 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1557 0d2c C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1558 0d30 0B46     		mov	r3, r1
+ 1559 0d32 4FEA8303 		lsl	r3, r3, #2
+ 1560 0d36 5B18     		adds	r3, r3, r1
+ 1561 0d38 4FEA8303 		lsl	r3, r3, #2
+ 1562 0d3c D318     		adds	r3, r2, r3
+ 1563 0d3e 03F10803 		add	r3, r3, #8
+ 1564 0d42 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 341:drivers/common/opentimers.c ****       if (
+ 1565              		.loc 1 341 0
+ 1566 0d44 002B     		cmp	r3, #0
+ 1567 0d46 2AD0     		beq	.L59
+ 343:drivers/common/opentimers.c ****             (
+ 344:drivers/common/opentimers.c ****                   found==FALSE
+ 1568              		.loc 1 344 0
+ 1569 0d48 FB7B     		ldrb	r3, [r7, #15]
+ 1570 0d4a 83F00103 		eor	r3, r3, #1
+ 1571 0d4e DBB2     		uxtb	r3, r3
+ 342:drivers/common/opentimers.c ****             opentimers_vars.timersBuf[id].isrunning==TRUE &&
+ 1572              		.loc 1 342 0
+ 1573 0d50 002B     		cmp	r3, #0
+ 1574 0d52 11D1     		bne	.L60
+ 345:drivers/common/opentimers.c ****                   ||
+ 346:drivers/common/opentimers.c ****                   opentimers_vars.timersBuf[id].ticks_remaining < min_timeout
+ 1575              		.loc 1 346 0
+ 1576 0d54 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1577 0d56 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1578 0d5a C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1579 0d5e 0B46     		mov	r3, r1
+ 1580 0d60 4FEA8303 		lsl	r3, r3, #2
+ 1581 0d64 5B18     		adds	r3, r3, r1
+ 1582 0d66 4FEA8303 		lsl	r3, r3, #2
+ 1583 0d6a D318     		adds	r3, r2, r3
+ 1584 0d6c 03F10403 		add	r3, r3, #4
+ 1585 0d70 1A68     		ldr	r2, [r3, #0]
+ 345:drivers/common/opentimers.c ****                   ||
+ 1586              		.loc 1 345 0
+ 1587 0d72 3B69     		ldr	r3, [r7, #16]
+ 1588 0d74 9A42     		cmp	r2, r3
+ 1589 0d76 12D2     		bcs	.L59
+ 1590              	.L60:
+ 347:drivers/common/opentimers.c ****             )
+ 348:drivers/common/opentimers.c ****       ) {
+ 349:drivers/common/opentimers.c ****          min_timeout    = opentimers_vars.timersBuf[id].ticks_remaining;
+ 1591              		.loc 1 349 0
+ 1592 0d78 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1593 0d7a 40F20002 		movw	r2, #:lower16:opentimers_vars
+ 1594 0d7e C0F20002 		movt	r2, #:upper16:opentimers_vars
+ 1595 0d82 0B46     		mov	r3, r1
+ 1596 0d84 4FEA8303 		lsl	r3, r3, #2
+ 1597 0d88 5B18     		adds	r3, r3, r1
+ 1598 0d8a 4FEA8303 		lsl	r3, r3, #2
+ 1599 0d8e D318     		adds	r3, r2, r3
+ 1600 0d90 03F10403 		add	r3, r3, #4
+ 1601 0d94 1B68     		ldr	r3, [r3, #0]
+ 1602 0d96 3B61     		str	r3, [r7, #16]
+ 350:drivers/common/opentimers.c ****          found          = TRUE;
+ 1603              		.loc 1 350 0
+ 1604 0d98 4FF00103 		mov	r3, #1
+ 1605 0d9c FB73     		strb	r3, [r7, #15]
+ 1606              	.L59:
+ 340:drivers/common/opentimers.c ****    for(id=0;id<MAX_NUM_TIMERS;id++) {
+ 1607              		.loc 1 340 0
+ 1608 0d9e FB7D     		ldrb	r3, [r7, #23]
+ 1609 0da0 03F10103 		add	r3, r3, #1
+ 1610 0da4 FB75     		strb	r3, [r7, #23]
+ 1611              	.L58:
+ 340:drivers/common/opentimers.c ****    for(id=0;id<MAX_NUM_TIMERS;id++) {
+ 1612              		.loc 1 340 0 is_stmt 0 discriminator 1
+ 1613 0da6 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 1614 0da8 092B     		cmp	r3, #9
+ 1615 0daa BCD9     		bls	.L61
+ 351:drivers/common/opentimers.c ****       }
+ 352:drivers/common/opentimers.c ****    }
+ 353:drivers/common/opentimers.c **** 
+ 354:drivers/common/opentimers.c ****    // step 4. schedule next timeout
+ 355:drivers/common/opentimers.c ****    if (found==TRUE) {
+ 1616              		.loc 1 355 0 is_stmt 1
+ 1617 0dac FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 1618 0dae 002B     		cmp	r3, #0
+ 1619 0db0 10D0     		beq	.L62
+ 356:drivers/common/opentimers.c ****       // at least one timer pending
+ 357:drivers/common/opentimers.c ****       opentimers_vars.currentTimeout = min_timeout;
+ 1620              		.loc 1 357 0
+ 1621 0db2 40F20003 		movw	r3, #:lower16:opentimers_vars
+ 1622 0db6 C0F20003 		movt	r3, #:upper16:opentimers_vars
+ 1623 0dba 3A69     		ldr	r2, [r7, #16]
+ 1624 0dbc C3F8CC20 		str	r2, [r3, #204]
+ 358:drivers/common/opentimers.c ****       bsp_timer_scheduleIn(opentimers_vars.currentTimeout);
+ 1625              		.loc 1 358 0
+ 1626 0dc0 40F20003 		movw	r3, #:lower16:opentimers_vars
+ 1627 0dc4 C0F20003 		movt	r3, #:upper16:opentimers_vars
+ 1628 0dc8 D3F8CC30 		ldr	r3, [r3, #204]
+ 1629 0dcc 1846     		mov	r0, r3
+ 1630 0dce FFF7FEFF 		bl	bsp_timer_scheduleIn
+ 1631 0dd2 07E0     		b	.L47
+ 1632              	.L62:
+ 359:drivers/common/opentimers.c ****    } else {
+ 360:drivers/common/opentimers.c ****       // no more timers pending
+ 361:drivers/common/opentimers.c ****       opentimers_vars.running = FALSE;
+ 1633              		.loc 1 361 0
+ 1634 0dd4 40F20003 		movw	r3, #:lower16:opentimers_vars
+ 1635 0dd8 C0F20003 		movt	r3, #:upper16:opentimers_vars
+ 1636 0ddc 4FF00002 		mov	r2, #0
+ 1637 0de0 83F8C820 		strb	r2, [r3, #200]
+ 1638              	.L47:
+ 362:drivers/common/opentimers.c ****    }
+ 363:drivers/common/opentimers.c **** }
+ 1639              		.loc 1 363 0
+ 1640 0de4 07F11807 		add	r7, r7, #24
+ 1641 0de8 BD46     		mov	sp, r7
+ 1642 0dea 80BD     		pop	{r7, pc}
+ 1643              		.cfi_endproc
+ 1644              	.LFE6:
+ 1646              	.Letext0:
+ 1647              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+ 1648              		.file 3 "drivers/common/opentimers.h"
+ 1649              		.file 4 "bsp/boards/OpenMote-CC2538/board_info.h"
+ 1650              		.file 5 "inc/opendefs.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 opentimers.c
+     /tmp/cc8hgMBU.s:19     .rodata:00000000 $d
+     /tmp/cc8hgMBU.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cc8hgMBU.s:27     .rodata:00000008 infoBoardname
+     /tmp/cc8hgMBU.s:32     .rodata:00000010 infouCName
+     /tmp/cc8hgMBU.s:37     .rodata:00000018 infoRadioName
+     /tmp/cc8hgMBU.s:42     .rodata:00000024 infoStackName
+                            *COM*:000000d0 opentimers_vars
+     /tmp/cc8hgMBU.s:46     .text:00000000 $t
+     /tmp/cc8hgMBU.s:51     .text:00000000 opentimers_init
+     /tmp/cc8hgMBU.s:786    .text:000005e8 opentimers_timer_callback
+     /tmp/cc8hgMBU.s:175    .text:00000108 opentimers_start
+     /tmp/cc8hgMBU.s:518    .text:00000408 opentimers_setPeriod
+     /tmp/cc8hgMBU.s:698    .text:00000578 opentimers_stop
+     /tmp/cc8hgMBU.s:742    .text:000005b0 opentimers_restart
+     /tmp/cc8hgMBU.s:1234   .text:00000a18 opentimers_sleepTimeCompesation
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.toolchain_defs.h.2.e4ebbe6e0a48032a9b79077dc42e1ffd
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
+                           .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
+
+UNDEFINED SYMBOLS
+bsp_timer_set_callback
+leds_error_blink
+board_reset
+bsp_timer_reset
+bsp_timer_scheduleIn

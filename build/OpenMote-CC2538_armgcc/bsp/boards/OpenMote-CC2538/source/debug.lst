@@ -1,0 +1,127 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"debug.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.align	2
+  19              		.global	__error__
+  20              		.thumb
+  21              		.thumb_func
+  23              	__error__:
+  24              	.LFB0:
+  25              		.file 1 "bsp/boards/OpenMote-CC2538/source/debug.c"
+   1:bsp/boards/OpenMote-CC2538/source/debug.c **** /******************************************************************************
+   2:bsp/boards/OpenMote-CC2538/source/debug.c **** *  Filename:       debug.c
+   3:bsp/boards/OpenMote-CC2538/source/debug.c **** *  Revised:        $Date: 2013-01-11 14:28:46 +0100 (fr, 11 jan 2013) $
+   4:bsp/boards/OpenMote-CC2538/source/debug.c **** *  Revision:       $Revision: 9099 $
+   5:bsp/boards/OpenMote-CC2538/source/debug.c **** *
+   6:bsp/boards/OpenMote-CC2538/source/debug.c **** *  Description:    Debug stub.
+   7:bsp/boards/OpenMote-CC2538/source/debug.c **** *
+   8:bsp/boards/OpenMote-CC2538/source/debug.c **** *  Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
+   9:bsp/boards/OpenMote-CC2538/source/debug.c **** *
+  10:bsp/boards/OpenMote-CC2538/source/debug.c **** *
+  11:bsp/boards/OpenMote-CC2538/source/debug.c **** *  Redistribution and use in source and binary forms, with or without
+  12:bsp/boards/OpenMote-CC2538/source/debug.c **** *  modification, are permitted provided that the following conditions
+  13:bsp/boards/OpenMote-CC2538/source/debug.c **** *  are met:
+  14:bsp/boards/OpenMote-CC2538/source/debug.c **** *
+  15:bsp/boards/OpenMote-CC2538/source/debug.c **** *    Redistributions of source code must retain the above copyright
+  16:bsp/boards/OpenMote-CC2538/source/debug.c **** *    notice, this list of conditions and the following disclaimer.
+  17:bsp/boards/OpenMote-CC2538/source/debug.c **** *
+  18:bsp/boards/OpenMote-CC2538/source/debug.c **** *    Redistributions in binary form must reproduce the above copyright
+  19:bsp/boards/OpenMote-CC2538/source/debug.c **** *    notice, this list of conditions and the following disclaimer in the
+  20:bsp/boards/OpenMote-CC2538/source/debug.c **** *    documentation and/or other materials provided with the distribution.
+  21:bsp/boards/OpenMote-CC2538/source/debug.c **** *
+  22:bsp/boards/OpenMote-CC2538/source/debug.c **** *    Neither the name of Texas Instruments Incorporated nor the names of
+  23:bsp/boards/OpenMote-CC2538/source/debug.c **** *    its contributors may be used to endorse or promote products derived
+  24:bsp/boards/OpenMote-CC2538/source/debug.c **** *    from this software without specific prior written permission.
+  25:bsp/boards/OpenMote-CC2538/source/debug.c **** *
+  26:bsp/boards/OpenMote-CC2538/source/debug.c **** *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  27:bsp/boards/OpenMote-CC2538/source/debug.c **** *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  28:bsp/boards/OpenMote-CC2538/source/debug.c **** *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  29:bsp/boards/OpenMote-CC2538/source/debug.c **** *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  30:bsp/boards/OpenMote-CC2538/source/debug.c **** *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  31:bsp/boards/OpenMote-CC2538/source/debug.c **** *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  32:bsp/boards/OpenMote-CC2538/source/debug.c **** *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  33:bsp/boards/OpenMote-CC2538/source/debug.c **** *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  34:bsp/boards/OpenMote-CC2538/source/debug.c **** *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  35:bsp/boards/OpenMote-CC2538/source/debug.c **** *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  36:bsp/boards/OpenMote-CC2538/source/debug.c **** *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  37:bsp/boards/OpenMote-CC2538/source/debug.c **** *
+  38:bsp/boards/OpenMote-CC2538/source/debug.c **** ******************************************************************************/
+  39:bsp/boards/OpenMote-CC2538/source/debug.c **** 
+  40:bsp/boards/OpenMote-CC2538/source/debug.c **** //*****************************************************************************
+  41:bsp/boards/OpenMote-CC2538/source/debug.c **** //
+  42:bsp/boards/OpenMote-CC2538/source/debug.c **** //! \addtogroup debug_api
+  43:bsp/boards/OpenMote-CC2538/source/debug.c **** //! @{
+  44:bsp/boards/OpenMote-CC2538/source/debug.c **** //
+  45:bsp/boards/OpenMote-CC2538/source/debug.c **** //*****************************************************************************
+  46:bsp/boards/OpenMote-CC2538/source/debug.c **** 
+  47:bsp/boards/OpenMote-CC2538/source/debug.c **** #include "debug.h"
+  48:bsp/boards/OpenMote-CC2538/source/debug.c **** 
+  49:bsp/boards/OpenMote-CC2538/source/debug.c **** //*****************************************************************************
+  50:bsp/boards/OpenMote-CC2538/source/debug.c **** //
+  51:bsp/boards/OpenMote-CC2538/source/debug.c **** //!
+  52:bsp/boards/OpenMote-CC2538/source/debug.c **** //! Function stub for allowing compile with ENABLE_ASSERT flag asserted.
+  53:bsp/boards/OpenMote-CC2538/source/debug.c **** //!
+  54:bsp/boards/OpenMote-CC2538/source/debug.c **** //
+  55:bsp/boards/OpenMote-CC2538/source/debug.c **** //*****************************************************************************
+  56:bsp/boards/OpenMote-CC2538/source/debug.c **** void
+  57:bsp/boards/OpenMote-CC2538/source/debug.c **** __error__(char *pcFilename, uint32_t ui32Line)
+  58:bsp/boards/OpenMote-CC2538/source/debug.c **** {
+  26              		.loc 1 58 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 8
+  29              		@ frame_needed = 1, uses_anonymous_args = 0
+  30              		@ link register save eliminated.
+  31 0000 80B4     		push	{r7}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 4
+  34              		.cfi_offset 7, -4
+  35 0002 83B0     		sub	sp, sp, #12
+  36              	.LCFI1:
+  37              		.cfi_def_cfa_offset 16
+  38 0004 00AF     		add	r7, sp, #0
+  39              	.LCFI2:
+  40              		.cfi_def_cfa_register 7
+  41 0006 7860     		str	r0, [r7, #4]
+  42 0008 3960     		str	r1, [r7, #0]
+  43              	.L2:
+  59:bsp/boards/OpenMote-CC2538/source/debug.c ****     //
+  60:bsp/boards/OpenMote-CC2538/source/debug.c ****     // Enter an infinite loop.
+  61:bsp/boards/OpenMote-CC2538/source/debug.c ****     //
+  62:bsp/boards/OpenMote-CC2538/source/debug.c ****     while(1)
+  63:bsp/boards/OpenMote-CC2538/source/debug.c ****     {
+  64:bsp/boards/OpenMote-CC2538/source/debug.c ****     }
+  44              		.loc 1 64 0 discriminator 1
+  45 000a FEE7     		b	.L2
+  46              		.cfi_endproc
+  47              	.LFE0:
+  49              	.Letext0:
+  50              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+DEFINED SYMBOLS
+                            *ABS*:00000000 debug.c
+     /tmp/ccXlWmAe.s:18     .text:00000000 $t
+     /tmp/ccXlWmAe.s:23     .text:00000000 __error__
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+
+NO UNDEFINED SYMBOLS

@@ -1,0 +1,1871 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"forwarding.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.align	2
+  42              	infoStackName:
+  43 0024 4F70656E 		.ascii	"OpenWSN \000"
+  43      57534E20 
+  43      00
+  44 002d 000000   		.align	2
+  47              	all_routers_multicast:
+  48 0030 FF       		.byte	-1
+  49 0031 02       		.byte	2
+  50 0032 00       		.byte	0
+  51 0033 00       		.byte	0
+  52 0034 00       		.byte	0
+  53 0035 00       		.byte	0
+  54 0036 00       		.byte	0
+  55 0037 00       		.byte	0
+  56 0038 00       		.byte	0
+  57 0039 00       		.byte	0
+  58 003a 00       		.byte	0
+  59 003b 00       		.byte	0
+  60 003c 00       		.byte	0
+  61 003d 00       		.byte	0
+  62 003e 00       		.byte	0
+  63 003f 02       		.byte	2
+  64              		.text
+  65              		.align	2
+  66              		.global	forwarding_init
+  67              		.thumb
+  68              		.thumb_func
+  70              	forwarding_init:
+  71              	.LFB0:
+  72              		.file 1 "openstack/03b-IPv6/forwarding.c"
+   1:openstack/03b-IPv6/forwarding.c **** #include "opendefs.h"
+   2:openstack/03b-IPv6/forwarding.c **** #include "forwarding.h"
+   3:openstack/03b-IPv6/forwarding.c **** #include "iphc.h"
+   4:openstack/03b-IPv6/forwarding.c **** #include "openqueue.h"
+   5:openstack/03b-IPv6/forwarding.c **** #include "openserial.h"
+   6:openstack/03b-IPv6/forwarding.c **** #include "idmanager.h"
+   7:openstack/03b-IPv6/forwarding.c **** #include "packetfunctions.h"
+   8:openstack/03b-IPv6/forwarding.c **** #include "neighbors.h"
+   9:openstack/03b-IPv6/forwarding.c **** #include "icmpv6.h"
+  10:openstack/03b-IPv6/forwarding.c **** #include "icmpv6rpl.h"
+  11:openstack/03b-IPv6/forwarding.c **** #include "openudp.h"
+  12:openstack/03b-IPv6/forwarding.c **** #include "opentcp.h"
+  13:openstack/03b-IPv6/forwarding.c **** #include "debugpins.h"
+  14:openstack/03b-IPv6/forwarding.c **** #include "scheduler.h"
+  15:openstack/03b-IPv6/forwarding.c **** 
+  16:openstack/03b-IPv6/forwarding.c **** //=========================== variables =======================================
+  17:openstack/03b-IPv6/forwarding.c **** 
+  18:openstack/03b-IPv6/forwarding.c **** //=========================== prototypes ======================================
+  19:openstack/03b-IPv6/forwarding.c **** 
+  20:openstack/03b-IPv6/forwarding.c **** void      forwarding_getNextHop(
+  21:openstack/03b-IPv6/forwarding.c ****    open_addr_t*         destination,
+  22:openstack/03b-IPv6/forwarding.c ****    open_addr_t*         addressToWrite
+  23:openstack/03b-IPv6/forwarding.c **** );
+  24:openstack/03b-IPv6/forwarding.c **** owerror_t forwarding_send_internal_RoutingTable(
+  25:openstack/03b-IPv6/forwarding.c ****    OpenQueueEntry_t*    msg,
+  26:openstack/03b-IPv6/forwarding.c ****    ipv6_header_iht*     ipv6_header,
+  27:openstack/03b-IPv6/forwarding.c ****    rpl_option_ht*       rpl_option,
+  28:openstack/03b-IPv6/forwarding.c ****    uint32_t*             flow_label,
+  29:openstack/03b-IPv6/forwarding.c ****    uint8_t              fw_SendOrfw_Rcv
+  30:openstack/03b-IPv6/forwarding.c **** );
+  31:openstack/03b-IPv6/forwarding.c **** owerror_t forwarding_send_internal_SourceRouting(
+  32:openstack/03b-IPv6/forwarding.c ****    OpenQueueEntry_t*    msg,
+  33:openstack/03b-IPv6/forwarding.c ****    ipv6_header_iht*     ipv6_header
+  34:openstack/03b-IPv6/forwarding.c **** );
+  35:openstack/03b-IPv6/forwarding.c **** void      forwarding_createRplOption(
+  36:openstack/03b-IPv6/forwarding.c ****    rpl_option_ht*       rpl_option,
+  37:openstack/03b-IPv6/forwarding.c ****    uint8_t              flags
+  38:openstack/03b-IPv6/forwarding.c **** );
+  39:openstack/03b-IPv6/forwarding.c **** 
+  40:openstack/03b-IPv6/forwarding.c **** #ifdef FLOW_LABEL_RPL_DOMAIN
+  41:openstack/03b-IPv6/forwarding.c **** void forwarding_createFlowLabel(uint32_t* flow_label,uint8_t flags);
+  42:openstack/03b-IPv6/forwarding.c **** #endif
+  43:openstack/03b-IPv6/forwarding.c **** //=========================== public ==========================================
+  44:openstack/03b-IPv6/forwarding.c **** 
+  45:openstack/03b-IPv6/forwarding.c **** /**
+  46:openstack/03b-IPv6/forwarding.c **** \brief Initialize this module.
+  47:openstack/03b-IPv6/forwarding.c **** */
+  48:openstack/03b-IPv6/forwarding.c **** void forwarding_init() {
+  73              		.loc 1 48 0
+  74              		.cfi_startproc
+  75              		@ args = 0, pretend = 0, frame = 0
+  76              		@ frame_needed = 1, uses_anonymous_args = 0
+  77              		@ link register save eliminated.
+  78 0000 80B4     		push	{r7}
+  79              	.LCFI0:
+  80              		.cfi_def_cfa_offset 4
+  81              		.cfi_offset 7, -4
+  82 0002 00AF     		add	r7, sp, #0
+  83              	.LCFI1:
+  84              		.cfi_def_cfa_register 7
+  49:openstack/03b-IPv6/forwarding.c **** }
+  85              		.loc 1 49 0
+  86 0004 BD46     		mov	sp, r7
+  87 0006 80BC     		pop	{r7}
+  88 0008 7047     		bx	lr
+  89              		.cfi_endproc
+  90              	.LFE0:
+  92 000a 00BF     		.align	2
+  93              		.global	forwarding_send
+  94              		.thumb
+  95              		.thumb_func
+  97              	forwarding_send:
+  98              	.LFB1:
+  50:openstack/03b-IPv6/forwarding.c **** 
+  51:openstack/03b-IPv6/forwarding.c **** /**
+  52:openstack/03b-IPv6/forwarding.c **** \brief Send a packet originating at this mote.
+  53:openstack/03b-IPv6/forwarding.c **** 
+  54:openstack/03b-IPv6/forwarding.c **** This function is called by an upper layer, and only concerns packets originated
+  55:openstack/03b-IPv6/forwarding.c **** at this mote.
+  56:openstack/03b-IPv6/forwarding.c **** 
+  57:openstack/03b-IPv6/forwarding.c **** \param[in,out] msg Packet to send.
+  58:openstack/03b-IPv6/forwarding.c **** */
+  59:openstack/03b-IPv6/forwarding.c **** owerror_t forwarding_send(OpenQueueEntry_t* msg) {
+  99              		.loc 1 59 0
+ 100              		.cfi_startproc
+ 101              		@ args = 0, pretend = 0, frame = 80
+ 102              		@ frame_needed = 1, uses_anonymous_args = 0
+ 103 000c 80B5     		push	{r7, lr}
+ 104              	.LCFI2:
+ 105              		.cfi_def_cfa_offset 8
+ 106              		.cfi_offset 7, -8
+ 107              		.cfi_offset 14, -4
+ 108 000e 96B0     		sub	sp, sp, #88
+ 109              	.LCFI3:
+ 110              		.cfi_def_cfa_offset 96
+ 111 0010 02AF     		add	r7, sp, #8
+ 112              	.LCFI4:
+ 113              		.cfi_def_cfa 7, 88
+ 114 0012 7860     		str	r0, [r7, #4]
+  60:openstack/03b-IPv6/forwarding.c ****    ipv6_header_iht      ipv6_header;
+  61:openstack/03b-IPv6/forwarding.c ****    rpl_option_ht        rpl_option;
+  62:openstack/03b-IPv6/forwarding.c ****    open_addr_t*         myprefix;
+  63:openstack/03b-IPv6/forwarding.c ****    open_addr_t*         myadd64;
+  64:openstack/03b-IPv6/forwarding.c ****    uint32_t             flow_label = 0;
+ 115              		.loc 1 64 0
+ 116 0014 4FF00003 		mov	r3, #0
+ 117 0018 FB60     		str	r3, [r7, #12]
+  65:openstack/03b-IPv6/forwarding.c ****    
+  66:openstack/03b-IPv6/forwarding.c ****    // take ownership over the packet
+  67:openstack/03b-IPv6/forwarding.c ****    msg->owner                = COMPONENT_FORWARDING;
+ 118              		.loc 1 67 0
+ 119 001a 7B68     		ldr	r3, [r7, #4]
+ 120 001c 4FF01202 		mov	r2, #18
+ 121 0020 5A70     		strb	r2, [r3, #1]
+  68:openstack/03b-IPv6/forwarding.c ****    
+  69:openstack/03b-IPv6/forwarding.c ****    // retrieve my prefix and EUI64
+  70:openstack/03b-IPv6/forwarding.c ****    myprefix                  = idmanager_getMyID(ADDR_PREFIX);
+ 122              		.loc 1 70 0
+ 123 0022 4FF00500 		mov	r0, #5
+ 124 0026 FFF7FEFF 		bl	idmanager_getMyID
+ 125 002a F864     		str	r0, [r7, #76]
+  71:openstack/03b-IPv6/forwarding.c ****    myadd64                   = idmanager_getMyID(ADDR_64B);
+ 126              		.loc 1 71 0
+ 127 002c 4FF00200 		mov	r0, #2
+ 128 0030 FFF7FEFF 		bl	idmanager_getMyID
+ 129 0034 B864     		str	r0, [r7, #72]
+  72:openstack/03b-IPv6/forwarding.c ****    
+  73:openstack/03b-IPv6/forwarding.c ****    // set source address (me)
+  74:openstack/03b-IPv6/forwarding.c ****    msg->l3_sourceAdd.type=ADDR_128B;
+ 130              		.loc 1 74 0
+ 131 0036 7B68     		ldr	r3, [r7, #4]
+ 132 0038 4FF00302 		mov	r2, #3
+ 133 003c 83F82620 		strb	r2, [r3, #38]
+  75:openstack/03b-IPv6/forwarding.c ****    memcpy(&(msg->l3_sourceAdd.addr_128b[0]),myprefix->prefix,8);
+ 134              		.loc 1 75 0
+ 135 0040 7B68     		ldr	r3, [r7, #4]
+ 136 0042 03F12702 		add	r2, r3, #39
+ 137 0046 FB6C     		ldr	r3, [r7, #76]
+ 138 0048 03F10103 		add	r3, r3, #1
+ 139 004c 1046     		mov	r0, r2
+ 140 004e 1946     		mov	r1, r3
+ 141 0050 4FF00802 		mov	r2, #8
+ 142 0054 FFF7FEFF 		bl	memcpy
+  76:openstack/03b-IPv6/forwarding.c ****    memcpy(&(msg->l3_sourceAdd.addr_128b[8]),myadd64->addr_64b,8);
+ 143              		.loc 1 76 0
+ 144 0058 7B68     		ldr	r3, [r7, #4]
+ 145 005a 03F12F02 		add	r2, r3, #47
+ 146 005e BB6C     		ldr	r3, [r7, #72]
+ 147 0060 03F10103 		add	r3, r3, #1
+ 148 0064 1046     		mov	r0, r2
+ 149 0066 1946     		mov	r1, r3
+ 150 0068 4FF00802 		mov	r2, #8
+ 151 006c FFF7FEFF 		bl	memcpy
+  77:openstack/03b-IPv6/forwarding.c ****    
+  78:openstack/03b-IPv6/forwarding.c ****    // initialize IPv6 header
+  79:openstack/03b-IPv6/forwarding.c ****    memset(&ipv6_header,0,sizeof(ipv6_header_iht));
+ 152              		.loc 1 79 0
+ 153 0070 07F11803 		add	r3, r7, #24
+ 154 0074 1846     		mov	r0, r3
+ 155 0076 4FF00001 		mov	r1, #0
+ 156 007a 4FF03002 		mov	r2, #48
+ 157 007e FFF7FEFF 		bl	memset
+  80:openstack/03b-IPv6/forwarding.c ****    
+  81:openstack/03b-IPv6/forwarding.c ****    // Set hop limit to the default in-network value as this packet is being
+  82:openstack/03b-IPv6/forwarding.c ****    // sent from upper layer. This is done here as send_internal() is used by
+  83:openstack/03b-IPv6/forwarding.c ****    // forwarding of packets as well which carry a hlim. This value is required
+  84:openstack/03b-IPv6/forwarding.c ****    // to be set to a value as the following function can decrement it.
+  85:openstack/03b-IPv6/forwarding.c ****    ipv6_header.hop_limit     = IPHC_DEFAULT_HOP_LIMIT;
+ 158              		.loc 1 85 0
+ 159 0082 4FF04103 		mov	r3, #65
+ 160 0086 87F82230 		strb	r3, [r7, #34]
+  86:openstack/03b-IPv6/forwarding.c ****    
+  87:openstack/03b-IPv6/forwarding.c ****    // create the RPL hop-by-hop option
+  88:openstack/03b-IPv6/forwarding.c **** 
+  89:openstack/03b-IPv6/forwarding.c ****    forwarding_createRplOption(
+ 161              		.loc 1 89 0
+ 162 008a 07F11003 		add	r3, r7, #16
+ 163 008e 1846     		mov	r0, r3
+ 164 0090 4FF00001 		mov	r1, #0
+ 165 0094 FFF7FEFF 		bl	forwarding_createRplOption
+  90:openstack/03b-IPv6/forwarding.c ****       &rpl_option,      // rpl_option to fill in
+  91:openstack/03b-IPv6/forwarding.c ****       0x00              // flags
+  92:openstack/03b-IPv6/forwarding.c ****    );
+  93:openstack/03b-IPv6/forwarding.c **** 
+  94:openstack/03b-IPv6/forwarding.c **** #ifdef FLOW_LABEL_RPL_DOMAIN
+  95:openstack/03b-IPv6/forwarding.c ****    forwarding_createFlowLabel(&flow_label,0x00);
+ 166              		.loc 1 95 0
+ 167 0098 07F10C03 		add	r3, r7, #12
+ 168 009c 1846     		mov	r0, r3
+ 169 009e 4FF00001 		mov	r1, #0
+ 170 00a2 FFF7FEFF 		bl	forwarding_createFlowLabel
+  96:openstack/03b-IPv6/forwarding.c **** #endif
+  97:openstack/03b-IPv6/forwarding.c **** 
+  98:openstack/03b-IPv6/forwarding.c ****    return forwarding_send_internal_RoutingTable(
+ 171              		.loc 1 98 0
+ 172 00a6 07F11801 		add	r1, r7, #24
+ 173 00aa 07F11002 		add	r2, r7, #16
+ 174 00ae 07F10C03 		add	r3, r7, #12
+ 175 00b2 4FF00200 		mov	r0, #2
+ 176 00b6 0090     		str	r0, [sp, #0]
+ 177 00b8 7868     		ldr	r0, [r7, #4]
+ 178 00ba FFF7FEFF 		bl	forwarding_send_internal_RoutingTable
+ 179 00be 0346     		mov	r3, r0
+  99:openstack/03b-IPv6/forwarding.c ****       msg,
+ 100:openstack/03b-IPv6/forwarding.c ****       &ipv6_header,
+ 101:openstack/03b-IPv6/forwarding.c ****       &rpl_option,
+ 102:openstack/03b-IPv6/forwarding.c ****       &flow_label,
+ 103:openstack/03b-IPv6/forwarding.c ****       PCKTSEND
+ 104:openstack/03b-IPv6/forwarding.c ****    );
+ 105:openstack/03b-IPv6/forwarding.c **** }
+ 180              		.loc 1 105 0
+ 181 00c0 1846     		mov	r0, r3
+ 182 00c2 07F15007 		add	r7, r7, #80
+ 183 00c6 BD46     		mov	sp, r7
+ 184 00c8 80BD     		pop	{r7, pc}
+ 185              		.cfi_endproc
+ 186              	.LFE1:
+ 188 00ca 00BF     		.align	2
+ 189              		.global	forwarding_sendDone
+ 190              		.thumb
+ 191              		.thumb_func
+ 193              	forwarding_sendDone:
+ 194              	.LFB2:
+ 106:openstack/03b-IPv6/forwarding.c **** 
+ 107:openstack/03b-IPv6/forwarding.c **** /**
+ 108:openstack/03b-IPv6/forwarding.c **** \brief Indicates a packet has been sent.
+ 109:openstack/03b-IPv6/forwarding.c **** 
+ 110:openstack/03b-IPv6/forwarding.c **** \param[in,out] msg   The packet just sent.
+ 111:openstack/03b-IPv6/forwarding.c **** \param[in]     error The outcome of sending it.
+ 112:openstack/03b-IPv6/forwarding.c **** */
+ 113:openstack/03b-IPv6/forwarding.c **** void forwarding_sendDone(OpenQueueEntry_t* msg, owerror_t error) {
+ 195              		.loc 1 113 0
+ 196              		.cfi_startproc
+ 197              		@ args = 0, pretend = 0, frame = 8
+ 198              		@ frame_needed = 1, uses_anonymous_args = 0
+ 199 00cc 80B5     		push	{r7, lr}
+ 200              	.LCFI5:
+ 201              		.cfi_def_cfa_offset 8
+ 202              		.cfi_offset 7, -8
+ 203              		.cfi_offset 14, -4
+ 204 00ce 82B0     		sub	sp, sp, #8
+ 205              	.LCFI6:
+ 206              		.cfi_def_cfa_offset 16
+ 207 00d0 00AF     		add	r7, sp, #0
+ 208              	.LCFI7:
+ 209              		.cfi_def_cfa_register 7
+ 210 00d2 7860     		str	r0, [r7, #4]
+ 211 00d4 0B46     		mov	r3, r1
+ 212 00d6 FB70     		strb	r3, [r7, #3]
+ 114:openstack/03b-IPv6/forwarding.c ****    
+ 115:openstack/03b-IPv6/forwarding.c ****    // take ownership
+ 116:openstack/03b-IPv6/forwarding.c ****    msg->owner = COMPONENT_FORWARDING;
+ 213              		.loc 1 116 0
+ 214 00d8 7B68     		ldr	r3, [r7, #4]
+ 215 00da 4FF01202 		mov	r2, #18
+ 216 00de 5A70     		strb	r2, [r3, #1]
+ 117:openstack/03b-IPv6/forwarding.c ****    
+ 118:openstack/03b-IPv6/forwarding.c ****    if (msg->creator==COMPONENT_RADIO || msg->creator==COMPONENT_FORWARDING) {
+ 217              		.loc 1 118 0
+ 218 00e0 7B68     		ldr	r3, [r7, #4]
+ 219 00e2 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 220 00e4 072B     		cmp	r3, #7
+ 221 00e6 03D0     		beq	.L5
+ 222              		.loc 1 118 0 is_stmt 0 discriminator 1
+ 223 00e8 7B68     		ldr	r3, [r7, #4]
+ 224 00ea 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 225 00ec 122B     		cmp	r3, #18
+ 226 00ee 03D1     		bne	.L6
+ 227              	.L5:
+ 119:openstack/03b-IPv6/forwarding.c ****       // this is a relayed packet
+ 120:openstack/03b-IPv6/forwarding.c ****       
+ 121:openstack/03b-IPv6/forwarding.c ****       // free packet
+ 122:openstack/03b-IPv6/forwarding.c ****       openqueue_freePacketBuffer(msg);
+ 228              		.loc 1 122 0 is_stmt 1
+ 229 00f0 7868     		ldr	r0, [r7, #4]
+ 230 00f2 FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 231 00f6 27E0     		b	.L4
+ 232              	.L6:
+ 123:openstack/03b-IPv6/forwarding.c ****    } else {
+ 124:openstack/03b-IPv6/forwarding.c ****       // this is a packet created by this mote
+ 125:openstack/03b-IPv6/forwarding.c ****       
+ 126:openstack/03b-IPv6/forwarding.c ****       // indicate sendDone to upper layer
+ 127:openstack/03b-IPv6/forwarding.c ****       switch(msg->l4_protocol) {
+ 233              		.loc 1 127 0
+ 234 00f8 7B68     		ldr	r3, [r7, #4]
+ 235 00fa 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 236 00fc 112B     		cmp	r3, #17
+ 237 00fe 09D0     		beq	.L10
+ 238 0100 3A2B     		cmp	r3, #58
+ 239 0102 0DD0     		beq	.L11
+ 240 0104 062B     		cmp	r3, #6
+ 241 0106 11D1     		bne	.L12
+ 242              	.L9:
+ 128:openstack/03b-IPv6/forwarding.c ****          case IANA_TCP:
+ 129:openstack/03b-IPv6/forwarding.c ****             opentcp_sendDone(msg,error);
+ 243              		.loc 1 129 0
+ 244 0108 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 245 010a 7868     		ldr	r0, [r7, #4]
+ 246 010c 1946     		mov	r1, r3
+ 247 010e FFF7FEFF 		bl	opentcp_sendDone
+ 130:openstack/03b-IPv6/forwarding.c ****             break;
+ 248              		.loc 1 130 0
+ 249 0112 19E0     		b	.L4
+ 250              	.L10:
+ 131:openstack/03b-IPv6/forwarding.c ****          case IANA_UDP:
+ 132:openstack/03b-IPv6/forwarding.c ****             openudp_sendDone(msg,error);
+ 251              		.loc 1 132 0
+ 252 0114 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 253 0116 7868     		ldr	r0, [r7, #4]
+ 254 0118 1946     		mov	r1, r3
+ 255 011a FFF7FEFF 		bl	openudp_sendDone
+ 133:openstack/03b-IPv6/forwarding.c ****             break;
+ 256              		.loc 1 133 0
+ 257 011e 13E0     		b	.L4
+ 258              	.L11:
+ 134:openstack/03b-IPv6/forwarding.c ****          case IANA_ICMPv6:
+ 135:openstack/03b-IPv6/forwarding.c ****             icmpv6_sendDone(msg,error);
+ 259              		.loc 1 135 0
+ 260 0120 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 261 0122 7868     		ldr	r0, [r7, #4]
+ 262 0124 1946     		mov	r1, r3
+ 263 0126 FFF7FEFF 		bl	icmpv6_sendDone
+ 136:openstack/03b-IPv6/forwarding.c ****             break;
+ 264              		.loc 1 136 0
+ 265 012a 0DE0     		b	.L4
+ 266              	.L12:
+ 137:openstack/03b-IPv6/forwarding.c ****          default:
+ 138:openstack/03b-IPv6/forwarding.c ****             
+ 139:openstack/03b-IPv6/forwarding.c ****             // log error
+ 140:openstack/03b-IPv6/forwarding.c ****             openserial_printCritical(
+ 141:openstack/03b-IPv6/forwarding.c ****                COMPONENT_FORWARDING,
+ 142:openstack/03b-IPv6/forwarding.c ****                ERR_WRONG_TRAN_PROTOCOL,
+ 143:openstack/03b-IPv6/forwarding.c ****                (errorparameter_t)msg->l4_protocol,
+ 267              		.loc 1 143 0
+ 268 012c 7B68     		ldr	r3, [r7, #4]
+ 269 012e 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 140:openstack/03b-IPv6/forwarding.c ****             openserial_printCritical(
+ 270              		.loc 1 140 0
+ 271 0130 4FF01200 		mov	r0, #18
+ 272 0134 4FF00601 		mov	r1, #6
+ 273 0138 1A46     		mov	r2, r3
+ 274 013a 4FF00003 		mov	r3, #0
+ 275 013e FFF7FEFF 		bl	openserial_printCritical
+ 144:openstack/03b-IPv6/forwarding.c ****                (errorparameter_t)0
+ 145:openstack/03b-IPv6/forwarding.c ****             );
+ 146:openstack/03b-IPv6/forwarding.c ****             
+ 147:openstack/03b-IPv6/forwarding.c ****             // free packet
+ 148:openstack/03b-IPv6/forwarding.c ****             openqueue_freePacketBuffer(msg);
+ 276              		.loc 1 148 0
+ 277 0142 7868     		ldr	r0, [r7, #4]
+ 278 0144 FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 279              	.L4:
+ 149:openstack/03b-IPv6/forwarding.c ****       }
+ 150:openstack/03b-IPv6/forwarding.c ****    }
+ 151:openstack/03b-IPv6/forwarding.c **** }
+ 280              		.loc 1 151 0
+ 281 0148 07F10807 		add	r7, r7, #8
+ 282 014c BD46     		mov	sp, r7
+ 283 014e 80BD     		pop	{r7, pc}
+ 284              		.cfi_endproc
+ 285              	.LFE2:
+ 287              		.align	2
+ 288              		.global	forwarding_receive
+ 289              		.thumb
+ 290              		.thumb_func
+ 292              	forwarding_receive:
+ 293              	.LFB3:
+ 152:openstack/03b-IPv6/forwarding.c **** 
+ 153:openstack/03b-IPv6/forwarding.c **** /**
+ 154:openstack/03b-IPv6/forwarding.c **** \brief Indicates a packet was received.
+ 155:openstack/03b-IPv6/forwarding.c **** 
+ 156:openstack/03b-IPv6/forwarding.c **** \param[in,out] msg               The packet just sent.
+ 157:openstack/03b-IPv6/forwarding.c **** \param[in]     ipv6_header       The information contained in the IPv6 header.
+ 158:openstack/03b-IPv6/forwarding.c **** \param[in]     ipv6_hop_header   The hop-by-hop header present in the packet.
+ 159:openstack/03b-IPv6/forwarding.c **** \param[in]     rpl_option        The hop-by-hop options present in the packet.
+ 160:openstack/03b-IPv6/forwarding.c **** */
+ 161:openstack/03b-IPv6/forwarding.c **** void forwarding_receive(
+ 162:openstack/03b-IPv6/forwarding.c ****       OpenQueueEntry_t*      msg,
+ 163:openstack/03b-IPv6/forwarding.c ****       ipv6_header_iht*       ipv6_header,
+ 164:openstack/03b-IPv6/forwarding.c ****       ipv6_hopbyhop_iht*     ipv6_hop_header,
+ 165:openstack/03b-IPv6/forwarding.c ****       rpl_option_ht*         rpl_option
+ 166:openstack/03b-IPv6/forwarding.c ****    ) {
+ 294              		.loc 1 166 0
+ 295              		.cfi_startproc
+ 296              		@ args = 0, pretend = 0, frame = 24
+ 297              		@ frame_needed = 1, uses_anonymous_args = 0
+ 298 0150 80B5     		push	{r7, lr}
+ 299              	.LCFI8:
+ 300              		.cfi_def_cfa_offset 8
+ 301              		.cfi_offset 7, -8
+ 302              		.cfi_offset 14, -4
+ 303 0152 88B0     		sub	sp, sp, #32
+ 304              	.LCFI9:
+ 305              		.cfi_def_cfa_offset 40
+ 306 0154 02AF     		add	r7, sp, #8
+ 307              	.LCFI10:
+ 308              		.cfi_def_cfa 7, 32
+ 309 0156 F860     		str	r0, [r7, #12]
+ 310 0158 B960     		str	r1, [r7, #8]
+ 311 015a 7A60     		str	r2, [r7, #4]
+ 312 015c 3B60     		str	r3, [r7, #0]
+ 167:openstack/03b-IPv6/forwarding.c ****    uint8_t flags;
+ 168:openstack/03b-IPv6/forwarding.c ****    uint16_t senderRank;
+ 169:openstack/03b-IPv6/forwarding.c ****    
+ 170:openstack/03b-IPv6/forwarding.c ****    // take ownership
+ 171:openstack/03b-IPv6/forwarding.c ****    msg->owner                     = COMPONENT_FORWARDING;
+ 313              		.loc 1 171 0
+ 314 015e FB68     		ldr	r3, [r7, #12]
+ 315 0160 4FF01202 		mov	r2, #18
+ 316 0164 5A70     		strb	r2, [r3, #1]
+ 172:openstack/03b-IPv6/forwarding.c ****    
+ 173:openstack/03b-IPv6/forwarding.c ****    // determine L4 protocol
+ 174:openstack/03b-IPv6/forwarding.c ****    if (ipv6_header->next_header==IANA_IPv6HOPOPT){
+ 317              		.loc 1 174 0
+ 318 0166 BB68     		ldr	r3, [r7, #8]
+ 319 0168 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 320 016a 002B     		cmp	r3, #0
+ 321 016c 08D1     		bne	.L14
+ 175:openstack/03b-IPv6/forwarding.c ****       // get information from ipv6_hop_header
+ 176:openstack/03b-IPv6/forwarding.c ****       
+ 177:openstack/03b-IPv6/forwarding.c ****       msg->l4_protocol            = ipv6_hop_header->nextHeader;
+ 322              		.loc 1 177 0
+ 323 016e 7B68     		ldr	r3, [r7, #4]
+ 324 0170 DA78     		ldrb	r2, [r3, #3]	@ zero_extendqisi2
+ 325 0172 FB68     		ldr	r3, [r7, #12]
+ 326 0174 5A72     		strb	r2, [r3, #9]
+ 178:openstack/03b-IPv6/forwarding.c ****       msg->l4_protocol_compressed = ipv6_hop_header->next_header_compressed;
+ 327              		.loc 1 178 0
+ 328 0176 7B68     		ldr	r3, [r7, #4]
+ 329 0178 5A78     		ldrb	r2, [r3, #1]	@ zero_extendqisi2
+ 330 017a FB68     		ldr	r3, [r7, #12]
+ 331 017c 9A72     		strb	r2, [r3, #10]
+ 332 017e 07E0     		b	.L15
+ 333              	.L14:
+ 179:openstack/03b-IPv6/forwarding.c ****    } else {
+ 180:openstack/03b-IPv6/forwarding.c ****       // get information from ipv6_header
+ 181:openstack/03b-IPv6/forwarding.c ****       
+ 182:openstack/03b-IPv6/forwarding.c ****       msg->l4_protocol            = ipv6_header->next_header;
+ 334              		.loc 1 182 0
+ 335 0180 BB68     		ldr	r3, [r7, #8]
+ 336 0182 5A7A     		ldrb	r2, [r3, #9]	@ zero_extendqisi2
+ 337 0184 FB68     		ldr	r3, [r7, #12]
+ 338 0186 5A72     		strb	r2, [r3, #9]
+ 183:openstack/03b-IPv6/forwarding.c ****       msg->l4_protocol_compressed = ipv6_header->next_header_compressed;
+ 339              		.loc 1 183 0
+ 340 0188 BB68     		ldr	r3, [r7, #8]
+ 341 018a 1A7A     		ldrb	r2, [r3, #8]	@ zero_extendqisi2
+ 342 018c FB68     		ldr	r3, [r7, #12]
+ 343 018e 9A72     		strb	r2, [r3, #10]
+ 344              	.L15:
+ 184:openstack/03b-IPv6/forwarding.c ****    }
+ 185:openstack/03b-IPv6/forwarding.c ****    
+ 186:openstack/03b-IPv6/forwarding.c ****    // populate packets metadata with L3 information
+ 187:openstack/03b-IPv6/forwarding.c ****    memcpy(&(msg->l3_destinationAdd),&ipv6_header->dest,sizeof(open_addr_t));
+ 345              		.loc 1 187 0
+ 346 0190 FB68     		ldr	r3, [r7, #12]
+ 347 0192 03F11502 		add	r2, r3, #21
+ 348 0196 BB68     		ldr	r3, [r7, #8]
+ 349 0198 03F11C03 		add	r3, r3, #28
+ 350 019c 1046     		mov	r0, r2
+ 351 019e 1946     		mov	r1, r3
+ 352 01a0 4FF01102 		mov	r2, #17
+ 353 01a4 FFF7FEFF 		bl	memcpy
+ 188:openstack/03b-IPv6/forwarding.c ****    memcpy(&(msg->l3_sourceAdd),     &ipv6_header->src, sizeof(open_addr_t));
+ 354              		.loc 1 188 0
+ 355 01a8 FB68     		ldr	r3, [r7, #12]
+ 356 01aa 03F12602 		add	r2, r3, #38
+ 357 01ae BB68     		ldr	r3, [r7, #8]
+ 358 01b0 03F10B03 		add	r3, r3, #11
+ 359 01b4 1046     		mov	r0, r2
+ 360 01b6 1946     		mov	r1, r3
+ 361 01b8 4FF01102 		mov	r2, #17
+ 362 01bc FFF7FEFF 		bl	memcpy
+ 189:openstack/03b-IPv6/forwarding.c ****    
+ 190:openstack/03b-IPv6/forwarding.c ****    if (
+ 191:openstack/03b-IPv6/forwarding.c ****          (
+ 192:openstack/03b-IPv6/forwarding.c ****             idmanager_isMyAddress(&ipv6_header->dest)
+ 363              		.loc 1 192 0
+ 364 01c0 BB68     		ldr	r3, [r7, #8]
+ 365 01c2 03F11C03 		add	r3, r3, #28
+ 366 01c6 1846     		mov	r0, r3
+ 367 01c8 FFF7FEFF 		bl	idmanager_isMyAddress
+ 368 01cc 0346     		mov	r3, r0
+ 190:openstack/03b-IPv6/forwarding.c ****    if (
+ 369              		.loc 1 190 0
+ 370 01ce 002B     		cmp	r3, #0
+ 371 01d0 08D1     		bne	.L16
+ 193:openstack/03b-IPv6/forwarding.c ****             ||
+ 194:openstack/03b-IPv6/forwarding.c ****             packetfunctions_isBroadcastMulticast(&ipv6_header->dest)
+ 372              		.loc 1 194 0
+ 373 01d2 BB68     		ldr	r3, [r7, #8]
+ 374 01d4 03F11C03 		add	r3, r3, #28
+ 375 01d8 1846     		mov	r0, r3
+ 376 01da FFF7FEFF 		bl	packetfunctions_isBroadcastMulticast
+ 377 01de 0346     		mov	r3, r0
+ 193:openstack/03b-IPv6/forwarding.c ****             ||
+ 378              		.loc 1 193 0
+ 379 01e0 002B     		cmp	r3, #0
+ 380 01e2 27D0     		beq	.L17
+ 381              	.L16:
+ 195:openstack/03b-IPv6/forwarding.c ****          )
+ 196:openstack/03b-IPv6/forwarding.c ****          &&
+ 197:openstack/03b-IPv6/forwarding.c ****          ipv6_header->next_header!=IANA_IPv6ROUTE
+ 382              		.loc 1 197 0
+ 383 01e4 BB68     		ldr	r3, [r7, #8]
+ 384 01e6 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 196:openstack/03b-IPv6/forwarding.c ****          &&
+ 385              		.loc 1 196 0
+ 386 01e8 2B2B     		cmp	r3, #43
+ 387 01ea 23D0     		beq	.L17
+ 198:openstack/03b-IPv6/forwarding.c ****       ) {
+ 199:openstack/03b-IPv6/forwarding.c ****       // this packet is for me, no source routing header.
+ 200:openstack/03b-IPv6/forwarding.c **** 
+ 201:openstack/03b-IPv6/forwarding.c ****       // indicate received packet to upper layer
+ 202:openstack/03b-IPv6/forwarding.c ****       switch(msg->l4_protocol) {
+ 388              		.loc 1 202 0
+ 389 01ec FB68     		ldr	r3, [r7, #12]
+ 390 01ee 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 391 01f0 112B     		cmp	r3, #17
+ 392 01f2 07D0     		beq	.L20
+ 393 01f4 3A2B     		cmp	r3, #58
+ 394 01f6 09D0     		beq	.L21
+ 395 01f8 062B     		cmp	r3, #6
+ 396 01fa 0BD1     		bne	.L27
+ 397              	.L19:
+ 203:openstack/03b-IPv6/forwarding.c ****          case IANA_TCP:
+ 204:openstack/03b-IPv6/forwarding.c ****             opentcp_receive(msg);
+ 398              		.loc 1 204 0
+ 399 01fc F868     		ldr	r0, [r7, #12]
+ 400 01fe FFF7FEFF 		bl	opentcp_receive
+ 205:openstack/03b-IPv6/forwarding.c ****             break;
+ 401              		.loc 1 205 0
+ 402 0202 16E0     		b	.L22
+ 403              	.L20:
+ 206:openstack/03b-IPv6/forwarding.c ****          case IANA_UDP:
+ 207:openstack/03b-IPv6/forwarding.c ****             openudp_receive(msg);
+ 404              		.loc 1 207 0
+ 405 0204 F868     		ldr	r0, [r7, #12]
+ 406 0206 FFF7FEFF 		bl	openudp_receive
+ 208:openstack/03b-IPv6/forwarding.c ****             break;
+ 407              		.loc 1 208 0
+ 408 020a 12E0     		b	.L22
+ 409              	.L21:
+ 209:openstack/03b-IPv6/forwarding.c ****          case IANA_ICMPv6:
+ 210:openstack/03b-IPv6/forwarding.c ****             icmpv6_receive(msg);
+ 410              		.loc 1 210 0
+ 411 020c F868     		ldr	r0, [r7, #12]
+ 412 020e FFF7FEFF 		bl	icmpv6_receive
+ 211:openstack/03b-IPv6/forwarding.c ****             break;
+ 413              		.loc 1 211 0
+ 414 0212 0EE0     		b	.L22
+ 415              	.L27:
+ 212:openstack/03b-IPv6/forwarding.c ****          default:
+ 213:openstack/03b-IPv6/forwarding.c ****             
+ 214:openstack/03b-IPv6/forwarding.c ****             // log error
+ 215:openstack/03b-IPv6/forwarding.c ****             openserial_printError(
+ 216:openstack/03b-IPv6/forwarding.c ****                COMPONENT_FORWARDING,ERR_WRONG_TRAN_PROTOCOL,
+ 217:openstack/03b-IPv6/forwarding.c ****                (errorparameter_t)msg->l4_protocol,
+ 416              		.loc 1 217 0
+ 417 0214 FB68     		ldr	r3, [r7, #12]
+ 418 0216 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 215:openstack/03b-IPv6/forwarding.c ****             openserial_printError(
+ 419              		.loc 1 215 0
+ 420 0218 4FF01200 		mov	r0, #18
+ 421 021c 4FF00601 		mov	r1, #6
+ 422 0220 1A46     		mov	r2, r3
+ 423 0222 4FF00103 		mov	r3, #1
+ 424 0226 FFF7FEFF 		bl	openserial_printError
+ 218:openstack/03b-IPv6/forwarding.c ****                (errorparameter_t)1
+ 219:openstack/03b-IPv6/forwarding.c ****             );
+ 220:openstack/03b-IPv6/forwarding.c ****             
+ 221:openstack/03b-IPv6/forwarding.c ****             // free packet
+ 222:openstack/03b-IPv6/forwarding.c ****             openqueue_freePacketBuffer(msg);
+ 425              		.loc 1 222 0
+ 426 022a F868     		ldr	r0, [r7, #12]
+ 427 022c FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 223:openstack/03b-IPv6/forwarding.c ****       }
+ 224:openstack/03b-IPv6/forwarding.c ****    } else {
+ 428              		.loc 1 224 0
+ 429 0230 68E0     		b	.L13
+ 430              	.L22:
+ 431 0232 67E0     		b	.L13
+ 432              	.L17:
+ 225:openstack/03b-IPv6/forwarding.c ****       // this packet is not for me: relay
+ 226:openstack/03b-IPv6/forwarding.c ****       
+ 227:openstack/03b-IPv6/forwarding.c ****       // change the creator of the packet
+ 228:openstack/03b-IPv6/forwarding.c ****       msg->creator = COMPONENT_FORWARDING;
+ 433              		.loc 1 228 0
+ 434 0234 FB68     		ldr	r3, [r7, #12]
+ 435 0236 4FF01202 		mov	r2, #18
+ 436 023a 1A70     		strb	r2, [r3, #0]
+ 229:openstack/03b-IPv6/forwarding.c ****       
+ 230:openstack/03b-IPv6/forwarding.c ****       if (ipv6_header->next_header!=IANA_IPv6ROUTE) {
+ 437              		.loc 1 230 0
+ 438 023c BB68     		ldr	r3, [r7, #8]
+ 439 023e 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 440 0240 2B2B     		cmp	r3, #43
+ 441 0242 4ED0     		beq	.L24
+ 231:openstack/03b-IPv6/forwarding.c ****          // no source routing header present
+ 232:openstack/03b-IPv6/forwarding.c ****          //check if flow label rpl header
+ 233:openstack/03b-IPv6/forwarding.c ****     	 #ifdef FLOW_LABEL_RPL_DOMAIN             
+ 234:openstack/03b-IPv6/forwarding.c ****              flags = (uint8_t)((uint32_t)((ipv6_header->flow_label)>>16)&0xFF);
+ 442              		.loc 1 234 0
+ 443 0244 BB68     		ldr	r3, [r7, #8]
+ 444 0246 5B68     		ldr	r3, [r3, #4]
+ 445 0248 4FEA1343 		lsr	r3, r3, #16
+ 446 024c FB75     		strb	r3, [r7, #23]
+ 235:openstack/03b-IPv6/forwarding.c ****              senderRank = (uint16_t)((uint32_t)(ipv6_header->flow_label)>>8)&0xFFFF;
+ 447              		.loc 1 235 0
+ 448 024e BB68     		ldr	r3, [r7, #8]
+ 449 0250 5B68     		ldr	r3, [r3, #4]
+ 450 0252 4FEA1323 		lsr	r3, r3, #8
+ 451 0256 BB82     		strh	r3, [r7, #20]	@ movhi
+ 236:openstack/03b-IPv6/forwarding.c ****              senderRank = senderRank*MINHOPRANKINCREASE;//shift it according to HopRank Increase
+ 452              		.loc 1 236 0
+ 453 0258 BB8A     		ldrh	r3, [r7, #20]	@ movhi
+ 454 025a 4FEA0323 		lsl	r3, r3, #8
+ 455 025e BB82     		strh	r3, [r7, #20]	@ movhi
+ 237:openstack/03b-IPv6/forwarding.c ****          #else
+ 238:openstack/03b-IPv6/forwarding.c ****     	     flags = rpl_option->flags;
+ 239:openstack/03b-IPv6/forwarding.c ****     	     senderRank = rpl_option->senderRank;
+ 240:openstack/03b-IPv6/forwarding.c ****     	 #endif
+ 241:openstack/03b-IPv6/forwarding.c **** 
+ 242:openstack/03b-IPv6/forwarding.c ****          if ((flags & O_FLAG)!=0){
+ 456              		.loc 1 242 0
+ 457 0260 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 458 0262 5BB2     		sxtb	r3, r3
+ 459 0264 002B     		cmp	r3, #0
+ 460 0266 08DA     		bge	.L25
+ 243:openstack/03b-IPv6/forwarding.c ****             // wrong direction
+ 244:openstack/03b-IPv6/forwarding.c ****             
+ 245:openstack/03b-IPv6/forwarding.c ****             // log error
+ 246:openstack/03b-IPv6/forwarding.c ****             openserial_printError(
+ 461              		.loc 1 246 0
+ 462 0268 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 463 026a 9AB2     		uxth	r2, r3
+ 464 026c BB8A     		ldrh	r3, [r7, #20]
+ 465 026e 4FF01200 		mov	r0, #18
+ 466 0272 4FF01301 		mov	r1, #19
+ 467 0276 FFF7FEFF 		bl	openserial_printError
+ 468              	.L25:
+ 247:openstack/03b-IPv6/forwarding.c ****                COMPONENT_FORWARDING,
+ 248:openstack/03b-IPv6/forwarding.c ****                ERR_WRONG_DIRECTION,
+ 249:openstack/03b-IPv6/forwarding.c ****                (errorparameter_t)flags,
+ 250:openstack/03b-IPv6/forwarding.c ****                (errorparameter_t)senderRank
+ 251:openstack/03b-IPv6/forwarding.c ****             );
+ 252:openstack/03b-IPv6/forwarding.c ****          }
+ 253:openstack/03b-IPv6/forwarding.c ****          
+ 254:openstack/03b-IPv6/forwarding.c **** 
+ 255:openstack/03b-IPv6/forwarding.c ****          if (senderRank < neighbors_getMyDAGrank()){
+ 469              		.loc 1 255 0
+ 470 027a FFF7FEFF 		bl	neighbors_getMyDAGrank
+ 471 027e 0346     		mov	r3, r0
+ 472 0280 BA8A     		ldrh	r2, [r7, #20]
+ 473 0282 9A42     		cmp	r2, r3
+ 474 0284 15D2     		bcs	.L26
+ 256:openstack/03b-IPv6/forwarding.c ****             // loop
+ 257:openstack/03b-IPv6/forwarding.c ****             
+ 258:openstack/03b-IPv6/forwarding.c ****             // set flag
+ 259:openstack/03b-IPv6/forwarding.c ****             #ifdef FLOW_LABEL_RPL_DOMAIN
+ 260:openstack/03b-IPv6/forwarding.c ****         	    flags |= R_FLAG;
+ 475              		.loc 1 260 0
+ 476 0286 FB7D     		ldrb	r3, [r7, #23]
+ 477 0288 43F04003 		orr	r3, r3, #64
+ 478 028c FB75     		strb	r3, [r7, #23]
+ 261:openstack/03b-IPv6/forwarding.c ****         	    ipv6_header->flow_label|= ((uint32_t)flags<<16);
+ 479              		.loc 1 261 0
+ 480 028e BB68     		ldr	r3, [r7, #8]
+ 481 0290 5A68     		ldr	r2, [r3, #4]
+ 482 0292 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 483 0294 4FEA0343 		lsl	r3, r3, #16
+ 484 0298 1A43     		orrs	r2, r2, r3
+ 485 029a BB68     		ldr	r3, [r7, #8]
+ 486 029c 5A60     		str	r2, [r3, #4]
+ 262:openstack/03b-IPv6/forwarding.c ****             #else
+ 263:openstack/03b-IPv6/forwarding.c ****         	    rpl_option->flags |= R_FLAG;
+ 264:openstack/03b-IPv6/forwarding.c ****             #endif
+ 265:openstack/03b-IPv6/forwarding.c **** 
+ 266:openstack/03b-IPv6/forwarding.c ****             // log error
+ 267:openstack/03b-IPv6/forwarding.c ****             openserial_printError(
+ 487              		.loc 1 267 0
+ 488 029e FFF7FEFF 		bl	neighbors_getMyDAGrank
+ 489 02a2 0346     		mov	r3, r0
+ 490 02a4 BA8A     		ldrh	r2, [r7, #20]
+ 491 02a6 4FF01200 		mov	r0, #18
+ 492 02aa 4FF01201 		mov	r1, #18
+ 493 02ae FFF7FEFF 		bl	openserial_printError
+ 494              	.L26:
+ 268:openstack/03b-IPv6/forwarding.c ****                COMPONENT_FORWARDING,
+ 269:openstack/03b-IPv6/forwarding.c ****                ERR_LOOP_DETECTED,
+ 270:openstack/03b-IPv6/forwarding.c ****                (errorparameter_t) senderRank,
+ 271:openstack/03b-IPv6/forwarding.c ****                (errorparameter_t) neighbors_getMyDAGrank()
+ 272:openstack/03b-IPv6/forwarding.c ****             );
+ 273:openstack/03b-IPv6/forwarding.c ****          }
+ 274:openstack/03b-IPv6/forwarding.c ****          
+ 275:openstack/03b-IPv6/forwarding.c **** 
+ 276:openstack/03b-IPv6/forwarding.c ****          forwarding_createRplOption(rpl_option, rpl_option->flags);
+ 495              		.loc 1 276 0
+ 496 02b2 3B68     		ldr	r3, [r7, #0]
+ 497 02b4 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 498 02b6 3868     		ldr	r0, [r7, #0]
+ 499 02b8 1946     		mov	r1, r3
+ 500 02ba FFF7FEFF 		bl	forwarding_createRplOption
+ 277:openstack/03b-IPv6/forwarding.c ****          #ifdef FLOW_LABEL_RPL_DOMAIN
+ 278:openstack/03b-IPv6/forwarding.c ****          // do not recreate flow label, relay the same but adding current flags
+ 279:openstack/03b-IPv6/forwarding.c ****          //forwarding_createFlowLabel(&(ipv6_header->flow_label),flags);
+ 280:openstack/03b-IPv6/forwarding.c ****          #endif
+ 281:openstack/03b-IPv6/forwarding.c ****          // resend as if from upper layer
+ 282:openstack/03b-IPv6/forwarding.c ****          if (
+ 283:openstack/03b-IPv6/forwarding.c ****                forwarding_send_internal_RoutingTable(
+ 501              		.loc 1 283 0
+ 502 02be BB68     		ldr	r3, [r7, #8]
+ 503 02c0 03F10403 		add	r3, r3, #4
+ 504 02c4 4FF00102 		mov	r2, #1
+ 505 02c8 0092     		str	r2, [sp, #0]
+ 506 02ca F868     		ldr	r0, [r7, #12]
+ 507 02cc B968     		ldr	r1, [r7, #8]
+ 508 02ce 3A68     		ldr	r2, [r7, #0]
+ 509 02d0 FFF7FEFF 		bl	forwarding_send_internal_RoutingTable
+ 510 02d4 0346     		mov	r3, r0
+ 282:openstack/03b-IPv6/forwarding.c ****          if (
+ 511              		.loc 1 282 0
+ 512 02d6 012B     		cmp	r3, #1
+ 513 02d8 14D1     		bne	.L13
+ 284:openstack/03b-IPv6/forwarding.c ****                   msg,
+ 285:openstack/03b-IPv6/forwarding.c ****                   ipv6_header,
+ 286:openstack/03b-IPv6/forwarding.c ****                   rpl_option,
+ 287:openstack/03b-IPv6/forwarding.c ****                   &(ipv6_header->flow_label),
+ 288:openstack/03b-IPv6/forwarding.c ****                   PCKTFORWARD 
+ 289:openstack/03b-IPv6/forwarding.c ****                )==E_FAIL
+ 290:openstack/03b-IPv6/forwarding.c ****             ) {
+ 291:openstack/03b-IPv6/forwarding.c ****             openqueue_freePacketBuffer(msg);
+ 514              		.loc 1 291 0
+ 515 02da F868     		ldr	r0, [r7, #12]
+ 516 02dc FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 517 02e0 10E0     		b	.L13
+ 518              	.L24:
+ 292:openstack/03b-IPv6/forwarding.c ****          }
+ 293:openstack/03b-IPv6/forwarding.c ****       } else {
+ 294:openstack/03b-IPv6/forwarding.c ****          // source routing header present
+ 295:openstack/03b-IPv6/forwarding.c ****          
+ 296:openstack/03b-IPv6/forwarding.c ****          if (forwarding_send_internal_SourceRouting(msg, ipv6_header)==E_FAIL) {
+ 519              		.loc 1 296 0
+ 520 02e2 F868     		ldr	r0, [r7, #12]
+ 521 02e4 B968     		ldr	r1, [r7, #8]
+ 522 02e6 FFF7FEFF 		bl	forwarding_send_internal_SourceRouting
+ 523 02ea 0346     		mov	r3, r0
+ 524 02ec 012B     		cmp	r3, #1
+ 525 02ee 09D1     		bne	.L13
+ 297:openstack/03b-IPv6/forwarding.c ****             
+ 298:openstack/03b-IPv6/forwarding.c ****             // already freed by send_internal
+ 299:openstack/03b-IPv6/forwarding.c ****             
+ 300:openstack/03b-IPv6/forwarding.c ****             // log error
+ 301:openstack/03b-IPv6/forwarding.c ****             openserial_printError(
+ 526              		.loc 1 301 0
+ 527 02f0 4FF01200 		mov	r0, #18
+ 528 02f4 4FF00F01 		mov	r1, #15
+ 529 02f8 4FF00002 		mov	r2, #0
+ 530 02fc 4FF00003 		mov	r3, #0
+ 531 0300 FFF7FEFF 		bl	openserial_printError
+ 532              	.L13:
+ 302:openstack/03b-IPv6/forwarding.c ****                COMPONENT_FORWARDING,
+ 303:openstack/03b-IPv6/forwarding.c ****                ERR_INVALID_FWDMODE,
+ 304:openstack/03b-IPv6/forwarding.c ****                (errorparameter_t)0,
+ 305:openstack/03b-IPv6/forwarding.c ****                (errorparameter_t)0
+ 306:openstack/03b-IPv6/forwarding.c ****             );
+ 307:openstack/03b-IPv6/forwarding.c ****          }
+ 308:openstack/03b-IPv6/forwarding.c ****       }
+ 309:openstack/03b-IPv6/forwarding.c ****    }
+ 310:openstack/03b-IPv6/forwarding.c **** }
+ 533              		.loc 1 310 0
+ 534 0304 07F11807 		add	r7, r7, #24
+ 535 0308 BD46     		mov	sp, r7
+ 536 030a 80BD     		pop	{r7, pc}
+ 537              		.cfi_endproc
+ 538              	.LFE3:
+ 540              		.align	2
+ 541              		.global	forwarding_getNextHop
+ 542              		.thumb
+ 543              		.thumb_func
+ 545              	forwarding_getNextHop:
+ 546              	.LFB4:
+ 311:openstack/03b-IPv6/forwarding.c **** 
+ 312:openstack/03b-IPv6/forwarding.c **** //=========================== private =========================================
+ 313:openstack/03b-IPv6/forwarding.c **** 
+ 314:openstack/03b-IPv6/forwarding.c **** /**
+ 315:openstack/03b-IPv6/forwarding.c **** \brief Retrieve the next hop's address from routing table.
+ 316:openstack/03b-IPv6/forwarding.c **** 
+ 317:openstack/03b-IPv6/forwarding.c **** \param[in]  destination128b  Final IPv6 destination address.
+ 318:openstack/03b-IPv6/forwarding.c **** \param[out] addressToWrite64b Location to write the EUI64 of next hop to.
+ 319:openstack/03b-IPv6/forwarding.c **** */
+ 320:openstack/03b-IPv6/forwarding.c **** void forwarding_getNextHop(open_addr_t* destination128b, open_addr_t* addressToWrite64b) {
+ 547              		.loc 1 320 0
+ 548              		.cfi_startproc
+ 549              		@ args = 0, pretend = 0, frame = 32
+ 550              		@ frame_needed = 1, uses_anonymous_args = 0
+ 551 030c 80B5     		push	{r7, lr}
+ 552              	.LCFI11:
+ 553              		.cfi_def_cfa_offset 8
+ 554              		.cfi_offset 7, -8
+ 555              		.cfi_offset 14, -4
+ 556 030e 88B0     		sub	sp, sp, #32
+ 557              	.LCFI12:
+ 558              		.cfi_def_cfa_offset 40
+ 559 0310 00AF     		add	r7, sp, #0
+ 560              	.LCFI13:
+ 561              		.cfi_def_cfa_register 7
+ 562 0312 7860     		str	r0, [r7, #4]
+ 563 0314 3960     		str	r1, [r7, #0]
+ 321:openstack/03b-IPv6/forwarding.c ****    uint8_t         i;
+ 322:openstack/03b-IPv6/forwarding.c ****    open_addr_t     temp_prefix64btoWrite;
+ 323:openstack/03b-IPv6/forwarding.c ****    
+ 324:openstack/03b-IPv6/forwarding.c ****    if (packetfunctions_isBroadcastMulticast(destination128b)) {
+ 564              		.loc 1 324 0
+ 565 0316 7868     		ldr	r0, [r7, #4]
+ 566 0318 FFF7FEFF 		bl	packetfunctions_isBroadcastMulticast
+ 567 031c 0346     		mov	r3, r0
+ 568 031e 002B     		cmp	r3, #0
+ 569 0320 15D0     		beq	.L29
+ 325:openstack/03b-IPv6/forwarding.c ****       // IP destination is broadcast, send to 0xffffffffffffffff
+ 326:openstack/03b-IPv6/forwarding.c ****       addressToWrite64b->type = ADDR_64B;
+ 570              		.loc 1 326 0
+ 571 0322 3B68     		ldr	r3, [r7, #0]
+ 572 0324 4FF00202 		mov	r2, #2
+ 573 0328 1A70     		strb	r2, [r3, #0]
+ 327:openstack/03b-IPv6/forwarding.c ****       for (i=0;i<8;i++) {
+ 574              		.loc 1 327 0
+ 575 032a 4FF00003 		mov	r3, #0
+ 576 032e FB77     		strb	r3, [r7, #31]
+ 577 0330 09E0     		b	.L30
+ 578              	.L31:
+ 328:openstack/03b-IPv6/forwarding.c ****          addressToWrite64b->addr_64b[i] = 0xff;
+ 579              		.loc 1 328 0 discriminator 2
+ 580 0332 FB7F     		ldrb	r3, [r7, #31]	@ zero_extendqisi2
+ 581 0334 3A68     		ldr	r2, [r7, #0]
+ 582 0336 D318     		adds	r3, r2, r3
+ 583 0338 4FF0FF02 		mov	r2, #255
+ 584 033c 5A70     		strb	r2, [r3, #1]
+ 327:openstack/03b-IPv6/forwarding.c ****       for (i=0;i<8;i++) {
+ 585              		.loc 1 327 0 discriminator 2
+ 586 033e FB7F     		ldrb	r3, [r7, #31]
+ 587 0340 03F10103 		add	r3, r3, #1
+ 588 0344 FB77     		strb	r3, [r7, #31]
+ 589              	.L30:
+ 327:openstack/03b-IPv6/forwarding.c ****       for (i=0;i<8;i++) {
+ 590              		.loc 1 327 0 is_stmt 0 discriminator 1
+ 591 0346 FB7F     		ldrb	r3, [r7, #31]	@ zero_extendqisi2
+ 592 0348 072B     		cmp	r3, #7
+ 593 034a F2D9     		bls	.L31
+ 327:openstack/03b-IPv6/forwarding.c ****       for (i=0;i<8;i++) {
+ 594              		.loc 1 327 0
+ 595 034c 10E0     		b	.L28
+ 596              	.L29:
+ 329:openstack/03b-IPv6/forwarding.c ****       }
+ 330:openstack/03b-IPv6/forwarding.c ****    } else if (neighbors_isStableNeighbor(destination128b)) {
+ 597              		.loc 1 330 0 is_stmt 1
+ 598 034e 7868     		ldr	r0, [r7, #4]
+ 599 0350 FFF7FEFF 		bl	neighbors_isStableNeighbor
+ 600 0354 0346     		mov	r3, r0
+ 601 0356 002B     		cmp	r3, #0
+ 602 0358 07D0     		beq	.L33
+ 331:openstack/03b-IPv6/forwarding.c ****       // IP destination is 1-hop neighbor, send directly
+ 332:openstack/03b-IPv6/forwarding.c ****       packetfunctions_ip128bToMac64b(destination128b,&temp_prefix64btoWrite,addressToWrite64b);
+ 603              		.loc 1 332 0
+ 604 035a 07F10C03 		add	r3, r7, #12
+ 605 035e 7868     		ldr	r0, [r7, #4]
+ 606 0360 1946     		mov	r1, r3
+ 607 0362 3A68     		ldr	r2, [r7, #0]
+ 608 0364 FFF7FEFF 		bl	packetfunctions_ip128bToMac64b
+ 609 0368 02E0     		b	.L28
+ 610              	.L33:
+ 333:openstack/03b-IPv6/forwarding.c ****    } else {
+ 334:openstack/03b-IPv6/forwarding.c ****       // destination is remote, send to preferred parent
+ 335:openstack/03b-IPv6/forwarding.c ****       neighbors_getPreferredParentEui64(addressToWrite64b);
+ 611              		.loc 1 335 0
+ 612 036a 3868     		ldr	r0, [r7, #0]
+ 613 036c FFF7FEFF 		bl	neighbors_getPreferredParentEui64
+ 614              	.L28:
+ 336:openstack/03b-IPv6/forwarding.c ****    }
+ 337:openstack/03b-IPv6/forwarding.c **** }
+ 615              		.loc 1 337 0
+ 616 0370 07F12007 		add	r7, r7, #32
+ 617 0374 BD46     		mov	sp, r7
+ 618 0376 80BD     		pop	{r7, pc}
+ 619              		.cfi_endproc
+ 620              	.LFE4:
+ 622              		.align	2
+ 623              		.global	forwarding_send_internal_RoutingTable
+ 624              		.thumb
+ 625              		.thumb_func
+ 627              	forwarding_send_internal_RoutingTable:
+ 628              	.LFB5:
+ 338:openstack/03b-IPv6/forwarding.c **** 
+ 339:openstack/03b-IPv6/forwarding.c **** /**
+ 340:openstack/03b-IPv6/forwarding.c **** \brief Send a packet using the routing table to find the next hop.
+ 341:openstack/03b-IPv6/forwarding.c **** 
+ 342:openstack/03b-IPv6/forwarding.c **** \param[in,out] msg             The packet to send.
+ 343:openstack/03b-IPv6/forwarding.c **** \param[in]     ipv6_header     The packet's IPv6 header.
+ 344:openstack/03b-IPv6/forwarding.c **** \param[in]     rpl_option      The hop-by-hop option to add in this packet.
+ 345:openstack/03b-IPv6/forwarding.c **** \param[in]     flow_label      The flowlabel to add in the 6LoWPAN header.
+ 346:openstack/03b-IPv6/forwarding.c **** \param[in]     fw_SendOrfw_Rcv The packet is originating from this mote
+ 347:openstack/03b-IPv6/forwarding.c ****    (PCKTSEND), or forwarded (PCKTFORWARD).
+ 348:openstack/03b-IPv6/forwarding.c **** */
+ 349:openstack/03b-IPv6/forwarding.c **** owerror_t forwarding_send_internal_RoutingTable(
+ 350:openstack/03b-IPv6/forwarding.c ****       OpenQueueEntry_t*      msg,
+ 351:openstack/03b-IPv6/forwarding.c ****       ipv6_header_iht*       ipv6_header,
+ 352:openstack/03b-IPv6/forwarding.c ****       rpl_option_ht*         rpl_option,
+ 353:openstack/03b-IPv6/forwarding.c ****       uint32_t*              flow_label,
+ 354:openstack/03b-IPv6/forwarding.c ****       uint8_t                fw_SendOrfw_Rcv
+ 355:openstack/03b-IPv6/forwarding.c ****    ) {
+ 629              		.loc 1 355 0
+ 630              		.cfi_startproc
+ 631              		@ args = 4, pretend = 0, frame = 16
+ 632              		@ frame_needed = 1, uses_anonymous_args = 0
+ 633 0378 80B5     		push	{r7, lr}
+ 634              	.LCFI14:
+ 635              		.cfi_def_cfa_offset 8
+ 636              		.cfi_offset 7, -8
+ 637              		.cfi_offset 14, -4
+ 638 037a 86B0     		sub	sp, sp, #24
+ 639              	.LCFI15:
+ 640              		.cfi_def_cfa_offset 32
+ 641 037c 02AF     		add	r7, sp, #8
+ 642              	.LCFI16:
+ 643              		.cfi_def_cfa 7, 24
+ 644 037e F860     		str	r0, [r7, #12]
+ 645 0380 B960     		str	r1, [r7, #8]
+ 646 0382 7A60     		str	r2, [r7, #4]
+ 647 0384 3B60     		str	r3, [r7, #0]
+ 356:openstack/03b-IPv6/forwarding.c ****    
+ 357:openstack/03b-IPv6/forwarding.c ****    // retrieve the next hop from the routing table
+ 358:openstack/03b-IPv6/forwarding.c ****    forwarding_getNextHop(&(msg->l3_destinationAdd),&(msg->l2_nextORpreviousHop));
+ 648              		.loc 1 358 0
+ 649 0386 FB68     		ldr	r3, [r7, #12]
+ 650 0388 03F11502 		add	r2, r3, #21
+ 651 038c FB68     		ldr	r3, [r7, #12]
+ 652 038e 03F13803 		add	r3, r3, #56
+ 653 0392 1046     		mov	r0, r2
+ 654 0394 1946     		mov	r1, r3
+ 655 0396 FFF7FEFF 		bl	forwarding_getNextHop
+ 359:openstack/03b-IPv6/forwarding.c ****    if (msg->l2_nextORpreviousHop.type==ADDR_NONE) {
+ 656              		.loc 1 359 0
+ 657 039a FB68     		ldr	r3, [r7, #12]
+ 658 039c 93F83830 		ldrb	r3, [r3, #56]	@ zero_extendqisi2
+ 659 03a0 002B     		cmp	r3, #0
+ 660 03a2 0CD1     		bne	.L35
+ 360:openstack/03b-IPv6/forwarding.c ****       openserial_printError(
+ 661              		.loc 1 360 0
+ 662 03a4 4FF01200 		mov	r0, #18
+ 663 03a8 4FF00D01 		mov	r1, #13
+ 664 03ac 4FF00002 		mov	r2, #0
+ 665 03b0 4FF00003 		mov	r3, #0
+ 666 03b4 FFF7FEFF 		bl	openserial_printError
+ 361:openstack/03b-IPv6/forwarding.c ****          COMPONENT_FORWARDING,
+ 362:openstack/03b-IPv6/forwarding.c ****          ERR_NO_NEXTHOP,
+ 363:openstack/03b-IPv6/forwarding.c ****          (errorparameter_t)0,
+ 364:openstack/03b-IPv6/forwarding.c ****          (errorparameter_t)0
+ 365:openstack/03b-IPv6/forwarding.c ****       );
+ 366:openstack/03b-IPv6/forwarding.c ****       return E_FAIL;
+ 667              		.loc 1 366 0
+ 668 03b8 4FF00103 		mov	r3, #1
+ 669 03bc 08E0     		b	.L36
+ 670              	.L35:
+ 367:openstack/03b-IPv6/forwarding.c ****    }
+ 368:openstack/03b-IPv6/forwarding.c ****    
+ 369:openstack/03b-IPv6/forwarding.c ****    // send to next lower layer
+ 370:openstack/03b-IPv6/forwarding.c ****    return iphc_sendFromForwarding(
+ 671              		.loc 1 370 0
+ 672 03be 3B7E     		ldrb	r3, [r7, #24]	@ zero_extendqisi2
+ 673 03c0 0093     		str	r3, [sp, #0]
+ 674 03c2 F868     		ldr	r0, [r7, #12]
+ 675 03c4 B968     		ldr	r1, [r7, #8]
+ 676 03c6 7A68     		ldr	r2, [r7, #4]
+ 677 03c8 3B68     		ldr	r3, [r7, #0]
+ 678 03ca FFF7FEFF 		bl	iphc_sendFromForwarding
+ 679 03ce 0346     		mov	r3, r0
+ 680              	.L36:
+ 371:openstack/03b-IPv6/forwarding.c ****       msg,
+ 372:openstack/03b-IPv6/forwarding.c ****       ipv6_header,
+ 373:openstack/03b-IPv6/forwarding.c ****       rpl_option,
+ 374:openstack/03b-IPv6/forwarding.c ****       flow_label,
+ 375:openstack/03b-IPv6/forwarding.c ****       fw_SendOrfw_Rcv
+ 376:openstack/03b-IPv6/forwarding.c ****    );
+ 377:openstack/03b-IPv6/forwarding.c **** }
+ 681              		.loc 1 377 0
+ 682 03d0 1846     		mov	r0, r3
+ 683 03d2 07F11007 		add	r7, r7, #16
+ 684 03d6 BD46     		mov	sp, r7
+ 685 03d8 80BD     		pop	{r7, pc}
+ 686              		.cfi_endproc
+ 687              	.LFE5:
+ 689 03da 00BF     		.align	2
+ 690              		.global	forwarding_send_internal_SourceRouting
+ 691              		.thumb
+ 692              		.thumb_func
+ 694              	forwarding_send_internal_SourceRouting:
+ 695              	.LFB6:
+ 378:openstack/03b-IPv6/forwarding.c **** 
+ 379:openstack/03b-IPv6/forwarding.c **** /**
+ 380:openstack/03b-IPv6/forwarding.c **** \brief Send a packet using the source rout to find the next hop.
+ 381:openstack/03b-IPv6/forwarding.c **** 
+ 382:openstack/03b-IPv6/forwarding.c **** \note This is always called for packets being forwarded.
+ 383:openstack/03b-IPv6/forwarding.c **** 
+ 384:openstack/03b-IPv6/forwarding.c **** How to process the routing header is detailed in
+ 385:openstack/03b-IPv6/forwarding.c **** http://tools.ietf.org/html/rfc6554#page-9.
+ 386:openstack/03b-IPv6/forwarding.c **** 
+ 387:openstack/03b-IPv6/forwarding.c **** \param[in,out] msg             The packet to send.
+ 388:openstack/03b-IPv6/forwarding.c **** \param[in]     ipv6_header     The packet's IPv6 header.
+ 389:openstack/03b-IPv6/forwarding.c **** */
+ 390:openstack/03b-IPv6/forwarding.c **** owerror_t forwarding_send_internal_SourceRouting(
+ 391:openstack/03b-IPv6/forwarding.c ****       OpenQueueEntry_t* msg,
+ 392:openstack/03b-IPv6/forwarding.c ****       ipv6_header_iht*  ipv6_header
+ 393:openstack/03b-IPv6/forwarding.c ****    ) {
+ 696              		.loc 1 393 0
+ 697              		.cfi_startproc
+ 698              		@ args = 0, pretend = 0, frame = 40
+ 699              		@ frame_needed = 1, uses_anonymous_args = 0
+ 700 03dc 80B5     		push	{r7, lr}
+ 701              	.LCFI17:
+ 702              		.cfi_def_cfa_offset 8
+ 703              		.cfi_offset 7, -8
+ 704              		.cfi_offset 14, -4
+ 705 03de 8CB0     		sub	sp, sp, #48
+ 706              	.LCFI18:
+ 707              		.cfi_def_cfa_offset 56
+ 708 03e0 02AF     		add	r7, sp, #8
+ 709              	.LCFI19:
+ 710              		.cfi_def_cfa 7, 48
+ 711 03e2 7860     		str	r0, [r7, #4]
+ 712 03e4 3960     		str	r1, [r7, #0]
+ 394:openstack/03b-IPv6/forwarding.c ****    uint8_t              local_CmprE;
+ 395:openstack/03b-IPv6/forwarding.c ****    uint8_t              local_CmprI;
+ 396:openstack/03b-IPv6/forwarding.c ****    uint8_t              numAddr;
+ 397:openstack/03b-IPv6/forwarding.c ****    uint8_t              hlen;
+ 398:openstack/03b-IPv6/forwarding.c ****    uint8_t              addressposition;
+ 399:openstack/03b-IPv6/forwarding.c ****    uint8_t*             runningPointer;
+ 400:openstack/03b-IPv6/forwarding.c ****    uint8_t              octetsAddressSize;
+ 401:openstack/03b-IPv6/forwarding.c ****    open_addr_t*         prefix;
+ 402:openstack/03b-IPv6/forwarding.c ****    rpl_routing_ht*      rpl_routing_hdr;
+ 403:openstack/03b-IPv6/forwarding.c ****    rpl_option_ht        rpl_option;
+ 404:openstack/03b-IPv6/forwarding.c ****    
+ 405:openstack/03b-IPv6/forwarding.c ****    // reset hop-by-hop option
+ 406:openstack/03b-IPv6/forwarding.c ****    memset(&rpl_option,0,sizeof(rpl_option_ht));
+ 713              		.loc 1 406 0
+ 714 03e6 07F10C03 		add	r3, r7, #12
+ 715 03ea 1846     		mov	r0, r3
+ 716 03ec 4FF00001 		mov	r1, #0
+ 717 03f0 4FF00602 		mov	r2, #6
+ 718 03f4 FFF7FEFF 		bl	memset
+ 407:openstack/03b-IPv6/forwarding.c ****    
+ 408:openstack/03b-IPv6/forwarding.c ****    // get my prefix
+ 409:openstack/03b-IPv6/forwarding.c ****    prefix               = idmanager_getMyID(ADDR_PREFIX);
+ 719              		.loc 1 409 0
+ 720 03f8 4FF00500 		mov	r0, #5
+ 721 03fc FFF7FEFF 		bl	idmanager_getMyID
+ 722 0400 3862     		str	r0, [r7, #32]
+ 410:openstack/03b-IPv6/forwarding.c ****    
+ 411:openstack/03b-IPv6/forwarding.c ****    // cast packet to RPL routing header
+ 412:openstack/03b-IPv6/forwarding.c ****    rpl_routing_hdr      = (rpl_routing_ht*)(msg->payload);
+ 723              		.loc 1 412 0
+ 724 0402 7B68     		ldr	r3, [r7, #4]
+ 725 0404 5B68     		ldr	r3, [r3, #4]
+ 726 0406 FB61     		str	r3, [r7, #28]
+ 413:openstack/03b-IPv6/forwarding.c ****    
+ 414:openstack/03b-IPv6/forwarding.c ****    // point behind the RPL routing header
+ 415:openstack/03b-IPv6/forwarding.c ****    runningPointer       = (msg->payload)+sizeof(rpl_routing_ht);
+ 727              		.loc 1 415 0
+ 728 0408 7B68     		ldr	r3, [r7, #4]
+ 729 040a 5B68     		ldr	r3, [r3, #4]
+ 730 040c 03F10803 		add	r3, r3, #8
+ 731 0410 BB61     		str	r3, [r7, #24]
+ 416:openstack/03b-IPv6/forwarding.c ****    
+ 417:openstack/03b-IPv6/forwarding.c ****    // retrieve CmprE and CmprI
+ 418:openstack/03b-IPv6/forwarding.c ****    
+ 419:openstack/03b-IPv6/forwarding.c ****    // CmprE 4-bit unsigned integer. Number of prefix octets
+ 420:openstack/03b-IPv6/forwarding.c ****    // from the last segment (i.e., segment n) that are
+ 421:openstack/03b-IPv6/forwarding.c ****    // elided. For example, an SRH carrying a full IPv6
+ 422:openstack/03b-IPv6/forwarding.c ****    // address in Addressesn sets CmprE to 0.
+ 423:openstack/03b-IPv6/forwarding.c ****    
+ 424:openstack/03b-IPv6/forwarding.c ****    local_CmprE          = rpl_routing_hdr->CmprICmprE & 0x0f;
+ 732              		.loc 1 424 0
+ 733 0412 FB69     		ldr	r3, [r7, #28]
+ 734 0414 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
+ 735 0416 03F00F03 		and	r3, r3, #15
+ 736 041a FB75     		strb	r3, [r7, #23]
+ 425:openstack/03b-IPv6/forwarding.c ****    local_CmprI          = rpl_routing_hdr->CmprICmprE & 0xf0;
+ 737              		.loc 1 425 0
+ 738 041c FB69     		ldr	r3, [r7, #28]
+ 739 041e 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
+ 740 0420 23F00F03 		bic	r3, r3, #15
+ 741 0424 BB75     		strb	r3, [r7, #22]
+ 426:openstack/03b-IPv6/forwarding.c ****    local_CmprI          = local_CmprI>>4;
+ 742              		.loc 1 426 0
+ 743 0426 BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 744 0428 4FEA1313 		lsr	r3, r3, #4
+ 745 042c BB75     		strb	r3, [r7, #22]
+ 427:openstack/03b-IPv6/forwarding.c ****    
+ 428:openstack/03b-IPv6/forwarding.c ****    numAddr              = (((rpl_routing_hdr->HdrExtLen*8)-rpl_routing_hdr->PadRes-(16-local_CmprE)
+ 746              		.loc 1 428 0
+ 747 042e FB69     		ldr	r3, [r7, #28]
+ 748 0430 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 749 0432 4FEAC302 		lsl	r2, r3, #3
+ 750 0436 FB69     		ldr	r3, [r7, #28]
+ 751 0438 5B79     		ldrb	r3, [r3, #5]	@ zero_extendqisi2
+ 752 043a D21A     		subs	r2, r2, r3
+ 753 043c FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 754 043e A3F11003 		sub	r3, r3, #16
+ 755 0442 D218     		adds	r2, r2, r3
+ 756 0444 BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 757 0446 C3F11003 		rsb	r3, r3, #16
+ 758 044a 92FBF3F3 		sdiv	r3, r2, r3
+ 759 044e DBB2     		uxtb	r3, r3
+ 760 0450 03F10103 		add	r3, r3, #1
+ 761 0454 7B75     		strb	r3, [r7, #21]
+ 429:openstack/03b-IPv6/forwarding.c ****    
+ 430:openstack/03b-IPv6/forwarding.c ****    if (rpl_routing_hdr->SegmentsLeft==0){
+ 762              		.loc 1 430 0
+ 763 0456 FB69     		ldr	r3, [r7, #28]
+ 764 0458 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 765 045a 002B     		cmp	r3, #0
+ 766 045c 42D1     		bne	.L38
+ 431:openstack/03b-IPv6/forwarding.c ****       // no more segments left, this is the last hop
+ 432:openstack/03b-IPv6/forwarding.c ****       
+ 433:openstack/03b-IPv6/forwarding.c ****       // push packet up the stack
+ 434:openstack/03b-IPv6/forwarding.c ****       msg->l4_protocol  = rpl_routing_hdr->nextHeader;
+ 767              		.loc 1 434 0
+ 768 045e FB69     		ldr	r3, [r7, #28]
+ 769 0460 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 770 0462 7B68     		ldr	r3, [r7, #4]
+ 771 0464 5A72     		strb	r2, [r3, #9]
+ 435:openstack/03b-IPv6/forwarding.c ****       hlen              = rpl_routing_hdr->HdrExtLen; //in 8-octet units
+ 772              		.loc 1 435 0
+ 773 0466 FB69     		ldr	r3, [r7, #28]
+ 774 0468 5B78     		ldrb	r3, [r3, #1]
+ 775 046a 3B75     		strb	r3, [r7, #20]
+ 436:openstack/03b-IPv6/forwarding.c ****       
+ 437:openstack/03b-IPv6/forwarding.c ****       // toss RPL routing header
+ 438:openstack/03b-IPv6/forwarding.c ****       packetfunctions_tossHeader(msg,sizeof(rpl_routing_ht));
+ 776              		.loc 1 438 0
+ 777 046c 7868     		ldr	r0, [r7, #4]
+ 778 046e 4FF00801 		mov	r1, #8
+ 779 0472 FFF7FEFF 		bl	packetfunctions_tossHeader
+ 439:openstack/03b-IPv6/forwarding.c ****       
+ 440:openstack/03b-IPv6/forwarding.c ****       // toss source route addresses
+ 441:openstack/03b-IPv6/forwarding.c ****       octetsAddressSize = LENGTH_ADDR128b - local_CmprE; //total length - number of octets that are
+ 780              		.loc 1 441 0
+ 781 0476 FB7D     		ldrb	r3, [r7, #23]
+ 782 0478 C3F11003 		rsb	r3, r3, #16
+ 783 047c 87F82730 		strb	r3, [r7, #39]
+ 442:openstack/03b-IPv6/forwarding.c ****       packetfunctions_tossHeader(msg,octetsAddressSize*hlen);
+ 784              		.loc 1 442 0
+ 785 0480 97F82730 		ldrb	r3, [r7, #39]
+ 786 0484 3A7D     		ldrb	r2, [r7, #20]
+ 787 0486 02FB03F3 		mul	r3, r2, r3
+ 788 048a DBB2     		uxtb	r3, r3
+ 789 048c 7868     		ldr	r0, [r7, #4]
+ 790 048e 1946     		mov	r1, r3
+ 791 0490 FFF7FEFF 		bl	packetfunctions_tossHeader
+ 443:openstack/03b-IPv6/forwarding.c ****       
+ 444:openstack/03b-IPv6/forwarding.c ****       // indicate reception to upper layer
+ 445:openstack/03b-IPv6/forwarding.c ****       switch(msg->l4_protocol) {
+ 792              		.loc 1 445 0
+ 793 0494 7B68     		ldr	r3, [r7, #4]
+ 794 0496 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 795 0498 112B     		cmp	r3, #17
+ 796 049a 07D0     		beq	.L41
+ 797 049c 3A2B     		cmp	r3, #58
+ 798 049e 09D0     		beq	.L42
+ 799 04a0 062B     		cmp	r3, #6
+ 800 04a2 0BD1     		bne	.L54
+ 801              	.L40:
+ 446:openstack/03b-IPv6/forwarding.c ****          case IANA_TCP:
+ 447:openstack/03b-IPv6/forwarding.c ****             opentcp_receive(msg);
+ 802              		.loc 1 447 0
+ 803 04a4 7868     		ldr	r0, [r7, #4]
+ 804 04a6 FFF7FEFF 		bl	opentcp_receive
+ 448:openstack/03b-IPv6/forwarding.c ****             break;
+ 805              		.loc 1 448 0
+ 806 04aa 18E0     		b	.L43
+ 807              	.L41:
+ 449:openstack/03b-IPv6/forwarding.c ****          case IANA_UDP:
+ 450:openstack/03b-IPv6/forwarding.c ****             openudp_receive(msg);
+ 808              		.loc 1 450 0
+ 809 04ac 7868     		ldr	r0, [r7, #4]
+ 810 04ae FFF7FEFF 		bl	openudp_receive
+ 451:openstack/03b-IPv6/forwarding.c ****             break;
+ 811              		.loc 1 451 0
+ 812 04b2 14E0     		b	.L43
+ 813              	.L42:
+ 452:openstack/03b-IPv6/forwarding.c ****          case IANA_ICMPv6:
+ 453:openstack/03b-IPv6/forwarding.c ****             icmpv6_receive(msg);
+ 814              		.loc 1 453 0
+ 815 04b4 7868     		ldr	r0, [r7, #4]
+ 816 04b6 FFF7FEFF 		bl	icmpv6_receive
+ 454:openstack/03b-IPv6/forwarding.c ****             break;
+ 817              		.loc 1 454 0
+ 818 04ba 10E0     		b	.L43
+ 819              	.L54:
+ 455:openstack/03b-IPv6/forwarding.c ****          default:
+ 456:openstack/03b-IPv6/forwarding.c ****             openserial_printError(
+ 457:openstack/03b-IPv6/forwarding.c ****                COMPONENT_FORWARDING,
+ 458:openstack/03b-IPv6/forwarding.c ****                ERR_WRONG_TRAN_PROTOCOL,
+ 459:openstack/03b-IPv6/forwarding.c ****                (errorparameter_t)msg->l4_protocol,
+ 820              		.loc 1 459 0
+ 821 04bc 7B68     		ldr	r3, [r7, #4]
+ 822 04be 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 456:openstack/03b-IPv6/forwarding.c ****             openserial_printError(
+ 823              		.loc 1 456 0
+ 824 04c0 4FF01200 		mov	r0, #18
+ 825 04c4 4FF00601 		mov	r1, #6
+ 826 04c8 1A46     		mov	r2, r3
+ 827 04ca 4FF00103 		mov	r3, #1
+ 828 04ce FFF7FEFF 		bl	openserial_printError
+ 460:openstack/03b-IPv6/forwarding.c ****                (errorparameter_t)1
+ 461:openstack/03b-IPv6/forwarding.c ****             );
+ 462:openstack/03b-IPv6/forwarding.c ****             //not sure that this is correct as iphc will free it?
+ 463:openstack/03b-IPv6/forwarding.c ****             openqueue_freePacketBuffer(msg);
+ 829              		.loc 1 463 0
+ 830 04d2 7868     		ldr	r0, [r7, #4]
+ 831 04d4 FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 464:openstack/03b-IPv6/forwarding.c ****             return E_FAIL;
+ 832              		.loc 1 464 0
+ 833 04d8 4FF00103 		mov	r3, #1
+ 834 04dc E6E0     		b	.L53
+ 835              	.L43:
+ 465:openstack/03b-IPv6/forwarding.c ****       }
+ 466:openstack/03b-IPv6/forwarding.c ****       
+ 467:openstack/03b-IPv6/forwarding.c ****       // stop executing here (successful)
+ 468:openstack/03b-IPv6/forwarding.c ****       return E_SUCCESS;
+ 836              		.loc 1 468 0
+ 837 04de 4FF00003 		mov	r3, #0
+ 838 04e2 E3E0     		b	.L53
+ 839              	.L38:
+ 469:openstack/03b-IPv6/forwarding.c ****    
+ 470:openstack/03b-IPv6/forwarding.c ****    } else {
+ 471:openstack/03b-IPv6/forwarding.c ****       // this is not the last hop
+ 472:openstack/03b-IPv6/forwarding.c ****       
+ 473:openstack/03b-IPv6/forwarding.c ****       if (rpl_routing_hdr->SegmentsLeft>numAddr) {
+ 840              		.loc 1 473 0
+ 841 04e4 FB69     		ldr	r3, [r7, #28]
+ 842 04e6 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 843 04e8 7A7D     		ldrb	r2, [r7, #21]	@ zero_extendqisi2
+ 844 04ea 9A42     		cmp	r2, r3
+ 845 04ec 0FD2     		bcs	.L45
+ 474:openstack/03b-IPv6/forwarding.c ****          // error code: there are more segments left than space in source route
+ 475:openstack/03b-IPv6/forwarding.c ****          
+ 476:openstack/03b-IPv6/forwarding.c ****          // TODO: send ICMPv6 packet (code 0) to originator
+ 477:openstack/03b-IPv6/forwarding.c ****          
+ 478:openstack/03b-IPv6/forwarding.c ****          openserial_printError(
+ 846              		.loc 1 478 0
+ 847 04ee 4FF01200 		mov	r0, #18
+ 848 04f2 4FF00D01 		mov	r1, #13
+ 849 04f6 4FF00002 		mov	r2, #0
+ 850 04fa 4FF00003 		mov	r3, #0
+ 851 04fe FFF7FEFF 		bl	openserial_printError
+ 479:openstack/03b-IPv6/forwarding.c ****             COMPONENT_FORWARDING,
+ 480:openstack/03b-IPv6/forwarding.c ****             ERR_NO_NEXTHOP,
+ 481:openstack/03b-IPv6/forwarding.c ****             (errorparameter_t)0,
+ 482:openstack/03b-IPv6/forwarding.c ****             (errorparameter_t)0
+ 483:openstack/03b-IPv6/forwarding.c ****          );
+ 484:openstack/03b-IPv6/forwarding.c ****          openqueue_freePacketBuffer(msg);
+ 852              		.loc 1 484 0
+ 853 0502 7868     		ldr	r0, [r7, #4]
+ 854 0504 FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 485:openstack/03b-IPv6/forwarding.c ****          return E_FAIL;
+ 855              		.loc 1 485 0
+ 856 0508 4FF00103 		mov	r3, #1
+ 857 050c CEE0     		b	.L53
+ 858              	.L45:
+ 486:openstack/03b-IPv6/forwarding.c ****       
+ 487:openstack/03b-IPv6/forwarding.c ****       } else {
+ 488:openstack/03b-IPv6/forwarding.c ****          
+ 489:openstack/03b-IPv6/forwarding.c ****          // decrement number of segments left
+ 490:openstack/03b-IPv6/forwarding.c ****          rpl_routing_hdr->SegmentsLeft--;
+ 859              		.loc 1 490 0
+ 860 050e FB69     		ldr	r3, [r7, #28]
+ 861 0510 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 862 0512 03F1FF33 		add	r3, r3, #-1
+ 863 0516 DAB2     		uxtb	r2, r3
+ 864 0518 FB69     		ldr	r3, [r7, #28]
+ 865 051a DA70     		strb	r2, [r3, #3]
+ 491:openstack/03b-IPv6/forwarding.c ****          
+ 492:openstack/03b-IPv6/forwarding.c ****          // find next hop address in source route
+ 493:openstack/03b-IPv6/forwarding.c ****          // addressposition    = numAddr-(rpl_routing_hdr->SegmentsLeft);
+ 494:openstack/03b-IPv6/forwarding.c ****          addressposition     = rpl_routing_hdr->SegmentsLeft;
+ 866              		.loc 1 494 0
+ 867 051c FB69     		ldr	r3, [r7, #28]
+ 868 051e DB78     		ldrb	r3, [r3, #3]
+ 869 0520 FB74     		strb	r3, [r7, #19]
+ 495:openstack/03b-IPv6/forwarding.c ****          
+ 496:openstack/03b-IPv6/forwarding.c ****          // how many octets have the address?
+ 497:openstack/03b-IPv6/forwarding.c ****          if (rpl_routing_hdr->SegmentsLeft > 1){
+ 870              		.loc 1 497 0
+ 871 0522 FB69     		ldr	r3, [r7, #28]
+ 872 0524 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 873 0526 012B     		cmp	r3, #1
+ 874 0528 05D9     		bls	.L46
+ 498:openstack/03b-IPv6/forwarding.c ****             // max addr length - number of prefix octets that are elided in the internal route elem
+ 499:openstack/03b-IPv6/forwarding.c ****             octetsAddressSize = LENGTH_ADDR128b - local_CmprI;
+ 875              		.loc 1 499 0
+ 876 052a BB7D     		ldrb	r3, [r7, #22]
+ 877 052c C3F11003 		rsb	r3, r3, #16
+ 878 0530 87F82730 		strb	r3, [r7, #39]
+ 879 0534 04E0     		b	.L47
+ 880              	.L46:
+ 500:openstack/03b-IPv6/forwarding.c ****          } else {
+ 501:openstack/03b-IPv6/forwarding.c ****             // max addr length - number of prefix octets that are elided in the internal route elem
+ 502:openstack/03b-IPv6/forwarding.c ****             octetsAddressSize = LENGTH_ADDR128b - local_CmprE;
+ 881              		.loc 1 502 0
+ 882 0536 FB7D     		ldrb	r3, [r7, #23]
+ 883 0538 C3F11003 		rsb	r3, r3, #16
+ 884 053c 87F82730 		strb	r3, [r7, #39]
+ 885              	.L47:
+ 503:openstack/03b-IPv6/forwarding.c ****          }
+ 504:openstack/03b-IPv6/forwarding.c ****          
+ 505:openstack/03b-IPv6/forwarding.c ****          switch(octetsAddressSize) {
+ 886              		.loc 1 505 0
+ 887 0540 97F82730 		ldrb	r3, [r7, #39]	@ zero_extendqisi2
+ 888 0544 082B     		cmp	r3, #8
+ 889 0546 30D0     		beq	.L50
+ 890 0548 102B     		cmp	r3, #16
+ 891 054a 66D0     		beq	.L51
+ 892 054c 022B     		cmp	r3, #2
+ 893 054e 40F09080 		bne	.L55
+ 894              	.L49:
+ 506:openstack/03b-IPv6/forwarding.c ****             
+ 507:openstack/03b-IPv6/forwarding.c ****             case LENGTH_ADDR16b:
+ 508:openstack/03b-IPv6/forwarding.c ****                
+ 509:openstack/03b-IPv6/forwarding.c ****                // write previous hop
+ 510:openstack/03b-IPv6/forwarding.c ****                msg->l2_nextORpreviousHop.type    = ADDR_16B;
+ 895              		.loc 1 510 0
+ 896 0552 7B68     		ldr	r3, [r7, #4]
+ 897 0554 4FF00102 		mov	r2, #1
+ 898 0558 83F83820 		strb	r2, [r3, #56]
+ 511:openstack/03b-IPv6/forwarding.c ****                memcpy(
+ 512:openstack/03b-IPv6/forwarding.c ****                   &(msg->l2_nextORpreviousHop.addr_16b),
+ 899              		.loc 1 512 0
+ 900 055c 7B68     		ldr	r3, [r7, #4]
+ 901 055e 03F13901 		add	r1, r3, #57
+ 513:openstack/03b-IPv6/forwarding.c ****                   runningPointer+((addressposition)*octetsAddressSize),
+ 902              		.loc 1 513 0
+ 903 0562 FB7C     		ldrb	r3, [r7, #19]	@ zero_extendqisi2
+ 904 0564 97F82720 		ldrb	r2, [r7, #39]	@ zero_extendqisi2
+ 905 0568 02FB03F3 		mul	r3, r2, r3
+ 511:openstack/03b-IPv6/forwarding.c ****                memcpy(
+ 906              		.loc 1 511 0
+ 907 056c BA69     		ldr	r2, [r7, #24]
+ 908 056e D218     		adds	r2, r2, r3
+ 909 0570 97F82730 		ldrb	r3, [r7, #39]	@ zero_extendqisi2
+ 910 0574 0846     		mov	r0, r1
+ 911 0576 1146     		mov	r1, r2
+ 912 0578 1A46     		mov	r2, r3
+ 913 057a FFF7FEFF 		bl	memcpy
+ 514:openstack/03b-IPv6/forwarding.c ****                   octetsAddressSize
+ 515:openstack/03b-IPv6/forwarding.c ****                );
+ 516:openstack/03b-IPv6/forwarding.c ****                
+ 517:openstack/03b-IPv6/forwarding.c ****                // write next hop
+ 518:openstack/03b-IPv6/forwarding.c ****                msg->l3_destinationAdd.type       = ADDR_16B;
+ 914              		.loc 1 518 0
+ 915 057e 7B68     		ldr	r3, [r7, #4]
+ 916 0580 4FF00102 		mov	r2, #1
+ 917 0584 5A75     		strb	r2, [r3, #21]
+ 519:openstack/03b-IPv6/forwarding.c ****                memcpy(
+ 520:openstack/03b-IPv6/forwarding.c ****                   &(msg->l3_destinationAdd.addr_16b),
+ 918              		.loc 1 520 0
+ 919 0586 7B68     		ldr	r3, [r7, #4]
+ 920 0588 03F11601 		add	r1, r3, #22
+ 521:openstack/03b-IPv6/forwarding.c ****                   runningPointer+((addressposition)*octetsAddressSize),
+ 921              		.loc 1 521 0
+ 922 058c FB7C     		ldrb	r3, [r7, #19]	@ zero_extendqisi2
+ 923 058e 97F82720 		ldrb	r2, [r7, #39]	@ zero_extendqisi2
+ 924 0592 02FB03F3 		mul	r3, r2, r3
+ 519:openstack/03b-IPv6/forwarding.c ****                memcpy(
+ 925              		.loc 1 519 0
+ 926 0596 BA69     		ldr	r2, [r7, #24]
+ 927 0598 D218     		adds	r2, r2, r3
+ 928 059a 97F82730 		ldrb	r3, [r7, #39]	@ zero_extendqisi2
+ 929 059e 0846     		mov	r0, r1
+ 930 05a0 1146     		mov	r1, r2
+ 931 05a2 1A46     		mov	r2, r3
+ 932 05a4 FFF7FEFF 		bl	memcpy
+ 522:openstack/03b-IPv6/forwarding.c ****                   octetsAddressSize
+ 523:openstack/03b-IPv6/forwarding.c ****                );
+ 524:openstack/03b-IPv6/forwarding.c ****                
+ 525:openstack/03b-IPv6/forwarding.c ****                break;
+ 933              		.loc 1 525 0
+ 934 05a8 73E0     		b	.L52
+ 935              	.L50:
+ 526:openstack/03b-IPv6/forwarding.c ****             
+ 527:openstack/03b-IPv6/forwarding.c ****             case LENGTH_ADDR64b:
+ 528:openstack/03b-IPv6/forwarding.c ****                
+ 529:openstack/03b-IPv6/forwarding.c ****                // write previous hop
+ 530:openstack/03b-IPv6/forwarding.c ****                msg->l2_nextORpreviousHop.type    = ADDR_64B;
+ 936              		.loc 1 530 0
+ 937 05aa 7B68     		ldr	r3, [r7, #4]
+ 938 05ac 4FF00202 		mov	r2, #2
+ 939 05b0 83F83820 		strb	r2, [r3, #56]
+ 531:openstack/03b-IPv6/forwarding.c ****                memcpy(
+ 532:openstack/03b-IPv6/forwarding.c ****                   &(msg->l2_nextORpreviousHop.addr_64b),
+ 940              		.loc 1 532 0
+ 941 05b4 7B68     		ldr	r3, [r7, #4]
+ 942 05b6 03F13901 		add	r1, r3, #57
+ 533:openstack/03b-IPv6/forwarding.c ****                   runningPointer+((addressposition)*octetsAddressSize),
+ 943              		.loc 1 533 0
+ 944 05ba FB7C     		ldrb	r3, [r7, #19]	@ zero_extendqisi2
+ 945 05bc 97F82720 		ldrb	r2, [r7, #39]	@ zero_extendqisi2
+ 946 05c0 02FB03F3 		mul	r3, r2, r3
+ 531:openstack/03b-IPv6/forwarding.c ****                memcpy(
+ 947              		.loc 1 531 0
+ 948 05c4 BA69     		ldr	r2, [r7, #24]
+ 949 05c6 D218     		adds	r2, r2, r3
+ 950 05c8 97F82730 		ldrb	r3, [r7, #39]	@ zero_extendqisi2
+ 951 05cc 0846     		mov	r0, r1
+ 952 05ce 1146     		mov	r1, r2
+ 953 05d0 1A46     		mov	r2, r3
+ 954 05d2 FFF7FEFF 		bl	memcpy
+ 534:openstack/03b-IPv6/forwarding.c ****                   octetsAddressSize
+ 535:openstack/03b-IPv6/forwarding.c ****                );
+ 536:openstack/03b-IPv6/forwarding.c ****                
+ 537:openstack/03b-IPv6/forwarding.c ****                //this is 128b address as send from forwarding function
+ 538:openstack/03b-IPv6/forwarding.c ****                //takes care of reducing it if needed.
+ 539:openstack/03b-IPv6/forwarding.c ****                
+ 540:openstack/03b-IPv6/forwarding.c ****                //write next hop
+ 541:openstack/03b-IPv6/forwarding.c ****                msg->l3_destinationAdd.type       = ADDR_128B;
+ 955              		.loc 1 541 0
+ 956 05d6 7B68     		ldr	r3, [r7, #4]
+ 957 05d8 4FF00302 		mov	r2, #3
+ 958 05dc 5A75     		strb	r2, [r3, #21]
+ 542:openstack/03b-IPv6/forwarding.c ****                memcpy(
+ 543:openstack/03b-IPv6/forwarding.c ****                   &(msg->l3_destinationAdd.addr_128b[0]),
+ 959              		.loc 1 543 0
+ 960 05de 7B68     		ldr	r3, [r7, #4]
+ 961 05e0 03F11602 		add	r2, r3, #22
+ 544:openstack/03b-IPv6/forwarding.c ****                   prefix->prefix,
+ 962              		.loc 1 544 0
+ 963 05e4 3B6A     		ldr	r3, [r7, #32]
+ 964 05e6 03F10103 		add	r3, r3, #1
+ 542:openstack/03b-IPv6/forwarding.c ****                memcpy(
+ 965              		.loc 1 542 0
+ 966 05ea 1046     		mov	r0, r2
+ 967 05ec 1946     		mov	r1, r3
+ 968 05ee 4FF00802 		mov	r2, #8
+ 969 05f2 FFF7FEFF 		bl	memcpy
+ 545:openstack/03b-IPv6/forwarding.c ****                   LENGTH_ADDR64b
+ 546:openstack/03b-IPv6/forwarding.c ****                );
+ 547:openstack/03b-IPv6/forwarding.c ****                
+ 548:openstack/03b-IPv6/forwarding.c ****                memcpy(
+ 549:openstack/03b-IPv6/forwarding.c ****                   &(msg->l3_destinationAdd.addr_128b[8]),
+ 970              		.loc 1 549 0
+ 971 05f6 7B68     		ldr	r3, [r7, #4]
+ 972 05f8 03F11E01 		add	r1, r3, #30
+ 550:openstack/03b-IPv6/forwarding.c ****                   runningPointer+((addressposition)*octetsAddressSize),
+ 973              		.loc 1 550 0
+ 974 05fc FB7C     		ldrb	r3, [r7, #19]	@ zero_extendqisi2
+ 975 05fe 97F82720 		ldrb	r2, [r7, #39]	@ zero_extendqisi2
+ 976 0602 02FB03F3 		mul	r3, r2, r3
+ 548:openstack/03b-IPv6/forwarding.c ****                memcpy(
+ 977              		.loc 1 548 0
+ 978 0606 BA69     		ldr	r2, [r7, #24]
+ 979 0608 D218     		adds	r2, r2, r3
+ 980 060a 97F82730 		ldrb	r3, [r7, #39]	@ zero_extendqisi2
+ 981 060e 0846     		mov	r0, r1
+ 982 0610 1146     		mov	r1, r2
+ 983 0612 1A46     		mov	r2, r3
+ 984 0614 FFF7FEFF 		bl	memcpy
+ 551:openstack/03b-IPv6/forwarding.c ****                   octetsAddressSize
+ 552:openstack/03b-IPv6/forwarding.c ****                );
+ 553:openstack/03b-IPv6/forwarding.c ****                
+ 554:openstack/03b-IPv6/forwarding.c ****                break;
+ 985              		.loc 1 554 0
+ 986 0618 3BE0     		b	.L52
+ 987              	.L51:
+ 555:openstack/03b-IPv6/forwarding.c ****             
+ 556:openstack/03b-IPv6/forwarding.c ****             case LENGTH_ADDR128b:
+ 557:openstack/03b-IPv6/forwarding.c ****                
+ 558:openstack/03b-IPv6/forwarding.c ****                // write previous hop
+ 559:openstack/03b-IPv6/forwarding.c ****                msg->l2_nextORpreviousHop.type    = ADDR_128B;
+ 988              		.loc 1 559 0
+ 989 061a 7B68     		ldr	r3, [r7, #4]
+ 990 061c 4FF00302 		mov	r2, #3
+ 991 0620 83F83820 		strb	r2, [r3, #56]
+ 560:openstack/03b-IPv6/forwarding.c ****                memcpy(
+ 561:openstack/03b-IPv6/forwarding.c ****                   &(msg->l2_nextORpreviousHop.addr_128b),
+ 992              		.loc 1 561 0
+ 993 0624 7B68     		ldr	r3, [r7, #4]
+ 994 0626 03F13901 		add	r1, r3, #57
+ 562:openstack/03b-IPv6/forwarding.c ****                   runningPointer+((addressposition)*octetsAddressSize),
+ 995              		.loc 1 562 0
+ 996 062a FB7C     		ldrb	r3, [r7, #19]	@ zero_extendqisi2
+ 997 062c 97F82720 		ldrb	r2, [r7, #39]	@ zero_extendqisi2
+ 998 0630 02FB03F3 		mul	r3, r2, r3
+ 560:openstack/03b-IPv6/forwarding.c ****                memcpy(
+ 999              		.loc 1 560 0
+ 1000 0634 BA69     		ldr	r2, [r7, #24]
+ 1001 0636 D218     		adds	r2, r2, r3
+ 1002 0638 97F82730 		ldrb	r3, [r7, #39]	@ zero_extendqisi2
+ 1003 063c 0846     		mov	r0, r1
+ 1004 063e 1146     		mov	r1, r2
+ 1005 0640 1A46     		mov	r2, r3
+ 1006 0642 FFF7FEFF 		bl	memcpy
+ 563:openstack/03b-IPv6/forwarding.c ****                   octetsAddressSize
+ 564:openstack/03b-IPv6/forwarding.c ****                );
+ 565:openstack/03b-IPv6/forwarding.c ****                
+ 566:openstack/03b-IPv6/forwarding.c ****                // write next hop
+ 567:openstack/03b-IPv6/forwarding.c ****                msg->l3_destinationAdd.type       = ADDR_128B;
+ 1007              		.loc 1 567 0
+ 1008 0646 7B68     		ldr	r3, [r7, #4]
+ 1009 0648 4FF00302 		mov	r2, #3
+ 1010 064c 5A75     		strb	r2, [r3, #21]
+ 568:openstack/03b-IPv6/forwarding.c ****                memcpy(
+ 569:openstack/03b-IPv6/forwarding.c ****                   &(msg->l3_destinationAdd.addr_128b),
+ 1011              		.loc 1 569 0
+ 1012 064e 7B68     		ldr	r3, [r7, #4]
+ 1013 0650 03F11601 		add	r1, r3, #22
+ 570:openstack/03b-IPv6/forwarding.c ****                   runningPointer+((addressposition)*octetsAddressSize),
+ 1014              		.loc 1 570 0
+ 1015 0654 FB7C     		ldrb	r3, [r7, #19]	@ zero_extendqisi2
+ 1016 0656 97F82720 		ldrb	r2, [r7, #39]	@ zero_extendqisi2
+ 1017 065a 02FB03F3 		mul	r3, r2, r3
+ 568:openstack/03b-IPv6/forwarding.c ****                memcpy(
+ 1018              		.loc 1 568 0
+ 1019 065e BA69     		ldr	r2, [r7, #24]
+ 1020 0660 D218     		adds	r2, r2, r3
+ 1021 0662 97F82730 		ldrb	r3, [r7, #39]	@ zero_extendqisi2
+ 1022 0666 0846     		mov	r0, r1
+ 1023 0668 1146     		mov	r1, r2
+ 1024 066a 1A46     		mov	r2, r3
+ 1025 066c FFF7FEFF 		bl	memcpy
+ 571:openstack/03b-IPv6/forwarding.c ****                   octetsAddressSize
+ 572:openstack/03b-IPv6/forwarding.c ****                );
+ 573:openstack/03b-IPv6/forwarding.c ****                
+ 574:openstack/03b-IPv6/forwarding.c ****                break;
+ 1026              		.loc 1 574 0
+ 1027 0670 0FE0     		b	.L52
+ 1028              	.L55:
+ 575:openstack/03b-IPv6/forwarding.c ****             
+ 576:openstack/03b-IPv6/forwarding.c ****             default:
+ 577:openstack/03b-IPv6/forwarding.c ****                // any other value is not supported by now
+ 578:openstack/03b-IPv6/forwarding.c ****                
+ 579:openstack/03b-IPv6/forwarding.c ****                openserial_printError(
+ 1029              		.loc 1 579 0
+ 1030 0672 4FF01200 		mov	r0, #18
+ 1031 0676 4FF00E01 		mov	r1, #14
+ 1032 067a 4FF00102 		mov	r2, #1
+ 1033 067e 4FF00003 		mov	r3, #0
+ 1034 0682 FFF7FEFF 		bl	openserial_printError
+ 580:openstack/03b-IPv6/forwarding.c ****                   COMPONENT_FORWARDING,
+ 581:openstack/03b-IPv6/forwarding.c ****                   ERR_INVALID_PARAM,
+ 582:openstack/03b-IPv6/forwarding.c ****                   (errorparameter_t)1,
+ 583:openstack/03b-IPv6/forwarding.c ****                   (errorparameter_t)0
+ 584:openstack/03b-IPv6/forwarding.c ****                );
+ 585:openstack/03b-IPv6/forwarding.c ****                openqueue_freePacketBuffer(msg);
+ 1035              		.loc 1 585 0
+ 1036 0686 7868     		ldr	r0, [r7, #4]
+ 1037 0688 FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 586:openstack/03b-IPv6/forwarding.c ****                return E_FAIL;
+ 1038              		.loc 1 586 0
+ 1039 068c 4FF00103 		mov	r3, #1
+ 1040 0690 0CE0     		b	.L53
+ 1041              	.L52:
+ 587:openstack/03b-IPv6/forwarding.c ****          }
+ 588:openstack/03b-IPv6/forwarding.c ****       }
+ 589:openstack/03b-IPv6/forwarding.c ****    }
+ 590:openstack/03b-IPv6/forwarding.c ****    
+ 591:openstack/03b-IPv6/forwarding.c ****    // send to next lower layer
+ 592:openstack/03b-IPv6/forwarding.c ****    return iphc_sendFromForwarding(
+ 1042              		.loc 1 592 0
+ 1043 0692 3B68     		ldr	r3, [r7, #0]
+ 1044 0694 03F10403 		add	r3, r3, #4
+ 1045 0698 07F10C02 		add	r2, r7, #12
+ 1046 069c 4FF00101 		mov	r1, #1
+ 1047 06a0 0091     		str	r1, [sp, #0]
+ 1048 06a2 7868     		ldr	r0, [r7, #4]
+ 1049 06a4 3968     		ldr	r1, [r7, #0]
+ 1050 06a6 FFF7FEFF 		bl	iphc_sendFromForwarding
+ 1051 06aa 0346     		mov	r3, r0
+ 1052              	.L53:
+ 593:openstack/03b-IPv6/forwarding.c ****       msg,
+ 594:openstack/03b-IPv6/forwarding.c ****       ipv6_header,
+ 595:openstack/03b-IPv6/forwarding.c ****       &rpl_option,
+ 596:openstack/03b-IPv6/forwarding.c ****       &ipv6_header->flow_label,
+ 597:openstack/03b-IPv6/forwarding.c ****       PCKTFORWARD
+ 598:openstack/03b-IPv6/forwarding.c ****    );
+ 599:openstack/03b-IPv6/forwarding.c **** }
+ 1053              		.loc 1 599 0
+ 1054 06ac 1846     		mov	r0, r3
+ 1055 06ae 07F12807 		add	r7, r7, #40
+ 1056 06b2 BD46     		mov	sp, r7
+ 1057 06b4 80BD     		pop	{r7, pc}
+ 1058              		.cfi_endproc
+ 1059              	.LFE6:
+ 1061 06b6 00BF     		.align	2
+ 1062              		.global	forwarding_createRplOption
+ 1063              		.thumb
+ 1064              		.thumb_func
+ 1066              	forwarding_createRplOption:
+ 1067              	.LFB7:
+ 600:openstack/03b-IPv6/forwarding.c **** 
+ 601:openstack/03b-IPv6/forwarding.c **** 
+ 602:openstack/03b-IPv6/forwarding.c **** /**
+ 603:openstack/03b-IPv6/forwarding.c **** \brief Create a RPL option.
+ 604:openstack/03b-IPv6/forwarding.c **** 
+ 605:openstack/03b-IPv6/forwarding.c **** \param[out] rpl_option A pointer to the structure to fill in.
+ 606:openstack/03b-IPv6/forwarding.c **** \param[in]  flags      The flags to indicate in the RPL option.
+ 607:openstack/03b-IPv6/forwarding.c **** */
+ 608:openstack/03b-IPv6/forwarding.c **** void forwarding_createRplOption(rpl_option_ht* rpl_option, uint8_t flags) {
+ 1068              		.loc 1 608 0
+ 1069              		.cfi_startproc
+ 1070              		@ args = 0, pretend = 0, frame = 8
+ 1071              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1072 06b8 80B5     		push	{r7, lr}
+ 1073              	.LCFI20:
+ 1074              		.cfi_def_cfa_offset 8
+ 1075              		.cfi_offset 7, -8
+ 1076              		.cfi_offset 14, -4
+ 1077 06ba 82B0     		sub	sp, sp, #8
+ 1078              	.LCFI21:
+ 1079              		.cfi_def_cfa_offset 16
+ 1080 06bc 00AF     		add	r7, sp, #0
+ 1081              	.LCFI22:
+ 1082              		.cfi_def_cfa_register 7
+ 1083 06be 7860     		str	r0, [r7, #4]
+ 1084 06c0 0B46     		mov	r3, r1
+ 1085 06c2 FB70     		strb	r3, [r7, #3]
+ 609:openstack/03b-IPv6/forwarding.c ****    // set the RPL hop-by-hop header
+ 610:openstack/03b-IPv6/forwarding.c ****    rpl_option->optionType         = RPL_HOPBYHOP_HEADER_OPTION_TYPE;
+ 1086              		.loc 1 610 0
+ 1087 06c4 7B68     		ldr	r3, [r7, #4]
+ 1088 06c6 4FF06302 		mov	r2, #99
+ 1089 06ca 1A70     		strb	r2, [r3, #0]
+ 611:openstack/03b-IPv6/forwarding.c ****    
+ 612:openstack/03b-IPv6/forwarding.c ****    // 8-bit field indicating the length of the option, in
+ 613:openstack/03b-IPv6/forwarding.c ****    // octets, excluding the Option Type and Opt Data Len fields.
+ 614:openstack/03b-IPv6/forwarding.c ****    // 4-bytes, flags+instanceID+senderrank - no sub-tlvs
+ 615:openstack/03b-IPv6/forwarding.c ****    rpl_option->optionLen          = 0x04; 
+ 1090              		.loc 1 615 0
+ 1091 06cc 7B68     		ldr	r3, [r7, #4]
+ 1092 06ce 4FF00402 		mov	r2, #4
+ 1093 06d2 5A70     		strb	r2, [r3, #1]
+ 616:openstack/03b-IPv6/forwarding.c ****    
+ 617:openstack/03b-IPv6/forwarding.c ****    rpl_option->flags              = flags;
+ 1094              		.loc 1 617 0
+ 1095 06d4 7B68     		ldr	r3, [r7, #4]
+ 1096 06d6 FA78     		ldrb	r2, [r7, #3]
+ 1097 06d8 9A70     		strb	r2, [r3, #2]
+ 618:openstack/03b-IPv6/forwarding.c ****    rpl_option->rplInstanceID      = icmpv6rpl_getRPLIntanceID();
+ 1098              		.loc 1 618 0
+ 1099 06da FFF7FEFF 		bl	icmpv6rpl_getRPLIntanceID
+ 1100 06de 0346     		mov	r3, r0
+ 1101 06e0 1A46     		mov	r2, r3
+ 1102 06e2 7B68     		ldr	r3, [r7, #4]
+ 1103 06e4 DA70     		strb	r2, [r3, #3]
+ 619:openstack/03b-IPv6/forwarding.c ****    rpl_option->senderRank         = neighbors_getMyDAGrank();
+ 1104              		.loc 1 619 0
+ 1105 06e6 FFF7FEFF 		bl	neighbors_getMyDAGrank
+ 1106 06ea 0346     		mov	r3, r0
+ 1107 06ec 1A46     		mov	r2, r3
+ 1108 06ee 7B68     		ldr	r3, [r7, #4]
+ 1109 06f0 9A80     		strh	r2, [r3, #4]	@ unaligned
+ 620:openstack/03b-IPv6/forwarding.c **** }
+ 1110              		.loc 1 620 0
+ 1111 06f2 07F10807 		add	r7, r7, #8
+ 1112 06f6 BD46     		mov	sp, r7
+ 1113 06f8 80BD     		pop	{r7, pc}
+ 1114              		.cfi_endproc
+ 1115              	.LFE7:
+ 1117 06fa 00BF     		.align	2
+ 1118              		.global	forwarding_createFlowLabel
+ 1119              		.thumb
+ 1120              		.thumb_func
+ 1122              	forwarding_createFlowLabel:
+ 1123              	.LFB8:
+ 621:openstack/03b-IPv6/forwarding.c **** 
+ 622:openstack/03b-IPv6/forwarding.c **** #ifdef FLOW_LABEL_RPL_DOMAIN
+ 623:openstack/03b-IPv6/forwarding.c **** void forwarding_createFlowLabel(uint32_t* flow_label,uint8_t flags){
+ 1124              		.loc 1 623 0
+ 1125              		.cfi_startproc
+ 1126              		@ args = 0, pretend = 0, frame = 16
+ 1127              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1128 06fc 80B5     		push	{r7, lr}
+ 1129              	.LCFI23:
+ 1130              		.cfi_def_cfa_offset 8
+ 1131              		.cfi_offset 7, -8
+ 1132              		.cfi_offset 14, -4
+ 1133 06fe 84B0     		sub	sp, sp, #16
+ 1134              	.LCFI24:
+ 1135              		.cfi_def_cfa_offset 24
+ 1136 0700 00AF     		add	r7, sp, #0
+ 1137              	.LCFI25:
+ 1138              		.cfi_def_cfa_register 7
+ 1139 0702 7860     		str	r0, [r7, #4]
+ 1140 0704 0B46     		mov	r3, r1
+ 1141 0706 FB70     		strb	r3, [r7, #3]
+ 624:openstack/03b-IPv6/forwarding.c ****      uint8_t instanceId,flrank;
+ 625:openstack/03b-IPv6/forwarding.c ****      uint16_t rank;
+ 626:openstack/03b-IPv6/forwarding.c **** 
+ 627:openstack/03b-IPv6/forwarding.c ****      instanceId=icmpv6rpl_getRPLIntanceID();
+ 1142              		.loc 1 627 0
+ 1143 0708 FFF7FEFF 		bl	icmpv6rpl_getRPLIntanceID
+ 1144 070c 0346     		mov	r3, r0
+ 1145 070e FB73     		strb	r3, [r7, #15]
+ 628:openstack/03b-IPv6/forwarding.c ****      rank=neighbors_getMyDAGrank();
+ 1146              		.loc 1 628 0
+ 1147 0710 FFF7FEFF 		bl	neighbors_getMyDAGrank
+ 1148 0714 0346     		mov	r3, r0
+ 1149 0716 BB81     		strh	r3, [r7, #12]	@ movhi
+ 629:openstack/03b-IPv6/forwarding.c ****      flrank=(uint8_t)(rank/MINHOPRANKINCREASE);
+ 1150              		.loc 1 629 0
+ 1151 0718 BB89     		ldrh	r3, [r7, #12]
+ 1152 071a 4FEA1323 		lsr	r3, r3, #8
+ 1153 071e 9BB2     		uxth	r3, r3
+ 1154 0720 FB72     		strb	r3, [r7, #11]
+ 630:openstack/03b-IPv6/forwarding.c ****      *flow_label = (uint32_t)instanceId | ((uint32_t)flrank<<8) | (uint32_t)flags<<16;
+ 1155              		.loc 1 630 0
+ 1156 0722 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 1157 0724 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 1158 0726 4FEA0323 		lsl	r3, r3, #8
+ 1159 072a 1A43     		orrs	r2, r2, r3
+ 1160 072c FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 1161 072e 4FEA0343 		lsl	r3, r3, #16
+ 1162 0732 1A43     		orrs	r2, r2, r3
+ 1163 0734 7B68     		ldr	r3, [r7, #4]
+ 1164 0736 1A60     		str	r2, [r3, #0]
+ 631:openstack/03b-IPv6/forwarding.c **** }
+ 1165              		.loc 1 631 0
+ 1166 0738 07F11007 		add	r7, r7, #16
+ 1167 073c BD46     		mov	sp, r7
+ 1168 073e 80BD     		pop	{r7, pc}
+ 1169              		.cfi_endproc
+ 1170              	.LFE8:
+ 1172              	.Letext0:
+ 1173              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+ 1174              		.file 3 "inc/opendefs.h"
+ 1175              		.file 4 "openstack/03a-IPHC/iphc.h"
+ 1176              		.file 5 "openstack/03b-IPv6/forwarding.h"
+ 1177              		.file 6 "bsp/boards/OpenMote-CC2538/board_info.h"
+ 1178              		.file 7 "openstack/03b-IPv6/icmpv6rpl.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 forwarding.c
+     /tmp/ccflV27c.s:19     .rodata:00000000 $d
+     /tmp/ccflV27c.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccflV27c.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccflV27c.s:32     .rodata:00000010 infouCName
+     /tmp/ccflV27c.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccflV27c.s:42     .rodata:00000024 infoStackName
+     /tmp/ccflV27c.s:47     .rodata:00000030 all_routers_multicast
+     /tmp/ccflV27c.s:65     .text:00000000 $t
+     /tmp/ccflV27c.s:70     .text:00000000 forwarding_init
+     /tmp/ccflV27c.s:97     .text:0000000c forwarding_send
+     /tmp/ccflV27c.s:1066   .text:000006b8 forwarding_createRplOption
+     /tmp/ccflV27c.s:1122   .text:000006fc forwarding_createFlowLabel
+     /tmp/ccflV27c.s:627    .text:00000378 forwarding_send_internal_RoutingTable
+     /tmp/ccflV27c.s:193    .text:000000cc forwarding_sendDone
+     /tmp/ccflV27c.s:292    .text:00000150 forwarding_receive
+     /tmp/ccflV27c.s:694    .text:000003dc forwarding_send_internal_SourceRouting
+     /tmp/ccflV27c.s:545    .text:0000030c forwarding_getNextHop
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.toolchain_defs.h.2.e4ebbe6e0a48032a9b79077dc42e1ffd
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
+                           .group:00000000 wm4.iphc.h.2.17b9b21c04d4f545c9a7ba404755c4d8
+                           .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
+                           .group:00000000 wm4.idmanager.h.2.8c0e2159b32ef3125cbb1e984805cbfe
+                           .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
+                           .group:00000000 wm4.icmpv6rpl.h.15.89c5061c19a4811537f699fd2b74755c
+                           .group:00000000 wm4.neighbors.h.15.9f35f180a0332d1bc442efb0ec51905c
+                           .group:00000000 wm4.scheduler.h.2.ca320b72942c5204a6e225e3c9c0814e
+
+UNDEFINED SYMBOLS
+idmanager_getMyID
+memcpy
+memset
+openqueue_freePacketBuffer
+opentcp_sendDone
+openudp_sendDone
+icmpv6_sendDone
+openserial_printCritical
+idmanager_isMyAddress
+packetfunctions_isBroadcastMulticast
+opentcp_receive
+openudp_receive
+icmpv6_receive
+openserial_printError
+neighbors_getMyDAGrank
+neighbors_isStableNeighbor
+packetfunctions_ip128bToMac64b
+neighbors_getPreferredParentEui64
+iphc_sendFromForwarding
+packetfunctions_tossHeader
+icmpv6rpl_getRPLIntanceID

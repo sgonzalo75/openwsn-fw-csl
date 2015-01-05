@@ -1,0 +1,261 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"topology.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.align	2
+  42              	infoStackName:
+  43 0024 4F70656E 		.ascii	"OpenWSN \000"
+  43      57534E20 
+  43      00
+  44 002d 000000   		.text
+  45              		.align	2
+  46              		.global	topology_isAcceptablePacket
+  47              		.thumb
+  48              		.thumb_func
+  50              	topology_isAcceptablePacket:
+  51              	.LFB0:
+  52              		.file 1 "openstack/02a-MAClow/topology.c"
+   1:openstack/02a-MAClow/topology.c **** #include "opendefs.h"
+   2:openstack/02a-MAClow/topology.c **** #include "topology.h"
+   3:openstack/02a-MAClow/topology.c **** #include "idmanager.h"
+   4:openstack/02a-MAClow/topology.c **** 
+   5:openstack/02a-MAClow/topology.c **** //=========================== defines =========================================
+   6:openstack/02a-MAClow/topology.c **** 
+   7:openstack/02a-MAClow/topology.c **** //=========================== variables =======================================
+   8:openstack/02a-MAClow/topology.c **** 
+   9:openstack/02a-MAClow/topology.c **** //=========================== prototypes ======================================
+  10:openstack/02a-MAClow/topology.c **** 
+  11:openstack/02a-MAClow/topology.c **** //=========================== public ==========================================
+  12:openstack/02a-MAClow/topology.c **** 
+  13:openstack/02a-MAClow/topology.c **** /**
+  14:openstack/02a-MAClow/topology.c **** \brief Force a topology.
+  15:openstack/02a-MAClow/topology.c **** 
+  16:openstack/02a-MAClow/topology.c **** This function is used to force a certain topology, by hard-coding the list of
+  17:openstack/02a-MAClow/topology.c **** acceptable neighbors for a given mote. This function is invoked each time a
+  18:openstack/02a-MAClow/topology.c **** packet is received. If it returns FALSE, the packet is silently dropped, as if
+  19:openstack/02a-MAClow/topology.c **** it were never received. If it returns TRUE, the packet is accepted.
+  20:openstack/02a-MAClow/topology.c **** 
+  21:openstack/02a-MAClow/topology.c **** Typically, filtering packets is done by analyzing the IEEE802.15.4 header. An
+  22:openstack/02a-MAClow/topology.c **** example body for this function which forces a topology is:
+  23:openstack/02a-MAClow/topology.c **** 
+  24:openstack/02a-MAClow/topology.c ****    switch (idmanager_getMyID(ADDR_64B)->addr_64b[7]) {
+  25:openstack/02a-MAClow/topology.c ****       case TOPOLOGY_MOTE1:
+  26:openstack/02a-MAClow/topology.c ****          if (ieee802514_header->src.addr_64b[7]==TOPOLOGY_MOTE2) {
+  27:openstack/02a-MAClow/topology.c ****             returnVal=TRUE;
+  28:openstack/02a-MAClow/topology.c ****          } else {
+  29:openstack/02a-MAClow/topology.c ****             returnVal=FALSE;
+  30:openstack/02a-MAClow/topology.c ****          }
+  31:openstack/02a-MAClow/topology.c ****          break;
+  32:openstack/02a-MAClow/topology.c ****       case TOPOLOGY_MOTE2:
+  33:openstack/02a-MAClow/topology.c ****          if (ieee802514_header->src.addr_64b[7]==TOPOLOGY_MOTE1 ||
+  34:openstack/02a-MAClow/topology.c ****              ieee802514_header->src.addr_64b[7]==TOPOLOGY_MOTE3) {
+  35:openstack/02a-MAClow/topology.c ****             returnVal=TRUE;
+  36:openstack/02a-MAClow/topology.c ****          } else {
+  37:openstack/02a-MAClow/topology.c ****             returnVal=FALSE;
+  38:openstack/02a-MAClow/topology.c ****          }
+  39:openstack/02a-MAClow/topology.c ****          break;
+  40:openstack/02a-MAClow/topology.c ****       default:
+  41:openstack/02a-MAClow/topology.c ****          returnVal=TRUE;
+  42:openstack/02a-MAClow/topology.c ****    }
+  43:openstack/02a-MAClow/topology.c ****    return returnVal;
+  44:openstack/02a-MAClow/topology.c **** 
+  45:openstack/02a-MAClow/topology.c **** By default, however, the function should return TRUE to *not* force any
+  46:openstack/02a-MAClow/topology.c **** topology.
+  47:openstack/02a-MAClow/topology.c **** 
+  48:openstack/02a-MAClow/topology.c **** \param[in] ieee802514_header The parsed IEEE802.15.4 MAC header.
+  49:openstack/02a-MAClow/topology.c **** 
+  50:openstack/02a-MAClow/topology.c **** \return TRUE if the packet can be received.
+  51:openstack/02a-MAClow/topology.c **** \return FALSE if the packet should be silently dropped.
+  52:openstack/02a-MAClow/topology.c **** */
+  53:openstack/02a-MAClow/topology.c **** bool topology_isAcceptablePacket(ieee802154_header_iht* ieee802514_header) {
+  53              		.loc 1 53 0
+  54              		.cfi_startproc
+  55              		@ args = 0, pretend = 0, frame = 8
+  56              		@ frame_needed = 1, uses_anonymous_args = 0
+  57              		@ link register save eliminated.
+  58 0000 80B4     		push	{r7}
+  59              	.LCFI0:
+  60              		.cfi_def_cfa_offset 4
+  61              		.cfi_offset 7, -4
+  62 0002 83B0     		sub	sp, sp, #12
+  63              	.LCFI1:
+  64              		.cfi_def_cfa_offset 16
+  65 0004 00AF     		add	r7, sp, #0
+  66              	.LCFI2:
+  67              		.cfi_def_cfa_register 7
+  68 0006 7860     		str	r0, [r7, #4]
+  54:openstack/02a-MAClow/topology.c **** #ifdef FORCETOPOLOGY
+  55:openstack/02a-MAClow/topology.c ****    bool returnVal;
+  56:openstack/02a-MAClow/topology.c ****    
+  57:openstack/02a-MAClow/topology.c ****    returnVal=FALSE;
+  58:openstack/02a-MAClow/topology.c ****    switch (idmanager_getMyID(ADDR_64B)->addr_64b[7]) {
+  59:openstack/02a-MAClow/topology.c ****       case 0x4c:
+  60:openstack/02a-MAClow/topology.c ****          if (
+  61:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x00 ||
+  62:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x60
+  63:openstack/02a-MAClow/topology.c ****             ) {
+  64:openstack/02a-MAClow/topology.c ****             returnVal=TRUE;
+  65:openstack/02a-MAClow/topology.c ****          }
+  66:openstack/02a-MAClow/topology.c ****          break;
+  67:openstack/02a-MAClow/topology.c ****       case 0x60:
+  68:openstack/02a-MAClow/topology.c ****          if (
+  69:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x4c ||
+  70:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x97 ||
+  71:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0xc8
+  72:openstack/02a-MAClow/topology.c ****             ) {
+  73:openstack/02a-MAClow/topology.c ****             returnVal=TRUE;
+  74:openstack/02a-MAClow/topology.c ****          }
+  75:openstack/02a-MAClow/topology.c ****          break;
+  76:openstack/02a-MAClow/topology.c ****       case 0xc8:
+  77:openstack/02a-MAClow/topology.c ****          if (
+  78:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x60 ||
+  79:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x6f ||
+  80:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x50
+  81:openstack/02a-MAClow/topology.c ****             ) {
+  82:openstack/02a-MAClow/topology.c ****             returnVal=TRUE;
+  83:openstack/02a-MAClow/topology.c ****          }
+  84:openstack/02a-MAClow/topology.c ****          break;
+  85:openstack/02a-MAClow/topology.c ****       case 0x50:
+  86:openstack/02a-MAClow/topology.c ****          if (
+  87:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0xc8
+  88:openstack/02a-MAClow/topology.c ****             ) {
+  89:openstack/02a-MAClow/topology.c ****             returnVal=TRUE;
+  90:openstack/02a-MAClow/topology.c ****          }
+  91:openstack/02a-MAClow/topology.c ****          break;
+  92:openstack/02a-MAClow/topology.c ****       case 0x6f:
+  93:openstack/02a-MAClow/topology.c ****          if (
+  94:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x85 ||
+  95:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x97 ||
+  96:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0xc8
+  97:openstack/02a-MAClow/topology.c ****             ) {
+  98:openstack/02a-MAClow/topology.c ****             returnVal=TRUE;
+  99:openstack/02a-MAClow/topology.c ****          }
+ 100:openstack/02a-MAClow/topology.c ****          break;
+ 101:openstack/02a-MAClow/topology.c ****       case 0x85:
+ 102:openstack/02a-MAClow/topology.c ****          if (
+ 103:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x5c ||
+ 104:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x97 ||
+ 105:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x6f
+ 106:openstack/02a-MAClow/topology.c ****             ) {
+ 107:openstack/02a-MAClow/topology.c ****             returnVal=TRUE;
+ 108:openstack/02a-MAClow/topology.c ****          }
+ 109:openstack/02a-MAClow/topology.c ****          break;
+ 110:openstack/02a-MAClow/topology.c ****       case 0xa8:
+ 111:openstack/02a-MAClow/topology.c ****          if (
+ 112:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x5c ||
+ 113:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x97 ||
+ 114:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x00
+ 115:openstack/02a-MAClow/topology.c ****             ) {
+ 116:openstack/02a-MAClow/topology.c ****             returnVal=TRUE;
+ 117:openstack/02a-MAClow/topology.c ****          }
+ 118:openstack/02a-MAClow/topology.c ****          break;
+ 119:openstack/02a-MAClow/topology.c ****       case 0x00:
+ 120:openstack/02a-MAClow/topology.c ****          if (
+ 121:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x4c ||
+ 122:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0xa8
+ 123:openstack/02a-MAClow/topology.c ****             ) {
+ 124:openstack/02a-MAClow/topology.c ****             returnVal=TRUE;
+ 125:openstack/02a-MAClow/topology.c ****          }
+ 126:openstack/02a-MAClow/topology.c ****          break;
+ 127:openstack/02a-MAClow/topology.c ****       case 0x97:
+ 128:openstack/02a-MAClow/topology.c ****          if (
+ 129:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0xa8 ||
+ 130:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x85 ||
+ 131:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x6f ||
+ 132:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x60
+ 133:openstack/02a-MAClow/topology.c ****             ) {
+ 134:openstack/02a-MAClow/topology.c ****             returnVal=TRUE;
+ 135:openstack/02a-MAClow/topology.c ****          }
+ 136:openstack/02a-MAClow/topology.c ****          break;
+ 137:openstack/02a-MAClow/topology.c ****       case 0x5c:
+ 138:openstack/02a-MAClow/topology.c ****          if (
+ 139:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0x85 ||
+ 140:openstack/02a-MAClow/topology.c ****                ieee802514_header->src.addr_64b[7]==0xa8
+ 141:openstack/02a-MAClow/topology.c ****             ) {
+ 142:openstack/02a-MAClow/topology.c ****             returnVal=TRUE;
+ 143:openstack/02a-MAClow/topology.c ****          }
+ 144:openstack/02a-MAClow/topology.c ****          break;
+ 145:openstack/02a-MAClow/topology.c ****    }
+ 146:openstack/02a-MAClow/topology.c ****    return returnVal;
+ 147:openstack/02a-MAClow/topology.c **** #else
+ 148:openstack/02a-MAClow/topology.c ****    return TRUE;
+  69              		.loc 1 148 0
+  70 0008 4FF00103 		mov	r3, #1
+ 149:openstack/02a-MAClow/topology.c **** #endif
+ 150:openstack/02a-MAClow/topology.c **** }
+  71              		.loc 1 150 0
+  72 000c 1846     		mov	r0, r3
+  73 000e 07F10C07 		add	r7, r7, #12
+  74 0012 BD46     		mov	sp, r7
+  75 0014 80BC     		pop	{r7}
+  76 0016 7047     		bx	lr
+  77              		.cfi_endproc
+  78              	.LFE0:
+  80              	.Letext0:
+  81              		.file 2 "inc/opendefs.h"
+  82              		.file 3 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+  83              		.file 4 "openstack/02a-MAClow/IEEE802154.h"
+  84              		.file 5 "bsp/boards/OpenMote-CC2538/board_info.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 topology.c
+     /tmp/cc4UtzHQ.s:19     .rodata:00000000 $d
+     /tmp/cc4UtzHQ.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cc4UtzHQ.s:27     .rodata:00000008 infoBoardname
+     /tmp/cc4UtzHQ.s:32     .rodata:00000010 infouCName
+     /tmp/cc4UtzHQ.s:37     .rodata:00000018 infoRadioName
+     /tmp/cc4UtzHQ.s:42     .rodata:00000024 infoStackName
+     /tmp/cc4UtzHQ.s:45     .text:00000000 $t
+     /tmp/cc4UtzHQ.s:50     .text:00000000 topology_isAcceptablePacket
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.toolchain_defs.h.2.e4ebbe6e0a48032a9b79077dc42e1ffd
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
+                           .group:00000000 wm4.idmanager.h.2.8c0e2159b32ef3125cbb1e984805cbfe
+
+NO UNDEFINED SYMBOLS

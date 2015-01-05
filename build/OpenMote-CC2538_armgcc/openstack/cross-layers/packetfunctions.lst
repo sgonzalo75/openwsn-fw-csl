@@ -1,0 +1,2600 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"packetfunctions.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.align	2
+  42              	infoStackName:
+  43 0024 4F70656E 		.ascii	"OpenWSN \000"
+  43      57534E20 
+  43      00
+  44 002d 000000   		.text
+  45              		.align	2
+  46              		.global	packetfunctions_ip128bToMac64b
+  47              		.thumb
+  48              		.thumb_func
+  50              	packetfunctions_ip128bToMac64b:
+  51              	.LFB0:
+  52              		.file 1 "openstack/cross-layers/packetfunctions.c"
+   1:openstack/cross-layers/packetfunctions.c **** #include "packetfunctions.h"
+   2:openstack/cross-layers/packetfunctions.c **** #include "openserial.h"
+   3:openstack/cross-layers/packetfunctions.c **** #include "idmanager.h"
+   4:openstack/cross-layers/packetfunctions.c **** 
+   5:openstack/cross-layers/packetfunctions.c **** //=========================== variables =======================================
+   6:openstack/cross-layers/packetfunctions.c **** 
+   7:openstack/cross-layers/packetfunctions.c **** //=========================== prototypes ======================================
+   8:openstack/cross-layers/packetfunctions.c **** 
+   9:openstack/cross-layers/packetfunctions.c **** void onesComplementSum(uint8_t* global_sum, uint8_t* ptr, int length);
+  10:openstack/cross-layers/packetfunctions.c **** 
+  11:openstack/cross-layers/packetfunctions.c **** //=========================== public ==========================================
+  12:openstack/cross-layers/packetfunctions.c **** 
+  13:openstack/cross-layers/packetfunctions.c **** //======= address translation
+  14:openstack/cross-layers/packetfunctions.c **** 
+  15:openstack/cross-layers/packetfunctions.c **** //assuming an ip128b is a concatenation of prefix64b followed by a mac64b
+  16:openstack/cross-layers/packetfunctions.c **** void packetfunctions_ip128bToMac64b(
+  17:openstack/cross-layers/packetfunctions.c ****       open_addr_t* ip128b,
+  18:openstack/cross-layers/packetfunctions.c ****       open_addr_t* prefix64btoWrite,
+  19:openstack/cross-layers/packetfunctions.c ****       open_addr_t* mac64btoWrite) {
+  53              		.loc 1 19 0
+  54              		.cfi_startproc
+  55              		@ args = 0, pretend = 0, frame = 16
+  56              		@ frame_needed = 1, uses_anonymous_args = 0
+  57 0000 80B5     		push	{r7, lr}
+  58              	.LCFI0:
+  59              		.cfi_def_cfa_offset 8
+  60              		.cfi_offset 7, -8
+  61              		.cfi_offset 14, -4
+  62 0002 84B0     		sub	sp, sp, #16
+  63              	.LCFI1:
+  64              		.cfi_def_cfa_offset 24
+  65 0004 00AF     		add	r7, sp, #0
+  66              	.LCFI2:
+  67              		.cfi_def_cfa_register 7
+  68 0006 F860     		str	r0, [r7, #12]
+  69 0008 B960     		str	r1, [r7, #8]
+  70 000a 7A60     		str	r2, [r7, #4]
+  20:openstack/cross-layers/packetfunctions.c ****    if (ip128b->type!=ADDR_128B) {
+  71              		.loc 1 20 0
+  72 000c FB68     		ldr	r3, [r7, #12]
+  73 000e 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+  74 0010 032B     		cmp	r3, #3
+  75 0012 0FD0     		beq	.L2
+  21:openstack/cross-layers/packetfunctions.c ****       openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_WRONG_ADDR_TYPE,
+  22:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)ip128b->type,
+  76              		.loc 1 22 0
+  77 0014 FB68     		ldr	r3, [r7, #12]
+  78 0016 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+  21:openstack/cross-layers/packetfunctions.c ****       openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_WRONG_ADDR_TYPE,
+  79              		.loc 1 21 0
+  80 0018 4FF00500 		mov	r0, #5
+  81 001c 4FF03101 		mov	r1, #49
+  82 0020 1A46     		mov	r2, r3
+  83 0022 4FF00003 		mov	r3, #0
+  84 0026 FFF7FEFF 		bl	openserial_printCritical
+  23:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)0);
+  24:openstack/cross-layers/packetfunctions.c ****       mac64btoWrite->type=ADDR_NONE;
+  85              		.loc 1 24 0
+  86 002a 7B68     		ldr	r3, [r7, #4]
+  87 002c 4FF00002 		mov	r2, #0
+  88 0030 1A70     		strb	r2, [r3, #0]
+  25:openstack/cross-layers/packetfunctions.c ****       return;
+  89              		.loc 1 25 0
+  90 0032 1FE0     		b	.L1
+  91              	.L2:
+  26:openstack/cross-layers/packetfunctions.c ****    }
+  27:openstack/cross-layers/packetfunctions.c ****    prefix64btoWrite->type=ADDR_PREFIX;
+  92              		.loc 1 27 0
+  93 0034 BB68     		ldr	r3, [r7, #8]
+  94 0036 4FF00502 		mov	r2, #5
+  95 003a 1A70     		strb	r2, [r3, #0]
+  28:openstack/cross-layers/packetfunctions.c ****    memcpy(prefix64btoWrite->prefix, &(ip128b->addr_128b[0]), 8);
+  96              		.loc 1 28 0
+  97 003c BB68     		ldr	r3, [r7, #8]
+  98 003e 03F10102 		add	r2, r3, #1
+  99 0042 FB68     		ldr	r3, [r7, #12]
+ 100 0044 03F10103 		add	r3, r3, #1
+ 101 0048 1046     		mov	r0, r2
+ 102 004a 1946     		mov	r1, r3
+ 103 004c 4FF00802 		mov	r2, #8
+ 104 0050 FFF7FEFF 		bl	memcpy
+  29:openstack/cross-layers/packetfunctions.c ****    mac64btoWrite->type=ADDR_64B;
+ 105              		.loc 1 29 0
+ 106 0054 7B68     		ldr	r3, [r7, #4]
+ 107 0056 4FF00202 		mov	r2, #2
+ 108 005a 1A70     		strb	r2, [r3, #0]
+  30:openstack/cross-layers/packetfunctions.c ****    memcpy(mac64btoWrite->addr_64b , &(ip128b->addr_128b[8]), 8);
+ 109              		.loc 1 30 0
+ 110 005c 7B68     		ldr	r3, [r7, #4]
+ 111 005e 03F10102 		add	r2, r3, #1
+ 112 0062 FB68     		ldr	r3, [r7, #12]
+ 113 0064 03F10903 		add	r3, r3, #9
+ 114 0068 1046     		mov	r0, r2
+ 115 006a 1946     		mov	r1, r3
+ 116 006c 4FF00802 		mov	r2, #8
+ 117 0070 FFF7FEFF 		bl	memcpy
+ 118              	.L1:
+  31:openstack/cross-layers/packetfunctions.c **** }
+ 119              		.loc 1 31 0
+ 120 0074 07F11007 		add	r7, r7, #16
+ 121 0078 BD46     		mov	sp, r7
+ 122 007a 80BD     		pop	{r7, pc}
+ 123              		.cfi_endproc
+ 124              	.LFE0:
+ 126              		.align	2
+ 127              		.global	packetfunctions_mac64bToIp128b
+ 128              		.thumb
+ 129              		.thumb_func
+ 131              	packetfunctions_mac64bToIp128b:
+ 132              	.LFB1:
+  32:openstack/cross-layers/packetfunctions.c **** void packetfunctions_mac64bToIp128b(
+  33:openstack/cross-layers/packetfunctions.c ****       open_addr_t* prefix64b,
+  34:openstack/cross-layers/packetfunctions.c ****       open_addr_t* mac64b,
+  35:openstack/cross-layers/packetfunctions.c ****       open_addr_t* ip128bToWrite) {
+ 133              		.loc 1 35 0
+ 134              		.cfi_startproc
+ 135              		@ args = 0, pretend = 0, frame = 16
+ 136              		@ frame_needed = 1, uses_anonymous_args = 0
+ 137 007c 80B5     		push	{r7, lr}
+ 138              	.LCFI3:
+ 139              		.cfi_def_cfa_offset 8
+ 140              		.cfi_offset 7, -8
+ 141              		.cfi_offset 14, -4
+ 142 007e 84B0     		sub	sp, sp, #16
+ 143              	.LCFI4:
+ 144              		.cfi_def_cfa_offset 24
+ 145 0080 00AF     		add	r7, sp, #0
+ 146              	.LCFI5:
+ 147              		.cfi_def_cfa_register 7
+ 148 0082 F860     		str	r0, [r7, #12]
+ 149 0084 B960     		str	r1, [r7, #8]
+ 150 0086 7A60     		str	r2, [r7, #4]
+  36:openstack/cross-layers/packetfunctions.c ****    if (prefix64b->type!=ADDR_PREFIX || mac64b->type!=ADDR_64B) {
+ 151              		.loc 1 36 0
+ 152 0088 FB68     		ldr	r3, [r7, #12]
+ 153 008a 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 154 008c 052B     		cmp	r3, #5
+ 155 008e 03D1     		bne	.L5
+ 156              		.loc 1 36 0 is_stmt 0 discriminator 1
+ 157 0090 BB68     		ldr	r3, [r7, #8]
+ 158 0092 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 159 0094 022B     		cmp	r3, #2
+ 160 0096 0FD0     		beq	.L6
+ 161              	.L5:
+  37:openstack/cross-layers/packetfunctions.c ****       openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_WRONG_ADDR_TYPE,
+  38:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)prefix64b->type,
+ 162              		.loc 1 38 0 is_stmt 1
+ 163 0098 FB68     		ldr	r3, [r7, #12]
+ 164 009a 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+  37:openstack/cross-layers/packetfunctions.c ****       openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_WRONG_ADDR_TYPE,
+ 165              		.loc 1 37 0
+ 166 009c 4FF00500 		mov	r0, #5
+ 167 00a0 4FF03101 		mov	r1, #49
+ 168 00a4 1A46     		mov	r2, r3
+ 169 00a6 4FF00103 		mov	r3, #1
+ 170 00aa FFF7FEFF 		bl	openserial_printCritical
+  39:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)1);
+  40:openstack/cross-layers/packetfunctions.c ****       ip128bToWrite->type=ADDR_NONE;
+ 171              		.loc 1 40 0
+ 172 00ae 7B68     		ldr	r3, [r7, #4]
+ 173 00b0 4FF00002 		mov	r2, #0
+ 174 00b4 1A70     		strb	r2, [r3, #0]
+  41:openstack/cross-layers/packetfunctions.c ****       return;
+ 175              		.loc 1 41 0
+ 176 00b6 1BE0     		b	.L4
+ 177              	.L6:
+  42:openstack/cross-layers/packetfunctions.c ****    }
+  43:openstack/cross-layers/packetfunctions.c ****    ip128bToWrite->type=ADDR_128B;
+ 178              		.loc 1 43 0
+ 179 00b8 7B68     		ldr	r3, [r7, #4]
+ 180 00ba 4FF00302 		mov	r2, #3
+ 181 00be 1A70     		strb	r2, [r3, #0]
+  44:openstack/cross-layers/packetfunctions.c ****    memcpy(&(ip128bToWrite->addr_128b[0]), &(prefix64b->prefix[0]), 8);
+ 182              		.loc 1 44 0
+ 183 00c0 7B68     		ldr	r3, [r7, #4]
+ 184 00c2 03F10102 		add	r2, r3, #1
+ 185 00c6 FB68     		ldr	r3, [r7, #12]
+ 186 00c8 03F10103 		add	r3, r3, #1
+ 187 00cc 1046     		mov	r0, r2
+ 188 00ce 1946     		mov	r1, r3
+ 189 00d0 4FF00802 		mov	r2, #8
+ 190 00d4 FFF7FEFF 		bl	memcpy
+  45:openstack/cross-layers/packetfunctions.c ****    memcpy(&(ip128bToWrite->addr_128b[8]), &(mac64b->addr_64b[0]),  8);
+ 191              		.loc 1 45 0
+ 192 00d8 7B68     		ldr	r3, [r7, #4]
+ 193 00da 03F10902 		add	r2, r3, #9
+ 194 00de BB68     		ldr	r3, [r7, #8]
+ 195 00e0 03F10103 		add	r3, r3, #1
+ 196 00e4 1046     		mov	r0, r2
+ 197 00e6 1946     		mov	r1, r3
+ 198 00e8 4FF00802 		mov	r2, #8
+ 199 00ec FFF7FEFF 		bl	memcpy
+ 200              	.L4:
+  46:openstack/cross-layers/packetfunctions.c **** }
+ 201              		.loc 1 46 0
+ 202 00f0 07F11007 		add	r7, r7, #16
+ 203 00f4 BD46     		mov	sp, r7
+ 204 00f6 80BD     		pop	{r7, pc}
+ 205              		.cfi_endproc
+ 206              	.LFE1:
+ 208              		.align	2
+ 209              		.global	packetfunctions_mac64bToMac16b
+ 210              		.thumb
+ 211              		.thumb_func
+ 213              	packetfunctions_mac64bToMac16b:
+ 214              	.LFB2:
+  47:openstack/cross-layers/packetfunctions.c **** 
+  48:openstack/cross-layers/packetfunctions.c **** //assuming an mac16b is lower 2B of mac64b
+  49:openstack/cross-layers/packetfunctions.c **** void packetfunctions_mac64bToMac16b(open_addr_t* mac64b, open_addr_t* mac16btoWrite) {
+ 215              		.loc 1 49 0
+ 216              		.cfi_startproc
+ 217              		@ args = 0, pretend = 0, frame = 8
+ 218              		@ frame_needed = 1, uses_anonymous_args = 0
+ 219 00f8 80B5     		push	{r7, lr}
+ 220              	.LCFI6:
+ 221              		.cfi_def_cfa_offset 8
+ 222              		.cfi_offset 7, -8
+ 223              		.cfi_offset 14, -4
+ 224 00fa 82B0     		sub	sp, sp, #8
+ 225              	.LCFI7:
+ 226              		.cfi_def_cfa_offset 16
+ 227 00fc 00AF     		add	r7, sp, #0
+ 228              	.LCFI8:
+ 229              		.cfi_def_cfa_register 7
+ 230 00fe 7860     		str	r0, [r7, #4]
+ 231 0100 3960     		str	r1, [r7, #0]
+  50:openstack/cross-layers/packetfunctions.c ****    if (mac64b->type!=ADDR_64B) {
+ 232              		.loc 1 50 0
+ 233 0102 7B68     		ldr	r3, [r7, #4]
+ 234 0104 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 235 0106 022B     		cmp	r3, #2
+ 236 0108 0FD0     		beq	.L9
+  51:openstack/cross-layers/packetfunctions.c ****       openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_WRONG_ADDR_TYPE,
+  52:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)mac64b->type,
+ 237              		.loc 1 52 0
+ 238 010a 7B68     		ldr	r3, [r7, #4]
+ 239 010c 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+  51:openstack/cross-layers/packetfunctions.c ****       openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_WRONG_ADDR_TYPE,
+ 240              		.loc 1 51 0
+ 241 010e 4FF00500 		mov	r0, #5
+ 242 0112 4FF03101 		mov	r1, #49
+ 243 0116 1A46     		mov	r2, r3
+ 244 0118 4FF00203 		mov	r3, #2
+ 245 011c FFF7FEFF 		bl	openserial_printCritical
+  53:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)2);
+  54:openstack/cross-layers/packetfunctions.c ****       mac16btoWrite->type=ADDR_NONE;
+ 246              		.loc 1 54 0
+ 247 0120 3B68     		ldr	r3, [r7, #0]
+ 248 0122 4FF00002 		mov	r2, #0
+ 249 0126 1A70     		strb	r2, [r3, #0]
+  55:openstack/cross-layers/packetfunctions.c ****       return;
+ 250              		.loc 1 55 0
+ 251 0128 0BE0     		b	.L8
+ 252              	.L9:
+  56:openstack/cross-layers/packetfunctions.c ****    }
+  57:openstack/cross-layers/packetfunctions.c ****    mac16btoWrite->type = ADDR_16B;
+ 253              		.loc 1 57 0
+ 254 012a 3B68     		ldr	r3, [r7, #0]
+ 255 012c 4FF00102 		mov	r2, #1
+ 256 0130 1A70     		strb	r2, [r3, #0]
+  58:openstack/cross-layers/packetfunctions.c ****    mac16btoWrite->addr_16b[0] = mac64b->addr_64b[6];
+ 257              		.loc 1 58 0
+ 258 0132 7B68     		ldr	r3, [r7, #4]
+ 259 0134 DA79     		ldrb	r2, [r3, #7]	@ zero_extendqisi2
+ 260 0136 3B68     		ldr	r3, [r7, #0]
+ 261 0138 5A70     		strb	r2, [r3, #1]
+  59:openstack/cross-layers/packetfunctions.c ****    mac16btoWrite->addr_16b[1] = mac64b->addr_64b[7];
+ 262              		.loc 1 59 0
+ 263 013a 7B68     		ldr	r3, [r7, #4]
+ 264 013c 1A7A     		ldrb	r2, [r3, #8]	@ zero_extendqisi2
+ 265 013e 3B68     		ldr	r3, [r7, #0]
+ 266 0140 9A70     		strb	r2, [r3, #2]
+ 267              	.L8:
+  60:openstack/cross-layers/packetfunctions.c **** }
+ 268              		.loc 1 60 0
+ 269 0142 07F10807 		add	r7, r7, #8
+ 270 0146 BD46     		mov	sp, r7
+ 271 0148 80BD     		pop	{r7, pc}
+ 272              		.cfi_endproc
+ 273              	.LFE2:
+ 275 014a 00BF     		.align	2
+ 276              		.global	packetfunctions_mac16bToMac64b
+ 277              		.thumb
+ 278              		.thumb_func
+ 280              	packetfunctions_mac16bToMac64b:
+ 281              	.LFB3:
+  61:openstack/cross-layers/packetfunctions.c **** void packetfunctions_mac16bToMac64b(open_addr_t* mac16b, open_addr_t* mac64btoWrite) {
+ 282              		.loc 1 61 0
+ 283              		.cfi_startproc
+ 284              		@ args = 0, pretend = 0, frame = 8
+ 285              		@ frame_needed = 1, uses_anonymous_args = 0
+ 286 014c 80B5     		push	{r7, lr}
+ 287              	.LCFI9:
+ 288              		.cfi_def_cfa_offset 8
+ 289              		.cfi_offset 7, -8
+ 290              		.cfi_offset 14, -4
+ 291 014e 82B0     		sub	sp, sp, #8
+ 292              	.LCFI10:
+ 293              		.cfi_def_cfa_offset 16
+ 294 0150 00AF     		add	r7, sp, #0
+ 295              	.LCFI11:
+ 296              		.cfi_def_cfa_register 7
+ 297 0152 7860     		str	r0, [r7, #4]
+ 298 0154 3960     		str	r1, [r7, #0]
+  62:openstack/cross-layers/packetfunctions.c ****    if (mac16b->type!=ADDR_16B) {
+ 299              		.loc 1 62 0
+ 300 0156 7B68     		ldr	r3, [r7, #4]
+ 301 0158 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 302 015a 012B     		cmp	r3, #1
+ 303 015c 0FD0     		beq	.L12
+  63:openstack/cross-layers/packetfunctions.c ****       openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_WRONG_ADDR_TYPE,
+  64:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)mac16b->type,
+ 304              		.loc 1 64 0
+ 305 015e 7B68     		ldr	r3, [r7, #4]
+ 306 0160 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+  63:openstack/cross-layers/packetfunctions.c ****       openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_WRONG_ADDR_TYPE,
+ 307              		.loc 1 63 0
+ 308 0162 4FF00500 		mov	r0, #5
+ 309 0166 4FF03101 		mov	r1, #49
+ 310 016a 1A46     		mov	r2, r3
+ 311 016c 4FF00303 		mov	r3, #3
+ 312 0170 FFF7FEFF 		bl	openserial_printCritical
+  65:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)3);
+  66:openstack/cross-layers/packetfunctions.c ****       mac64btoWrite->type=ADDR_NONE;
+ 313              		.loc 1 66 0
+ 314 0174 3B68     		ldr	r3, [r7, #0]
+ 315 0176 4FF00002 		mov	r2, #0
+ 316 017a 1A70     		strb	r2, [r3, #0]
+  67:openstack/cross-layers/packetfunctions.c ****       return;
+ 317              		.loc 1 67 0
+ 318 017c 23E0     		b	.L11
+ 319              	.L12:
+  68:openstack/cross-layers/packetfunctions.c ****    }
+  69:openstack/cross-layers/packetfunctions.c ****    mac64btoWrite->type = ADDR_64B;
+ 320              		.loc 1 69 0
+ 321 017e 3B68     		ldr	r3, [r7, #0]
+ 322 0180 4FF00202 		mov	r2, #2
+ 323 0184 1A70     		strb	r2, [r3, #0]
+  70:openstack/cross-layers/packetfunctions.c ****    mac64btoWrite->addr_64b[0] = 0;
+ 324              		.loc 1 70 0
+ 325 0186 3B68     		ldr	r3, [r7, #0]
+ 326 0188 4FF00002 		mov	r2, #0
+ 327 018c 5A70     		strb	r2, [r3, #1]
+  71:openstack/cross-layers/packetfunctions.c ****    mac64btoWrite->addr_64b[1] = 0;
+ 328              		.loc 1 71 0
+ 329 018e 3B68     		ldr	r3, [r7, #0]
+ 330 0190 4FF00002 		mov	r2, #0
+ 331 0194 9A70     		strb	r2, [r3, #2]
+  72:openstack/cross-layers/packetfunctions.c ****    mac64btoWrite->addr_64b[2] = 0;
+ 332              		.loc 1 72 0
+ 333 0196 3B68     		ldr	r3, [r7, #0]
+ 334 0198 4FF00002 		mov	r2, #0
+ 335 019c DA70     		strb	r2, [r3, #3]
+  73:openstack/cross-layers/packetfunctions.c ****    mac64btoWrite->addr_64b[3] = 0;
+ 336              		.loc 1 73 0
+ 337 019e 3B68     		ldr	r3, [r7, #0]
+ 338 01a0 4FF00002 		mov	r2, #0
+ 339 01a4 1A71     		strb	r2, [r3, #4]
+  74:openstack/cross-layers/packetfunctions.c ****    mac64btoWrite->addr_64b[4] = 0;
+ 340              		.loc 1 74 0
+ 341 01a6 3B68     		ldr	r3, [r7, #0]
+ 342 01a8 4FF00002 		mov	r2, #0
+ 343 01ac 5A71     		strb	r2, [r3, #5]
+  75:openstack/cross-layers/packetfunctions.c ****    mac64btoWrite->addr_64b[5] = 0;
+ 344              		.loc 1 75 0
+ 345 01ae 3B68     		ldr	r3, [r7, #0]
+ 346 01b0 4FF00002 		mov	r2, #0
+ 347 01b4 9A71     		strb	r2, [r3, #6]
+  76:openstack/cross-layers/packetfunctions.c ****    mac64btoWrite->addr_64b[6] = mac16b->addr_16b[0];
+ 348              		.loc 1 76 0
+ 349 01b6 7B68     		ldr	r3, [r7, #4]
+ 350 01b8 5A78     		ldrb	r2, [r3, #1]	@ zero_extendqisi2
+ 351 01ba 3B68     		ldr	r3, [r7, #0]
+ 352 01bc DA71     		strb	r2, [r3, #7]
+  77:openstack/cross-layers/packetfunctions.c ****    mac64btoWrite->addr_64b[7] = mac16b->addr_16b[1];
+ 353              		.loc 1 77 0
+ 354 01be 7B68     		ldr	r3, [r7, #4]
+ 355 01c0 9A78     		ldrb	r2, [r3, #2]	@ zero_extendqisi2
+ 356 01c2 3B68     		ldr	r3, [r7, #0]
+ 357 01c4 1A72     		strb	r2, [r3, #8]
+ 358              	.L11:
+  78:openstack/cross-layers/packetfunctions.c **** }
+ 359              		.loc 1 78 0
+ 360 01c6 07F10807 		add	r7, r7, #8
+ 361 01ca BD46     		mov	sp, r7
+ 362 01cc 80BD     		pop	{r7, pc}
+ 363              		.cfi_endproc
+ 364              	.LFE3:
+ 366 01ce 00BF     		.align	2
+ 367              		.global	packetfunctions_isBroadcastMulticast
+ 368              		.thumb
+ 369              		.thumb_func
+ 371              	packetfunctions_isBroadcastMulticast:
+ 372              	.LFB4:
+  79:openstack/cross-layers/packetfunctions.c **** 
+  80:openstack/cross-layers/packetfunctions.c **** //======= address recognition
+  81:openstack/cross-layers/packetfunctions.c **** 
+  82:openstack/cross-layers/packetfunctions.c **** bool packetfunctions_isBroadcastMulticast(open_addr_t* address) {
+ 373              		.loc 1 82 0
+ 374              		.cfi_startproc
+ 375              		@ args = 0, pretend = 0, frame = 16
+ 376              		@ frame_needed = 1, uses_anonymous_args = 0
+ 377 01d0 80B5     		push	{r7, lr}
+ 378              	.LCFI12:
+ 379              		.cfi_def_cfa_offset 8
+ 380              		.cfi_offset 7, -8
+ 381              		.cfi_offset 14, -4
+ 382 01d2 84B0     		sub	sp, sp, #16
+ 383              	.LCFI13:
+ 384              		.cfi_def_cfa_offset 24
+ 385 01d4 00AF     		add	r7, sp, #0
+ 386              	.LCFI14:
+ 387              		.cfi_def_cfa_register 7
+ 388 01d6 7860     		str	r0, [r7, #4]
+  83:openstack/cross-layers/packetfunctions.c ****    uint8_t i;
+  84:openstack/cross-layers/packetfunctions.c ****    uint8_t address_length;
+  85:openstack/cross-layers/packetfunctions.c ****    //IPv6 multicast
+  86:openstack/cross-layers/packetfunctions.c ****    if (address->type==ADDR_128B) {
+ 389              		.loc 1 86 0
+ 390 01d8 7B68     		ldr	r3, [r7, #4]
+ 391 01da 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 392 01dc 032B     		cmp	r3, #3
+ 393 01de 09D1     		bne	.L15
+  87:openstack/cross-layers/packetfunctions.c ****       if (address->addr_128b[0]==0xff) {
+ 394              		.loc 1 87 0
+ 395 01e0 7B68     		ldr	r3, [r7, #4]
+ 396 01e2 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 397 01e4 FF2B     		cmp	r3, #255
+ 398 01e6 02D1     		bne	.L16
+  88:openstack/cross-layers/packetfunctions.c ****          return TRUE;
+ 399              		.loc 1 88 0
+ 400 01e8 4FF00103 		mov	r3, #1
+ 401 01ec 36E0     		b	.L17
+ 402              	.L16:
+  89:openstack/cross-layers/packetfunctions.c ****       } else {
+  90:openstack/cross-layers/packetfunctions.c ****          return FALSE;
+ 403              		.loc 1 90 0
+ 404 01ee 4FF00003 		mov	r3, #0
+ 405 01f2 33E0     		b	.L17
+ 406              	.L15:
+  91:openstack/cross-layers/packetfunctions.c ****       }
+  92:openstack/cross-layers/packetfunctions.c ****    }
+  93:openstack/cross-layers/packetfunctions.c ****    //15.4 broadcast
+  94:openstack/cross-layers/packetfunctions.c ****    switch (address->type) {
+ 407              		.loc 1 94 0
+ 408 01f4 7B68     		ldr	r3, [r7, #4]
+ 409 01f6 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 410 01f8 012B     		cmp	r3, #1
+ 411 01fa 02D0     		beq	.L19
+ 412 01fc 022B     		cmp	r3, #2
+ 413 01fe 04D0     		beq	.L20
+ 414 0200 07E0     		b	.L25
+ 415              	.L19:
+  95:openstack/cross-layers/packetfunctions.c ****       case ADDR_16B:
+  96:openstack/cross-layers/packetfunctions.c ****          address_length = 2;
+ 416              		.loc 1 96 0
+ 417 0202 4FF00203 		mov	r3, #2
+ 418 0206 BB73     		strb	r3, [r7, #14]
+  97:openstack/cross-layers/packetfunctions.c ****          break;
+ 419              		.loc 1 97 0
+ 420 0208 11E0     		b	.L21
+ 421              	.L20:
+  98:openstack/cross-layers/packetfunctions.c ****       case ADDR_64B:
+  99:openstack/cross-layers/packetfunctions.c ****          address_length = 8;
+ 422              		.loc 1 99 0
+ 423 020a 4FF00803 		mov	r3, #8
+ 424 020e BB73     		strb	r3, [r7, #14]
+ 100:openstack/cross-layers/packetfunctions.c ****          break;
+ 425              		.loc 1 100 0
+ 426 0210 0DE0     		b	.L21
+ 427              	.L25:
+ 101:openstack/cross-layers/packetfunctions.c ****       default:
+ 102:openstack/cross-layers/packetfunctions.c ****          openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_WRONG_ADDR_TYPE,
+ 103:openstack/cross-layers/packetfunctions.c ****                                (errorparameter_t)address->type,
+ 428              		.loc 1 103 0
+ 429 0212 7B68     		ldr	r3, [r7, #4]
+ 430 0214 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 102:openstack/cross-layers/packetfunctions.c ****          openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_WRONG_ADDR_TYPE,
+ 431              		.loc 1 102 0
+ 432 0216 4FF00500 		mov	r0, #5
+ 433 021a 4FF03101 		mov	r1, #49
+ 434 021e 1A46     		mov	r2, r3
+ 435 0220 4FF00403 		mov	r3, #4
+ 436 0224 FFF7FEFF 		bl	openserial_printCritical
+ 104:openstack/cross-layers/packetfunctions.c ****                                (errorparameter_t)4);
+ 105:openstack/cross-layers/packetfunctions.c ****          return FALSE;
+ 437              		.loc 1 105 0
+ 438 0228 4FF00003 		mov	r3, #0
+ 439 022c 16E0     		b	.L17
+ 440              	.L21:
+ 106:openstack/cross-layers/packetfunctions.c ****    }
+ 107:openstack/cross-layers/packetfunctions.c ****    for (i=0;i<address_length;i++) {
+ 441              		.loc 1 107 0
+ 442 022e 4FF00003 		mov	r3, #0
+ 443 0232 FB73     		strb	r3, [r7, #15]
+ 444 0234 0CE0     		b	.L22
+ 445              	.L24:
+ 108:openstack/cross-layers/packetfunctions.c ****       if (address->addr_128b[i]!=0xFF) {
+ 446              		.loc 1 108 0
+ 447 0236 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 448 0238 7A68     		ldr	r2, [r7, #4]
+ 449 023a D318     		adds	r3, r2, r3
+ 450 023c 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 451 023e FF2B     		cmp	r3, #255
+ 452 0240 02D0     		beq	.L23
+ 109:openstack/cross-layers/packetfunctions.c ****          return FALSE;
+ 453              		.loc 1 109 0
+ 454 0242 4FF00003 		mov	r3, #0
+ 455 0246 09E0     		b	.L17
+ 456              	.L23:
+ 107:openstack/cross-layers/packetfunctions.c ****    for (i=0;i<address_length;i++) {
+ 457              		.loc 1 107 0
+ 458 0248 FB7B     		ldrb	r3, [r7, #15]
+ 459 024a 03F10103 		add	r3, r3, #1
+ 460 024e FB73     		strb	r3, [r7, #15]
+ 461              	.L22:
+ 107:openstack/cross-layers/packetfunctions.c ****    for (i=0;i<address_length;i++) {
+ 462              		.loc 1 107 0 is_stmt 0 discriminator 1
+ 463 0250 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 464 0252 BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 465 0254 9A42     		cmp	r2, r3
+ 466 0256 EED3     		bcc	.L24
+ 110:openstack/cross-layers/packetfunctions.c ****       }
+ 111:openstack/cross-layers/packetfunctions.c ****    }
+ 112:openstack/cross-layers/packetfunctions.c ****    return TRUE;
+ 467              		.loc 1 112 0 is_stmt 1
+ 468 0258 4FF00103 		mov	r3, #1
+ 469              	.L17:
+ 113:openstack/cross-layers/packetfunctions.c **** }
+ 470              		.loc 1 113 0
+ 471 025c 1846     		mov	r0, r3
+ 472 025e 07F11007 		add	r7, r7, #16
+ 473 0262 BD46     		mov	sp, r7
+ 474 0264 80BD     		pop	{r7, pc}
+ 475              		.cfi_endproc
+ 476              	.LFE4:
+ 478 0266 00BF     		.align	2
+ 479              		.global	packetfunctions_isAllRoutersMulticast
+ 480              		.thumb
+ 481              		.thumb_func
+ 483              	packetfunctions_isAllRoutersMulticast:
+ 484              	.LFB5:
+ 114:openstack/cross-layers/packetfunctions.c **** 
+ 115:openstack/cross-layers/packetfunctions.c **** bool packetfunctions_isAllRoutersMulticast(open_addr_t* address) {
+ 485              		.loc 1 115 0
+ 486              		.cfi_startproc
+ 487              		@ args = 0, pretend = 0, frame = 8
+ 488              		@ frame_needed = 1, uses_anonymous_args = 0
+ 489              		@ link register save eliminated.
+ 490 0268 80B4     		push	{r7}
+ 491              	.LCFI15:
+ 492              		.cfi_def_cfa_offset 4
+ 493              		.cfi_offset 7, -4
+ 494 026a 83B0     		sub	sp, sp, #12
+ 495              	.LCFI16:
+ 496              		.cfi_def_cfa_offset 16
+ 497 026c 00AF     		add	r7, sp, #0
+ 498              	.LCFI17:
+ 499              		.cfi_def_cfa_register 7
+ 500 026e 7860     		str	r0, [r7, #4]
+ 116:openstack/cross-layers/packetfunctions.c ****    if (
+ 117:openstack/cross-layers/packetfunctions.c ****       address->type          == ADDR_128B &&
+ 501              		.loc 1 117 0
+ 502 0270 7B68     		ldr	r3, [r7, #4]
+ 503 0272 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 116:openstack/cross-layers/packetfunctions.c ****    if (
+ 504              		.loc 1 116 0
+ 505 0274 032B     		cmp	r3, #3
+ 506 0276 42D1     		bne	.L27
+ 118:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[0]  == 0xff &&
+ 507              		.loc 1 118 0
+ 508 0278 7B68     		ldr	r3, [r7, #4]
+ 509 027a 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 117:openstack/cross-layers/packetfunctions.c ****       address->type          == ADDR_128B &&
+ 510              		.loc 1 117 0
+ 511 027c FF2B     		cmp	r3, #255
+ 512 027e 3ED1     		bne	.L27
+ 119:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[1]  == 0x02 &&
+ 513              		.loc 1 119 0
+ 514 0280 7B68     		ldr	r3, [r7, #4]
+ 515 0282 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 118:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[0]  == 0xff &&
+ 516              		.loc 1 118 0
+ 517 0284 022B     		cmp	r3, #2
+ 518 0286 3AD1     		bne	.L27
+ 120:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[2]  == 0x00 &&
+ 519              		.loc 1 120 0
+ 520 0288 7B68     		ldr	r3, [r7, #4]
+ 521 028a DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 119:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[1]  == 0x02 &&
+ 522              		.loc 1 119 0
+ 523 028c 002B     		cmp	r3, #0
+ 524 028e 36D1     		bne	.L27
+ 121:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[3]  == 0x00 &&
+ 525              		.loc 1 121 0
+ 526 0290 7B68     		ldr	r3, [r7, #4]
+ 527 0292 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
+ 120:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[2]  == 0x00 &&
+ 528              		.loc 1 120 0
+ 529 0294 002B     		cmp	r3, #0
+ 530 0296 32D1     		bne	.L27
+ 122:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[4]  == 0x00 &&
+ 531              		.loc 1 122 0
+ 532 0298 7B68     		ldr	r3, [r7, #4]
+ 533 029a 5B79     		ldrb	r3, [r3, #5]	@ zero_extendqisi2
+ 121:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[3]  == 0x00 &&
+ 534              		.loc 1 121 0
+ 535 029c 002B     		cmp	r3, #0
+ 536 029e 2ED1     		bne	.L27
+ 123:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[5]  == 0x00 &&
+ 537              		.loc 1 123 0
+ 538 02a0 7B68     		ldr	r3, [r7, #4]
+ 539 02a2 9B79     		ldrb	r3, [r3, #6]	@ zero_extendqisi2
+ 122:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[4]  == 0x00 &&
+ 540              		.loc 1 122 0
+ 541 02a4 002B     		cmp	r3, #0
+ 542 02a6 2AD1     		bne	.L27
+ 124:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[6]  == 0x00 &&
+ 543              		.loc 1 124 0
+ 544 02a8 7B68     		ldr	r3, [r7, #4]
+ 545 02aa DB79     		ldrb	r3, [r3, #7]	@ zero_extendqisi2
+ 123:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[5]  == 0x00 &&
+ 546              		.loc 1 123 0
+ 547 02ac 002B     		cmp	r3, #0
+ 548 02ae 26D1     		bne	.L27
+ 125:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[7]  == 0x00 &&
+ 549              		.loc 1 125 0
+ 550 02b0 7B68     		ldr	r3, [r7, #4]
+ 551 02b2 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 124:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[6]  == 0x00 &&
+ 552              		.loc 1 124 0
+ 553 02b4 002B     		cmp	r3, #0
+ 554 02b6 22D1     		bne	.L27
+ 126:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[8]  == 0x00 &&
+ 555              		.loc 1 126 0
+ 556 02b8 7B68     		ldr	r3, [r7, #4]
+ 557 02ba 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 125:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[7]  == 0x00 &&
+ 558              		.loc 1 125 0
+ 559 02bc 002B     		cmp	r3, #0
+ 560 02be 1ED1     		bne	.L27
+ 127:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[9]  == 0x00 &&
+ 561              		.loc 1 127 0
+ 562 02c0 7B68     		ldr	r3, [r7, #4]
+ 563 02c2 9B7A     		ldrb	r3, [r3, #10]	@ zero_extendqisi2
+ 126:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[8]  == 0x00 &&
+ 564              		.loc 1 126 0
+ 565 02c4 002B     		cmp	r3, #0
+ 566 02c6 1AD1     		bne	.L27
+ 128:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[10] == 0x00 &&
+ 567              		.loc 1 128 0
+ 568 02c8 7B68     		ldr	r3, [r7, #4]
+ 569 02ca DB7A     		ldrb	r3, [r3, #11]	@ zero_extendqisi2
+ 127:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[9]  == 0x00 &&
+ 570              		.loc 1 127 0
+ 571 02cc 002B     		cmp	r3, #0
+ 572 02ce 16D1     		bne	.L27
+ 129:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[11] == 0x00 &&
+ 573              		.loc 1 129 0
+ 574 02d0 7B68     		ldr	r3, [r7, #4]
+ 575 02d2 1B7B     		ldrb	r3, [r3, #12]	@ zero_extendqisi2
+ 128:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[10] == 0x00 &&
+ 576              		.loc 1 128 0
+ 577 02d4 002B     		cmp	r3, #0
+ 578 02d6 12D1     		bne	.L27
+ 130:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[12] == 0x00 &&
+ 579              		.loc 1 130 0
+ 580 02d8 7B68     		ldr	r3, [r7, #4]
+ 581 02da 5B7B     		ldrb	r3, [r3, #13]	@ zero_extendqisi2
+ 129:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[11] == 0x00 &&
+ 582              		.loc 1 129 0
+ 583 02dc 002B     		cmp	r3, #0
+ 584 02de 0ED1     		bne	.L27
+ 131:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[13] == 0x00 &&
+ 585              		.loc 1 131 0
+ 586 02e0 7B68     		ldr	r3, [r7, #4]
+ 587 02e2 9B7B     		ldrb	r3, [r3, #14]	@ zero_extendqisi2
+ 130:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[12] == 0x00 &&
+ 588              		.loc 1 130 0
+ 589 02e4 002B     		cmp	r3, #0
+ 590 02e6 0AD1     		bne	.L27
+ 132:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[14] == 0x00 &&
+ 591              		.loc 1 132 0
+ 592 02e8 7B68     		ldr	r3, [r7, #4]
+ 593 02ea DB7B     		ldrb	r3, [r3, #15]	@ zero_extendqisi2
+ 131:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[13] == 0x00 &&
+ 594              		.loc 1 131 0
+ 595 02ec 002B     		cmp	r3, #0
+ 596 02ee 06D1     		bne	.L27
+ 133:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[15] == 0x02
+ 597              		.loc 1 133 0
+ 598 02f0 7B68     		ldr	r3, [r7, #4]
+ 599 02f2 1B7C     		ldrb	r3, [r3, #16]	@ zero_extendqisi2
+ 132:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[14] == 0x00 &&
+ 600              		.loc 1 132 0
+ 601 02f4 022B     		cmp	r3, #2
+ 602 02f6 02D1     		bne	.L27
+ 134:openstack/cross-layers/packetfunctions.c ****    ) {
+ 135:openstack/cross-layers/packetfunctions.c ****       return TRUE;
+ 603              		.loc 1 135 0
+ 604 02f8 4FF00103 		mov	r3, #1
+ 605 02fc 01E0     		b	.L28
+ 606              	.L27:
+ 136:openstack/cross-layers/packetfunctions.c ****    }
+ 137:openstack/cross-layers/packetfunctions.c ****    return FALSE;
+ 607              		.loc 1 137 0
+ 608 02fe 4FF00003 		mov	r3, #0
+ 609              	.L28:
+ 138:openstack/cross-layers/packetfunctions.c **** }
+ 610              		.loc 1 138 0
+ 611 0302 1846     		mov	r0, r3
+ 612 0304 07F10C07 		add	r7, r7, #12
+ 613 0308 BD46     		mov	sp, r7
+ 614 030a 80BC     		pop	{r7}
+ 615 030c 7047     		bx	lr
+ 616              		.cfi_endproc
+ 617              	.LFE5:
+ 619 030e 00BF     		.align	2
+ 620              		.global	packetfunctions_isAllHostsMulticast
+ 621              		.thumb
+ 622              		.thumb_func
+ 624              	packetfunctions_isAllHostsMulticast:
+ 625              	.LFB6:
+ 139:openstack/cross-layers/packetfunctions.c **** 
+ 140:openstack/cross-layers/packetfunctions.c **** bool packetfunctions_isAllHostsMulticast(open_addr_t* address) {
+ 626              		.loc 1 140 0
+ 627              		.cfi_startproc
+ 628              		@ args = 0, pretend = 0, frame = 8
+ 629              		@ frame_needed = 1, uses_anonymous_args = 0
+ 630              		@ link register save eliminated.
+ 631 0310 80B4     		push	{r7}
+ 632              	.LCFI18:
+ 633              		.cfi_def_cfa_offset 4
+ 634              		.cfi_offset 7, -4
+ 635 0312 83B0     		sub	sp, sp, #12
+ 636              	.LCFI19:
+ 637              		.cfi_def_cfa_offset 16
+ 638 0314 00AF     		add	r7, sp, #0
+ 639              	.LCFI20:
+ 640              		.cfi_def_cfa_register 7
+ 641 0316 7860     		str	r0, [r7, #4]
+ 141:openstack/cross-layers/packetfunctions.c ****    if (
+ 142:openstack/cross-layers/packetfunctions.c ****       address->type          == ADDR_128B &&
+ 642              		.loc 1 142 0
+ 643 0318 7B68     		ldr	r3, [r7, #4]
+ 644 031a 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 141:openstack/cross-layers/packetfunctions.c ****    if (
+ 645              		.loc 1 141 0
+ 646 031c 032B     		cmp	r3, #3
+ 647 031e 42D1     		bne	.L30
+ 143:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[0]  == 0xff &&
+ 648              		.loc 1 143 0
+ 649 0320 7B68     		ldr	r3, [r7, #4]
+ 650 0322 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 142:openstack/cross-layers/packetfunctions.c ****       address->type          == ADDR_128B &&
+ 651              		.loc 1 142 0
+ 652 0324 FF2B     		cmp	r3, #255
+ 653 0326 3ED1     		bne	.L30
+ 144:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[1]  == 0x02 &&
+ 654              		.loc 1 144 0
+ 655 0328 7B68     		ldr	r3, [r7, #4]
+ 656 032a 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 143:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[0]  == 0xff &&
+ 657              		.loc 1 143 0
+ 658 032c 022B     		cmp	r3, #2
+ 659 032e 3AD1     		bne	.L30
+ 145:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[2]  == 0x00 &&
+ 660              		.loc 1 145 0
+ 661 0330 7B68     		ldr	r3, [r7, #4]
+ 662 0332 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 144:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[1]  == 0x02 &&
+ 663              		.loc 1 144 0
+ 664 0334 002B     		cmp	r3, #0
+ 665 0336 36D1     		bne	.L30
+ 146:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[3]  == 0x00 &&
+ 666              		.loc 1 146 0
+ 667 0338 7B68     		ldr	r3, [r7, #4]
+ 668 033a 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
+ 145:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[2]  == 0x00 &&
+ 669              		.loc 1 145 0
+ 670 033c 002B     		cmp	r3, #0
+ 671 033e 32D1     		bne	.L30
+ 147:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[4]  == 0x00 &&
+ 672              		.loc 1 147 0
+ 673 0340 7B68     		ldr	r3, [r7, #4]
+ 674 0342 5B79     		ldrb	r3, [r3, #5]	@ zero_extendqisi2
+ 146:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[3]  == 0x00 &&
+ 675              		.loc 1 146 0
+ 676 0344 002B     		cmp	r3, #0
+ 677 0346 2ED1     		bne	.L30
+ 148:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[5]  == 0x00 &&
+ 678              		.loc 1 148 0
+ 679 0348 7B68     		ldr	r3, [r7, #4]
+ 680 034a 9B79     		ldrb	r3, [r3, #6]	@ zero_extendqisi2
+ 147:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[4]  == 0x00 &&
+ 681              		.loc 1 147 0
+ 682 034c 002B     		cmp	r3, #0
+ 683 034e 2AD1     		bne	.L30
+ 149:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[6]  == 0x00 &&
+ 684              		.loc 1 149 0
+ 685 0350 7B68     		ldr	r3, [r7, #4]
+ 686 0352 DB79     		ldrb	r3, [r3, #7]	@ zero_extendqisi2
+ 148:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[5]  == 0x00 &&
+ 687              		.loc 1 148 0
+ 688 0354 002B     		cmp	r3, #0
+ 689 0356 26D1     		bne	.L30
+ 150:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[7]  == 0x00 &&
+ 690              		.loc 1 150 0
+ 691 0358 7B68     		ldr	r3, [r7, #4]
+ 692 035a 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 149:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[6]  == 0x00 &&
+ 693              		.loc 1 149 0
+ 694 035c 002B     		cmp	r3, #0
+ 695 035e 22D1     		bne	.L30
+ 151:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[8]  == 0x00 &&
+ 696              		.loc 1 151 0
+ 697 0360 7B68     		ldr	r3, [r7, #4]
+ 698 0362 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 150:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[7]  == 0x00 &&
+ 699              		.loc 1 150 0
+ 700 0364 002B     		cmp	r3, #0
+ 701 0366 1ED1     		bne	.L30
+ 152:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[9]  == 0x00 &&
+ 702              		.loc 1 152 0
+ 703 0368 7B68     		ldr	r3, [r7, #4]
+ 704 036a 9B7A     		ldrb	r3, [r3, #10]	@ zero_extendqisi2
+ 151:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[8]  == 0x00 &&
+ 705              		.loc 1 151 0
+ 706 036c 002B     		cmp	r3, #0
+ 707 036e 1AD1     		bne	.L30
+ 153:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[10] == 0x00 &&
+ 708              		.loc 1 153 0
+ 709 0370 7B68     		ldr	r3, [r7, #4]
+ 710 0372 DB7A     		ldrb	r3, [r3, #11]	@ zero_extendqisi2
+ 152:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[9]  == 0x00 &&
+ 711              		.loc 1 152 0
+ 712 0374 002B     		cmp	r3, #0
+ 713 0376 16D1     		bne	.L30
+ 154:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[11] == 0x00 &&
+ 714              		.loc 1 154 0
+ 715 0378 7B68     		ldr	r3, [r7, #4]
+ 716 037a 1B7B     		ldrb	r3, [r3, #12]	@ zero_extendqisi2
+ 153:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[10] == 0x00 &&
+ 717              		.loc 1 153 0
+ 718 037c 002B     		cmp	r3, #0
+ 719 037e 12D1     		bne	.L30
+ 155:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[12] == 0x00 &&
+ 720              		.loc 1 155 0
+ 721 0380 7B68     		ldr	r3, [r7, #4]
+ 722 0382 5B7B     		ldrb	r3, [r3, #13]	@ zero_extendqisi2
+ 154:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[11] == 0x00 &&
+ 723              		.loc 1 154 0
+ 724 0384 002B     		cmp	r3, #0
+ 725 0386 0ED1     		bne	.L30
+ 156:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[13] == 0x00 &&
+ 726              		.loc 1 156 0
+ 727 0388 7B68     		ldr	r3, [r7, #4]
+ 728 038a 9B7B     		ldrb	r3, [r3, #14]	@ zero_extendqisi2
+ 155:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[12] == 0x00 &&
+ 729              		.loc 1 155 0
+ 730 038c 002B     		cmp	r3, #0
+ 731 038e 0AD1     		bne	.L30
+ 157:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[14] == 0x00 &&
+ 732              		.loc 1 157 0
+ 733 0390 7B68     		ldr	r3, [r7, #4]
+ 734 0392 DB7B     		ldrb	r3, [r3, #15]	@ zero_extendqisi2
+ 156:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[13] == 0x00 &&
+ 735              		.loc 1 156 0
+ 736 0394 002B     		cmp	r3, #0
+ 737 0396 06D1     		bne	.L30
+ 158:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[15] == 0x01
+ 738              		.loc 1 158 0
+ 739 0398 7B68     		ldr	r3, [r7, #4]
+ 740 039a 1B7C     		ldrb	r3, [r3, #16]	@ zero_extendqisi2
+ 157:openstack/cross-layers/packetfunctions.c ****       address->addr_128b[14] == 0x00 &&
+ 741              		.loc 1 157 0
+ 742 039c 012B     		cmp	r3, #1
+ 743 039e 02D1     		bne	.L30
+ 159:openstack/cross-layers/packetfunctions.c ****    ) {
+ 160:openstack/cross-layers/packetfunctions.c ****       return TRUE;
+ 744              		.loc 1 160 0
+ 745 03a0 4FF00103 		mov	r3, #1
+ 746 03a4 01E0     		b	.L31
+ 747              	.L30:
+ 161:openstack/cross-layers/packetfunctions.c ****    }
+ 162:openstack/cross-layers/packetfunctions.c ****    return FALSE;
+ 748              		.loc 1 162 0
+ 749 03a6 4FF00003 		mov	r3, #0
+ 750              	.L31:
+ 163:openstack/cross-layers/packetfunctions.c **** }
+ 751              		.loc 1 163 0
+ 752 03aa 1846     		mov	r0, r3
+ 753 03ac 07F10C07 		add	r7, r7, #12
+ 754 03b0 BD46     		mov	sp, r7
+ 755 03b2 80BC     		pop	{r7}
+ 756 03b4 7047     		bx	lr
+ 757              		.cfi_endproc
+ 758              	.LFE6:
+ 760 03b6 00BF     		.align	2
+ 761              		.global	packetfunctions_sameAddress
+ 762              		.thumb
+ 763              		.thumb_func
+ 765              	packetfunctions_sameAddress:
+ 766              	.LFB7:
+ 164:openstack/cross-layers/packetfunctions.c **** 
+ 165:openstack/cross-layers/packetfunctions.c **** bool packetfunctions_sameAddress(open_addr_t* address_1, open_addr_t* address_2) {
+ 767              		.loc 1 165 0
+ 768              		.cfi_startproc
+ 769              		@ args = 0, pretend = 0, frame = 16
+ 770              		@ frame_needed = 1, uses_anonymous_args = 0
+ 771 03b8 80B5     		push	{r7, lr}
+ 772              	.LCFI21:
+ 773              		.cfi_def_cfa_offset 8
+ 774              		.cfi_offset 7, -8
+ 775              		.cfi_offset 14, -4
+ 776 03ba 84B0     		sub	sp, sp, #16
+ 777              	.LCFI22:
+ 778              		.cfi_def_cfa_offset 24
+ 779 03bc 00AF     		add	r7, sp, #0
+ 780              	.LCFI23:
+ 781              		.cfi_def_cfa_register 7
+ 782 03be 7860     		str	r0, [r7, #4]
+ 783 03c0 3960     		str	r1, [r7, #0]
+ 166:openstack/cross-layers/packetfunctions.c ****    uint8_t address_length;
+ 167:openstack/cross-layers/packetfunctions.c ****    
+ 168:openstack/cross-layers/packetfunctions.c ****    if (address_1->type!=address_2->type) {
+ 784              		.loc 1 168 0
+ 785 03c2 7B68     		ldr	r3, [r7, #4]
+ 786 03c4 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 787 03c6 3B68     		ldr	r3, [r7, #0]
+ 788 03c8 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 789 03ca 9A42     		cmp	r2, r3
+ 790 03cc 02D0     		beq	.L33
+ 169:openstack/cross-layers/packetfunctions.c ****       return FALSE;
+ 791              		.loc 1 169 0
+ 792 03ce 4FF00003 		mov	r3, #0
+ 793 03d2 41E0     		b	.L34
+ 794              	.L33:
+ 170:openstack/cross-layers/packetfunctions.c ****    }
+ 171:openstack/cross-layers/packetfunctions.c ****    switch (address_1->type) {
+ 795              		.loc 1 171 0
+ 796 03d4 7B68     		ldr	r3, [r7, #4]
+ 797 03d6 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 798 03d8 062B     		cmp	r3, #6
+ 799 03da 1BD8     		bhi	.L35
+ 800 03dc 4FF00102 		mov	r2, #1
+ 801 03e0 02FA03F3 		lsl	r3, r2, r3
+ 802 03e4 03F04802 		and	r2, r3, #72
+ 803 03e8 002A     		cmp	r2, #0
+ 804 03ea 0FD1     		bne	.L38
+ 805 03ec 03F02402 		and	r2, r3, #36
+ 806 03f0 002A     		cmp	r2, #0
+ 807 03f2 07D1     		bne	.L37
+ 808 03f4 03F01203 		and	r3, r3, #18
+ 809 03f8 002B     		cmp	r3, #0
+ 810 03fa 0BD0     		beq	.L35
+ 811              	.L36:
+ 172:openstack/cross-layers/packetfunctions.c ****       case ADDR_16B:
+ 173:openstack/cross-layers/packetfunctions.c ****       case ADDR_PANID:
+ 174:openstack/cross-layers/packetfunctions.c ****          address_length = 2;
+ 812              		.loc 1 174 0
+ 813 03fc 4FF00203 		mov	r3, #2
+ 814 0400 FB73     		strb	r3, [r7, #15]
+ 175:openstack/cross-layers/packetfunctions.c ****          break;
+ 815              		.loc 1 175 0
+ 816 0402 15E0     		b	.L39
+ 817              	.L37:
+ 176:openstack/cross-layers/packetfunctions.c ****       case ADDR_64B:
+ 177:openstack/cross-layers/packetfunctions.c ****       case ADDR_PREFIX:
+ 178:openstack/cross-layers/packetfunctions.c ****          address_length = 8;
+ 818              		.loc 1 178 0
+ 819 0404 4FF00803 		mov	r3, #8
+ 820 0408 FB73     		strb	r3, [r7, #15]
+ 179:openstack/cross-layers/packetfunctions.c ****          break;
+ 821              		.loc 1 179 0
+ 822 040a 11E0     		b	.L39
+ 823              	.L38:
+ 180:openstack/cross-layers/packetfunctions.c ****       case ADDR_128B:
+ 181:openstack/cross-layers/packetfunctions.c ****       case ADDR_ANYCAST:
+ 182:openstack/cross-layers/packetfunctions.c ****          address_length = 16;
+ 824              		.loc 1 182 0
+ 825 040c 4FF01003 		mov	r3, #16
+ 826 0410 FB73     		strb	r3, [r7, #15]
+ 183:openstack/cross-layers/packetfunctions.c ****          break;
+ 827              		.loc 1 183 0
+ 828 0412 0DE0     		b	.L39
+ 829              	.L35:
+ 184:openstack/cross-layers/packetfunctions.c ****     
+ 185:openstack/cross-layers/packetfunctions.c ****       default:
+ 186:openstack/cross-layers/packetfunctions.c ****          openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_WRONG_ADDR_TYPE,
+ 187:openstack/cross-layers/packetfunctions.c ****                                (errorparameter_t)address_1->type,
+ 830              		.loc 1 187 0
+ 831 0414 7B68     		ldr	r3, [r7, #4]
+ 832 0416 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 186:openstack/cross-layers/packetfunctions.c ****          openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_WRONG_ADDR_TYPE,
+ 833              		.loc 1 186 0
+ 834 0418 4FF00500 		mov	r0, #5
+ 835 041c 4FF03101 		mov	r1, #49
+ 836 0420 1A46     		mov	r2, r3
+ 837 0422 4FF00503 		mov	r3, #5
+ 838 0426 FFF7FEFF 		bl	openserial_printCritical
+ 188:openstack/cross-layers/packetfunctions.c ****                                (errorparameter_t)5);
+ 189:openstack/cross-layers/packetfunctions.c ****          return FALSE;
+ 839              		.loc 1 189 0
+ 840 042a 4FF00003 		mov	r3, #0
+ 841 042e 13E0     		b	.L34
+ 842              	.L39:
+ 190:openstack/cross-layers/packetfunctions.c ****    }
+ 191:openstack/cross-layers/packetfunctions.c ****    if (memcmp((void*)address_1->addr_128b,(void*)address_2->addr_128b,address_length)==0) {
+ 843              		.loc 1 191 0
+ 844 0430 7B68     		ldr	r3, [r7, #4]
+ 845 0432 03F10101 		add	r1, r3, #1
+ 846 0436 3B68     		ldr	r3, [r7, #0]
+ 847 0438 03F10102 		add	r2, r3, #1
+ 848 043c FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 849 043e 0846     		mov	r0, r1
+ 850 0440 1146     		mov	r1, r2
+ 851 0442 1A46     		mov	r2, r3
+ 852 0444 FFF7FEFF 		bl	memcmp
+ 853 0448 0346     		mov	r3, r0
+ 854 044a 002B     		cmp	r3, #0
+ 855 044c 02D1     		bne	.L40
+ 192:openstack/cross-layers/packetfunctions.c ****       return TRUE;
+ 856              		.loc 1 192 0
+ 857 044e 4FF00103 		mov	r3, #1
+ 858 0452 01E0     		b	.L34
+ 859              	.L40:
+ 193:openstack/cross-layers/packetfunctions.c ****    }
+ 194:openstack/cross-layers/packetfunctions.c ****    return FALSE;
+ 860              		.loc 1 194 0
+ 861 0454 4FF00003 		mov	r3, #0
+ 862              	.L34:
+ 195:openstack/cross-layers/packetfunctions.c **** }
+ 863              		.loc 1 195 0
+ 864 0458 1846     		mov	r0, r3
+ 865 045a 07F11007 		add	r7, r7, #16
+ 866 045e BD46     		mov	sp, r7
+ 867 0460 80BD     		pop	{r7, pc}
+ 868              		.cfi_endproc
+ 869              	.LFE7:
+ 871 0462 00BF     		.align	2
+ 872              		.global	packetfunctions_readAddress
+ 873              		.thumb
+ 874              		.thumb_func
+ 876              	packetfunctions_readAddress:
+ 877              	.LFB8:
+ 196:openstack/cross-layers/packetfunctions.c **** 
+ 197:openstack/cross-layers/packetfunctions.c **** //======= address read/write
+ 198:openstack/cross-layers/packetfunctions.c **** 
+ 199:openstack/cross-layers/packetfunctions.c **** void packetfunctions_readAddress(uint8_t* payload, uint8_t type, open_addr_t* writeToAddress, bool 
+ 878              		.loc 1 199 0
+ 879              		.cfi_startproc
+ 880              		@ args = 0, pretend = 0, frame = 24
+ 881              		@ frame_needed = 1, uses_anonymous_args = 0
+ 882 0464 80B5     		push	{r7, lr}
+ 883              	.LCFI24:
+ 884              		.cfi_def_cfa_offset 8
+ 885              		.cfi_offset 7, -8
+ 886              		.cfi_offset 14, -4
+ 887 0466 86B0     		sub	sp, sp, #24
+ 888              	.LCFI25:
+ 889              		.cfi_def_cfa_offset 32
+ 890 0468 00AF     		add	r7, sp, #0
+ 891              	.LCFI26:
+ 892              		.cfi_def_cfa_register 7
+ 893 046a F860     		str	r0, [r7, #12]
+ 894 046c 7A60     		str	r2, [r7, #4]
+ 895 046e 0A46     		mov	r2, r1
+ 896 0470 FA72     		strb	r2, [r7, #11]
+ 897 0472 BB72     		strb	r3, [r7, #10]
+ 200:openstack/cross-layers/packetfunctions.c ****    uint8_t i;
+ 201:openstack/cross-layers/packetfunctions.c ****    uint8_t address_length;
+ 202:openstack/cross-layers/packetfunctions.c ****    
+ 203:openstack/cross-layers/packetfunctions.c ****    writeToAddress->type = type;
+ 898              		.loc 1 203 0
+ 899 0474 7B68     		ldr	r3, [r7, #4]
+ 900 0476 FA7A     		ldrb	r2, [r7, #11]
+ 901 0478 1A70     		strb	r2, [r3, #0]
+ 204:openstack/cross-layers/packetfunctions.c ****    switch (type) {
+ 902              		.loc 1 204 0
+ 903 047a FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 904 047c 03F1FF33 		add	r3, r3, #-1
+ 905 0480 042B     		cmp	r3, #4
+ 906 0482 19D8     		bhi	.L42
+ 907 0484 01A2     		adr	r2, .L46
+ 908 0486 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 909 048a 00BF     		.align	2
+ 910              	.L46:
+ 911 048c A1040000 		.word	.L43+1
+ 912 0490 A9040000 		.word	.L44+1
+ 913 0494 B1040000 		.word	.L45+1
+ 914 0498 A1040000 		.word	.L43+1
+ 915 049c A9040000 		.word	.L44+1
+ 916              	.L43:
+ 205:openstack/cross-layers/packetfunctions.c ****       case ADDR_16B:
+ 206:openstack/cross-layers/packetfunctions.c ****       case ADDR_PANID:
+ 207:openstack/cross-layers/packetfunctions.c ****          address_length = 2;
+ 917              		.loc 1 207 0
+ 918 04a0 4FF00203 		mov	r3, #2
+ 919 04a4 BB75     		strb	r3, [r7, #22]
+ 208:openstack/cross-layers/packetfunctions.c ****          break;
+ 920              		.loc 1 208 0
+ 921 04a6 13E0     		b	.L47
+ 922              	.L44:
+ 209:openstack/cross-layers/packetfunctions.c ****       case ADDR_64B:
+ 210:openstack/cross-layers/packetfunctions.c ****       case ADDR_PREFIX:
+ 211:openstack/cross-layers/packetfunctions.c ****          address_length = 8;
+ 923              		.loc 1 211 0
+ 924 04a8 4FF00803 		mov	r3, #8
+ 925 04ac BB75     		strb	r3, [r7, #22]
+ 212:openstack/cross-layers/packetfunctions.c ****          break;
+ 926              		.loc 1 212 0
+ 927 04ae 0FE0     		b	.L47
+ 928              	.L45:
+ 213:openstack/cross-layers/packetfunctions.c ****       case ADDR_128B:
+ 214:openstack/cross-layers/packetfunctions.c ****          address_length = 16;
+ 929              		.loc 1 214 0
+ 930 04b0 4FF01003 		mov	r3, #16
+ 931 04b4 BB75     		strb	r3, [r7, #22]
+ 215:openstack/cross-layers/packetfunctions.c ****          break;
+ 932              		.loc 1 215 0
+ 933 04b6 0BE0     		b	.L47
+ 934              	.L42:
+ 216:openstack/cross-layers/packetfunctions.c ****       default:
+ 217:openstack/cross-layers/packetfunctions.c ****          openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_WRONG_ADDR_TYPE,
+ 935              		.loc 1 217 0
+ 936 04b8 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 937 04ba 9BB2     		uxth	r3, r3
+ 938 04bc 4FF00500 		mov	r0, #5
+ 939 04c0 4FF03101 		mov	r1, #49
+ 940 04c4 1A46     		mov	r2, r3
+ 941 04c6 4FF00603 		mov	r3, #6
+ 942 04ca FFF7FEFF 		bl	openserial_printCritical
+ 218:openstack/cross-layers/packetfunctions.c ****                                (errorparameter_t)type,
+ 219:openstack/cross-layers/packetfunctions.c ****                                (errorparameter_t)6);
+ 220:openstack/cross-layers/packetfunctions.c ****          return;
+ 943              		.loc 1 220 0
+ 944 04ce 23E0     		b	.L41
+ 945              	.L47:
+ 221:openstack/cross-layers/packetfunctions.c ****    }
+ 222:openstack/cross-layers/packetfunctions.c ****    
+ 223:openstack/cross-layers/packetfunctions.c ****    for (i=0;i<address_length;i++) {
+ 946              		.loc 1 223 0
+ 947 04d0 4FF00003 		mov	r3, #0
+ 948 04d4 FB75     		strb	r3, [r7, #23]
+ 949 04d6 1BE0     		b	.L49
+ 950              	.L52:
+ 224:openstack/cross-layers/packetfunctions.c ****       if (littleEndian) {
+ 951              		.loc 1 224 0
+ 952 04d8 BB7A     		ldrb	r3, [r7, #10]	@ zero_extendqisi2
+ 953 04da 002B     		cmp	r3, #0
+ 954 04dc 0CD0     		beq	.L50
+ 225:openstack/cross-layers/packetfunctions.c ****          writeToAddress->addr_128b[address_length-1-i] = *(payload+i);
+ 955              		.loc 1 225 0
+ 956 04de BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 957 04e0 03F1FF32 		add	r2, r3, #-1
+ 958 04e4 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 959 04e6 D31A     		subs	r3, r2, r3
+ 960 04e8 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 961 04ea F968     		ldr	r1, [r7, #12]
+ 962 04ec 8A18     		adds	r2, r1, r2
+ 963 04ee 1278     		ldrb	r2, [r2, #0]	@ zero_extendqisi2
+ 964 04f0 7968     		ldr	r1, [r7, #4]
+ 965 04f2 CB18     		adds	r3, r1, r3
+ 966 04f4 5A70     		strb	r2, [r3, #1]
+ 967 04f6 07E0     		b	.L51
+ 968              	.L50:
+ 226:openstack/cross-layers/packetfunctions.c ****       } else {
+ 227:openstack/cross-layers/packetfunctions.c ****          writeToAddress->addr_128b[i]   = *(payload+i);
+ 969              		.loc 1 227 0
+ 970 04f8 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 971 04fa FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 972 04fc F968     		ldr	r1, [r7, #12]
+ 973 04fe 8A18     		adds	r2, r1, r2
+ 974 0500 1278     		ldrb	r2, [r2, #0]	@ zero_extendqisi2
+ 975 0502 7968     		ldr	r1, [r7, #4]
+ 976 0504 CB18     		adds	r3, r1, r3
+ 977 0506 5A70     		strb	r2, [r3, #1]
+ 978              	.L51:
+ 223:openstack/cross-layers/packetfunctions.c ****    for (i=0;i<address_length;i++) {
+ 979              		.loc 1 223 0
+ 980 0508 FB7D     		ldrb	r3, [r7, #23]
+ 981 050a 03F10103 		add	r3, r3, #1
+ 982 050e FB75     		strb	r3, [r7, #23]
+ 983              	.L49:
+ 223:openstack/cross-layers/packetfunctions.c ****    for (i=0;i<address_length;i++) {
+ 984              		.loc 1 223 0 is_stmt 0 discriminator 1
+ 985 0510 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 986 0512 BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 987 0514 9A42     		cmp	r2, r3
+ 988 0516 DFD3     		bcc	.L52
+ 989              	.L41:
+ 228:openstack/cross-layers/packetfunctions.c ****       }
+ 229:openstack/cross-layers/packetfunctions.c ****    }
+ 230:openstack/cross-layers/packetfunctions.c **** }
+ 990              		.loc 1 230 0 is_stmt 1
+ 991 0518 07F11807 		add	r7, r7, #24
+ 992 051c BD46     		mov	sp, r7
+ 993 051e 80BD     		pop	{r7, pc}
+ 994              		.cfi_endproc
+ 995              	.LFE8:
+ 997              		.align	2
+ 998              		.global	packetfunctions_writeAddress
+ 999              		.thumb
+ 1000              		.thumb_func
+ 1002              	packetfunctions_writeAddress:
+ 1003              	.LFB9:
+ 231:openstack/cross-layers/packetfunctions.c **** 
+ 232:openstack/cross-layers/packetfunctions.c **** void packetfunctions_writeAddress(OpenQueueEntry_t* msg, open_addr_t* address, bool littleEndian) {
+ 1004              		.loc 1 232 0
+ 1005              		.cfi_startproc
+ 1006              		@ args = 0, pretend = 0, frame = 24
+ 1007              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1008 0520 80B5     		push	{r7, lr}
+ 1009              	.LCFI27:
+ 1010              		.cfi_def_cfa_offset 8
+ 1011              		.cfi_offset 7, -8
+ 1012              		.cfi_offset 14, -4
+ 1013 0522 86B0     		sub	sp, sp, #24
+ 1014              	.LCFI28:
+ 1015              		.cfi_def_cfa_offset 32
+ 1016 0524 00AF     		add	r7, sp, #0
+ 1017              	.LCFI29:
+ 1018              		.cfi_def_cfa_register 7
+ 1019 0526 F860     		str	r0, [r7, #12]
+ 1020 0528 B960     		str	r1, [r7, #8]
+ 1021 052a 1346     		mov	r3, r2
+ 1022 052c FB71     		strb	r3, [r7, #7]
+ 233:openstack/cross-layers/packetfunctions.c ****    uint8_t i;
+ 234:openstack/cross-layers/packetfunctions.c ****    uint8_t address_length;
+ 235:openstack/cross-layers/packetfunctions.c ****    
+ 236:openstack/cross-layers/packetfunctions.c ****    switch (address->type) {
+ 1023              		.loc 1 236 0
+ 1024 052e BB68     		ldr	r3, [r7, #8]
+ 1025 0530 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1026 0532 03F1FF33 		add	r3, r3, #-1
+ 1027 0536 042B     		cmp	r3, #4
+ 1028 0538 18D8     		bhi	.L54
+ 1029 053a 01A2     		adr	r2, .L58
+ 1030 053c 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 1031              		.align	2
+ 1032              	.L58:
+ 1033 0540 55050000 		.word	.L55+1
+ 1034 0544 5D050000 		.word	.L56+1
+ 1035 0548 65050000 		.word	.L57+1
+ 1036 054c 55050000 		.word	.L55+1
+ 1037 0550 5D050000 		.word	.L56+1
+ 1038              	.L55:
+ 237:openstack/cross-layers/packetfunctions.c ****       case ADDR_16B:
+ 238:openstack/cross-layers/packetfunctions.c ****       case ADDR_PANID:
+ 239:openstack/cross-layers/packetfunctions.c ****          address_length = 2;
+ 1039              		.loc 1 239 0
+ 1040 0554 4FF00203 		mov	r3, #2
+ 1041 0558 BB75     		strb	r3, [r7, #22]
+ 240:openstack/cross-layers/packetfunctions.c ****          break;
+ 1042              		.loc 1 240 0
+ 1043 055a 13E0     		b	.L59
+ 1044              	.L56:
+ 241:openstack/cross-layers/packetfunctions.c ****       case ADDR_64B:
+ 242:openstack/cross-layers/packetfunctions.c ****       case ADDR_PREFIX:
+ 243:openstack/cross-layers/packetfunctions.c ****          address_length = 8;
+ 1045              		.loc 1 243 0
+ 1046 055c 4FF00803 		mov	r3, #8
+ 1047 0560 BB75     		strb	r3, [r7, #22]
+ 244:openstack/cross-layers/packetfunctions.c ****          break;
+ 1048              		.loc 1 244 0
+ 1049 0562 0FE0     		b	.L59
+ 1050              	.L57:
+ 245:openstack/cross-layers/packetfunctions.c ****       case ADDR_128B:
+ 246:openstack/cross-layers/packetfunctions.c ****          address_length = 16;
+ 1051              		.loc 1 246 0
+ 1052 0564 4FF01003 		mov	r3, #16
+ 1053 0568 BB75     		strb	r3, [r7, #22]
+ 247:openstack/cross-layers/packetfunctions.c ****          break;
+ 1054              		.loc 1 247 0
+ 1055 056a 0BE0     		b	.L59
+ 1056              	.L54:
+ 248:openstack/cross-layers/packetfunctions.c ****       default:
+ 249:openstack/cross-layers/packetfunctions.c ****          openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_WRONG_ADDR_TYPE,
+ 250:openstack/cross-layers/packetfunctions.c ****                                (errorparameter_t)address->type,
+ 1057              		.loc 1 250 0
+ 1058 056c BB68     		ldr	r3, [r7, #8]
+ 1059 056e 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 249:openstack/cross-layers/packetfunctions.c ****          openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_WRONG_ADDR_TYPE,
+ 1060              		.loc 1 249 0
+ 1061 0570 4FF00500 		mov	r0, #5
+ 1062 0574 4FF03101 		mov	r1, #49
+ 1063 0578 1A46     		mov	r2, r3
+ 1064 057a 4FF00703 		mov	r3, #7
+ 1065 057e FFF7FEFF 		bl	openserial_printCritical
+ 251:openstack/cross-layers/packetfunctions.c ****                                (errorparameter_t)7);
+ 252:openstack/cross-layers/packetfunctions.c ****          return;
+ 1066              		.loc 1 252 0
+ 1067 0582 2EE0     		b	.L53
+ 1068              	.L59:
+ 253:openstack/cross-layers/packetfunctions.c ****    }
+ 254:openstack/cross-layers/packetfunctions.c ****    
+ 255:openstack/cross-layers/packetfunctions.c ****    for (i=0;i<address_length;i++) {
+ 1069              		.loc 1 255 0
+ 1070 0584 4FF00003 		mov	r3, #0
+ 1071 0588 FB75     		strb	r3, [r7, #23]
+ 1072 058a 26E0     		b	.L61
+ 1073              	.L64:
+ 256:openstack/cross-layers/packetfunctions.c ****       msg->payload      -= sizeof(uint8_t);
+ 1074              		.loc 1 256 0
+ 1075 058c FB68     		ldr	r3, [r7, #12]
+ 1076 058e 5B68     		ldr	r3, [r3, #4]
+ 1077 0590 03F1FF32 		add	r2, r3, #-1
+ 1078 0594 FB68     		ldr	r3, [r7, #12]
+ 1079 0596 5A60     		str	r2, [r3, #4]
+ 257:openstack/cross-layers/packetfunctions.c ****       msg->length       += sizeof(uint8_t);
+ 1080              		.loc 1 257 0
+ 1081 0598 FB68     		ldr	r3, [r7, #12]
+ 1082 059a 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 1083 059c 03F10103 		add	r3, r3, #1
+ 1084 05a0 DAB2     		uxtb	r2, r3
+ 1085 05a2 FB68     		ldr	r3, [r7, #12]
+ 1086 05a4 1A72     		strb	r2, [r3, #8]
+ 258:openstack/cross-layers/packetfunctions.c ****       if (littleEndian) {
+ 1087              		.loc 1 258 0
+ 1088 05a6 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1089 05a8 002B     		cmp	r3, #0
+ 1090 05aa 07D0     		beq	.L62
+ 259:openstack/cross-layers/packetfunctions.c ****          *((uint8_t*)(msg->payload)) = address->addr_128b[i];
+ 1091              		.loc 1 259 0
+ 1092 05ac FB68     		ldr	r3, [r7, #12]
+ 1093 05ae 5B68     		ldr	r3, [r3, #4]
+ 1094 05b0 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 1095 05b2 B968     		ldr	r1, [r7, #8]
+ 1096 05b4 8A18     		adds	r2, r1, r2
+ 1097 05b6 5278     		ldrb	r2, [r2, #1]	@ zero_extendqisi2
+ 1098 05b8 1A70     		strb	r2, [r3, #0]
+ 1099 05ba 0AE0     		b	.L63
+ 1100              	.L62:
+ 260:openstack/cross-layers/packetfunctions.c ****       } else {
+ 261:openstack/cross-layers/packetfunctions.c ****          *((uint8_t*)(msg->payload)) = address->addr_128b[address_length-1-i];
+ 1101              		.loc 1 261 0
+ 1102 05bc FB68     		ldr	r3, [r7, #12]
+ 1103 05be 5B68     		ldr	r3, [r3, #4]
+ 1104 05c0 BA7D     		ldrb	r2, [r7, #22]	@ zero_extendqisi2
+ 1105 05c2 02F1FF31 		add	r1, r2, #-1
+ 1106 05c6 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 1107 05c8 8A1A     		subs	r2, r1, r2
+ 1108 05ca B968     		ldr	r1, [r7, #8]
+ 1109 05cc 8A18     		adds	r2, r1, r2
+ 1110 05ce 5278     		ldrb	r2, [r2, #1]	@ zero_extendqisi2
+ 1111 05d0 1A70     		strb	r2, [r3, #0]
+ 1112              	.L63:
+ 255:openstack/cross-layers/packetfunctions.c ****    for (i=0;i<address_length;i++) {
+ 1113              		.loc 1 255 0
+ 1114 05d2 FB7D     		ldrb	r3, [r7, #23]
+ 1115 05d4 03F10103 		add	r3, r3, #1
+ 1116 05d8 FB75     		strb	r3, [r7, #23]
+ 1117              	.L61:
+ 255:openstack/cross-layers/packetfunctions.c ****    for (i=0;i<address_length;i++) {
+ 1118              		.loc 1 255 0 is_stmt 0 discriminator 1
+ 1119 05da FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 1120 05dc BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 1121 05de 9A42     		cmp	r2, r3
+ 1122 05e0 D4D3     		bcc	.L64
+ 1123              	.L53:
+ 262:openstack/cross-layers/packetfunctions.c ****       }
+ 263:openstack/cross-layers/packetfunctions.c ****    }
+ 264:openstack/cross-layers/packetfunctions.c **** }
+ 1124              		.loc 1 264 0 is_stmt 1
+ 1125 05e2 07F11807 		add	r7, r7, #24
+ 1126 05e6 BD46     		mov	sp, r7
+ 1127 05e8 80BD     		pop	{r7, pc}
+ 1128              		.cfi_endproc
+ 1129              	.LFE9:
+ 1131 05ea 00BF     		.align	2
+ 1132              		.global	packetfunctions_reserveHeaderSize
+ 1133              		.thumb
+ 1134              		.thumb_func
+ 1136              	packetfunctions_reserveHeaderSize:
+ 1137              	.LFB10:
+ 265:openstack/cross-layers/packetfunctions.c **** 
+ 266:openstack/cross-layers/packetfunctions.c **** //======= reserving/tossing headers
+ 267:openstack/cross-layers/packetfunctions.c **** 
+ 268:openstack/cross-layers/packetfunctions.c **** void packetfunctions_reserveHeaderSize(OpenQueueEntry_t* pkt, uint8_t header_length) {
+ 1138              		.loc 1 268 0
+ 1139              		.cfi_startproc
+ 1140              		@ args = 0, pretend = 0, frame = 8
+ 1141              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1142 05ec 80B5     		push	{r7, lr}
+ 1143              	.LCFI30:
+ 1144              		.cfi_def_cfa_offset 8
+ 1145              		.cfi_offset 7, -8
+ 1146              		.cfi_offset 14, -4
+ 1147 05ee 82B0     		sub	sp, sp, #8
+ 1148              	.LCFI31:
+ 1149              		.cfi_def_cfa_offset 16
+ 1150 05f0 00AF     		add	r7, sp, #0
+ 1151              	.LCFI32:
+ 1152              		.cfi_def_cfa_register 7
+ 1153 05f2 7860     		str	r0, [r7, #4]
+ 1154 05f4 0B46     		mov	r3, r1
+ 1155 05f6 FB70     		strb	r3, [r7, #3]
+ 269:openstack/cross-layers/packetfunctions.c ****    pkt->payload -= header_length;
+ 1156              		.loc 1 269 0
+ 1157 05f8 7B68     		ldr	r3, [r7, #4]
+ 1158 05fa 5A68     		ldr	r2, [r3, #4]
+ 1159 05fc FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 1160 05fe C3F10003 		rsb	r3, r3, #0
+ 1161 0602 D218     		adds	r2, r2, r3
+ 1162 0604 7B68     		ldr	r3, [r7, #4]
+ 1163 0606 5A60     		str	r2, [r3, #4]
+ 270:openstack/cross-layers/packetfunctions.c ****    pkt->length  += header_length;
+ 1164              		.loc 1 270 0
+ 1165 0608 7B68     		ldr	r3, [r7, #4]
+ 1166 060a 1A7A     		ldrb	r2, [r3, #8]	@ zero_extendqisi2
+ 1167 060c FB78     		ldrb	r3, [r7, #3]
+ 1168 060e D318     		adds	r3, r2, r3
+ 1169 0610 DAB2     		uxtb	r2, r3
+ 1170 0612 7B68     		ldr	r3, [r7, #4]
+ 1171 0614 1A72     		strb	r2, [r3, #8]
+ 271:openstack/cross-layers/packetfunctions.c ****    if ( (uint8_t*)(pkt->payload) < (uint8_t*)(pkt->packet) ) {
+ 1172              		.loc 1 271 0
+ 1173 0616 7B68     		ldr	r3, [r7, #4]
+ 1174 0618 5A68     		ldr	r2, [r3, #4]
+ 1175 061a 7B68     		ldr	r3, [r7, #4]
+ 1176 061c 03F16B03 		add	r3, r3, #107
+ 1177 0620 9A42     		cmp	r2, r3
+ 1178 0622 09D2     		bcs	.L65
+ 272:openstack/cross-layers/packetfunctions.c ****       openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_HEADER_TOO_LONG,
+ 273:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)0,
+ 274:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)pkt->length);
+ 1179              		.loc 1 274 0
+ 1180 0624 7B68     		ldr	r3, [r7, #4]
+ 1181 0626 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 272:openstack/cross-layers/packetfunctions.c ****       openserial_printCritical(COMPONENT_PACKETFUNCTIONS,ERR_HEADER_TOO_LONG,
+ 1182              		.loc 1 272 0
+ 1183 0628 4FF00500 		mov	r0, #5
+ 1184 062c 4FF03301 		mov	r1, #51
+ 1185 0630 4FF00002 		mov	r2, #0
+ 1186 0634 FFF7FEFF 		bl	openserial_printCritical
+ 1187              	.L65:
+ 275:openstack/cross-layers/packetfunctions.c ****    }
+ 276:openstack/cross-layers/packetfunctions.c **** }
+ 1188              		.loc 1 276 0
+ 1189 0638 07F10807 		add	r7, r7, #8
+ 1190 063c BD46     		mov	sp, r7
+ 1191 063e 80BD     		pop	{r7, pc}
+ 1192              		.cfi_endproc
+ 1193              	.LFE10:
+ 1195              		.align	2
+ 1196              		.global	packetfunctions_tossHeader
+ 1197              		.thumb
+ 1198              		.thumb_func
+ 1200              	packetfunctions_tossHeader:
+ 1201              	.LFB11:
+ 277:openstack/cross-layers/packetfunctions.c **** 
+ 278:openstack/cross-layers/packetfunctions.c **** void packetfunctions_tossHeader(OpenQueueEntry_t* pkt, uint8_t header_length) {
+ 1202              		.loc 1 278 0
+ 1203              		.cfi_startproc
+ 1204              		@ args = 0, pretend = 0, frame = 8
+ 1205              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1206 0640 80B5     		push	{r7, lr}
+ 1207              	.LCFI33:
+ 1208              		.cfi_def_cfa_offset 8
+ 1209              		.cfi_offset 7, -8
+ 1210              		.cfi_offset 14, -4
+ 1211 0642 82B0     		sub	sp, sp, #8
+ 1212              	.LCFI34:
+ 1213              		.cfi_def_cfa_offset 16
+ 1214 0644 00AF     		add	r7, sp, #0
+ 1215              	.LCFI35:
+ 1216              		.cfi_def_cfa_register 7
+ 1217 0646 7860     		str	r0, [r7, #4]
+ 1218 0648 0B46     		mov	r3, r1
+ 1219 064a FB70     		strb	r3, [r7, #3]
+ 279:openstack/cross-layers/packetfunctions.c ****    pkt->payload += header_length;
+ 1220              		.loc 1 279 0
+ 1221 064c 7B68     		ldr	r3, [r7, #4]
+ 1222 064e 5A68     		ldr	r2, [r3, #4]
+ 1223 0650 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 1224 0652 D218     		adds	r2, r2, r3
+ 1225 0654 7B68     		ldr	r3, [r7, #4]
+ 1226 0656 5A60     		str	r2, [r3, #4]
+ 280:openstack/cross-layers/packetfunctions.c ****    pkt->length  -= header_length;
+ 1227              		.loc 1 280 0
+ 1228 0658 7B68     		ldr	r3, [r7, #4]
+ 1229 065a 1A7A     		ldrb	r2, [r3, #8]	@ zero_extendqisi2
+ 1230 065c FB78     		ldrb	r3, [r7, #3]
+ 1231 065e D31A     		subs	r3, r2, r3
+ 1232 0660 DAB2     		uxtb	r2, r3
+ 1233 0662 7B68     		ldr	r3, [r7, #4]
+ 1234 0664 1A72     		strb	r2, [r3, #8]
+ 281:openstack/cross-layers/packetfunctions.c ****    if ( (uint8_t*)(pkt->payload) > (uint8_t*)(pkt->packet+126) ) {
+ 1235              		.loc 1 281 0
+ 1236 0666 7B68     		ldr	r3, [r7, #4]
+ 1237 0668 5A68     		ldr	r2, [r3, #4]
+ 1238 066a 7B68     		ldr	r3, [r7, #4]
+ 1239 066c 03F1E903 		add	r3, r3, #233
+ 1240 0670 9A42     		cmp	r2, r3
+ 1241 0672 09D9     		bls	.L67
+ 282:openstack/cross-layers/packetfunctions.c ****       openserial_printError(COMPONENT_PACKETFUNCTIONS,ERR_HEADER_TOO_LONG,
+ 283:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)1,
+ 284:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)pkt->length);
+ 1242              		.loc 1 284 0
+ 1243 0674 7B68     		ldr	r3, [r7, #4]
+ 1244 0676 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 282:openstack/cross-layers/packetfunctions.c ****       openserial_printError(COMPONENT_PACKETFUNCTIONS,ERR_HEADER_TOO_LONG,
+ 1245              		.loc 1 282 0
+ 1246 0678 4FF00500 		mov	r0, #5
+ 1247 067c 4FF03301 		mov	r1, #51
+ 1248 0680 4FF00102 		mov	r2, #1
+ 1249 0684 FFF7FEFF 		bl	openserial_printError
+ 1250              	.L67:
+ 285:openstack/cross-layers/packetfunctions.c ****    }
+ 286:openstack/cross-layers/packetfunctions.c **** }
+ 1251              		.loc 1 286 0
+ 1252 0688 07F10807 		add	r7, r7, #8
+ 1253 068c BD46     		mov	sp, r7
+ 1254 068e 80BD     		pop	{r7, pc}
+ 1255              		.cfi_endproc
+ 1256              	.LFE11:
+ 1258              		.align	2
+ 1259              		.global	packetfunctions_reserveFooterSize
+ 1260              		.thumb
+ 1261              		.thumb_func
+ 1263              	packetfunctions_reserveFooterSize:
+ 1264              	.LFB12:
+ 287:openstack/cross-layers/packetfunctions.c **** 
+ 288:openstack/cross-layers/packetfunctions.c **** void packetfunctions_reserveFooterSize(OpenQueueEntry_t* pkt, uint8_t header_length) {
+ 1265              		.loc 1 288 0
+ 1266              		.cfi_startproc
+ 1267              		@ args = 0, pretend = 0, frame = 8
+ 1268              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1269 0690 80B5     		push	{r7, lr}
+ 1270              	.LCFI36:
+ 1271              		.cfi_def_cfa_offset 8
+ 1272              		.cfi_offset 7, -8
+ 1273              		.cfi_offset 14, -4
+ 1274 0692 82B0     		sub	sp, sp, #8
+ 1275              	.LCFI37:
+ 1276              		.cfi_def_cfa_offset 16
+ 1277 0694 00AF     		add	r7, sp, #0
+ 1278              	.LCFI38:
+ 1279              		.cfi_def_cfa_register 7
+ 1280 0696 7860     		str	r0, [r7, #4]
+ 1281 0698 0B46     		mov	r3, r1
+ 1282 069a FB70     		strb	r3, [r7, #3]
+ 289:openstack/cross-layers/packetfunctions.c ****    pkt->length  += header_length;
+ 1283              		.loc 1 289 0
+ 1284 069c 7B68     		ldr	r3, [r7, #4]
+ 1285 069e 1A7A     		ldrb	r2, [r3, #8]	@ zero_extendqisi2
+ 1286 06a0 FB78     		ldrb	r3, [r7, #3]
+ 1287 06a2 D318     		adds	r3, r2, r3
+ 1288 06a4 DAB2     		uxtb	r2, r3
+ 1289 06a6 7B68     		ldr	r3, [r7, #4]
+ 1290 06a8 1A72     		strb	r2, [r3, #8]
+ 290:openstack/cross-layers/packetfunctions.c ****    if (pkt->length>127) {
+ 1291              		.loc 1 290 0
+ 1292 06aa 7B68     		ldr	r3, [r7, #4]
+ 1293 06ac 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 1294 06ae DBB2     		uxtb	r3, r3
+ 1295 06b0 5BB2     		sxtb	r3, r3
+ 1296 06b2 002B     		cmp	r3, #0
+ 1297 06b4 09DA     		bge	.L69
+ 291:openstack/cross-layers/packetfunctions.c ****       openserial_printError(COMPONENT_PACKETFUNCTIONS,ERR_HEADER_TOO_LONG,
+ 292:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)2,
+ 293:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)pkt->length);
+ 1298              		.loc 1 293 0
+ 1299 06b6 7B68     		ldr	r3, [r7, #4]
+ 1300 06b8 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 291:openstack/cross-layers/packetfunctions.c ****       openserial_printError(COMPONENT_PACKETFUNCTIONS,ERR_HEADER_TOO_LONG,
+ 1301              		.loc 1 291 0
+ 1302 06ba 4FF00500 		mov	r0, #5
+ 1303 06be 4FF03301 		mov	r1, #51
+ 1304 06c2 4FF00202 		mov	r2, #2
+ 1305 06c6 FFF7FEFF 		bl	openserial_printError
+ 1306              	.L69:
+ 294:openstack/cross-layers/packetfunctions.c ****    }
+ 295:openstack/cross-layers/packetfunctions.c **** }
+ 1307              		.loc 1 295 0
+ 1308 06ca 07F10807 		add	r7, r7, #8
+ 1309 06ce BD46     		mov	sp, r7
+ 1310 06d0 80BD     		pop	{r7, pc}
+ 1311              		.cfi_endproc
+ 1312              	.LFE12:
+ 1314 06d2 00BF     		.align	2
+ 1315              		.global	packetfunctions_tossFooter
+ 1316              		.thumb
+ 1317              		.thumb_func
+ 1319              	packetfunctions_tossFooter:
+ 1320              	.LFB13:
+ 296:openstack/cross-layers/packetfunctions.c **** 
+ 297:openstack/cross-layers/packetfunctions.c **** void packetfunctions_tossFooter(OpenQueueEntry_t* pkt, uint8_t header_length) {
+ 1321              		.loc 1 297 0
+ 1322              		.cfi_startproc
+ 1323              		@ args = 0, pretend = 0, frame = 8
+ 1324              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1325 06d4 80B5     		push	{r7, lr}
+ 1326              	.LCFI39:
+ 1327              		.cfi_def_cfa_offset 8
+ 1328              		.cfi_offset 7, -8
+ 1329              		.cfi_offset 14, -4
+ 1330 06d6 82B0     		sub	sp, sp, #8
+ 1331              	.LCFI40:
+ 1332              		.cfi_def_cfa_offset 16
+ 1333 06d8 00AF     		add	r7, sp, #0
+ 1334              	.LCFI41:
+ 1335              		.cfi_def_cfa_register 7
+ 1336 06da 7860     		str	r0, [r7, #4]
+ 1337 06dc 0B46     		mov	r3, r1
+ 1338 06de FB70     		strb	r3, [r7, #3]
+ 298:openstack/cross-layers/packetfunctions.c ****    pkt->length  -= header_length;
+ 1339              		.loc 1 298 0
+ 1340 06e0 7B68     		ldr	r3, [r7, #4]
+ 1341 06e2 1A7A     		ldrb	r2, [r3, #8]	@ zero_extendqisi2
+ 1342 06e4 FB78     		ldrb	r3, [r7, #3]
+ 1343 06e6 D31A     		subs	r3, r2, r3
+ 1344 06e8 DAB2     		uxtb	r2, r3
+ 1345 06ea 7B68     		ldr	r3, [r7, #4]
+ 1346 06ec 1A72     		strb	r2, [r3, #8]
+ 299:openstack/cross-layers/packetfunctions.c ****    if (pkt->length>128) {//wraps around, so a negative value will be >128
+ 1347              		.loc 1 299 0
+ 1348 06ee 7B68     		ldr	r3, [r7, #4]
+ 1349 06f0 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 1350 06f2 802B     		cmp	r3, #128
+ 1351 06f4 09D9     		bls	.L71
+ 300:openstack/cross-layers/packetfunctions.c ****       openserial_printError(COMPONENT_PACKETFUNCTIONS,ERR_HEADER_TOO_LONG,
+ 301:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)3,
+ 302:openstack/cross-layers/packetfunctions.c ****                             (errorparameter_t)pkt->length);
+ 1352              		.loc 1 302 0
+ 1353 06f6 7B68     		ldr	r3, [r7, #4]
+ 1354 06f8 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 300:openstack/cross-layers/packetfunctions.c ****       openserial_printError(COMPONENT_PACKETFUNCTIONS,ERR_HEADER_TOO_LONG,
+ 1355              		.loc 1 300 0
+ 1356 06fa 4FF00500 		mov	r0, #5
+ 1357 06fe 4FF03301 		mov	r1, #51
+ 1358 0702 4FF00302 		mov	r2, #3
+ 1359 0706 FFF7FEFF 		bl	openserial_printError
+ 1360              	.L71:
+ 303:openstack/cross-layers/packetfunctions.c ****    }
+ 304:openstack/cross-layers/packetfunctions.c **** }
+ 1361              		.loc 1 304 0
+ 1362 070a 07F10807 		add	r7, r7, #8
+ 1363 070e BD46     		mov	sp, r7
+ 1364 0710 80BD     		pop	{r7, pc}
+ 1365              		.cfi_endproc
+ 1366              	.LFE13:
+ 1368 0712 00BF     		.align	2
+ 1369              		.global	packetfunctions_calculateCRC
+ 1370              		.thumb
+ 1371              		.thumb_func
+ 1373              	packetfunctions_calculateCRC:
+ 1374              	.LFB14:
+ 305:openstack/cross-layers/packetfunctions.c **** 
+ 306:openstack/cross-layers/packetfunctions.c **** //======= CRC calculation
+ 307:openstack/cross-layers/packetfunctions.c **** 
+ 308:openstack/cross-layers/packetfunctions.c **** void packetfunctions_calculateCRC(OpenQueueEntry_t* msg) {
+ 1375              		.loc 1 308 0
+ 1376              		.cfi_startproc
+ 1377              		@ args = 0, pretend = 0, frame = 16
+ 1378              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1379              		@ link register save eliminated.
+ 1380 0714 80B4     		push	{r7}
+ 1381              	.LCFI42:
+ 1382              		.cfi_def_cfa_offset 4
+ 1383              		.cfi_offset 7, -4
+ 1384 0716 85B0     		sub	sp, sp, #20
+ 1385              	.LCFI43:
+ 1386              		.cfi_def_cfa_offset 24
+ 1387 0718 00AF     		add	r7, sp, #0
+ 1388              	.LCFI44:
+ 1389              		.cfi_def_cfa_register 7
+ 1390 071a 7860     		str	r0, [r7, #4]
+ 309:openstack/cross-layers/packetfunctions.c ****    uint16_t crc;
+ 310:openstack/cross-layers/packetfunctions.c ****    uint8_t  i;
+ 311:openstack/cross-layers/packetfunctions.c ****    uint8_t  count;
+ 312:openstack/cross-layers/packetfunctions.c ****    crc = 0;
+ 1391              		.loc 1 312 0
+ 1392 071c 4FF00003 		mov	r3, #0
+ 1393 0720 FB81     		strh	r3, [r7, #14]	@ movhi
+ 313:openstack/cross-layers/packetfunctions.c ****    for (count=1;count<msg->length-2;count++) {
+ 1394              		.loc 1 313 0
+ 1395 0722 4FF00103 		mov	r3, #1
+ 1396 0726 3B73     		strb	r3, [r7, #12]
+ 1397 0728 2BE0     		b	.L74
+ 1398              	.L79:
+ 314:openstack/cross-layers/packetfunctions.c ****       crc = crc ^ (uint8_t)*(msg->payload+count);
+ 1399              		.loc 1 314 0
+ 1400 072a 7B68     		ldr	r3, [r7, #4]
+ 1401 072c 5A68     		ldr	r2, [r3, #4]
+ 1402 072e 3B7B     		ldrb	r3, [r7, #12]	@ zero_extendqisi2
+ 1403 0730 D318     		adds	r3, r2, r3
+ 1404 0732 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1405 0734 1A46     		mov	r2, r3
+ 1406 0736 FB89     		ldrh	r3, [r7, #14]	@ movhi
+ 1407 0738 5340     		eors	r3, r3, r2
+ 1408 073a FB81     		strh	r3, [r7, #14]	@ movhi
+ 315:openstack/cross-layers/packetfunctions.c ****       //crc = crc ^ (uint16_t)*ptr++ << 8;
+ 316:openstack/cross-layers/packetfunctions.c ****       for (i=0;i<8;i++) {
+ 1409              		.loc 1 316 0
+ 1410 073c 4FF00003 		mov	r3, #0
+ 1411 0740 7B73     		strb	r3, [r7, #13]
+ 1412 0742 17E0     		b	.L75
+ 1413              	.L78:
+ 317:openstack/cross-layers/packetfunctions.c ****          if (crc & 0x1) {
+ 1414              		.loc 1 317 0
+ 1415 0744 FB89     		ldrh	r3, [r7, #14]
+ 1416 0746 03F00103 		and	r3, r3, #1
+ 1417 074a 002B     		cmp	r3, #0
+ 1418 074c 0AD0     		beq	.L76
+ 318:openstack/cross-layers/packetfunctions.c ****             crc = crc >> 1 ^ 0x8408;
+ 1419              		.loc 1 318 0
+ 1420 074e FB89     		ldrh	r3, [r7, #14]
+ 1421 0750 4FEA5303 		lsr	r3, r3, #1
+ 1422 0754 9AB2     		uxth	r2, r3
+ 1423 0756 48F20843 		movw	r3, #33800
+ 1424 075a CFF6FF73 		movt	r3, 65535
+ 1425 075e 5340     		eors	r3, r3, r2
+ 1426 0760 FB81     		strh	r3, [r7, #14]	@ movhi
+ 1427 0762 03E0     		b	.L77
+ 1428              	.L76:
+ 319:openstack/cross-layers/packetfunctions.c ****          } else {
+ 320:openstack/cross-layers/packetfunctions.c ****             crc = crc >> 1;
+ 1429              		.loc 1 320 0
+ 1430 0764 FB89     		ldrh	r3, [r7, #14]
+ 1431 0766 4FEA5303 		lsr	r3, r3, #1
+ 1432 076a FB81     		strh	r3, [r7, #14]	@ movhi
+ 1433              	.L77:
+ 316:openstack/cross-layers/packetfunctions.c ****       for (i=0;i<8;i++) {
+ 1434              		.loc 1 316 0
+ 1435 076c 7B7B     		ldrb	r3, [r7, #13]
+ 1436 076e 03F10103 		add	r3, r3, #1
+ 1437 0772 7B73     		strb	r3, [r7, #13]
+ 1438              	.L75:
+ 316:openstack/cross-layers/packetfunctions.c ****       for (i=0;i<8;i++) {
+ 1439              		.loc 1 316 0 is_stmt 0 discriminator 1
+ 1440 0774 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 1441 0776 072B     		cmp	r3, #7
+ 1442 0778 E4D9     		bls	.L78
+ 313:openstack/cross-layers/packetfunctions.c ****    for (count=1;count<msg->length-2;count++) {
+ 1443              		.loc 1 313 0 is_stmt 1
+ 1444 077a 3B7B     		ldrb	r3, [r7, #12]
+ 1445 077c 03F10103 		add	r3, r3, #1
+ 1446 0780 3B73     		strb	r3, [r7, #12]
+ 1447              	.L74:
+ 313:openstack/cross-layers/packetfunctions.c ****    for (count=1;count<msg->length-2;count++) {
+ 1448              		.loc 1 313 0 is_stmt 0 discriminator 1
+ 1449 0782 3A7B     		ldrb	r2, [r7, #12]	@ zero_extendqisi2
+ 1450 0784 7B68     		ldr	r3, [r7, #4]
+ 1451 0786 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 1452 0788 A3F10203 		sub	r3, r3, #2
+ 1453 078c 9A42     		cmp	r2, r3
+ 1454 078e CCDB     		blt	.L79
+ 321:openstack/cross-layers/packetfunctions.c ****          }
+ 322:openstack/cross-layers/packetfunctions.c ****       }
+ 323:openstack/cross-layers/packetfunctions.c ****    }
+ 324:openstack/cross-layers/packetfunctions.c ****    *(msg->payload+(msg->length-2)) = crc%256;
+ 1455              		.loc 1 324 0 is_stmt 1
+ 1456 0790 7B68     		ldr	r3, [r7, #4]
+ 1457 0792 5A68     		ldr	r2, [r3, #4]
+ 1458 0794 7B68     		ldr	r3, [r7, #4]
+ 1459 0796 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 1460 0798 A3F10203 		sub	r3, r3, #2
+ 1461 079c D318     		adds	r3, r2, r3
+ 1462 079e FA89     		ldrh	r2, [r7, #14]	@ movhi
+ 1463 07a0 D2B2     		uxtb	r2, r2
+ 1464 07a2 1A70     		strb	r2, [r3, #0]
+ 325:openstack/cross-layers/packetfunctions.c ****    *(msg->payload+(msg->length-1)) = crc/256;
+ 1465              		.loc 1 325 0
+ 1466 07a4 7B68     		ldr	r3, [r7, #4]
+ 1467 07a6 5A68     		ldr	r2, [r3, #4]
+ 1468 07a8 7B68     		ldr	r3, [r7, #4]
+ 1469 07aa 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 1470 07ac 03F1FF33 		add	r3, r3, #-1
+ 1471 07b0 D318     		adds	r3, r2, r3
+ 1472 07b2 FA89     		ldrh	r2, [r7, #14]
+ 1473 07b4 4FEA1222 		lsr	r2, r2, #8
+ 1474 07b8 92B2     		uxth	r2, r2
+ 1475 07ba D2B2     		uxtb	r2, r2
+ 1476 07bc 1A70     		strb	r2, [r3, #0]
+ 326:openstack/cross-layers/packetfunctions.c **** }
+ 1477              		.loc 1 326 0
+ 1478 07be 07F11407 		add	r7, r7, #20
+ 1479 07c2 BD46     		mov	sp, r7
+ 1480 07c4 80BC     		pop	{r7}
+ 1481 07c6 7047     		bx	lr
+ 1482              		.cfi_endproc
+ 1483              	.LFE14:
+ 1485              		.align	2
+ 1486              		.global	packetfunctions_checkCRC
+ 1487              		.thumb
+ 1488              		.thumb_func
+ 1490              	packetfunctions_checkCRC:
+ 1491              	.LFB15:
+ 327:openstack/cross-layers/packetfunctions.c **** 
+ 328:openstack/cross-layers/packetfunctions.c **** bool packetfunctions_checkCRC(OpenQueueEntry_t* msg) {
+ 1492              		.loc 1 328 0
+ 1493              		.cfi_startproc
+ 1494              		@ args = 0, pretend = 0, frame = 16
+ 1495              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1496              		@ link register save eliminated.
+ 1497 07c8 80B4     		push	{r7}
+ 1498              	.LCFI45:
+ 1499              		.cfi_def_cfa_offset 4
+ 1500              		.cfi_offset 7, -4
+ 1501 07ca 85B0     		sub	sp, sp, #20
+ 1502              	.LCFI46:
+ 1503              		.cfi_def_cfa_offset 24
+ 1504 07cc 00AF     		add	r7, sp, #0
+ 1505              	.LCFI47:
+ 1506              		.cfi_def_cfa_register 7
+ 1507 07ce 7860     		str	r0, [r7, #4]
+ 329:openstack/cross-layers/packetfunctions.c ****    uint16_t crc;
+ 330:openstack/cross-layers/packetfunctions.c ****    uint8_t  i;
+ 331:openstack/cross-layers/packetfunctions.c ****    uint8_t  count;
+ 332:openstack/cross-layers/packetfunctions.c ****    crc = 0;
+ 1508              		.loc 1 332 0
+ 1509 07d0 4FF00003 		mov	r3, #0
+ 1510 07d4 FB81     		strh	r3, [r7, #14]	@ movhi
+ 333:openstack/cross-layers/packetfunctions.c ****    for (count=0;count<msg->length-2;count++) {
+ 1511              		.loc 1 333 0
+ 1512 07d6 4FF00003 		mov	r3, #0
+ 1513 07da 3B73     		strb	r3, [r7, #12]
+ 1514 07dc 2BE0     		b	.L81
+ 1515              	.L86:
+ 334:openstack/cross-layers/packetfunctions.c ****       crc = crc ^ (uint8_t)*(msg->payload+count);
+ 1516              		.loc 1 334 0
+ 1517 07de 7B68     		ldr	r3, [r7, #4]
+ 1518 07e0 5A68     		ldr	r2, [r3, #4]
+ 1519 07e2 3B7B     		ldrb	r3, [r7, #12]	@ zero_extendqisi2
+ 1520 07e4 D318     		adds	r3, r2, r3
+ 1521 07e6 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1522 07e8 1A46     		mov	r2, r3
+ 1523 07ea FB89     		ldrh	r3, [r7, #14]	@ movhi
+ 1524 07ec 5340     		eors	r3, r3, r2
+ 1525 07ee FB81     		strh	r3, [r7, #14]	@ movhi
+ 335:openstack/cross-layers/packetfunctions.c ****       //crc = crc ^ (uint16_t)*ptr++ << 8;
+ 336:openstack/cross-layers/packetfunctions.c ****       for (i=0;i<8;i++) {
+ 1526              		.loc 1 336 0
+ 1527 07f0 4FF00003 		mov	r3, #0
+ 1528 07f4 7B73     		strb	r3, [r7, #13]
+ 1529 07f6 17E0     		b	.L82
+ 1530              	.L85:
+ 337:openstack/cross-layers/packetfunctions.c ****          if (crc & 0x1) {
+ 1531              		.loc 1 337 0
+ 1532 07f8 FB89     		ldrh	r3, [r7, #14]
+ 1533 07fa 03F00103 		and	r3, r3, #1
+ 1534 07fe 002B     		cmp	r3, #0
+ 1535 0800 0AD0     		beq	.L83
+ 338:openstack/cross-layers/packetfunctions.c ****             crc = crc >> 1 ^ 0x8408;
+ 1536              		.loc 1 338 0
+ 1537 0802 FB89     		ldrh	r3, [r7, #14]
+ 1538 0804 4FEA5303 		lsr	r3, r3, #1
+ 1539 0808 9AB2     		uxth	r2, r3
+ 1540 080a 48F20843 		movw	r3, #33800
+ 1541 080e CFF6FF73 		movt	r3, 65535
+ 1542 0812 5340     		eors	r3, r3, r2
+ 1543 0814 FB81     		strh	r3, [r7, #14]	@ movhi
+ 1544 0816 03E0     		b	.L84
+ 1545              	.L83:
+ 339:openstack/cross-layers/packetfunctions.c ****          } else {
+ 340:openstack/cross-layers/packetfunctions.c ****             crc = crc >> 1;
+ 1546              		.loc 1 340 0
+ 1547 0818 FB89     		ldrh	r3, [r7, #14]
+ 1548 081a 4FEA5303 		lsr	r3, r3, #1
+ 1549 081e FB81     		strh	r3, [r7, #14]	@ movhi
+ 1550              	.L84:
+ 336:openstack/cross-layers/packetfunctions.c ****       for (i=0;i<8;i++) {
+ 1551              		.loc 1 336 0
+ 1552 0820 7B7B     		ldrb	r3, [r7, #13]
+ 1553 0822 03F10103 		add	r3, r3, #1
+ 1554 0826 7B73     		strb	r3, [r7, #13]
+ 1555              	.L82:
+ 336:openstack/cross-layers/packetfunctions.c ****       for (i=0;i<8;i++) {
+ 1556              		.loc 1 336 0 is_stmt 0 discriminator 1
+ 1557 0828 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 1558 082a 072B     		cmp	r3, #7
+ 1559 082c E4D9     		bls	.L85
+ 333:openstack/cross-layers/packetfunctions.c ****    for (count=0;count<msg->length-2;count++) {
+ 1560              		.loc 1 333 0 is_stmt 1
+ 1561 082e 3B7B     		ldrb	r3, [r7, #12]
+ 1562 0830 03F10103 		add	r3, r3, #1
+ 1563 0834 3B73     		strb	r3, [r7, #12]
+ 1564              	.L81:
+ 333:openstack/cross-layers/packetfunctions.c ****    for (count=0;count<msg->length-2;count++) {
+ 1565              		.loc 1 333 0 is_stmt 0 discriminator 1
+ 1566 0836 3A7B     		ldrb	r2, [r7, #12]	@ zero_extendqisi2
+ 1567 0838 7B68     		ldr	r3, [r7, #4]
+ 1568 083a 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 1569 083c A3F10203 		sub	r3, r3, #2
+ 1570 0840 9A42     		cmp	r2, r3
+ 1571 0842 CCDB     		blt	.L86
+ 341:openstack/cross-layers/packetfunctions.c ****          }
+ 342:openstack/cross-layers/packetfunctions.c ****       }
+ 343:openstack/cross-layers/packetfunctions.c ****    }
+ 344:openstack/cross-layers/packetfunctions.c ****    if (*(msg->payload+(msg->length-2))==crc%256 &&
+ 1572              		.loc 1 344 0 is_stmt 1
+ 1573 0844 7B68     		ldr	r3, [r7, #4]
+ 1574 0846 5A68     		ldr	r2, [r3, #4]
+ 1575 0848 7B68     		ldr	r3, [r7, #4]
+ 1576 084a 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 1577 084c A3F10203 		sub	r3, r3, #2
+ 1578 0850 D318     		adds	r3, r2, r3
+ 1579 0852 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1580 0854 1A46     		mov	r2, r3
+ 1581 0856 FB89     		ldrh	r3, [r7, #14]	@ movhi
+ 1582 0858 DBB2     		uxtb	r3, r3
+ 1583 085a 9BB2     		uxth	r3, r3
+ 1584 085c 9A42     		cmp	r2, r3
+ 1585 085e 11D1     		bne	.L87
+ 345:openstack/cross-layers/packetfunctions.c ****        *(msg->payload+(msg->length-1))==crc/256) {
+ 1586              		.loc 1 345 0 discriminator 1
+ 1587 0860 7B68     		ldr	r3, [r7, #4]
+ 1588 0862 5A68     		ldr	r2, [r3, #4]
+ 1589 0864 7B68     		ldr	r3, [r7, #4]
+ 1590 0866 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 1591 0868 03F1FF33 		add	r3, r3, #-1
+ 1592 086c D318     		adds	r3, r2, r3
+ 1593 086e 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1594 0870 1A46     		mov	r2, r3
+ 1595 0872 FB89     		ldrh	r3, [r7, #14]
+ 1596 0874 4FEA1323 		lsr	r3, r3, #8
+ 1597 0878 9BB2     		uxth	r3, r3
+ 344:openstack/cross-layers/packetfunctions.c ****    if (*(msg->payload+(msg->length-2))==crc%256 &&
+ 1598              		.loc 1 344 0 discriminator 1
+ 1599 087a 9A42     		cmp	r2, r3
+ 1600 087c 02D1     		bne	.L87
+ 346:openstack/cross-layers/packetfunctions.c ****           return TRUE;
+ 1601              		.loc 1 346 0
+ 1602 087e 4FF00103 		mov	r3, #1
+ 1603 0882 01E0     		b	.L88
+ 1604              	.L87:
+ 347:openstack/cross-layers/packetfunctions.c ****        } else {
+ 348:openstack/cross-layers/packetfunctions.c ****           return FALSE;
+ 1605              		.loc 1 348 0
+ 1606 0884 4FF00003 		mov	r3, #0
+ 1607              	.L88:
+ 349:openstack/cross-layers/packetfunctions.c ****        }
+ 350:openstack/cross-layers/packetfunctions.c **** }
+ 1608              		.loc 1 350 0
+ 1609 0888 1846     		mov	r0, r3
+ 1610 088a 07F11407 		add	r7, r7, #20
+ 1611 088e BD46     		mov	sp, r7
+ 1612 0890 80BC     		pop	{r7}
+ 1613 0892 7047     		bx	lr
+ 1614              		.cfi_endproc
+ 1615              	.LFE15:
+ 1617              		.align	2
+ 1618              		.global	packetfunctions_calculateChecksum
+ 1619              		.thumb
+ 1620              		.thumb_func
+ 1622              	packetfunctions_calculateChecksum:
+ 1623              	.LFB16:
+ 351:openstack/cross-layers/packetfunctions.c **** 
+ 352:openstack/cross-layers/packetfunctions.c **** //======= checksum calculation
+ 353:openstack/cross-layers/packetfunctions.c **** 
+ 354:openstack/cross-layers/packetfunctions.c **** //see http://www-net.cs.umass.edu/kurose/transport/UDP.html, or http://tools.ietf.org/html/rfc1071
+ 355:openstack/cross-layers/packetfunctions.c **** //see http://en.wikipedia.org/wiki/User_Datagram_Protocol#IPv6_PSEUDO-HEADER
+ 356:openstack/cross-layers/packetfunctions.c **** void packetfunctions_calculateChecksum(OpenQueueEntry_t* msg, uint8_t* checksum_ptr) {
+ 1624              		.loc 1 356 0
+ 1625              		.cfi_startproc
+ 1626              		@ args = 0, pretend = 0, frame = 16
+ 1627              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1628 0894 80B5     		push	{r7, lr}
+ 1629              	.LCFI48:
+ 1630              		.cfi_def_cfa_offset 8
+ 1631              		.cfi_offset 7, -8
+ 1632              		.cfi_offset 14, -4
+ 1633 0896 84B0     		sub	sp, sp, #16
+ 1634              	.LCFI49:
+ 1635              		.cfi_def_cfa_offset 24
+ 1636 0898 00AF     		add	r7, sp, #0
+ 1637              	.LCFI50:
+ 1638              		.cfi_def_cfa_register 7
+ 1639 089a 7860     		str	r0, [r7, #4]
+ 1640 089c 3960     		str	r1, [r7, #0]
+ 357:openstack/cross-layers/packetfunctions.c ****    uint8_t temp_checksum[2];
+ 358:openstack/cross-layers/packetfunctions.c ****    uint8_t little_helper[2];
+ 359:openstack/cross-layers/packetfunctions.c ****    
+ 360:openstack/cross-layers/packetfunctions.c ****    // initialize running checksum
+ 361:openstack/cross-layers/packetfunctions.c ****    temp_checksum[0]  = 0;
+ 1641              		.loc 1 361 0
+ 1642 089e 4FF00003 		mov	r3, #0
+ 1643 08a2 3B73     		strb	r3, [r7, #12]
+ 362:openstack/cross-layers/packetfunctions.c ****    temp_checksum[1]  = 0;
+ 1644              		.loc 1 362 0
+ 1645 08a4 4FF00003 		mov	r3, #0
+ 1646 08a8 7B73     		strb	r3, [r7, #13]
+ 363:openstack/cross-layers/packetfunctions.c ****    
+ 364:openstack/cross-layers/packetfunctions.c ****    //===== IPv6 pseudo header
+ 365:openstack/cross-layers/packetfunctions.c ****    
+ 366:openstack/cross-layers/packetfunctions.c ****    // source address (prefix and EUI64)
+ 367:openstack/cross-layers/packetfunctions.c ****    onesComplementSum(temp_checksum,(idmanager_getMyID(ADDR_PREFIX))->prefix,8);
+ 1647              		.loc 1 367 0
+ 1648 08aa 4FF00500 		mov	r0, #5
+ 1649 08ae FFF7FEFF 		bl	idmanager_getMyID
+ 1650 08b2 0346     		mov	r3, r0
+ 1651 08b4 03F10103 		add	r3, r3, #1
+ 1652 08b8 07F10C02 		add	r2, r7, #12
+ 1653 08bc 1046     		mov	r0, r2
+ 1654 08be 1946     		mov	r1, r3
+ 1655 08c0 4FF00802 		mov	r2, #8
+ 1656 08c4 FFF7FEFF 		bl	onesComplementSum
+ 368:openstack/cross-layers/packetfunctions.c ****    onesComplementSum(temp_checksum,(idmanager_getMyID(ADDR_64B))->addr_64b,8);
+ 1657              		.loc 1 368 0
+ 1658 08c8 4FF00200 		mov	r0, #2
+ 1659 08cc FFF7FEFF 		bl	idmanager_getMyID
+ 1660 08d0 0346     		mov	r3, r0
+ 1661 08d2 03F10103 		add	r3, r3, #1
+ 1662 08d6 07F10C02 		add	r2, r7, #12
+ 1663 08da 1046     		mov	r0, r2
+ 1664 08dc 1946     		mov	r1, r3
+ 1665 08de 4FF00802 		mov	r2, #8
+ 1666 08e2 FFF7FEFF 		bl	onesComplementSum
+ 369:openstack/cross-layers/packetfunctions.c ****    
+ 370:openstack/cross-layers/packetfunctions.c ****    // destination address
+ 371:openstack/cross-layers/packetfunctions.c ****    onesComplementSum(temp_checksum,msg->l3_destinationAdd.addr_128b,16);
+ 1667              		.loc 1 371 0
+ 1668 08e6 7B68     		ldr	r3, [r7, #4]
+ 1669 08e8 03F11603 		add	r3, r3, #22
+ 1670 08ec 07F10C02 		add	r2, r7, #12
+ 1671 08f0 1046     		mov	r0, r2
+ 1672 08f2 1946     		mov	r1, r3
+ 1673 08f4 4FF01002 		mov	r2, #16
+ 1674 08f8 FFF7FEFF 		bl	onesComplementSum
+ 372:openstack/cross-layers/packetfunctions.c ****    
+ 373:openstack/cross-layers/packetfunctions.c ****    // length
+ 374:openstack/cross-layers/packetfunctions.c ****    little_helper[0] = 0;
+ 1675              		.loc 1 374 0
+ 1676 08fc 4FF00003 		mov	r3, #0
+ 1677 0900 3B72     		strb	r3, [r7, #8]
+ 375:openstack/cross-layers/packetfunctions.c ****    little_helper[1] = msg->length;
+ 1678              		.loc 1 375 0
+ 1679 0902 7B68     		ldr	r3, [r7, #4]
+ 1680 0904 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 1681 0906 7B72     		strb	r3, [r7, #9]
+ 376:openstack/cross-layers/packetfunctions.c ****    onesComplementSum(temp_checksum,little_helper,2);
+ 1682              		.loc 1 376 0
+ 1683 0908 07F10C02 		add	r2, r7, #12
+ 1684 090c 07F10803 		add	r3, r7, #8
+ 1685 0910 1046     		mov	r0, r2
+ 1686 0912 1946     		mov	r1, r3
+ 1687 0914 4FF00202 		mov	r2, #2
+ 1688 0918 FFF7FEFF 		bl	onesComplementSum
+ 377:openstack/cross-layers/packetfunctions.c ****    
+ 378:openstack/cross-layers/packetfunctions.c ****    // next header
+ 379:openstack/cross-layers/packetfunctions.c ****    little_helper[0] = 0;
+ 1689              		.loc 1 379 0
+ 1690 091c 4FF00003 		mov	r3, #0
+ 1691 0920 3B72     		strb	r3, [r7, #8]
+ 380:openstack/cross-layers/packetfunctions.c ****    little_helper[1] = msg->l4_protocol;
+ 1692              		.loc 1 380 0
+ 1693 0922 7B68     		ldr	r3, [r7, #4]
+ 1694 0924 5B7A     		ldrb	r3, [r3, #9]	@ zero_extendqisi2
+ 1695 0926 7B72     		strb	r3, [r7, #9]
+ 381:openstack/cross-layers/packetfunctions.c ****    onesComplementSum(temp_checksum,little_helper,2);
+ 1696              		.loc 1 381 0
+ 1697 0928 07F10C02 		add	r2, r7, #12
+ 1698 092c 07F10803 		add	r3, r7, #8
+ 1699 0930 1046     		mov	r0, r2
+ 1700 0932 1946     		mov	r1, r3
+ 1701 0934 4FF00202 		mov	r2, #2
+ 1702 0938 FFF7FEFF 		bl	onesComplementSum
+ 382:openstack/cross-layers/packetfunctions.c ****    
+ 383:openstack/cross-layers/packetfunctions.c ****    //===== payload
+ 384:openstack/cross-layers/packetfunctions.c ****    
+ 385:openstack/cross-layers/packetfunctions.c ****    // reset the checksum currently in the payload
+ 386:openstack/cross-layers/packetfunctions.c ****    *checksum_ptr     = 0;
+ 1703              		.loc 1 386 0
+ 1704 093c 3B68     		ldr	r3, [r7, #0]
+ 1705 093e 4FF00002 		mov	r2, #0
+ 1706 0942 1A70     		strb	r2, [r3, #0]
+ 387:openstack/cross-layers/packetfunctions.c ****    *(checksum_ptr+1) = 0;
+ 1707              		.loc 1 387 0
+ 1708 0944 3B68     		ldr	r3, [r7, #0]
+ 1709 0946 03F10103 		add	r3, r3, #1
+ 1710 094a 4FF00002 		mov	r2, #0
+ 1711 094e 1A70     		strb	r2, [r3, #0]
+ 388:openstack/cross-layers/packetfunctions.c ****    
+ 389:openstack/cross-layers/packetfunctions.c ****    onesComplementSum(temp_checksum,msg->payload,msg->length);
+ 1712              		.loc 1 389 0
+ 1713 0950 7B68     		ldr	r3, [r7, #4]
+ 1714 0952 5A68     		ldr	r2, [r3, #4]
+ 1715 0954 7B68     		ldr	r3, [r7, #4]
+ 1716 0956 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 1717 0958 07F10C01 		add	r1, r7, #12
+ 1718 095c 0846     		mov	r0, r1
+ 1719 095e 1146     		mov	r1, r2
+ 1720 0960 1A46     		mov	r2, r3
+ 1721 0962 FFF7FEFF 		bl	onesComplementSum
+ 390:openstack/cross-layers/packetfunctions.c ****    temp_checksum[0] ^= 0xFF;
+ 1722              		.loc 1 390 0
+ 1723 0966 3B7B     		ldrb	r3, [r7, #12]	@ zero_extendqisi2
+ 1724 0968 6FEA0303 		mvn	r3, r3
+ 1725 096c DBB2     		uxtb	r3, r3
+ 1726 096e 3B73     		strb	r3, [r7, #12]
+ 391:openstack/cross-layers/packetfunctions.c ****    temp_checksum[1] ^= 0xFF;
+ 1727              		.loc 1 391 0
+ 1728 0970 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 1729 0972 6FEA0303 		mvn	r3, r3
+ 1730 0976 DBB2     		uxtb	r3, r3
+ 1731 0978 7B73     		strb	r3, [r7, #13]
+ 392:openstack/cross-layers/packetfunctions.c ****    
+ 393:openstack/cross-layers/packetfunctions.c ****    //write in packet
+ 394:openstack/cross-layers/packetfunctions.c ****    *checksum_ptr     = temp_checksum[0];
+ 1732              		.loc 1 394 0
+ 1733 097a 3A7B     		ldrb	r2, [r7, #12]	@ zero_extendqisi2
+ 1734 097c 3B68     		ldr	r3, [r7, #0]
+ 1735 097e 1A70     		strb	r2, [r3, #0]
+ 395:openstack/cross-layers/packetfunctions.c ****    *(checksum_ptr+1) = temp_checksum[1];
+ 1736              		.loc 1 395 0
+ 1737 0980 3B68     		ldr	r3, [r7, #0]
+ 1738 0982 03F10103 		add	r3, r3, #1
+ 1739 0986 7A7B     		ldrb	r2, [r7, #13]	@ zero_extendqisi2
+ 1740 0988 1A70     		strb	r2, [r3, #0]
+ 396:openstack/cross-layers/packetfunctions.c **** }
+ 1741              		.loc 1 396 0
+ 1742 098a 07F11007 		add	r7, r7, #16
+ 1743 098e BD46     		mov	sp, r7
+ 1744 0990 80BD     		pop	{r7, pc}
+ 1745              		.cfi_endproc
+ 1746              	.LFE16:
+ 1748 0992 00BF     		.align	2
+ 1749              		.global	onesComplementSum
+ 1750              		.thumb
+ 1751              		.thumb_func
+ 1753              	onesComplementSum:
+ 1754              	.LFB17:
+ 397:openstack/cross-layers/packetfunctions.c **** 
+ 398:openstack/cross-layers/packetfunctions.c **** 
+ 399:openstack/cross-layers/packetfunctions.c **** void onesComplementSum(uint8_t* global_sum, uint8_t* ptr, int length) {
+ 1755              		.loc 1 399 0
+ 1756              		.cfi_startproc
+ 1757              		@ args = 0, pretend = 0, frame = 24
+ 1758              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1759              		@ link register save eliminated.
+ 1760 0994 80B4     		push	{r7}
+ 1761              	.LCFI51:
+ 1762              		.cfi_def_cfa_offset 4
+ 1763              		.cfi_offset 7, -4
+ 1764 0996 87B0     		sub	sp, sp, #28
+ 1765              	.LCFI52:
+ 1766              		.cfi_def_cfa_offset 32
+ 1767 0998 00AF     		add	r7, sp, #0
+ 1768              	.LCFI53:
+ 1769              		.cfi_def_cfa_register 7
+ 1770 099a F860     		str	r0, [r7, #12]
+ 1771 099c B960     		str	r1, [r7, #8]
+ 1772 099e 7A60     		str	r2, [r7, #4]
+ 400:openstack/cross-layers/packetfunctions.c ****    uint32_t sum = 0xFFFF & (global_sum[0]<<8 | global_sum[1]);
+ 1773              		.loc 1 400 0
+ 1774 09a0 FB68     		ldr	r3, [r7, #12]
+ 1775 09a2 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1776 09a4 4FEA0322 		lsl	r2, r3, #8
+ 1777 09a8 FB68     		ldr	r3, [r7, #12]
+ 1778 09aa 03F10103 		add	r3, r3, #1
+ 1779 09ae 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1780 09b0 1343     		orrs	r3, r3, r2
+ 1781 09b2 4FEA0343 		lsl	r3, r3, #16
+ 1782 09b6 4FEA1343 		lsr	r3, r3, #16
+ 1783 09ba 7B61     		str	r3, [r7, #20]
+ 401:openstack/cross-layers/packetfunctions.c ****    while (length>1) {
+ 1784              		.loc 1 401 0
+ 1785 09bc 17E0     		b	.L91
+ 1786              	.L92:
+ 402:openstack/cross-layers/packetfunctions.c ****       sum     += 0xFFFF & (*ptr<<8 | *(ptr+1));
+ 1787              		.loc 1 402 0
+ 1788 09be BB68     		ldr	r3, [r7, #8]
+ 1789 09c0 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1790 09c2 4FEA0322 		lsl	r2, r3, #8
+ 1791 09c6 BB68     		ldr	r3, [r7, #8]
+ 1792 09c8 03F10103 		add	r3, r3, #1
+ 1793 09cc 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1794 09ce 1343     		orrs	r3, r3, r2
+ 1795 09d0 4FEA0343 		lsl	r3, r3, #16
+ 1796 09d4 4FEA1343 		lsr	r3, r3, #16
+ 1797 09d8 7A69     		ldr	r2, [r7, #20]
+ 1798 09da D318     		adds	r3, r2, r3
+ 1799 09dc 7B61     		str	r3, [r7, #20]
+ 403:openstack/cross-layers/packetfunctions.c ****       ptr     += 2;
+ 1800              		.loc 1 403 0
+ 1801 09de BB68     		ldr	r3, [r7, #8]
+ 1802 09e0 03F10203 		add	r3, r3, #2
+ 1803 09e4 BB60     		str	r3, [r7, #8]
+ 404:openstack/cross-layers/packetfunctions.c ****       length  -= 2;
+ 1804              		.loc 1 404 0
+ 1805 09e6 7B68     		ldr	r3, [r7, #4]
+ 1806 09e8 A3F10203 		sub	r3, r3, #2
+ 1807 09ec 7B60     		str	r3, [r7, #4]
+ 1808              	.L91:
+ 401:openstack/cross-layers/packetfunctions.c ****    while (length>1) {
+ 1809              		.loc 1 401 0 discriminator 1
+ 1810 09ee 7B68     		ldr	r3, [r7, #4]
+ 1811 09f0 012B     		cmp	r3, #1
+ 1812 09f2 E4DC     		bgt	.L92
+ 405:openstack/cross-layers/packetfunctions.c ****    }
+ 406:openstack/cross-layers/packetfunctions.c ****    if (length) {
+ 1813              		.loc 1 406 0
+ 1814 09f4 7B68     		ldr	r3, [r7, #4]
+ 1815 09f6 002B     		cmp	r3, #0
+ 1816 09f8 12D0     		beq	.L96
+ 407:openstack/cross-layers/packetfunctions.c ****       sum     += (0xFF & *ptr)<<8;
+ 1817              		.loc 1 407 0
+ 1818 09fa BB68     		ldr	r3, [r7, #8]
+ 1819 09fc 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1820 09fe 4FEA0323 		lsl	r3, r3, #8
+ 1821 0a02 7A69     		ldr	r2, [r7, #20]
+ 1822 0a04 D318     		adds	r3, r2, r3
+ 1823 0a06 7B61     		str	r3, [r7, #20]
+ 408:openstack/cross-layers/packetfunctions.c ****    }
+ 409:openstack/cross-layers/packetfunctions.c ****    while (sum>>16) {
+ 1824              		.loc 1 409 0
+ 1825 0a08 0AE0     		b	.L96
+ 1826              	.L95:
+ 410:openstack/cross-layers/packetfunctions.c ****       sum      = (sum & 0xFFFF)+(sum >> 16);
+ 1827              		.loc 1 410 0
+ 1828 0a0a 7B69     		ldr	r3, [r7, #20]
+ 1829 0a0c 4FEA0343 		lsl	r3, r3, #16
+ 1830 0a10 4FEA1343 		lsr	r3, r3, #16
+ 1831 0a14 7A69     		ldr	r2, [r7, #20]
+ 1832 0a16 4FEA1242 		lsr	r2, r2, #16
+ 1833 0a1a 9B18     		adds	r3, r3, r2
+ 1834 0a1c 7B61     		str	r3, [r7, #20]
+ 1835 0a1e 00E0     		b	.L94
+ 1836              	.L96:
+ 409:openstack/cross-layers/packetfunctions.c ****    while (sum>>16) {
+ 1837              		.loc 1 409 0
+ 1838 0a20 00BF     		nop
+ 1839              	.L94:
+ 409:openstack/cross-layers/packetfunctions.c ****    while (sum>>16) {
+ 1840              		.loc 1 409 0 is_stmt 0 discriminator 1
+ 1841 0a22 7B69     		ldr	r3, [r7, #20]
+ 1842 0a24 4FEA1343 		lsr	r3, r3, #16
+ 1843 0a28 002B     		cmp	r3, #0
+ 1844 0a2a EED1     		bne	.L95
+ 411:openstack/cross-layers/packetfunctions.c ****    }
+ 412:openstack/cross-layers/packetfunctions.c ****    global_sum[0] = (sum>>8) & 0xFF;
+ 1845              		.loc 1 412 0 is_stmt 1
+ 1846 0a2c 7B69     		ldr	r3, [r7, #20]
+ 1847 0a2e 4FEA1323 		lsr	r3, r3, #8
+ 1848 0a32 DAB2     		uxtb	r2, r3
+ 1849 0a34 FB68     		ldr	r3, [r7, #12]
+ 1850 0a36 1A70     		strb	r2, [r3, #0]
+ 413:openstack/cross-layers/packetfunctions.c ****    global_sum[1] = sum & 0xFF;
+ 1851              		.loc 1 413 0
+ 1852 0a38 FB68     		ldr	r3, [r7, #12]
+ 1853 0a3a 03F10103 		add	r3, r3, #1
+ 1854 0a3e 7A69     		ldr	r2, [r7, #20]
+ 1855 0a40 D2B2     		uxtb	r2, r2
+ 1856 0a42 1A70     		strb	r2, [r3, #0]
+ 414:openstack/cross-layers/packetfunctions.c **** }
+ 1857              		.loc 1 414 0
+ 1858 0a44 07F11C07 		add	r7, r7, #28
+ 1859 0a48 BD46     		mov	sp, r7
+ 1860 0a4a 80BC     		pop	{r7}
+ 1861 0a4c 7047     		bx	lr
+ 1862              		.cfi_endproc
+ 1863              	.LFE17:
+ 1865 0a4e 00BF     		.align	2
+ 1866              		.global	packetfunctions_htons
+ 1867              		.thumb
+ 1868              		.thumb_func
+ 1870              	packetfunctions_htons:
+ 1871              	.LFB18:
+ 415:openstack/cross-layers/packetfunctions.c **** 
+ 416:openstack/cross-layers/packetfunctions.c **** //======= endianness
+ 417:openstack/cross-layers/packetfunctions.c **** 
+ 418:openstack/cross-layers/packetfunctions.c **** void packetfunctions_htons( uint16_t val, uint8_t* dest ) {
+ 1872              		.loc 1 418 0
+ 1873              		.cfi_startproc
+ 1874              		@ args = 0, pretend = 0, frame = 8
+ 1875              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1876              		@ link register save eliminated.
+ 1877 0a50 80B4     		push	{r7}
+ 1878              	.LCFI54:
+ 1879              		.cfi_def_cfa_offset 4
+ 1880              		.cfi_offset 7, -4
+ 1881 0a52 83B0     		sub	sp, sp, #12
+ 1882              	.LCFI55:
+ 1883              		.cfi_def_cfa_offset 16
+ 1884 0a54 00AF     		add	r7, sp, #0
+ 1885              	.LCFI56:
+ 1886              		.cfi_def_cfa_register 7
+ 1887 0a56 0346     		mov	r3, r0
+ 1888 0a58 3960     		str	r1, [r7, #0]
+ 1889 0a5a FB80     		strh	r3, [r7, #6]	@ movhi
+ 419:openstack/cross-layers/packetfunctions.c ****    dest[0] = (val & 0xff00) >> 8;
+ 1890              		.loc 1 419 0
+ 1891 0a5c FB88     		ldrh	r3, [r7, #6]
+ 1892 0a5e 4FEA1323 		lsr	r3, r3, #8
+ 1893 0a62 9BB2     		uxth	r3, r3
+ 1894 0a64 DAB2     		uxtb	r2, r3
+ 1895 0a66 3B68     		ldr	r3, [r7, #0]
+ 1896 0a68 1A70     		strb	r2, [r3, #0]
+ 420:openstack/cross-layers/packetfunctions.c ****    dest[1] = (val & 0x00ff);
+ 1897              		.loc 1 420 0
+ 1898 0a6a 3B68     		ldr	r3, [r7, #0]
+ 1899 0a6c 03F10103 		add	r3, r3, #1
+ 1900 0a70 FA88     		ldrh	r2, [r7, #6]	@ movhi
+ 1901 0a72 D2B2     		uxtb	r2, r2
+ 1902 0a74 1A70     		strb	r2, [r3, #0]
+ 421:openstack/cross-layers/packetfunctions.c **** }
+ 1903              		.loc 1 421 0
+ 1904 0a76 07F10C07 		add	r7, r7, #12
+ 1905 0a7a BD46     		mov	sp, r7
+ 1906 0a7c 80BC     		pop	{r7}
+ 1907 0a7e 7047     		bx	lr
+ 1908              		.cfi_endproc
+ 1909              	.LFE18:
+ 1911              		.align	2
+ 1912              		.global	packetfunctions_ntohs
+ 1913              		.thumb
+ 1914              		.thumb_func
+ 1916              	packetfunctions_ntohs:
+ 1917              	.LFB19:
+ 422:openstack/cross-layers/packetfunctions.c **** 
+ 423:openstack/cross-layers/packetfunctions.c **** uint16_t packetfunctions_ntohs( uint8_t* src ) {
+ 1918              		.loc 1 423 0
+ 1919              		.cfi_startproc
+ 1920              		@ args = 0, pretend = 0, frame = 8
+ 1921              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1922              		@ link register save eliminated.
+ 1923 0a80 80B4     		push	{r7}
+ 1924              	.LCFI57:
+ 1925              		.cfi_def_cfa_offset 4
+ 1926              		.cfi_offset 7, -4
+ 1927 0a82 83B0     		sub	sp, sp, #12
+ 1928              	.LCFI58:
+ 1929              		.cfi_def_cfa_offset 16
+ 1930 0a84 00AF     		add	r7, sp, #0
+ 1931              	.LCFI59:
+ 1932              		.cfi_def_cfa_register 7
+ 1933 0a86 7860     		str	r0, [r7, #4]
+ 424:openstack/cross-layers/packetfunctions.c ****    return (((uint16_t) src[0]) << 8) |
+ 1934              		.loc 1 424 0
+ 1935 0a88 7B68     		ldr	r3, [r7, #4]
+ 1936 0a8a 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1937 0a8c 4FEA0323 		lsl	r3, r3, #8
+ 1938 0a90 9AB2     		uxth	r2, r3
+ 425:openstack/cross-layers/packetfunctions.c ****       (((uint16_t) src[1])
+ 1939              		.loc 1 425 0
+ 1940 0a92 7B68     		ldr	r3, [r7, #4]
+ 1941 0a94 03F10103 		add	r3, r3, #1
+ 1942 0a98 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 424:openstack/cross-layers/packetfunctions.c ****    return (((uint16_t) src[0]) << 8) |
+ 1943              		.loc 1 424 0
+ 1944 0a9a 1343     		orrs	r3, r3, r2
+ 1945 0a9c 9BB2     		uxth	r3, r3
+ 1946 0a9e 9BB2     		uxth	r3, r3
+ 426:openstack/cross-layers/packetfunctions.c ****       );
+ 427:openstack/cross-layers/packetfunctions.c **** }
+ 1947              		.loc 1 427 0
+ 1948 0aa0 1846     		mov	r0, r3
+ 1949 0aa2 07F10C07 		add	r7, r7, #12
+ 1950 0aa6 BD46     		mov	sp, r7
+ 1951 0aa8 80BC     		pop	{r7}
+ 1952 0aaa 7047     		bx	lr
+ 1953              		.cfi_endproc
+ 1954              	.LFE19:
+ 1956              		.align	2
+ 1957              		.global	packetfunctions_htonl
+ 1958              		.thumb
+ 1959              		.thumb_func
+ 1961              	packetfunctions_htonl:
+ 1962              	.LFB20:
+ 428:openstack/cross-layers/packetfunctions.c **** 
+ 429:openstack/cross-layers/packetfunctions.c **** void packetfunctions_htonl( uint32_t val, uint8_t* dest ) {
+ 1963              		.loc 1 429 0
+ 1964              		.cfi_startproc
+ 1965              		@ args = 0, pretend = 0, frame = 8
+ 1966              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1967              		@ link register save eliminated.
+ 1968 0aac 80B4     		push	{r7}
+ 1969              	.LCFI60:
+ 1970              		.cfi_def_cfa_offset 4
+ 1971              		.cfi_offset 7, -4
+ 1972 0aae 83B0     		sub	sp, sp, #12
+ 1973              	.LCFI61:
+ 1974              		.cfi_def_cfa_offset 16
+ 1975 0ab0 00AF     		add	r7, sp, #0
+ 1976              	.LCFI62:
+ 1977              		.cfi_def_cfa_register 7
+ 1978 0ab2 7860     		str	r0, [r7, #4]
+ 1979 0ab4 3960     		str	r1, [r7, #0]
+ 430:openstack/cross-layers/packetfunctions.c ****    dest[0] = (val & 0xff000000) >> 24;
+ 1980              		.loc 1 430 0
+ 1981 0ab6 7B68     		ldr	r3, [r7, #4]
+ 1982 0ab8 4FEA1363 		lsr	r3, r3, #24
+ 1983 0abc DAB2     		uxtb	r2, r3
+ 1984 0abe 3B68     		ldr	r3, [r7, #0]
+ 1985 0ac0 1A70     		strb	r2, [r3, #0]
+ 431:openstack/cross-layers/packetfunctions.c ****    dest[1] = (val & 0x00ff0000) >> 16;
+ 1986              		.loc 1 431 0
+ 1987 0ac2 3B68     		ldr	r3, [r7, #0]
+ 1988 0ac4 03F10103 		add	r3, r3, #1
+ 1989 0ac8 7A68     		ldr	r2, [r7, #4]
+ 1990 0aca 02F47F02 		and	r2, r2, #16711680
+ 1991 0ace 4FEA1242 		lsr	r2, r2, #16
+ 1992 0ad2 D2B2     		uxtb	r2, r2
+ 1993 0ad4 1A70     		strb	r2, [r3, #0]
+ 432:openstack/cross-layers/packetfunctions.c ****    dest[2] = (val & 0x0000ff00) >> 8;
+ 1994              		.loc 1 432 0
+ 1995 0ad6 3B68     		ldr	r3, [r7, #0]
+ 1996 0ad8 03F10203 		add	r3, r3, #2
+ 1997 0adc 7A68     		ldr	r2, [r7, #4]
+ 1998 0ade 02F47F42 		and	r2, r2, #65280
+ 1999 0ae2 4FEA1222 		lsr	r2, r2, #8
+ 2000 0ae6 D2B2     		uxtb	r2, r2
+ 2001 0ae8 1A70     		strb	r2, [r3, #0]
+ 433:openstack/cross-layers/packetfunctions.c ****    dest[3] = (val & 0x000000ff);
+ 2002              		.loc 1 433 0
+ 2003 0aea 3B68     		ldr	r3, [r7, #0]
+ 2004 0aec 03F10303 		add	r3, r3, #3
+ 2005 0af0 7A68     		ldr	r2, [r7, #4]
+ 2006 0af2 D2B2     		uxtb	r2, r2
+ 2007 0af4 1A70     		strb	r2, [r3, #0]
+ 434:openstack/cross-layers/packetfunctions.c **** }
+ 2008              		.loc 1 434 0
+ 2009 0af6 07F10C07 		add	r7, r7, #12
+ 2010 0afa BD46     		mov	sp, r7
+ 2011 0afc 80BC     		pop	{r7}
+ 2012 0afe 7047     		bx	lr
+ 2013              		.cfi_endproc
+ 2014              	.LFE20:
+ 2016              		.align	2
+ 2017              		.global	packetfunctions_ntohl
+ 2018              		.thumb
+ 2019              		.thumb_func
+ 2021              	packetfunctions_ntohl:
+ 2022              	.LFB21:
+ 435:openstack/cross-layers/packetfunctions.c **** 
+ 436:openstack/cross-layers/packetfunctions.c **** uint32_t packetfunctions_ntohl( uint8_t* src ) {
+ 2023              		.loc 1 436 0
+ 2024              		.cfi_startproc
+ 2025              		@ args = 0, pretend = 0, frame = 8
+ 2026              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2027              		@ link register save eliminated.
+ 2028 0b00 80B4     		push	{r7}
+ 2029              	.LCFI63:
+ 2030              		.cfi_def_cfa_offset 4
+ 2031              		.cfi_offset 7, -4
+ 2032 0b02 83B0     		sub	sp, sp, #12
+ 2033              	.LCFI64:
+ 2034              		.cfi_def_cfa_offset 16
+ 2035 0b04 00AF     		add	r7, sp, #0
+ 2036              	.LCFI65:
+ 2037              		.cfi_def_cfa_register 7
+ 2038 0b06 7860     		str	r0, [r7, #4]
+ 437:openstack/cross-layers/packetfunctions.c ****    return (((uint32_t) src[0]) << 24) |
+ 2039              		.loc 1 437 0
+ 2040 0b08 7B68     		ldr	r3, [r7, #4]
+ 2041 0b0a 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 2042 0b0c 4FEA0362 		lsl	r2, r3, #24
+ 438:openstack/cross-layers/packetfunctions.c ****       (((uint32_t) src[1]) << 16)     |
+ 2043              		.loc 1 438 0
+ 2044 0b10 7B68     		ldr	r3, [r7, #4]
+ 2045 0b12 03F10103 		add	r3, r3, #1
+ 2046 0b16 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 2047 0b18 4FEA0343 		lsl	r3, r3, #16
+ 437:openstack/cross-layers/packetfunctions.c ****    return (((uint32_t) src[0]) << 24) |
+ 2048              		.loc 1 437 0
+ 2049 0b1c 1A43     		orrs	r2, r2, r3
+ 439:openstack/cross-layers/packetfunctions.c ****       (((uint32_t) src[2]) << 8)      |
+ 2050              		.loc 1 439 0
+ 2051 0b1e 7B68     		ldr	r3, [r7, #4]
+ 2052 0b20 03F10203 		add	r3, r3, #2
+ 2053 0b24 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 2054 0b26 4FEA0323 		lsl	r3, r3, #8
+ 438:openstack/cross-layers/packetfunctions.c ****       (((uint32_t) src[1]) << 16)     |
+ 2055              		.loc 1 438 0
+ 2056 0b2a 1A43     		orrs	r2, r2, r3
+ 440:openstack/cross-layers/packetfunctions.c ****       (((uint32_t) src[3])
+ 2057              		.loc 1 440 0
+ 2058 0b2c 7B68     		ldr	r3, [r7, #4]
+ 2059 0b2e 03F10303 		add	r3, r3, #3
+ 2060 0b32 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 437:openstack/cross-layers/packetfunctions.c ****    return (((uint32_t) src[0]) << 24) |
+ 2061              		.loc 1 437 0
+ 2062 0b34 1343     		orrs	r3, r3, r2
+ 441:openstack/cross-layers/packetfunctions.c ****       );
+ 442:openstack/cross-layers/packetfunctions.c **** }
+ 2063              		.loc 1 442 0
+ 2064 0b36 1846     		mov	r0, r3
+ 2065 0b38 07F10C07 		add	r7, r7, #12
+ 2066 0b3c BD46     		mov	sp, r7
+ 2067 0b3e 80BC     		pop	{r7}
+ 2068 0b40 7047     		bx	lr
+ 2069              		.cfi_endproc
+ 2070              	.LFE21:
+ 2072              	.Letext0:
+ 2073              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+ 2074              		.file 3 "inc/opendefs.h"
+ 2075              		.file 4 "bsp/boards/OpenMote-CC2538/board_info.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 packetfunctions.c
+     /tmp/ccBlqns1.s:19     .rodata:00000000 $d
+     /tmp/ccBlqns1.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccBlqns1.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccBlqns1.s:32     .rodata:00000010 infouCName
+     /tmp/ccBlqns1.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccBlqns1.s:42     .rodata:00000024 infoStackName
+     /tmp/ccBlqns1.s:45     .text:00000000 $t
+     /tmp/ccBlqns1.s:50     .text:00000000 packetfunctions_ip128bToMac64b
+     /tmp/ccBlqns1.s:131    .text:0000007c packetfunctions_mac64bToIp128b
+     /tmp/ccBlqns1.s:213    .text:000000f8 packetfunctions_mac64bToMac16b
+     /tmp/ccBlqns1.s:280    .text:0000014c packetfunctions_mac16bToMac64b
+     /tmp/ccBlqns1.s:371    .text:000001d0 packetfunctions_isBroadcastMulticast
+     /tmp/ccBlqns1.s:483    .text:00000268 packetfunctions_isAllRoutersMulticast
+     /tmp/ccBlqns1.s:624    .text:00000310 packetfunctions_isAllHostsMulticast
+     /tmp/ccBlqns1.s:765    .text:000003b8 packetfunctions_sameAddress
+     /tmp/ccBlqns1.s:876    .text:00000464 packetfunctions_readAddress
+     /tmp/ccBlqns1.s:911    .text:0000048c $d
+     /tmp/ccBlqns1.s:918    .text:000004a0 $t
+     /tmp/ccBlqns1.s:1002   .text:00000520 packetfunctions_writeAddress
+     /tmp/ccBlqns1.s:1033   .text:00000540 $d
+     /tmp/ccBlqns1.s:1040   .text:00000554 $t
+     /tmp/ccBlqns1.s:1136   .text:000005ec packetfunctions_reserveHeaderSize
+     /tmp/ccBlqns1.s:1200   .text:00000640 packetfunctions_tossHeader
+     /tmp/ccBlqns1.s:1263   .text:00000690 packetfunctions_reserveFooterSize
+     /tmp/ccBlqns1.s:1319   .text:000006d4 packetfunctions_tossFooter
+     /tmp/ccBlqns1.s:1373   .text:00000714 packetfunctions_calculateCRC
+     /tmp/ccBlqns1.s:1490   .text:000007c8 packetfunctions_checkCRC
+     /tmp/ccBlqns1.s:1622   .text:00000894 packetfunctions_calculateChecksum
+     /tmp/ccBlqns1.s:1753   .text:00000994 onesComplementSum
+     /tmp/ccBlqns1.s:1870   .text:00000a50 packetfunctions_htons
+     /tmp/ccBlqns1.s:1916   .text:00000a80 packetfunctions_ntohs
+     /tmp/ccBlqns1.s:1961   .text:00000aac packetfunctions_htonl
+     /tmp/ccBlqns1.s:2021   .text:00000b00 packetfunctions_ntohl
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.toolchain_defs.h.2.e4ebbe6e0a48032a9b79077dc42e1ffd
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
+                           .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
+                           .group:00000000 wm4.idmanager.h.2.8c0e2159b32ef3125cbb1e984805cbfe
+
+UNDEFINED SYMBOLS
+openserial_printCritical
+memcpy
+memcmp
+openserial_printError
+idmanager_getMyID

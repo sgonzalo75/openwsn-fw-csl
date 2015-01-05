@@ -1,0 +1,538 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"adxl346.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.align	2
+  19              		.global	adx346_init
+  20              		.thumb
+  21              		.thumb_func
+  23              	adx346_init:
+  24              	.LFB0:
+  25              		.file 1 "drivers/OpenMote-CC2538/adxl346.c"
+   1:drivers/OpenMote-CC2538/adxl346.c **** /**
+   2:drivers/OpenMote-CC2538/adxl346.c ****  * \file
+   3:drivers/OpenMote-CC2538/adxl346.c ****  *         Device drivers for ADXL346 acceleration sensor in OpenMote-CC2538.
+   4:drivers/OpenMote-CC2538/adxl346.c ****  * \author
+   5:drivers/OpenMote-CC2538/adxl346.c ****  *         Pere Tuset, OpenMote <peretuset@openmote.com>
+   6:drivers/OpenMote-CC2538/adxl346.c ****  */
+   7:drivers/OpenMote-CC2538/adxl346.c **** 
+   8:drivers/OpenMote-CC2538/adxl346.c **** #include "i2c.h"
+   9:drivers/OpenMote-CC2538/adxl346.c **** #include "adxl346.h"
+  10:drivers/OpenMote-CC2538/adxl346.c **** 
+  11:drivers/OpenMote-CC2538/adxl346.c **** //=========================== define ==========================================
+  12:drivers/OpenMote-CC2538/adxl346.c **** 
+  13:drivers/OpenMote-CC2538/adxl346.c **** /* ADDRESS AND IDENTIFIER */
+  14:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ADDRESS                     ( 0x53 )
+  15:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DEVID_VALUE                 ( 0xE6 )
+  16:drivers/OpenMote-CC2538/adxl346.c **** 
+  17:drivers/OpenMote-CC2538/adxl346.c **** /* REGISTER ADDRESSES */
+  18:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DEVID_ADDR                  ( 0x00 )
+  19:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_THRES_TAP_ADDR              ( 0x1D )
+  20:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_OFSX_ADDR                   ( 0x1E )
+  21:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_OFSY_ADDR                   ( 0x1F )
+  22:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_OFSZ_ADDR                   ( 0x20 )
+  23:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DUR_ADDR                    ( 0x21 )
+  24:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_LATENT_ADDR                 ( 0x22 )
+  25:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_WINDOW_ADDR                 ( 0x23 )
+  26:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_THRESH_ACT_ADDR             ( 0x24 )
+  27:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_THRESH_INACT_ADDR           ( 0x25 )
+  28:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_TIME_INACT_ADDR             ( 0x26 )
+  29:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_INACT_CTL_ADDR          ( 0x27 )
+  30:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_THRESH_FF_ADDR              ( 0x28 )
+  31:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_TIME_FF_ADDR                ( 0x29 )
+  32:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_TAP_AXES_ADDR               ( 0x2A )
+  33:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_TAP_STATUS_ADDR         ( 0x2B )
+  34:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_BW_RATE_ADDR                ( 0x2C )
+  35:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_POWER_CTL_ADDR              ( 0x2D )
+  36:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_INT_ENABLE_ADDR             ( 0x2E )
+  37:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_INT_MAP_ADDR                ( 0x2F )
+  38:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_INT_SOURCE_ADDR             ( 0x30 )
+  39:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATA_FORMAT_ADDR            ( 0x31 )
+  40:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATAX0_ADDR                 ( 0x32 )
+  41:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATAX1_ADDR                 ( 0x33 )
+  42:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATAY0_ADDR                 ( 0x34 )
+  43:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATAY1_ADDR                 ( 0x35 )
+  44:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATAZ0_ADDR                 ( 0x36 )
+  45:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATAZ1_ADDR                 ( 0x37 )
+  46:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_FIFO_CTL_ADDR               ( 0x38 )
+  47:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_FIFO_STATUS_ADDR            ( 0x39 )
+  48:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_TAP_SIGN_ADDR               ( 0x3A )
+  49:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ORIENT_CONF_ADDR            ( 0x3B )
+  50:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ORIENT_ADDR                 ( 0x3C )
+  51:drivers/OpenMote-CC2538/adxl346.c **** 
+  52:drivers/OpenMote-CC2538/adxl346.c **** /* INT_ENABLE/INT_MAP/INT_SOURCE */
+  53:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_INT_ENABLE_DATA_READY      ( 1 << 7 )
+  54:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_INT_ENABLE_SINGLE_TAP      ( 1 << 6 )
+  55:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_INT_ENABLE_DOUBLE_TAP      ( 1 << 5 )
+  56:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_INT_ENABLE_ACTIVITY        ( 1 << 4 )
+  57:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_INT_ENABLE_INACTIVITY      ( 1 << 3 )
+  58:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_INT_ENABLE_FREE_FALL       ( 1 << 2 )
+  59:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_INT_ENABLE_WATERMARK       ( 1 << 1 )
+  60:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_INT_ENABLE_OVERRUN         ( 1 << 0 )
+  61:drivers/OpenMote-CC2538/adxl346.c **** 
+  62:drivers/OpenMote-CC2538/adxl346.c **** /* ACT_INACT_CONTROL */
+  63:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_INACT_CTL_ACT_ACDC     ( 1 << 7 )
+  64:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_INACT_CTL_ACT_X_EN     ( 1 << 6 )
+  65:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_INACT_CTL_ACT_Y_EN     ( 1 << 5 )
+  66:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_INACT_CTL_ACT_Z_EN     ( 1 << 4 )
+  67:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_INACT_CTL_INACT_ACDC   ( 1 << 3 )
+  68:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_INACT_CTL_INACT_X_EN   ( 1 << 2 )
+  69:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_INACT_CTL_INACT_Y_EN   ( 1 << 1 )
+  70:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_INACT_CTL_INACT_Z_EN   ( 1 << 0 )
+  71:drivers/OpenMote-CC2538/adxl346.c **** 
+  72:drivers/OpenMote-CC2538/adxl346.c **** /* TAP_AXES */
+  73:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_TAP_AXES_SUPPRESS           ( 1 << 3 )
+  74:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_TAP_AXES_TAP_X_EN           ( 1 << 2 )
+  75:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_TAP_AXES_TAP_Y_EN           ( 1 << 1 )
+  76:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_TAP_AXES_TAP_Z_EN           ( 1 << 0 )
+  77:drivers/OpenMote-CC2538/adxl346.c **** 
+  78:drivers/OpenMote-CC2538/adxl346.c **** /* ACT_TAP_STATUS */
+  79:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_TAP_STATUS_ACT_X_SRC    ( 1 << 6 )
+  80:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_TAP_STATUS_ACT_Y_SRC    ( 1 << 5 )
+  81:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_TAP_STATUS_ACT_Z_SRC    ( 1 << 4 )
+  82:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_TAP_STATUS_ASLEEP       ( 1 << 3 )
+  83:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_TAP_STATUS_TAP_X_SRC    ( 1 << 2 )
+  84:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_TAP_STATUS_TAP_Y_SRC    ( 1 << 1 )
+  85:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_ACT_TAP_STATUS_TAP_Z_SRC    ( 1 << 0 )
+  86:drivers/OpenMote-CC2538/adxl346.c **** 
+  87:drivers/OpenMote-CC2538/adxl346.c **** /* BW_RATE */
+  88:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_BW_RATE_POWER               ( 1 << 4 )
+  89:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_BW_RATE_RATE(x)             ( (x) & 0x0F)
+  90:drivers/OpenMote-CC2538/adxl346.c **** 
+  91:drivers/OpenMote-CC2538/adxl346.c **** /* POWER CONTROL */
+  92:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_POWER_CTL_LINK              ( 1 << 5 )
+  93:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_POWER_CTL_AUTO_SLEEP        ( 1 << 4 )
+  94:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_POWER_CTL_MEASURE           ( 1 << 3 )
+  95:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_POWER_CTL_SLEEP             ( 1 << 2 )
+  96:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_POWER_CTL_WAKEUP(x)         ( (x) & 0x03 )
+  97:drivers/OpenMote-CC2538/adxl346.c **** 
+  98:drivers/OpenMote-CC2538/adxl346.c **** /* DATA_FORMAT */
+  99:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATA_FORMAT_SELF_TEST       ( 1 << 7 )
+ 100:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATA_FORMAT_SPI             ( 1 << 6 )
+ 101:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATA_FORMAT_INT_INVERT      ( 1 << 5 )
+ 102:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATA_FORMAT_FULL_RES        ( 1 << 3 )
+ 103:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATA_FORMAT_JUSTIFY         ( 1 << 2 )
+ 104:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATA_FORMAT_RANGE(x)        ( (x) & 0x03 )
+ 105:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATA_FORMAT_RANGE_PM_2g     ( 0 )
+ 106:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATA_FORMAT_RANGE_PM_4g     ( 1 )
+ 107:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATA_FORMAT_RANGE_PM_8g     ( 2 )
+ 108:drivers/OpenMote-CC2538/adxl346.c **** #define ADXL346_DATA_FORMAT_RANGE_PM_16g    ( 3 )
+ 109:drivers/OpenMote-CC2538/adxl346.c **** 
+ 110:drivers/OpenMote-CC2538/adxl346.c **** //=========================== variables =======================================
+ 111:drivers/OpenMote-CC2538/adxl346.c **** 
+ 112:drivers/OpenMote-CC2538/adxl346.c **** 
+ 113:drivers/OpenMote-CC2538/adxl346.c **** //=========================== prototypes ======================================
+ 114:drivers/OpenMote-CC2538/adxl346.c **** 
+ 115:drivers/OpenMote-CC2538/adxl346.c **** 
+ 116:drivers/OpenMote-CC2538/adxl346.c **** //=========================== public ==========================================
+ 117:drivers/OpenMote-CC2538/adxl346.c **** 
+ 118:drivers/OpenMote-CC2538/adxl346.c **** void adx346_init(void)
+ 119:drivers/OpenMote-CC2538/adxl346.c **** {
+  26              		.loc 1 119 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 8
+  29              		@ frame_needed = 1, uses_anonymous_args = 0
+  30 0000 80B5     		push	{r7, lr}
+  31              	.LCFI0:
+  32              		.cfi_def_cfa_offset 8
+  33              		.cfi_offset 7, -8
+  34              		.cfi_offset 14, -4
+  35 0002 82B0     		sub	sp, sp, #8
+  36              	.LCFI1:
+  37              		.cfi_def_cfa_offset 16
+  38 0004 00AF     		add	r7, sp, #0
+  39              	.LCFI2:
+  40              		.cfi_def_cfa_register 7
+ 120:drivers/OpenMote-CC2538/adxl346.c ****     uint8_t config[2];
+ 121:drivers/OpenMote-CC2538/adxl346.c **** 
+ 122:drivers/OpenMote-CC2538/adxl346.c ****     config[0] = ADXL346_BW_RATE_ADDR;
+  41              		.loc 1 122 0
+  42 0006 4FF02C03 		mov	r3, #44
+  43 000a 3B71     		strb	r3, [r7, #4]
+ 123:drivers/OpenMote-CC2538/adxl346.c ****     config[1] = (ADXL346_BW_RATE_RATE(11));
+  44              		.loc 1 123 0
+  45 000c 4FF00B03 		mov	r3, #11
+  46 0010 7B71     		strb	r3, [r7, #5]
+ 124:drivers/OpenMote-CC2538/adxl346.c ****     i2c_write_bytes(ADXL346_ADDRESS, config, sizeof(config));
+  47              		.loc 1 124 0
+  48 0012 07F10403 		add	r3, r7, #4
+  49 0016 4FF05300 		mov	r0, #83
+  50 001a 1946     		mov	r1, r3
+  51 001c 4FF00202 		mov	r2, #2
+  52 0020 FFF7FEFF 		bl	i2c_write_bytes
+ 125:drivers/OpenMote-CC2538/adxl346.c **** 
+ 126:drivers/OpenMote-CC2538/adxl346.c ****     config[0] = ADXL346_DATA_FORMAT_ADDR;
+  53              		.loc 1 126 0
+  54 0024 4FF03103 		mov	r3, #49
+  55 0028 3B71     		strb	r3, [r7, #4]
+ 127:drivers/OpenMote-CC2538/adxl346.c ****     config[1] = (ADXL346_DATA_FORMAT_SELF_TEST |
+  56              		.loc 1 127 0
+  57 002a 4FF08B03 		mov	r3, #139
+  58 002e 7B71     		strb	r3, [r7, #5]
+ 128:drivers/OpenMote-CC2538/adxl346.c ****                  ADXL346_DATA_FORMAT_FULL_RES  |
+ 129:drivers/OpenMote-CC2538/adxl346.c ****                  ADXL346_DATA_FORMAT_RANGE_PM_16g);
+ 130:drivers/OpenMote-CC2538/adxl346.c ****     i2c_write_bytes(ADXL346_ADDRESS, config, sizeof(config));
+  59              		.loc 1 130 0
+  60 0030 07F10403 		add	r3, r7, #4
+  61 0034 4FF05300 		mov	r0, #83
+  62 0038 1946     		mov	r1, r3
+  63 003a 4FF00202 		mov	r2, #2
+  64 003e FFF7FEFF 		bl	i2c_write_bytes
+ 131:drivers/OpenMote-CC2538/adxl346.c **** 
+ 132:drivers/OpenMote-CC2538/adxl346.c ****     config[0] = ADXL346_POWER_CTL_ADDR;
+  65              		.loc 1 132 0
+  66 0042 4FF02D03 		mov	r3, #45
+  67 0046 3B71     		strb	r3, [r7, #4]
+ 133:drivers/OpenMote-CC2538/adxl346.c ****     config[1] = (ADXL346_POWER_CTL_MEASURE);
+  68              		.loc 1 133 0
+  69 0048 4FF00803 		mov	r3, #8
+  70 004c 7B71     		strb	r3, [r7, #5]
+ 134:drivers/OpenMote-CC2538/adxl346.c ****     i2c_write_bytes(ADXL346_ADDRESS, config, sizeof(config));
+  71              		.loc 1 134 0
+  72 004e 07F10403 		add	r3, r7, #4
+  73 0052 4FF05300 		mov	r0, #83
+  74 0056 1946     		mov	r1, r3
+  75 0058 4FF00202 		mov	r2, #2
+  76 005c FFF7FEFF 		bl	i2c_write_bytes
+ 135:drivers/OpenMote-CC2538/adxl346.c **** }
+  77              		.loc 1 135 0
+  78 0060 07F10807 		add	r7, r7, #8
+  79 0064 BD46     		mov	sp, r7
+  80 0066 80BD     		pop	{r7, pc}
+  81              		.cfi_endproc
+  82              	.LFE0:
+  84              		.align	2
+  85              		.global	adx346_reset
+  86              		.thumb
+  87              		.thumb_func
+  89              	adx346_reset:
+  90              	.LFB1:
+ 136:drivers/OpenMote-CC2538/adxl346.c **** 
+ 137:drivers/OpenMote-CC2538/adxl346.c **** void adx346_reset(void)
+ 138:drivers/OpenMote-CC2538/adxl346.c **** {
+  91              		.loc 1 138 0
+  92              		.cfi_startproc
+  93              		@ args = 0, pretend = 0, frame = 0
+  94              		@ frame_needed = 1, uses_anonymous_args = 0
+  95              		@ link register save eliminated.
+  96 0068 80B4     		push	{r7}
+  97              	.LCFI3:
+  98              		.cfi_def_cfa_offset 4
+  99              		.cfi_offset 7, -4
+ 100 006a 00AF     		add	r7, sp, #0
+ 101              	.LCFI4:
+ 102              		.cfi_def_cfa_register 7
+ 139:drivers/OpenMote-CC2538/adxl346.c **** }
+ 103              		.loc 1 139 0
+ 104 006c BD46     		mov	sp, r7
+ 105 006e 80BC     		pop	{r7}
+ 106 0070 7047     		bx	lr
+ 107              		.cfi_endproc
+ 108              	.LFE1:
+ 110 0072 00BF     		.align	2
+ 111              		.global	adx346_is_present
+ 112              		.thumb
+ 113              		.thumb_func
+ 115              	adx346_is_present:
+ 116              	.LFB2:
+ 140:drivers/OpenMote-CC2538/adxl346.c **** 
+ 141:drivers/OpenMote-CC2538/adxl346.c **** uint8_t adx346_is_present(void)
+ 142:drivers/OpenMote-CC2538/adxl346.c **** {
+ 117              		.loc 1 142 0
+ 118              		.cfi_startproc
+ 119              		@ args = 0, pretend = 0, frame = 8
+ 120              		@ frame_needed = 1, uses_anonymous_args = 0
+ 121 0074 80B5     		push	{r7, lr}
+ 122              	.LCFI5:
+ 123              		.cfi_def_cfa_offset 8
+ 124              		.cfi_offset 7, -8
+ 125              		.cfi_offset 14, -4
+ 126 0076 82B0     		sub	sp, sp, #8
+ 127              	.LCFI6:
+ 128              		.cfi_def_cfa_offset 16
+ 129 0078 00AF     		add	r7, sp, #0
+ 130              	.LCFI7:
+ 131              		.cfi_def_cfa_register 7
+ 143:drivers/OpenMote-CC2538/adxl346.c ****     uint8_t is_present;
+ 144:drivers/OpenMote-CC2538/adxl346.c **** 
+ 145:drivers/OpenMote-CC2538/adxl346.c ****     i2c_write_byte(ADXL346_ADDRESS, ADXL346_DEVID_ADDR);
+ 132              		.loc 1 145 0
+ 133 007a 4FF05300 		mov	r0, #83
+ 134 007e 4FF00001 		mov	r1, #0
+ 135 0082 FFF7FEFF 		bl	i2c_write_byte
+ 146:drivers/OpenMote-CC2538/adxl346.c ****     i2c_read_byte(ADXL346_ADDRESS, &is_present);
+ 136              		.loc 1 146 0
+ 137 0086 07F10703 		add	r3, r7, #7
+ 138 008a 4FF05300 		mov	r0, #83
+ 139 008e 1946     		mov	r1, r3
+ 140 0090 FFF7FEFF 		bl	i2c_read_byte
+ 147:drivers/OpenMote-CC2538/adxl346.c **** 
+ 148:drivers/OpenMote-CC2538/adxl346.c ****     return (is_present == ADXL346_DEVID_VALUE);
+ 141              		.loc 1 148 0
+ 142 0094 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 143 0096 E62B     		cmp	r3, #230
+ 144 0098 14BF     		ite	ne
+ 145 009a 0023     		movne	r3, #0
+ 146 009c 0123     		moveq	r3, #1
+ 147 009e DBB2     		uxtb	r3, r3
+ 149:drivers/OpenMote-CC2538/adxl346.c **** }
+ 148              		.loc 1 149 0
+ 149 00a0 1846     		mov	r0, r3
+ 150 00a2 07F10807 		add	r7, r7, #8
+ 151 00a6 BD46     		mov	sp, r7
+ 152 00a8 80BD     		pop	{r7, pc}
+ 153              		.cfi_endproc
+ 154              	.LFE2:
+ 156 00aa 00BF     		.align	2
+ 157              		.global	adx346_read_x
+ 158              		.thumb
+ 159              		.thumb_func
+ 161              	adx346_read_x:
+ 162              	.LFB3:
+ 150:drivers/OpenMote-CC2538/adxl346.c **** 
+ 151:drivers/OpenMote-CC2538/adxl346.c **** uint16_t adx346_read_x(void)
+ 152:drivers/OpenMote-CC2538/adxl346.c **** {
+ 163              		.loc 1 152 0
+ 164              		.cfi_startproc
+ 165              		@ args = 0, pretend = 0, frame = 8
+ 166              		@ frame_needed = 1, uses_anonymous_args = 0
+ 167 00ac 80B5     		push	{r7, lr}
+ 168              	.LCFI8:
+ 169              		.cfi_def_cfa_offset 8
+ 170              		.cfi_offset 7, -8
+ 171              		.cfi_offset 14, -4
+ 172 00ae 82B0     		sub	sp, sp, #8
+ 173              	.LCFI9:
+ 174              		.cfi_def_cfa_offset 16
+ 175 00b0 00AF     		add	r7, sp, #0
+ 176              	.LCFI10:
+ 177              		.cfi_def_cfa_register 7
+ 153:drivers/OpenMote-CC2538/adxl346.c ****     uint8_t acceleration[2];
+ 154:drivers/OpenMote-CC2538/adxl346.c ****     uint16_t x;
+ 155:drivers/OpenMote-CC2538/adxl346.c **** 
+ 156:drivers/OpenMote-CC2538/adxl346.c ****     i2c_write_byte(ADXL346_ADDRESS, ADXL346_DATAX0_ADDR);
+ 178              		.loc 1 156 0
+ 179 00b2 4FF05300 		mov	r0, #83
+ 180 00b6 4FF03201 		mov	r1, #50
+ 181 00ba FFF7FEFF 		bl	i2c_write_byte
+ 157:drivers/OpenMote-CC2538/adxl346.c ****     i2c_read_byte(ADXL346_ADDRESS, &acceleration[0]);
+ 182              		.loc 1 157 0
+ 183 00be 07F10403 		add	r3, r7, #4
+ 184 00c2 4FF05300 		mov	r0, #83
+ 185 00c6 1946     		mov	r1, r3
+ 186 00c8 FFF7FEFF 		bl	i2c_read_byte
+ 158:drivers/OpenMote-CC2538/adxl346.c ****     i2c_write_byte(ADXL346_ADDRESS, ADXL346_DATAX1_ADDR);
+ 187              		.loc 1 158 0
+ 188 00cc 4FF05300 		mov	r0, #83
+ 189 00d0 4FF03301 		mov	r1, #51
+ 190 00d4 FFF7FEFF 		bl	i2c_write_byte
+ 159:drivers/OpenMote-CC2538/adxl346.c ****     i2c_read_byte(ADXL346_ADDRESS, &acceleration[1]);
+ 191              		.loc 1 159 0
+ 192 00d8 07F10403 		add	r3, r7, #4
+ 193 00dc 03F10103 		add	r3, r3, #1
+ 194 00e0 4FF05300 		mov	r0, #83
+ 195 00e4 1946     		mov	r1, r3
+ 196 00e6 FFF7FEFF 		bl	i2c_read_byte
+ 160:drivers/OpenMote-CC2538/adxl346.c **** 
+ 161:drivers/OpenMote-CC2538/adxl346.c ****     x = (acceleration[0] << 8) | acceleration[1];
+ 197              		.loc 1 161 0
+ 198 00ea 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 199 00ec 4FEA0323 		lsl	r3, r3, #8
+ 200 00f0 9AB2     		uxth	r2, r3
+ 201 00f2 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 202 00f4 1343     		orrs	r3, r3, r2
+ 203 00f6 9BB2     		uxth	r3, r3
+ 204 00f8 FB80     		strh	r3, [r7, #6]	@ movhi
+ 162:drivers/OpenMote-CC2538/adxl346.c **** 
+ 163:drivers/OpenMote-CC2538/adxl346.c ****     return x;
+ 205              		.loc 1 163 0
+ 206 00fa FB88     		ldrh	r3, [r7, #6]
+ 164:drivers/OpenMote-CC2538/adxl346.c **** }
+ 207              		.loc 1 164 0
+ 208 00fc 1846     		mov	r0, r3
+ 209 00fe 07F10807 		add	r7, r7, #8
+ 210 0102 BD46     		mov	sp, r7
+ 211 0104 80BD     		pop	{r7, pc}
+ 212              		.cfi_endproc
+ 213              	.LFE3:
+ 215 0106 00BF     		.align	2
+ 216              		.global	adx346_read_y
+ 217              		.thumb
+ 218              		.thumb_func
+ 220              	adx346_read_y:
+ 221              	.LFB4:
+ 165:drivers/OpenMote-CC2538/adxl346.c **** 
+ 166:drivers/OpenMote-CC2538/adxl346.c **** uint16_t adx346_read_y(void)
+ 167:drivers/OpenMote-CC2538/adxl346.c **** {
+ 222              		.loc 1 167 0
+ 223              		.cfi_startproc
+ 224              		@ args = 0, pretend = 0, frame = 8
+ 225              		@ frame_needed = 1, uses_anonymous_args = 0
+ 226 0108 80B5     		push	{r7, lr}
+ 227              	.LCFI11:
+ 228              		.cfi_def_cfa_offset 8
+ 229              		.cfi_offset 7, -8
+ 230              		.cfi_offset 14, -4
+ 231 010a 82B0     		sub	sp, sp, #8
+ 232              	.LCFI12:
+ 233              		.cfi_def_cfa_offset 16
+ 234 010c 00AF     		add	r7, sp, #0
+ 235              	.LCFI13:
+ 236              		.cfi_def_cfa_register 7
+ 168:drivers/OpenMote-CC2538/adxl346.c ****     uint8_t acceleration[2];
+ 169:drivers/OpenMote-CC2538/adxl346.c ****     uint16_t y;
+ 170:drivers/OpenMote-CC2538/adxl346.c ****     
+ 171:drivers/OpenMote-CC2538/adxl346.c ****     i2c_write_byte(ADXL346_ADDRESS, ADXL346_DATAY0_ADDR);
+ 237              		.loc 1 171 0
+ 238 010e 4FF05300 		mov	r0, #83
+ 239 0112 4FF03401 		mov	r1, #52
+ 240 0116 FFF7FEFF 		bl	i2c_write_byte
+ 172:drivers/OpenMote-CC2538/adxl346.c ****     i2c_read_byte(ADXL346_ADDRESS, &acceleration[0]);
+ 241              		.loc 1 172 0
+ 242 011a 07F10403 		add	r3, r7, #4
+ 243 011e 4FF05300 		mov	r0, #83
+ 244 0122 1946     		mov	r1, r3
+ 245 0124 FFF7FEFF 		bl	i2c_read_byte
+ 173:drivers/OpenMote-CC2538/adxl346.c ****     i2c_write_byte(ADXL346_ADDRESS, ADXL346_DATAY1_ADDR);
+ 246              		.loc 1 173 0
+ 247 0128 4FF05300 		mov	r0, #83
+ 248 012c 4FF03501 		mov	r1, #53
+ 249 0130 FFF7FEFF 		bl	i2c_write_byte
+ 174:drivers/OpenMote-CC2538/adxl346.c ****     i2c_read_byte(ADXL346_ADDRESS, &acceleration[1]);
+ 250              		.loc 1 174 0
+ 251 0134 07F10403 		add	r3, r7, #4
+ 252 0138 03F10103 		add	r3, r3, #1
+ 253 013c 4FF05300 		mov	r0, #83
+ 254 0140 1946     		mov	r1, r3
+ 255 0142 FFF7FEFF 		bl	i2c_read_byte
+ 175:drivers/OpenMote-CC2538/adxl346.c **** 
+ 176:drivers/OpenMote-CC2538/adxl346.c ****     y = (acceleration[0] << 8) | acceleration[1];
+ 256              		.loc 1 176 0
+ 257 0146 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 258 0148 4FEA0323 		lsl	r3, r3, #8
+ 259 014c 9AB2     		uxth	r2, r3
+ 260 014e 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 261 0150 1343     		orrs	r3, r3, r2
+ 262 0152 9BB2     		uxth	r3, r3
+ 263 0154 FB80     		strh	r3, [r7, #6]	@ movhi
+ 177:drivers/OpenMote-CC2538/adxl346.c ****     
+ 178:drivers/OpenMote-CC2538/adxl346.c ****     return y;
+ 264              		.loc 1 178 0
+ 265 0156 FB88     		ldrh	r3, [r7, #6]
+ 179:drivers/OpenMote-CC2538/adxl346.c **** }
+ 266              		.loc 1 179 0
+ 267 0158 1846     		mov	r0, r3
+ 268 015a 07F10807 		add	r7, r7, #8
+ 269 015e BD46     		mov	sp, r7
+ 270 0160 80BD     		pop	{r7, pc}
+ 271              		.cfi_endproc
+ 272              	.LFE4:
+ 274 0162 00BF     		.align	2
+ 275              		.global	adx346_read_z
+ 276              		.thumb
+ 277              		.thumb_func
+ 279              	adx346_read_z:
+ 280              	.LFB5:
+ 180:drivers/OpenMote-CC2538/adxl346.c **** 
+ 181:drivers/OpenMote-CC2538/adxl346.c **** uint16_t adx346_read_z(void)
+ 182:drivers/OpenMote-CC2538/adxl346.c **** {
+ 281              		.loc 1 182 0
+ 282              		.cfi_startproc
+ 283              		@ args = 0, pretend = 0, frame = 8
+ 284              		@ frame_needed = 1, uses_anonymous_args = 0
+ 285 0164 80B5     		push	{r7, lr}
+ 286              	.LCFI14:
+ 287              		.cfi_def_cfa_offset 8
+ 288              		.cfi_offset 7, -8
+ 289              		.cfi_offset 14, -4
+ 290 0166 82B0     		sub	sp, sp, #8
+ 291              	.LCFI15:
+ 292              		.cfi_def_cfa_offset 16
+ 293 0168 00AF     		add	r7, sp, #0
+ 294              	.LCFI16:
+ 295              		.cfi_def_cfa_register 7
+ 183:drivers/OpenMote-CC2538/adxl346.c ****     uint8_t acceleration[2];
+ 184:drivers/OpenMote-CC2538/adxl346.c ****     uint16_t z;
+ 185:drivers/OpenMote-CC2538/adxl346.c ****     
+ 186:drivers/OpenMote-CC2538/adxl346.c ****     i2c_write_byte(ADXL346_ADDRESS, ADXL346_DATAZ0_ADDR);
+ 296              		.loc 1 186 0
+ 297 016a 4FF05300 		mov	r0, #83
+ 298 016e 4FF03601 		mov	r1, #54
+ 299 0172 FFF7FEFF 		bl	i2c_write_byte
+ 187:drivers/OpenMote-CC2538/adxl346.c ****     i2c_read_byte(ADXL346_ADDRESS, &acceleration[0]);
+ 300              		.loc 1 187 0
+ 301 0176 07F10403 		add	r3, r7, #4
+ 302 017a 4FF05300 		mov	r0, #83
+ 303 017e 1946     		mov	r1, r3
+ 304 0180 FFF7FEFF 		bl	i2c_read_byte
+ 188:drivers/OpenMote-CC2538/adxl346.c ****     i2c_write_byte(ADXL346_ADDRESS, ADXL346_DATAZ1_ADDR);
+ 305              		.loc 1 188 0
+ 306 0184 4FF05300 		mov	r0, #83
+ 307 0188 4FF03701 		mov	r1, #55
+ 308 018c FFF7FEFF 		bl	i2c_write_byte
+ 189:drivers/OpenMote-CC2538/adxl346.c ****     i2c_read_byte(ADXL346_ADDRESS, &acceleration[1]);
+ 309              		.loc 1 189 0
+ 310 0190 07F10403 		add	r3, r7, #4
+ 311 0194 03F10103 		add	r3, r3, #1
+ 312 0198 4FF05300 		mov	r0, #83
+ 313 019c 1946     		mov	r1, r3
+ 314 019e FFF7FEFF 		bl	i2c_read_byte
+ 190:drivers/OpenMote-CC2538/adxl346.c **** 
+ 191:drivers/OpenMote-CC2538/adxl346.c ****     z = (acceleration[0] << 8) | acceleration[1];
+ 315              		.loc 1 191 0
+ 316 01a2 3B79     		ldrb	r3, [r7, #4]	@ zero_extendqisi2
+ 317 01a4 4FEA0323 		lsl	r3, r3, #8
+ 318 01a8 9AB2     		uxth	r2, r3
+ 319 01aa 7B79     		ldrb	r3, [r7, #5]	@ zero_extendqisi2
+ 320 01ac 1343     		orrs	r3, r3, r2
+ 321 01ae 9BB2     		uxth	r3, r3
+ 322 01b0 FB80     		strh	r3, [r7, #6]	@ movhi
+ 192:drivers/OpenMote-CC2538/adxl346.c ****     
+ 193:drivers/OpenMote-CC2538/adxl346.c ****     return z;
+ 323              		.loc 1 193 0
+ 324 01b2 FB88     		ldrh	r3, [r7, #6]
+ 194:drivers/OpenMote-CC2538/adxl346.c **** }
+ 325              		.loc 1 194 0
+ 326 01b4 1846     		mov	r0, r3
+ 327 01b6 07F10807 		add	r7, r7, #8
+ 328 01ba BD46     		mov	sp, r7
+ 329 01bc 80BD     		pop	{r7, pc}
+ 330              		.cfi_endproc
+ 331              	.LFE5:
+ 333              	.Letext0:
+ 334              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+DEFINED SYMBOLS
+                            *ABS*:00000000 adxl346.c
+     /tmp/ccUKfvr1.s:18     .text:00000000 $t
+     /tmp/ccUKfvr1.s:23     .text:00000000 adx346_init
+     /tmp/ccUKfvr1.s:89     .text:00000068 adx346_reset
+     /tmp/ccUKfvr1.s:115    .text:00000074 adx346_is_present
+     /tmp/ccUKfvr1.s:161    .text:000000ac adx346_read_x
+     /tmp/ccUKfvr1.s:220    .text:00000108 adx346_read_y
+     /tmp/ccUKfvr1.s:279    .text:00000164 adx346_read_z
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.i2c.h.15.8e849f5fcf39557ec3e120a857902900
+
+UNDEFINED SYMBOLS
+i2c_write_bytes
+i2c_write_byte
+i2c_read_byte

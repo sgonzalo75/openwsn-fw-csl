@@ -1,0 +1,3169 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"gpio.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.align	2
+  19              		.global	GPIOGetIntNumber
+  20              		.thumb
+  21              		.thumb_func
+  23              	GPIOGetIntNumber:
+  24              	.LFB0:
+  25              		.file 1 "bsp/boards/OpenMote-CC2538/source/gpio.c"
+   1:bsp/boards/OpenMote-CC2538/source/gpio.c **** /******************************************************************************
+   2:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  Filename:       gpio.c
+   3:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  Revised:        $Date: 2013-04-29 09:36:44 +0200 (Mon, 29 Apr 2013) $
+   4:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  Revision:       $Revision: 9922 $
+   5:bsp/boards/OpenMote-CC2538/source/gpio.c **** *
+   6:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  Description:    Driver for the GPIO controller.
+   7:bsp/boards/OpenMote-CC2538/source/gpio.c **** *
+   8:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
+   9:bsp/boards/OpenMote-CC2538/source/gpio.c **** *
+  10:bsp/boards/OpenMote-CC2538/source/gpio.c **** *
+  11:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  Redistribution and use in source and binary forms, with or without
+  12:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  modification, are permitted provided that the following conditions
+  13:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  are met:
+  14:bsp/boards/OpenMote-CC2538/source/gpio.c **** *
+  15:bsp/boards/OpenMote-CC2538/source/gpio.c **** *    Redistributions of source code must retain the above copyright
+  16:bsp/boards/OpenMote-CC2538/source/gpio.c **** *    notice, this list of conditions and the following disclaimer.
+  17:bsp/boards/OpenMote-CC2538/source/gpio.c **** *
+  18:bsp/boards/OpenMote-CC2538/source/gpio.c **** *    Redistributions in binary form must reproduce the above copyright
+  19:bsp/boards/OpenMote-CC2538/source/gpio.c **** *    notice, this list of conditions and the following disclaimer in the
+  20:bsp/boards/OpenMote-CC2538/source/gpio.c **** *    documentation and/or other materials provided with the distribution.
+  21:bsp/boards/OpenMote-CC2538/source/gpio.c **** *
+  22:bsp/boards/OpenMote-CC2538/source/gpio.c **** *    Neither the name of Texas Instruments Incorporated nor the names of
+  23:bsp/boards/OpenMote-CC2538/source/gpio.c **** *    its contributors may be used to endorse or promote products derived
+  24:bsp/boards/OpenMote-CC2538/source/gpio.c **** *    from this software without specific prior written permission.
+  25:bsp/boards/OpenMote-CC2538/source/gpio.c **** *
+  26:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  27:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  28:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  29:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  30:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  31:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  32:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  33:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  34:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  35:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  36:bsp/boards/OpenMote-CC2538/source/gpio.c **** *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  37:bsp/boards/OpenMote-CC2538/source/gpio.c **** *
+  38:bsp/boards/OpenMote-CC2538/source/gpio.c **** ******************************************************************************/
+  39:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+  40:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+  41:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+  42:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \addtogroup gpio_api
+  43:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! @{
+  44:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+  45:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+  46:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+  47:bsp/boards/OpenMote-CC2538/source/gpio.c **** #include <headers/hw_gpio.h>
+  48:bsp/boards/OpenMote-CC2538/source/gpio.c **** #include <headers/hw_ints.h>
+  49:bsp/boards/OpenMote-CC2538/source/gpio.c **** #include <headers/hw_memmap.h>
+  50:bsp/boards/OpenMote-CC2538/source/gpio.c **** #include <headers/hw_sys_ctrl.h>
+  51:bsp/boards/OpenMote-CC2538/source/gpio.c **** #include "debug.h"
+  52:bsp/boards/OpenMote-CC2538/source/gpio.c **** #include "gpio.h"
+  53:bsp/boards/OpenMote-CC2538/source/gpio.c **** #include "interrupt.h"
+  54:bsp/boards/OpenMote-CC2538/source/gpio.c **** #include "ioc.h"
+  55:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+  56:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+  57:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+  58:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \internal
+  59:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Checks a GPIO base address
+  60:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+  61:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+  62:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+  63:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! This function determines if a GPIO port base address is valid.
+  64:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+  65:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return Returns \b true if the base address is valid and \b false
+  66:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! otherwise.
+  67:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+  68:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+  69:bsp/boards/OpenMote-CC2538/source/gpio.c **** #ifdef ENABLE_ASSERT
+  70:bsp/boards/OpenMote-CC2538/source/gpio.c **** static bool
+  71:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOBaseValid(uint32_t ui32Port)
+  72:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+  73:bsp/boards/OpenMote-CC2538/source/gpio.c ****     return((ui32Port == GPIO_A_BASE) || (ui32Port == GPIO_B_BASE) ||
+  74:bsp/boards/OpenMote-CC2538/source/gpio.c ****            (ui32Port == GPIO_C_BASE) || (ui32Port == GPIO_D_BASE));
+  75:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+  76:bsp/boards/OpenMote-CC2538/source/gpio.c **** #endif
+  77:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+  78:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+  79:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+  80:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \internal
+  81:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Gets the GPIO interrupt number
+  82:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+  83:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+  84:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+  85:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Given a GPIO base address, returns the corresponding interrupt number.
+  86:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+  87:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return Returns a GPIO interrupt number, or 0 if \e ui32Port is invalid.
+  88:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+  89:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+  90:bsp/boards/OpenMote-CC2538/source/gpio.c **** uint32_t
+  91:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOGetIntNumber(uint32_t ui32Port)
+  92:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+  26              		.loc 1 92 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 16
+  29              		@ frame_needed = 1, uses_anonymous_args = 0
+  30              		@ link register save eliminated.
+  31 0000 80B4     		push	{r7}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 4
+  34              		.cfi_offset 7, -4
+  35 0002 85B0     		sub	sp, sp, #20
+  36              	.LCFI1:
+  37              		.cfi_def_cfa_offset 24
+  38 0004 00AF     		add	r7, sp, #0
+  39              	.LCFI2:
+  40              		.cfi_def_cfa_register 7
+  41 0006 7860     		str	r0, [r7, #4]
+  93:bsp/boards/OpenMote-CC2538/source/gpio.c ****     uint32_t ui32Int;
+  94:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+  95:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+  96:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+  97:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+  98:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+  99:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 100:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 101:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Determine the GPIO interrupt number for the given module.
+ 102:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 103:bsp/boards/OpenMote-CC2538/source/gpio.c ****     switch(ui32Port)
+  42              		.loc 1 103 0
+  43 0008 7B68     		ldr	r3, [r7, #4]
+  44 000a 4FF42042 		mov	r2, #40960
+  45 000e C4F20D02 		movt	r2, 16397
+  46 0012 9342     		cmp	r3, r2
+  47 0014 1DD0     		beq	.L4
+  48 0016 4FF42042 		mov	r2, #40960
+  49 001a C4F20D02 		movt	r2, 16397
+  50 001e 9342     		cmp	r3, r2
+  51 0020 06D8     		bhi	.L7
+  52 0022 4FF41042 		mov	r2, #36864
+  53 0026 C4F20D02 		movt	r2, 16397
+  54 002a 9342     		cmp	r3, r2
+  55 002c 0DD0     		beq	.L3
+  56 002e 1CE0     		b	.L2
+  57              	.L7:
+  58 0030 4FF43042 		mov	r2, #45056
+  59 0034 C4F20D02 		movt	r2, 16397
+  60 0038 9342     		cmp	r3, r2
+  61 003a 0ED0     		beq	.L5
+  62 003c 4FF44042 		mov	r2, #49152
+  63 0040 C4F20D02 		movt	r2, 16397
+  64 0044 9342     		cmp	r3, r2
+  65 0046 0CD0     		beq	.L6
+  66 0048 0FE0     		b	.L2
+  67              	.L3:
+ 104:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+ 105:bsp/boards/OpenMote-CC2538/source/gpio.c ****     case GPIO_A_BASE:
+ 106:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+ 107:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32Int = INT_GPIOA;
+  68              		.loc 1 107 0
+  69 004a 4FF01003 		mov	r3, #16
+  70 004e FB60     		str	r3, [r7, #12]
+ 108:bsp/boards/OpenMote-CC2538/source/gpio.c ****         break;
+  71              		.loc 1 108 0
+  72 0050 0EE0     		b	.L8
+  73              	.L4:
+ 109:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+ 110:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 111:bsp/boards/OpenMote-CC2538/source/gpio.c ****     case GPIO_B_BASE:
+ 112:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+ 113:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32Int = INT_GPIOB;
+  74              		.loc 1 113 0
+  75 0052 4FF01103 		mov	r3, #17
+  76 0056 FB60     		str	r3, [r7, #12]
+ 114:bsp/boards/OpenMote-CC2538/source/gpio.c ****         break;
+  77              		.loc 1 114 0
+  78 0058 0AE0     		b	.L8
+  79              	.L5:
+ 115:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+ 116:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 117:bsp/boards/OpenMote-CC2538/source/gpio.c ****     case GPIO_C_BASE:
+ 118:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+ 119:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32Int = INT_GPIOC;
+  80              		.loc 1 119 0
+  81 005a 4FF01203 		mov	r3, #18
+  82 005e FB60     		str	r3, [r7, #12]
+ 120:bsp/boards/OpenMote-CC2538/source/gpio.c ****         break;
+  83              		.loc 1 120 0
+  84 0060 06E0     		b	.L8
+  85              	.L6:
+ 121:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+ 122:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 123:bsp/boards/OpenMote-CC2538/source/gpio.c ****     case GPIO_D_BASE:
+ 124:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+ 125:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32Int = INT_GPIOD;
+  86              		.loc 1 125 0
+  87 0062 4FF01303 		mov	r3, #19
+  88 0066 FB60     		str	r3, [r7, #12]
+ 126:bsp/boards/OpenMote-CC2538/source/gpio.c ****         break;
+  89              		.loc 1 126 0
+  90 0068 02E0     		b	.L8
+  91              	.L2:
+ 127:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+ 128:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 129:bsp/boards/OpenMote-CC2538/source/gpio.c ****     default:
+ 130:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+ 131:bsp/boards/OpenMote-CC2538/source/gpio.c ****         return(0);
+  92              		.loc 1 131 0
+  93 006a 4FF00003 		mov	r3, #0
+  94 006e 00E0     		b	.L9
+  95              	.L8:
+ 132:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+ 133:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+ 134:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 135:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 136:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Return GPIO interrupt number.
+ 137:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 138:bsp/boards/OpenMote-CC2538/source/gpio.c ****     return(ui32Int);
+  96              		.loc 1 138 0
+  97 0070 FB68     		ldr	r3, [r7, #12]
+  98              	.L9:
+ 139:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+  99              		.loc 1 139 0
+ 100 0072 1846     		mov	r0, r3
+ 101 0074 07F11407 		add	r7, r7, #20
+ 102 0078 BD46     		mov	sp, r7
+ 103 007a 80BC     		pop	{r7}
+ 104 007c 7047     		bx	lr
+ 105              		.cfi_endproc
+ 106              	.LFE0:
+ 108 007e 00BF     		.align	2
+ 109              		.global	GPIODirModeSet
+ 110              		.thumb
+ 111              		.thumb_func
+ 113              	GPIODirModeSet:
+ 114              	.LFB1:
+ 140:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 141:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 142:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 143:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Sets the direction and mode of the specified pin(s)
+ 144:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 145:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 146:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+ 147:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32PinIO is the pin direction and/or mode.
+ 148:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 149:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! This function sets the specified pin(s) on the selected GPIO port
+ 150:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! as either an input or output under software control or sets the
+ 151:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! pin to be under hardware control.
+ 152:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 153:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The parameter \e ui32PinIO is an enumerated data type that can be one of
+ 154:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! the following values:
+ 155:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 156:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! - \b GPIO_DIR_MODE_IN
+ 157:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! - \b GPIO_DIR_MODE_OUT
+ 158:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! - \b GPIO_DIR_MODE_HW
+ 159:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 160:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! where \b GPIO_DIR_MODE_IN specifies that the pin will be programmed as
+ 161:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! a software controlled input, \b GPIO_DIR_MODE_OUT specifies that the pin
+ 162:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! will be programmed as a software controlled output, and
+ 163:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \b GPIO_DIR_MODE_HW specifies that the pin will be placed under
+ 164:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! hardware control.
+ 165:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 166:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+ 167:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+ 168:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 169:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 170:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 171:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 172:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 173:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 174:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIODirModeSet(uint32_t ui32Port, uint8_t ui8Pins,
+ 175:bsp/boards/OpenMote-CC2538/source/gpio.c ****                uint32_t ui32PinIO)
+ 176:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 115              		.loc 1 176 0
+ 116              		.cfi_startproc
+ 117              		@ args = 0, pretend = 0, frame = 16
+ 118              		@ frame_needed = 1, uses_anonymous_args = 0
+ 119              		@ link register save eliminated.
+ 120 0080 80B4     		push	{r7}
+ 121              	.LCFI3:
+ 122              		.cfi_def_cfa_offset 4
+ 123              		.cfi_offset 7, -4
+ 124 0082 85B0     		sub	sp, sp, #20
+ 125              	.LCFI4:
+ 126              		.cfi_def_cfa_offset 24
+ 127 0084 00AF     		add	r7, sp, #0
+ 128              	.LCFI5:
+ 129              		.cfi_def_cfa_register 7
+ 130 0086 F860     		str	r0, [r7, #12]
+ 131 0088 0B46     		mov	r3, r1
+ 132 008a 7A60     		str	r2, [r7, #4]
+ 133 008c FB72     		strb	r3, [r7, #11]
+ 177:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 178:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 179:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 180:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 181:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 182:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT((ui32PinIO == GPIO_DIR_MODE_IN) || (ui32PinIO == GPIO_DIR_MODE_OUT) ||
+ 183:bsp/boards/OpenMote-CC2538/source/gpio.c ****            (ui32PinIO == GPIO_DIR_MODE_HW));
+ 184:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 185:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 186:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Set the pin direction and mode.
+ 187:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 188:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_DIR)   = ((ui32PinIO & GPIO_DIR_MODE_OUT) ?
+ 134              		.loc 1 188 0
+ 135 008e FB68     		ldr	r3, [r7, #12]
+ 136 0090 03F58063 		add	r3, r3, #1024
+ 137 0094 1A46     		mov	r2, r3
+ 138 0096 7B68     		ldr	r3, [r7, #4]
+ 139 0098 03F00103 		and	r3, r3, #1
+ 189:bsp/boards/OpenMote-CC2538/source/gpio.c ****                                       (HWREG(ui32Port + GPIO_O_DIR) | ui8Pins) :
+ 140              		.loc 1 189 0
+ 141 009c 002B     		cmp	r3, #0
+ 142 009e 06D0     		beq	.L11
+ 143              		.loc 1 189 0 is_stmt 0 discriminator 1
+ 144 00a0 FB68     		ldr	r3, [r7, #12]
+ 145 00a2 03F58063 		add	r3, r3, #1024
+ 146 00a6 1968     		ldr	r1, [r3, #0]
+ 147 00a8 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 148 00aa 0B43     		orrs	r3, r3, r1
+ 149 00ac 07E0     		b	.L12
+ 150              	.L11:
+ 190:bsp/boards/OpenMote-CC2538/source/gpio.c ****                                       (HWREG(ui32Port + GPIO_O_DIR) & ~(ui8Pins)));
+ 151              		.loc 1 190 0 is_stmt 1 discriminator 2
+ 152 00ae FB68     		ldr	r3, [r7, #12]
+ 153 00b0 03F58063 		add	r3, r3, #1024
+ 154 00b4 1968     		ldr	r1, [r3, #0]
+ 155 00b6 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 156 00b8 6FEA0303 		mvn	r3, r3
+ 189:bsp/boards/OpenMote-CC2538/source/gpio.c ****                                       (HWREG(ui32Port + GPIO_O_DIR) | ui8Pins) :
+ 157              		.loc 1 189 0 discriminator 2
+ 158 00bc 0B40     		ands	r3, r3, r1
+ 159              	.L12:
+ 188:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_DIR)   = ((ui32PinIO & GPIO_DIR_MODE_OUT) ?
+ 160              		.loc 1 188 0
+ 161 00be 1360     		str	r3, [r2, #0]
+ 191:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_AFSEL) = ((ui32PinIO & GPIO_DIR_MODE_HW) ?
+ 162              		.loc 1 191 0
+ 163 00c0 FB68     		ldr	r3, [r7, #12]
+ 164 00c2 03F58463 		add	r3, r3, #1056
+ 165 00c6 1A46     		mov	r2, r3
+ 166 00c8 7B68     		ldr	r3, [r7, #4]
+ 167 00ca 03F00203 		and	r3, r3, #2
+ 192:bsp/boards/OpenMote-CC2538/source/gpio.c ****                                       (HWREG(ui32Port + GPIO_O_AFSEL) | ui8Pins) :
+ 168              		.loc 1 192 0
+ 169 00ce 002B     		cmp	r3, #0
+ 170 00d0 06D0     		beq	.L13
+ 171              		.loc 1 192 0 is_stmt 0 discriminator 1
+ 172 00d2 FB68     		ldr	r3, [r7, #12]
+ 173 00d4 03F58463 		add	r3, r3, #1056
+ 174 00d8 1968     		ldr	r1, [r3, #0]
+ 175 00da FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 176 00dc 0B43     		orrs	r3, r3, r1
+ 177 00de 07E0     		b	.L14
+ 178              	.L13:
+ 193:bsp/boards/OpenMote-CC2538/source/gpio.c ****                                       (HWREG(ui32Port + GPIO_O_AFSEL) & ~(ui8Pins)));
+ 179              		.loc 1 193 0 is_stmt 1 discriminator 2
+ 180 00e0 FB68     		ldr	r3, [r7, #12]
+ 181 00e2 03F58463 		add	r3, r3, #1056
+ 182 00e6 1968     		ldr	r1, [r3, #0]
+ 183 00e8 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 184 00ea 6FEA0303 		mvn	r3, r3
+ 192:bsp/boards/OpenMote-CC2538/source/gpio.c ****                                       (HWREG(ui32Port + GPIO_O_AFSEL) | ui8Pins) :
+ 185              		.loc 1 192 0 discriminator 2
+ 186 00ee 0B40     		ands	r3, r3, r1
+ 187              	.L14:
+ 191:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_AFSEL) = ((ui32PinIO & GPIO_DIR_MODE_HW) ?
+ 188              		.loc 1 191 0
+ 189 00f0 1360     		str	r3, [r2, #0]
+ 194:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 190              		.loc 1 194 0
+ 191 00f2 07F11407 		add	r7, r7, #20
+ 192 00f6 BD46     		mov	sp, r7
+ 193 00f8 80BC     		pop	{r7}
+ 194 00fa 7047     		bx	lr
+ 195              		.cfi_endproc
+ 196              	.LFE1:
+ 198              		.align	2
+ 199              		.global	GPIODirModeGet
+ 200              		.thumb
+ 201              		.thumb_func
+ 203              	GPIODirModeGet:
+ 204              	.LFB2:
+ 195:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 196:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 197:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 198:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Gets the direction and mode of a pin
+ 199:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 200:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 201:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pin is the pin number.
+ 202:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 203:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! This function gets the direction and control mode for a specified pin on
+ 204:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! the selected GPIO port.  The pin can be configured as either an input or
+ 205:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! output under software control, or it can be under hardware control.  The
+ 206:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! type of control and direction are returned as an enumerated data type.
+ 207:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 208:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return Returns one of the enumerated data types described for
+ 209:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! GPIODirModeSet().
+ 210:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 211:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 212:bsp/boards/OpenMote-CC2538/source/gpio.c **** uint32_t
+ 213:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIODirModeGet(uint32_t ui32Port, uint8_t ui8Pin)
+ 214:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 205              		.loc 1 214 0
+ 206              		.cfi_startproc
+ 207              		@ args = 0, pretend = 0, frame = 16
+ 208              		@ frame_needed = 1, uses_anonymous_args = 0
+ 209              		@ link register save eliminated.
+ 210 00fc 80B4     		push	{r7}
+ 211              	.LCFI6:
+ 212              		.cfi_def_cfa_offset 4
+ 213              		.cfi_offset 7, -4
+ 214 00fe 85B0     		sub	sp, sp, #20
+ 215              	.LCFI7:
+ 216              		.cfi_def_cfa_offset 24
+ 217 0100 00AF     		add	r7, sp, #0
+ 218              	.LCFI8:
+ 219              		.cfi_def_cfa_register 7
+ 220 0102 7860     		str	r0, [r7, #4]
+ 221 0104 0B46     		mov	r3, r1
+ 222 0106 FB70     		strb	r3, [r7, #3]
+ 215:bsp/boards/OpenMote-CC2538/source/gpio.c ****     uint32_t ui32Dir;
+ 216:bsp/boards/OpenMote-CC2538/source/gpio.c ****     uint32_t ui32AFSEL;
+ 217:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 218:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 219:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 220:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 221:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 222:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(ui8Pin < 8);
+ 223:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 224:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 225:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Convert from a pin number to a bit position.
+ 226:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 227:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui8Pin = 1 << ui8Pin;
+ 223              		.loc 1 227 0
+ 224 0108 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 225 010a 4FF00102 		mov	r2, #1
+ 226 010e 02FA03F3 		lsl	r3, r2, r3
+ 227 0112 FB70     		strb	r3, [r7, #3]
+ 228:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 229:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 230:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Return the pin direction and mode.
+ 231:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 232:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32Dir   = HWREG(ui32Port + GPIO_O_DIR);
+ 228              		.loc 1 232 0
+ 229 0114 7B68     		ldr	r3, [r7, #4]
+ 230 0116 03F58063 		add	r3, r3, #1024
+ 231 011a 1B68     		ldr	r3, [r3, #0]
+ 232 011c FB60     		str	r3, [r7, #12]
+ 233:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32AFSEL = HWREG(ui32Port + GPIO_O_AFSEL);
+ 233              		.loc 1 233 0
+ 234 011e 7B68     		ldr	r3, [r7, #4]
+ 235 0120 03F58463 		add	r3, r3, #1056
+ 236 0124 1B68     		ldr	r3, [r3, #0]
+ 237 0126 BB60     		str	r3, [r7, #8]
+ 234:bsp/boards/OpenMote-CC2538/source/gpio.c ****     return(((ui32Dir & ui8Pin) ? GPIO_DIR_MODE_OUT : GPIO_DIR_MODE_IN) |
+ 238              		.loc 1 234 0
+ 239 0128 FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 240 012a FB68     		ldr	r3, [r7, #12]
+ 241 012c 1340     		ands	r3, r3, r2
+ 242 012e 002B     		cmp	r3, #0
+ 243 0130 0CBF     		ite	eq
+ 244 0132 0023     		moveq	r3, #0
+ 245 0134 0123     		movne	r3, #1
+ 246 0136 DBB2     		uxtb	r3, r3
+ 247 0138 1A46     		mov	r2, r3
+ 235:bsp/boards/OpenMote-CC2538/source/gpio.c ****            ((ui32AFSEL & ui8Pin) ? GPIO_DIR_MODE_HW : GPIO_DIR_MODE_IN));
+ 248              		.loc 1 235 0
+ 249 013a F978     		ldrb	r1, [r7, #3]	@ zero_extendqisi2
+ 250 013c BB68     		ldr	r3, [r7, #8]
+ 251 013e 0B40     		ands	r3, r3, r1
+ 252 0140 002B     		cmp	r3, #0
+ 253 0142 02D0     		beq	.L16
+ 254              		.loc 1 235 0 is_stmt 0 discriminator 1
+ 255 0144 4FF00203 		mov	r3, #2
+ 256 0148 01E0     		b	.L17
+ 257              	.L16:
+ 258              		.loc 1 235 0 discriminator 2
+ 259 014a 4FF00003 		mov	r3, #0
+ 260              	.L17:
+ 234:bsp/boards/OpenMote-CC2538/source/gpio.c ****     return(((ui32Dir & ui8Pin) ? GPIO_DIR_MODE_OUT : GPIO_DIR_MODE_IN) |
+ 261              		.loc 1 234 0 is_stmt 1
+ 262 014e 1343     		orrs	r3, r3, r2
+ 236:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 263              		.loc 1 236 0
+ 264 0150 1846     		mov	r0, r3
+ 265 0152 07F11407 		add	r7, r7, #20
+ 266 0156 BD46     		mov	sp, r7
+ 267 0158 80BC     		pop	{r7}
+ 268 015a 7047     		bx	lr
+ 269              		.cfi_endproc
+ 270              	.LFE2:
+ 272              		.align	2
+ 273              		.global	GPIOIntTypeSet
+ 274              		.thumb
+ 275              		.thumb_func
+ 277              	GPIOIntTypeSet:
+ 278              	.LFB3:
+ 237:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 238:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 239:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 240:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Sets the interrupt type for the specified pin(s)
+ 241:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 242:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 243:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+ 244:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32IntType specifies the type of interrupt trigger mechanism.
+ 245:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 246:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! This function sets up the various interrupt trigger mechanisms for the
+ 247:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! specified pin(s) on the selected GPIO port.
+ 248:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 249:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The parameter \e ui32IntType is an enumerated data type that can be one of
+ 250:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! the following values:
+ 251:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 252:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! - \b GPIO_FALLING_EDGE
+ 253:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! - \b GPIO_RISING_EDGE
+ 254:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! - \b GPIO_BOTH_EDGES
+ 255:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! - \b GPIO_LOW_LEVEL
+ 256:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! - \b GPIO_HIGH_LEVEL
+ 257:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 258:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! where the different values describe the interrupt detection mechanism
+ 259:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! (edge or level) and the particular triggering event (falling, rising,
+ 260:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! or both edges for edge detect, low or high for level detect).
+ 261:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 262:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+ 263:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+ 264:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 265:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 266:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \note To avoid any spurious interrupts, the user must
+ 267:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! ensure that the GPIO inputs remain stable for the duration of
+ 268:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! this function.
+ 269:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 270:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 271:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 272:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 273:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 274:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOIntTypeSet(uint32_t ui32Port, uint8_t ui8Pins,
+ 275:bsp/boards/OpenMote-CC2538/source/gpio.c ****                uint32_t ui32IntType)
+ 276:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 279              		.loc 1 276 0
+ 280              		.cfi_startproc
+ 281              		@ args = 0, pretend = 0, frame = 16
+ 282              		@ frame_needed = 1, uses_anonymous_args = 0
+ 283              		@ link register save eliminated.
+ 284 015c 80B4     		push	{r7}
+ 285              	.LCFI9:
+ 286              		.cfi_def_cfa_offset 4
+ 287              		.cfi_offset 7, -4
+ 288 015e 85B0     		sub	sp, sp, #20
+ 289              	.LCFI10:
+ 290              		.cfi_def_cfa_offset 24
+ 291 0160 00AF     		add	r7, sp, #0
+ 292              	.LCFI11:
+ 293              		.cfi_def_cfa_register 7
+ 294 0162 F860     		str	r0, [r7, #12]
+ 295 0164 0B46     		mov	r3, r1
+ 296 0166 7A60     		str	r2, [r7, #4]
+ 297 0168 FB72     		strb	r3, [r7, #11]
+ 277:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 278:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 279:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 280:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 281:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 282:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT((ui32IntType == GPIO_FALLING_EDGE) ||
+ 283:bsp/boards/OpenMote-CC2538/source/gpio.c ****            (ui32IntType == GPIO_RISING_EDGE) || (ui32IntType == GPIO_BOTH_EDGES) ||
+ 284:bsp/boards/OpenMote-CC2538/source/gpio.c ****            (ui32IntType == GPIO_LOW_LEVEL)  || (ui32IntType == GPIO_HIGH_LEVEL));
+ 285:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 286:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 287:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Set the pin interrupt type.
+ 288:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 289:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_IBE) = ((ui32IntType & 1) ?
+ 298              		.loc 1 289 0
+ 299 016a FB68     		ldr	r3, [r7, #12]
+ 300 016c 03F58163 		add	r3, r3, #1032
+ 301 0170 1A46     		mov	r2, r3
+ 302 0172 7B68     		ldr	r3, [r7, #4]
+ 303 0174 03F00103 		and	r3, r3, #1
+ 290:bsp/boards/OpenMote-CC2538/source/gpio.c ****                                     (HWREG(ui32Port + GPIO_O_IBE) | ui8Pins) :
+ 304              		.loc 1 290 0
+ 305 0178 002B     		cmp	r3, #0
+ 306 017a 06D0     		beq	.L20
+ 307              		.loc 1 290 0 is_stmt 0 discriminator 1
+ 308 017c FB68     		ldr	r3, [r7, #12]
+ 309 017e 03F58163 		add	r3, r3, #1032
+ 310 0182 1968     		ldr	r1, [r3, #0]
+ 311 0184 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 312 0186 0B43     		orrs	r3, r3, r1
+ 313 0188 07E0     		b	.L21
+ 314              	.L20:
+ 291:bsp/boards/OpenMote-CC2538/source/gpio.c ****                                     (HWREG(ui32Port + GPIO_O_IBE) & ~(ui8Pins)));
+ 315              		.loc 1 291 0 is_stmt 1 discriminator 2
+ 316 018a FB68     		ldr	r3, [r7, #12]
+ 317 018c 03F58163 		add	r3, r3, #1032
+ 318 0190 1968     		ldr	r1, [r3, #0]
+ 319 0192 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 320 0194 6FEA0303 		mvn	r3, r3
+ 290:bsp/boards/OpenMote-CC2538/source/gpio.c ****                                     (HWREG(ui32Port + GPIO_O_IBE) | ui8Pins) :
+ 321              		.loc 1 290 0 discriminator 2
+ 322 0198 0B40     		ands	r3, r3, r1
+ 323              	.L21:
+ 289:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_IBE) = ((ui32IntType & 1) ?
+ 324              		.loc 1 289 0
+ 325 019a 1360     		str	r3, [r2, #0]
+ 292:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_IS) = ((ui32IntType & 2) ?
+ 326              		.loc 1 292 0
+ 327 019c FB68     		ldr	r3, [r7, #12]
+ 328 019e 03F20443 		addw	r3, r3, #1028
+ 329 01a2 1A46     		mov	r2, r3
+ 330 01a4 7B68     		ldr	r3, [r7, #4]
+ 331 01a6 03F00203 		and	r3, r3, #2
+ 293:bsp/boards/OpenMote-CC2538/source/gpio.c ****                                    (HWREG(ui32Port + GPIO_O_IS) | ui8Pins) :
+ 332              		.loc 1 293 0
+ 333 01aa 002B     		cmp	r3, #0
+ 334 01ac 06D0     		beq	.L22
+ 335              		.loc 1 293 0 is_stmt 0 discriminator 1
+ 336 01ae FB68     		ldr	r3, [r7, #12]
+ 337 01b0 03F20443 		addw	r3, r3, #1028
+ 338 01b4 1968     		ldr	r1, [r3, #0]
+ 339 01b6 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 340 01b8 0B43     		orrs	r3, r3, r1
+ 341 01ba 07E0     		b	.L23
+ 342              	.L22:
+ 294:bsp/boards/OpenMote-CC2538/source/gpio.c ****                                    (HWREG(ui32Port + GPIO_O_IS) & ~(ui8Pins)));
+ 343              		.loc 1 294 0 is_stmt 1 discriminator 2
+ 344 01bc FB68     		ldr	r3, [r7, #12]
+ 345 01be 03F20443 		addw	r3, r3, #1028
+ 346 01c2 1968     		ldr	r1, [r3, #0]
+ 347 01c4 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 348 01c6 6FEA0303 		mvn	r3, r3
+ 293:bsp/boards/OpenMote-CC2538/source/gpio.c ****                                    (HWREG(ui32Port + GPIO_O_IS) | ui8Pins) :
+ 349              		.loc 1 293 0 discriminator 2
+ 350 01ca 0B40     		ands	r3, r3, r1
+ 351              	.L23:
+ 292:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_IS) = ((ui32IntType & 2) ?
+ 352              		.loc 1 292 0
+ 353 01cc 1360     		str	r3, [r2, #0]
+ 295:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_IEV) = ((ui32IntType & 4) ?
+ 354              		.loc 1 295 0
+ 355 01ce FB68     		ldr	r3, [r7, #12]
+ 356 01d0 03F20C43 		addw	r3, r3, #1036
+ 357 01d4 1A46     		mov	r2, r3
+ 358 01d6 7B68     		ldr	r3, [r7, #4]
+ 359 01d8 03F00403 		and	r3, r3, #4
+ 296:bsp/boards/OpenMote-CC2538/source/gpio.c ****                                     (HWREG(ui32Port + GPIO_O_IEV) | ui8Pins) :
+ 360              		.loc 1 296 0
+ 361 01dc 002B     		cmp	r3, #0
+ 362 01de 06D0     		beq	.L24
+ 363              		.loc 1 296 0 is_stmt 0 discriminator 1
+ 364 01e0 FB68     		ldr	r3, [r7, #12]
+ 365 01e2 03F20C43 		addw	r3, r3, #1036
+ 366 01e6 1968     		ldr	r1, [r3, #0]
+ 367 01e8 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 368 01ea 0B43     		orrs	r3, r3, r1
+ 369 01ec 07E0     		b	.L25
+ 370              	.L24:
+ 297:bsp/boards/OpenMote-CC2538/source/gpio.c ****                                     (HWREG(ui32Port + GPIO_O_IEV) & ~(ui8Pins)));
+ 371              		.loc 1 297 0 is_stmt 1 discriminator 2
+ 372 01ee FB68     		ldr	r3, [r7, #12]
+ 373 01f0 03F20C43 		addw	r3, r3, #1036
+ 374 01f4 1968     		ldr	r1, [r3, #0]
+ 375 01f6 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+ 376 01f8 6FEA0303 		mvn	r3, r3
+ 296:bsp/boards/OpenMote-CC2538/source/gpio.c ****                                     (HWREG(ui32Port + GPIO_O_IEV) | ui8Pins) :
+ 377              		.loc 1 296 0 discriminator 2
+ 378 01fc 0B40     		ands	r3, r3, r1
+ 379              	.L25:
+ 295:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_IEV) = ((ui32IntType & 4) ?
+ 380              		.loc 1 295 0
+ 381 01fe 1360     		str	r3, [r2, #0]
+ 298:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 382              		.loc 1 298 0
+ 383 0200 07F11407 		add	r7, r7, #20
+ 384 0204 BD46     		mov	sp, r7
+ 385 0206 80BC     		pop	{r7}
+ 386 0208 7047     		bx	lr
+ 387              		.cfi_endproc
+ 388              	.LFE3:
+ 390 020a 00BF     		.align	2
+ 391              		.global	GPIOIntTypeGet
+ 392              		.thumb
+ 393              		.thumb_func
+ 395              	GPIOIntTypeGet:
+ 396              	.LFB4:
+ 299:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 300:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 301:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 302:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Gets the interrupt type for a pin
+ 303:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 304:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 305:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pin is the pin number.
+ 306:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 307:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! This function gets the interrupt type for a specified pin on the selected
+ 308:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! GPIO port.  The pin can be configured as a falling edge, rising edge, or
+ 309:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! both edge detected interrupt, or can be configured as a low level or
+ 310:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! high level detected interrupt.  The type of interrupt detection mechanism
+ 311:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! is returned as an enumerated data type.
+ 312:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 313:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return Returns one of the enumerated data types described for
+ 314:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! GPIOIntTypeSet().
+ 315:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 316:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 317:bsp/boards/OpenMote-CC2538/source/gpio.c **** uint32_t
+ 318:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOIntTypeGet(uint32_t ui32Port, uint8_t ui8Pin)
+ 319:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 397              		.loc 1 319 0
+ 398              		.cfi_startproc
+ 399              		@ args = 0, pretend = 0, frame = 24
+ 400              		@ frame_needed = 1, uses_anonymous_args = 0
+ 401              		@ link register save eliminated.
+ 402 020c 80B4     		push	{r7}
+ 403              	.LCFI12:
+ 404              		.cfi_def_cfa_offset 4
+ 405              		.cfi_offset 7, -4
+ 406 020e 87B0     		sub	sp, sp, #28
+ 407              	.LCFI13:
+ 408              		.cfi_def_cfa_offset 32
+ 409 0210 00AF     		add	r7, sp, #0
+ 410              	.LCFI14:
+ 411              		.cfi_def_cfa_register 7
+ 412 0212 7860     		str	r0, [r7, #4]
+ 413 0214 0B46     		mov	r3, r1
+ 414 0216 FB70     		strb	r3, [r7, #3]
+ 320:bsp/boards/OpenMote-CC2538/source/gpio.c ****     uint32_t ui32IBE, ui32IS, ui32IEV;
+ 321:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 322:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 323:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 324:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 325:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 326:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(ui8Pin < 8);
+ 327:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 328:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 329:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Convert from a pin number to a bit position.
+ 330:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 331:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui8Pin = 1 << ui8Pin;
+ 415              		.loc 1 331 0
+ 416 0218 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 417 021a 4FF00102 		mov	r2, #1
+ 418 021e 02FA03F3 		lsl	r3, r2, r3
+ 419 0222 FB70     		strb	r3, [r7, #3]
+ 332:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 333:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 334:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Return the pin interrupt type.
+ 335:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 336:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32IBE = HWREG(ui32Port + GPIO_O_IBE);
+ 420              		.loc 1 336 0
+ 421 0224 7B68     		ldr	r3, [r7, #4]
+ 422 0226 03F58163 		add	r3, r3, #1032
+ 423 022a 1B68     		ldr	r3, [r3, #0]
+ 424 022c 7B61     		str	r3, [r7, #20]
+ 337:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32IS  = HWREG(ui32Port + GPIO_O_IS);
+ 425              		.loc 1 337 0
+ 426 022e 7B68     		ldr	r3, [r7, #4]
+ 427 0230 03F20443 		addw	r3, r3, #1028
+ 428 0234 1B68     		ldr	r3, [r3, #0]
+ 429 0236 3B61     		str	r3, [r7, #16]
+ 338:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32IEV = HWREG(ui32Port + GPIO_O_IEV);
+ 430              		.loc 1 338 0
+ 431 0238 7B68     		ldr	r3, [r7, #4]
+ 432 023a 03F20C43 		addw	r3, r3, #1036
+ 433 023e 1B68     		ldr	r3, [r3, #0]
+ 434 0240 FB60     		str	r3, [r7, #12]
+ 339:bsp/boards/OpenMote-CC2538/source/gpio.c ****     return(((ui32IBE & ui8Pin) ? 1 : 0) | ((ui32IS & ui8Pin) ? 2 : 0) |
+ 435              		.loc 1 339 0
+ 436 0242 FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 437 0244 7B69     		ldr	r3, [r7, #20]
+ 438 0246 1340     		ands	r3, r3, r2
+ 439 0248 002B     		cmp	r3, #0
+ 440 024a 0CBF     		ite	eq
+ 441 024c 0023     		moveq	r3, #0
+ 442 024e 0123     		movne	r3, #1
+ 443 0250 DBB2     		uxtb	r3, r3
+ 444 0252 1A46     		mov	r2, r3
+ 445 0254 F978     		ldrb	r1, [r7, #3]	@ zero_extendqisi2
+ 446 0256 3B69     		ldr	r3, [r7, #16]
+ 447 0258 0B40     		ands	r3, r3, r1
+ 448 025a 002B     		cmp	r3, #0
+ 449 025c 02D0     		beq	.L27
+ 450              		.loc 1 339 0 is_stmt 0 discriminator 1
+ 451 025e 4FF00203 		mov	r3, #2
+ 452 0262 01E0     		b	.L28
+ 453              	.L27:
+ 454              		.loc 1 339 0 discriminator 2
+ 455 0264 4FF00003 		mov	r3, #0
+ 456              	.L28:
+ 457              		.loc 1 339 0 discriminator 3
+ 458 0268 1A43     		orrs	r2, r2, r3
+ 340:bsp/boards/OpenMote-CC2538/source/gpio.c ****            ((ui32IEV & ui8Pin) ? 4 : 0));
+ 459              		.loc 1 340 0 is_stmt 1 discriminator 3
+ 460 026a F978     		ldrb	r1, [r7, #3]	@ zero_extendqisi2
+ 461 026c FB68     		ldr	r3, [r7, #12]
+ 462 026e 0B40     		ands	r3, r3, r1
+ 463 0270 002B     		cmp	r3, #0
+ 464 0272 02D0     		beq	.L29
+ 465              		.loc 1 340 0 is_stmt 0 discriminator 1
+ 466 0274 4FF00403 		mov	r3, #4
+ 467 0278 01E0     		b	.L30
+ 468              	.L29:
+ 469              		.loc 1 340 0 discriminator 2
+ 470 027a 4FF00003 		mov	r3, #0
+ 471              	.L30:
+ 339:bsp/boards/OpenMote-CC2538/source/gpio.c ****     return(((ui32IBE & ui8Pin) ? 1 : 0) | ((ui32IS & ui8Pin) ? 2 : 0) |
+ 472              		.loc 1 339 0 is_stmt 1
+ 473 027e 1343     		orrs	r3, r3, r2
+ 341:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 474              		.loc 1 341 0
+ 475 0280 1846     		mov	r0, r3
+ 476 0282 07F11C07 		add	r7, r7, #28
+ 477 0286 BD46     		mov	sp, r7
+ 478 0288 80BC     		pop	{r7}
+ 479 028a 7047     		bx	lr
+ 480              		.cfi_endproc
+ 481              	.LFE4:
+ 483              		.align	2
+ 484              		.global	GPIOPinIntEnable
+ 485              		.thumb
+ 486              		.thumb_func
+ 488              	GPIOPinIntEnable:
+ 489              	.LFB5:
+ 342:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 343:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 344:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 345:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Enables interrupts for the specified pin(s)
+ 346:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 347:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 348:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+ 349:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 350:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Unmasks the interrupt for the specified pin(s).
+ 351:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 352:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+ 353:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+ 354:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 355:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 356:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 357:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 358:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 359:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 360:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPinIntEnable(uint32_t ui32Port, uint8_t ui8Pins)
+ 361:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 490              		.loc 1 361 0
+ 491              		.cfi_startproc
+ 492              		@ args = 0, pretend = 0, frame = 8
+ 493              		@ frame_needed = 1, uses_anonymous_args = 0
+ 494              		@ link register save eliminated.
+ 495 028c 80B4     		push	{r7}
+ 496              	.LCFI15:
+ 497              		.cfi_def_cfa_offset 4
+ 498              		.cfi_offset 7, -4
+ 499 028e 83B0     		sub	sp, sp, #12
+ 500              	.LCFI16:
+ 501              		.cfi_def_cfa_offset 16
+ 502 0290 00AF     		add	r7, sp, #0
+ 503              	.LCFI17:
+ 504              		.cfi_def_cfa_register 7
+ 505 0292 7860     		str	r0, [r7, #4]
+ 506 0294 0B46     		mov	r3, r1
+ 507 0296 FB70     		strb	r3, [r7, #3]
+ 362:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 363:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 364:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 365:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 366:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 367:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 368:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Enable the interrupts.
+ 369:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 370:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_IE) |= ui8Pins;
+ 508              		.loc 1 370 0
+ 509 0298 7B68     		ldr	r3, [r7, #4]
+ 510 029a 03F58263 		add	r3, r3, #1040
+ 511 029e 7A68     		ldr	r2, [r7, #4]
+ 512 02a0 02F58262 		add	r2, r2, #1040
+ 513 02a4 1168     		ldr	r1, [r2, #0]
+ 514 02a6 FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 515 02a8 0A43     		orrs	r2, r2, r1
+ 516 02aa 1A60     		str	r2, [r3, #0]
+ 371:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 517              		.loc 1 371 0
+ 518 02ac 07F10C07 		add	r7, r7, #12
+ 519 02b0 BD46     		mov	sp, r7
+ 520 02b2 80BC     		pop	{r7}
+ 521 02b4 7047     		bx	lr
+ 522              		.cfi_endproc
+ 523              	.LFE5:
+ 525 02b6 00BF     		.align	2
+ 526              		.global	GPIOPinIntDisable
+ 527              		.thumb
+ 528              		.thumb_func
+ 530              	GPIOPinIntDisable:
+ 531              	.LFB6:
+ 372:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 373:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 374:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 375:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Disables interrupts for the specified pin(s)
+ 376:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 377:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 378:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+ 379:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 380:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Masks the interrupt for the specified pin(s)
+ 381:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 382:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+ 383:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+ 384:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 385:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 386:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 387:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 388:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 389:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 390:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPinIntDisable(uint32_t ui32Port, uint8_t ui8Pins)
+ 391:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 532              		.loc 1 391 0
+ 533              		.cfi_startproc
+ 534              		@ args = 0, pretend = 0, frame = 8
+ 535              		@ frame_needed = 1, uses_anonymous_args = 0
+ 536              		@ link register save eliminated.
+ 537 02b8 80B4     		push	{r7}
+ 538              	.LCFI18:
+ 539              		.cfi_def_cfa_offset 4
+ 540              		.cfi_offset 7, -4
+ 541 02ba 83B0     		sub	sp, sp, #12
+ 542              	.LCFI19:
+ 543              		.cfi_def_cfa_offset 16
+ 544 02bc 00AF     		add	r7, sp, #0
+ 545              	.LCFI20:
+ 546              		.cfi_def_cfa_register 7
+ 547 02be 7860     		str	r0, [r7, #4]
+ 548 02c0 0B46     		mov	r3, r1
+ 549 02c2 FB70     		strb	r3, [r7, #3]
+ 392:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 393:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 394:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 395:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 396:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 397:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 398:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Disable the interrupts.
+ 399:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 400:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_IE) &= ~(ui8Pins);
+ 550              		.loc 1 400 0
+ 551 02c4 7B68     		ldr	r3, [r7, #4]
+ 552 02c6 03F58263 		add	r3, r3, #1040
+ 553 02ca 7A68     		ldr	r2, [r7, #4]
+ 554 02cc 02F58262 		add	r2, r2, #1040
+ 555 02d0 1168     		ldr	r1, [r2, #0]
+ 556 02d2 FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 557 02d4 6FEA0202 		mvn	r2, r2
+ 558 02d8 0A40     		ands	r2, r2, r1
+ 559 02da 1A60     		str	r2, [r3, #0]
+ 401:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 560              		.loc 1 401 0
+ 561 02dc 07F10C07 		add	r7, r7, #12
+ 562 02e0 BD46     		mov	sp, r7
+ 563 02e2 80BC     		pop	{r7}
+ 564 02e4 7047     		bx	lr
+ 565              		.cfi_endproc
+ 566              	.LFE6:
+ 568 02e6 00BF     		.align	2
+ 569              		.global	GPIOPinIntStatus
+ 570              		.thumb
+ 571              		.thumb_func
+ 573              	GPIOPinIntStatus:
+ 574              	.LFB7:
+ 402:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 403:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 404:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 405:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Gets interrupt status for the specified GPIO port
+ 406:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 407:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 408:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param bMasked specifies whether masked or raw interrupt status is
+ 409:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! returned.
+ 410:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 411:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! If \e bMasked is set as \b true, then the masked interrupt status is
+ 412:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! returned; otherwise, the raw interrupt status is returned.
+ 413:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 414:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return Returns a bit-packed byte, where each bit that is set identifies
+ 415:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! an active masked or raw interrupt, and where bit 0 of the byte
+ 416:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 417:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Bits 31:8 should be ignored.
+ 418:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 419:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 420:bsp/boards/OpenMote-CC2538/source/gpio.c **** uint32_t
+ 421:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPinIntStatus(uint32_t ui32Port, bool bMasked)
+ 422:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 575              		.loc 1 422 0
+ 576              		.cfi_startproc
+ 577              		@ args = 0, pretend = 0, frame = 8
+ 578              		@ frame_needed = 1, uses_anonymous_args = 0
+ 579              		@ link register save eliminated.
+ 580 02e8 80B4     		push	{r7}
+ 581              	.LCFI21:
+ 582              		.cfi_def_cfa_offset 4
+ 583              		.cfi_offset 7, -4
+ 584 02ea 83B0     		sub	sp, sp, #12
+ 585              	.LCFI22:
+ 586              		.cfi_def_cfa_offset 16
+ 587 02ec 00AF     		add	r7, sp, #0
+ 588              	.LCFI23:
+ 589              		.cfi_def_cfa_register 7
+ 590 02ee 7860     		str	r0, [r7, #4]
+ 591 02f0 0B46     		mov	r3, r1
+ 592 02f2 FB70     		strb	r3, [r7, #3]
+ 423:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 424:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 425:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 426:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 427:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 428:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 429:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Return the interrupt status.
+ 430:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 431:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(bMasked)
+ 593              		.loc 1 431 0
+ 594 02f4 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 595 02f6 002B     		cmp	r3, #0
+ 596 02f8 04D0     		beq	.L35
+ 432:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+ 433:bsp/boards/OpenMote-CC2538/source/gpio.c ****         return(HWREG(ui32Port + GPIO_O_MIS));
+ 597              		.loc 1 433 0
+ 598 02fa 7B68     		ldr	r3, [r7, #4]
+ 599 02fc 03F58363 		add	r3, r3, #1048
+ 600 0300 1B68     		ldr	r3, [r3, #0]
+ 601 0302 03E0     		b	.L36
+ 602              	.L35:
+ 434:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+ 435:bsp/boards/OpenMote-CC2538/source/gpio.c ****     else
+ 436:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+ 437:bsp/boards/OpenMote-CC2538/source/gpio.c ****         return(HWREG(ui32Port + GPIO_O_RIS));
+ 603              		.loc 1 437 0
+ 604 0304 7B68     		ldr	r3, [r7, #4]
+ 605 0306 03F21443 		addw	r3, r3, #1044
+ 606 030a 1B68     		ldr	r3, [r3, #0]
+ 607              	.L36:
+ 438:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+ 439:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 608              		.loc 1 439 0
+ 609 030c 1846     		mov	r0, r3
+ 610 030e 07F10C07 		add	r7, r7, #12
+ 611 0312 BD46     		mov	sp, r7
+ 612 0314 80BC     		pop	{r7}
+ 613 0316 7047     		bx	lr
+ 614              		.cfi_endproc
+ 615              	.LFE7:
+ 617              		.align	2
+ 618              		.global	GPIOPinIntClear
+ 619              		.thumb
+ 620              		.thumb_func
+ 622              	GPIOPinIntClear:
+ 623              	.LFB8:
+ 440:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 441:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 442:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 443:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Clears the interrupt for the specified pin(s)
+ 444:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 445:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 446:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+ 447:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 448:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Clears the interrupt for the specified pin(s).
+ 449:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 450:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+ 451:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+ 452:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 453:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 454:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \note The write buffer in the Cortex-M3 processor can cause the interrupt 
+ 455:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! source to take several clock cycles before clearing.
+ 456:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Therefore, TI recommends clearing the interrupt source early in the 
+ 457:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! interrupt handler (as opposed to the very last action) to avoid
+ 458:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! returning from the interrupt handler before the interrupt source is
+ 459:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! actually cleared.  Failure to clear the interrupt source early can result in
+ 460:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! the interrupt handler being immediately reentered (because NVIC still sees
+ 461:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! the interrupt source asserted).
+ 462:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 463:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 464:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 465:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 466:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 467:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPinIntClear(uint32_t ui32Port, uint8_t ui8Pins)
+ 468:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 624              		.loc 1 468 0
+ 625              		.cfi_startproc
+ 626              		@ args = 0, pretend = 0, frame = 8
+ 627              		@ frame_needed = 1, uses_anonymous_args = 0
+ 628              		@ link register save eliminated.
+ 629 0318 80B4     		push	{r7}
+ 630              	.LCFI24:
+ 631              		.cfi_def_cfa_offset 4
+ 632              		.cfi_offset 7, -4
+ 633 031a 83B0     		sub	sp, sp, #12
+ 634              	.LCFI25:
+ 635              		.cfi_def_cfa_offset 16
+ 636 031c 00AF     		add	r7, sp, #0
+ 637              	.LCFI26:
+ 638              		.cfi_def_cfa_register 7
+ 639 031e 7860     		str	r0, [r7, #4]
+ 640 0320 0B46     		mov	r3, r1
+ 641 0322 FB70     		strb	r3, [r7, #3]
+ 469:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 470:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 471:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 472:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 473:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 474:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 475:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Clear the interrupts.
+ 476:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 477:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_IC) = ui8Pins;
+ 642              		.loc 1 477 0
+ 643 0324 7B68     		ldr	r3, [r7, #4]
+ 644 0326 03F21C43 		addw	r3, r3, #1052
+ 645 032a FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 646 032c 1A60     		str	r2, [r3, #0]
+ 478:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 647              		.loc 1 478 0
+ 648 032e 07F10C07 		add	r7, r7, #12
+ 649 0332 BD46     		mov	sp, r7
+ 650 0334 80BC     		pop	{r7}
+ 651 0336 7047     		bx	lr
+ 652              		.cfi_endproc
+ 653              	.LFE8:
+ 655              		.align	2
+ 656              		.global	GPIOPortIntRegister
+ 657              		.thumb
+ 658              		.thumb_func
+ 660              	GPIOPortIntRegister:
+ 661              	.LFB9:
+ 479:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 480:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 481:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 482:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Registers an interrupt handler for a GPIO port
+ 483:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 484:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 485:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param pfnHandler is a pointer to the GPIO port interrupt handling
+ 486:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! function.
+ 487:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 488:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! This function ensures that the interrupt handler specified by
+ 489:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \e pfnHandler is called when an interrupt is detected from the selected
+ 490:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! GPIO port.  This function also enables the corresponding GPIO interrupt
+ 491:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! in the interrupt controller; individual pin interrupts and interrupt
+ 492:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! sources must be enabled with GPIOPinIntEnable().
+ 493:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 494:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \sa IntRegister() for important information about registering interrupt
+ 495:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! handlers.
+ 496:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 497:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 498:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 499:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 500:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 501:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPortIntRegister(uint32_t ui32Port, void (*pfnHandler)(void))
+ 502:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 662              		.loc 1 502 0
+ 663              		.cfi_startproc
+ 664              		@ args = 0, pretend = 0, frame = 8
+ 665              		@ frame_needed = 1, uses_anonymous_args = 0
+ 666 0338 80B5     		push	{r7, lr}
+ 667              	.LCFI27:
+ 668              		.cfi_def_cfa_offset 8
+ 669              		.cfi_offset 7, -8
+ 670              		.cfi_offset 14, -4
+ 671 033a 82B0     		sub	sp, sp, #8
+ 672              	.LCFI28:
+ 673              		.cfi_def_cfa_offset 16
+ 674 033c 00AF     		add	r7, sp, #0
+ 675              	.LCFI29:
+ 676              		.cfi_def_cfa_register 7
+ 677 033e 7860     		str	r0, [r7, #4]
+ 678 0340 3960     		str	r1, [r7, #0]
+ 503:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 504:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 505:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 506:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 507:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 508:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 509:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Get the interrupt number associated with the specified GPIO.
+ 510:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 511:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32Port = GPIOGetIntNumber(ui32Port);
+ 679              		.loc 1 511 0
+ 680 0342 7868     		ldr	r0, [r7, #4]
+ 681 0344 FFF7FEFF 		bl	GPIOGetIntNumber
+ 682 0348 7860     		str	r0, [r7, #4]
+ 512:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 513:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 514:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Register the interrupt handler.
+ 515:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 516:bsp/boards/OpenMote-CC2538/source/gpio.c ****     IntRegister(ui32Port, pfnHandler);
+ 683              		.loc 1 516 0
+ 684 034a 7868     		ldr	r0, [r7, #4]
+ 685 034c 3968     		ldr	r1, [r7, #0]
+ 686 034e FFF7FEFF 		bl	IntRegister
+ 517:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 518:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 519:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Enable the GPIO interrupt.
+ 520:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 521:bsp/boards/OpenMote-CC2538/source/gpio.c ****     IntEnable(ui32Port);
+ 687              		.loc 1 521 0
+ 688 0352 7868     		ldr	r0, [r7, #4]
+ 689 0354 FFF7FEFF 		bl	IntEnable
+ 522:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 690              		.loc 1 522 0
+ 691 0358 07F10807 		add	r7, r7, #8
+ 692 035c BD46     		mov	sp, r7
+ 693 035e 80BD     		pop	{r7, pc}
+ 694              		.cfi_endproc
+ 695              	.LFE9:
+ 697              		.align	2
+ 698              		.global	GPIOPortIntUnregister
+ 699              		.thumb
+ 700              		.thumb_func
+ 702              	GPIOPortIntUnregister:
+ 703              	.LFB10:
+ 523:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 524:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 525:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 526:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Removes an interrupt handler for a GPIO port
+ 527:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 528:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 529:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 530:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! This function unregisters the interrupt handler for the specified
+ 531:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! GPIO port.  This function also disables the corresponding
+ 532:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! GPIO port interrupt in the interrupt controller; individual GPIO interrupts
+ 533:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! and interrupt sources must be disabled with GPIOPinIntDisable().
+ 534:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 535:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \sa IntRegister() for important information about registering interrupt
+ 536:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! handlers.
+ 537:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 538:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 539:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 540:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 541:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 542:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPortIntUnregister(uint32_t ui32Port)
+ 543:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 704              		.loc 1 543 0
+ 705              		.cfi_startproc
+ 706              		@ args = 0, pretend = 0, frame = 8
+ 707              		@ frame_needed = 1, uses_anonymous_args = 0
+ 708 0360 80B5     		push	{r7, lr}
+ 709              	.LCFI30:
+ 710              		.cfi_def_cfa_offset 8
+ 711              		.cfi_offset 7, -8
+ 712              		.cfi_offset 14, -4
+ 713 0362 82B0     		sub	sp, sp, #8
+ 714              	.LCFI31:
+ 715              		.cfi_def_cfa_offset 16
+ 716 0364 00AF     		add	r7, sp, #0
+ 717              	.LCFI32:
+ 718              		.cfi_def_cfa_register 7
+ 719 0366 7860     		str	r0, [r7, #4]
+ 544:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 545:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 546:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 547:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 548:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 549:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 550:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Get the interrupt number associated with the specified GPIO.
+ 551:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 552:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32Port = GPIOGetIntNumber(ui32Port);
+ 720              		.loc 1 552 0
+ 721 0368 7868     		ldr	r0, [r7, #4]
+ 722 036a FFF7FEFF 		bl	GPIOGetIntNumber
+ 723 036e 7860     		str	r0, [r7, #4]
+ 553:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 554:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 555:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Disable the GPIO interrupt.
+ 556:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 557:bsp/boards/OpenMote-CC2538/source/gpio.c ****     IntDisable(ui32Port);
+ 724              		.loc 1 557 0
+ 725 0370 7868     		ldr	r0, [r7, #4]
+ 726 0372 FFF7FEFF 		bl	IntDisable
+ 558:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 559:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 560:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Unregister the interrupt handler.
+ 561:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 562:bsp/boards/OpenMote-CC2538/source/gpio.c ****     IntUnregister(ui32Port);
+ 727              		.loc 1 562 0
+ 728 0376 7868     		ldr	r0, [r7, #4]
+ 729 0378 FFF7FEFF 		bl	IntUnregister
+ 563:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 730              		.loc 1 563 0
+ 731 037c 07F10807 		add	r7, r7, #8
+ 732 0380 BD46     		mov	sp, r7
+ 733 0382 80BD     		pop	{r7, pc}
+ 734              		.cfi_endproc
+ 735              	.LFE10:
+ 737              		.align	2
+ 738              		.global	GPIOPinRead
+ 739              		.thumb
+ 740              		.thumb_func
+ 742              	GPIOPinRead:
+ 743              	.LFB11:
+ 564:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 565:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 566:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 567:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Reads the values present of the specified pin(s)
+ 568:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 569:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 570:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+ 571:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 572:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The values at the specified pin(s) are read, as specified by \e ui8Pins.
+ 573:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Values are returned for both input and output pin(s), and the value
+ 574:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! for pin(s) that are not specified by \e ui8Pins are set to 0.
+ 575:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 576:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+ 577:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+ 578:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 579:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 580:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return Returns a bit-packed byte providing the state of the specified
+ 581:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! pin, where bit 0 of the byte represents GPIO port pin 0, bit 1 represents
+ 582:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! GPIO port pin 1, and so on.  Any bit that is not specified by \e ui8Pins
+ 583:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! is returned as a 0.  Bits 31:8 should be ignored.
+ 584:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 585:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 586:bsp/boards/OpenMote-CC2538/source/gpio.c **** uint32_t
+ 587:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPinRead(uint32_t ui32Port, uint8_t ui8Pins)
+ 588:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 744              		.loc 1 588 0
+ 745              		.cfi_startproc
+ 746              		@ args = 0, pretend = 0, frame = 8
+ 747              		@ frame_needed = 1, uses_anonymous_args = 0
+ 748              		@ link register save eliminated.
+ 749 0384 80B4     		push	{r7}
+ 750              	.LCFI33:
+ 751              		.cfi_def_cfa_offset 4
+ 752              		.cfi_offset 7, -4
+ 753 0386 83B0     		sub	sp, sp, #12
+ 754              	.LCFI34:
+ 755              		.cfi_def_cfa_offset 16
+ 756 0388 00AF     		add	r7, sp, #0
+ 757              	.LCFI35:
+ 758              		.cfi_def_cfa_register 7
+ 759 038a 7860     		str	r0, [r7, #4]
+ 760 038c 0B46     		mov	r3, r1
+ 761 038e FB70     		strb	r3, [r7, #3]
+ 589:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 590:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 591:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 592:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 593:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 594:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 595:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Return the pin value(s).
+ 596:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 597:bsp/boards/OpenMote-CC2538/source/gpio.c ****     return(HWREG(ui32Port + (GPIO_O_DATA + (ui8Pins << 2))));
+ 762              		.loc 1 597 0
+ 763 0390 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 764 0392 4FEA8303 		lsl	r3, r3, #2
+ 765 0396 1A46     		mov	r2, r3
+ 766 0398 7B68     		ldr	r3, [r7, #4]
+ 767 039a D318     		adds	r3, r2, r3
+ 768 039c 1B68     		ldr	r3, [r3, #0]
+ 598:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 769              		.loc 1 598 0
+ 770 039e 1846     		mov	r0, r3
+ 771 03a0 07F10C07 		add	r7, r7, #12
+ 772 03a4 BD46     		mov	sp, r7
+ 773 03a6 80BC     		pop	{r7}
+ 774 03a8 7047     		bx	lr
+ 775              		.cfi_endproc
+ 776              	.LFE11:
+ 778 03aa 00BF     		.align	2
+ 779              		.global	GPIOPinWrite
+ 780              		.thumb
+ 781              		.thumb_func
+ 783              	GPIOPinWrite:
+ 784              	.LFB12:
+ 599:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 600:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 601:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 602:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Writes a value to the specified pin(s)
+ 603:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 604:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 605:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+ 606:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Val is the value to write to the pin(s).
+ 607:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 608:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Writes the corresponding bit values to the output pin(s) specified by
+ 609:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \e ui8Pins.  Writing to a pin configured as an input pin has no effect.
+ 610:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 611:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+ 612:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+ 613:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 614:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 615:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 616:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 617:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 618:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 619:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPinWrite(uint32_t ui32Port, uint8_t ui8Pins, uint8_t ui8Val)
+ 620:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 785              		.loc 1 620 0
+ 786              		.cfi_startproc
+ 787              		@ args = 0, pretend = 0, frame = 8
+ 788              		@ frame_needed = 1, uses_anonymous_args = 0
+ 789              		@ link register save eliminated.
+ 790 03ac 80B4     		push	{r7}
+ 791              	.LCFI36:
+ 792              		.cfi_def_cfa_offset 4
+ 793              		.cfi_offset 7, -4
+ 794 03ae 83B0     		sub	sp, sp, #12
+ 795              	.LCFI37:
+ 796              		.cfi_def_cfa_offset 16
+ 797 03b0 00AF     		add	r7, sp, #0
+ 798              	.LCFI38:
+ 799              		.cfi_def_cfa_register 7
+ 800 03b2 7860     		str	r0, [r7, #4]
+ 801 03b4 1346     		mov	r3, r2
+ 802 03b6 0A46     		mov	r2, r1
+ 803 03b8 FA70     		strb	r2, [r7, #3]
+ 804 03ba BB70     		strb	r3, [r7, #2]
+ 621:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 622:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 623:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 624:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 625:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 626:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 627:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Write the pins.
+ 628:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 629:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + (GPIO_O_DATA + (ui8Pins << 2))) = ui8Val;
+ 805              		.loc 1 629 0
+ 806 03bc FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 807 03be 4FEA8303 		lsl	r3, r3, #2
+ 808 03c2 1A46     		mov	r2, r3
+ 809 03c4 7B68     		ldr	r3, [r7, #4]
+ 810 03c6 D318     		adds	r3, r2, r3
+ 811 03c8 BA78     		ldrb	r2, [r7, #2]	@ zero_extendqisi2
+ 812 03ca 1A60     		str	r2, [r3, #0]
+ 630:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 813              		.loc 1 630 0
+ 814 03cc 07F10C07 		add	r7, r7, #12
+ 815 03d0 BD46     		mov	sp, r7
+ 816 03d2 80BC     		pop	{r7}
+ 817 03d4 7047     		bx	lr
+ 818              		.cfi_endproc
+ 819              	.LFE12:
+ 821 03d6 00BF     		.align	2
+ 822              		.global	GPIOPinTypeGPIOInput
+ 823              		.thumb
+ 824              		.thumb_func
+ 826              	GPIOPinTypeGPIOInput:
+ 827              	.LFB13:
+ 631:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 632:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 633:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 634:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Configures pin(s) for use as GPIO inputs
+ 635:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 636:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 637:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+ 638:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 639:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The GPIO pins must be properly configured in order to function correctly as
+ 640:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! GPIO inputs.  This function provides the proper configuration for those
+ 641:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! pin(s).
+ 642:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 643:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+ 644:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+ 645:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 646:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 647:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 648:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 649:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 650:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 651:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPinTypeGPIOInput(uint32_t ui32Port, uint8_t ui8Pins)
+ 652:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 828              		.loc 1 652 0
+ 829              		.cfi_startproc
+ 830              		@ args = 0, pretend = 0, frame = 8
+ 831              		@ frame_needed = 1, uses_anonymous_args = 0
+ 832 03d8 80B5     		push	{r7, lr}
+ 833              	.LCFI39:
+ 834              		.cfi_def_cfa_offset 8
+ 835              		.cfi_offset 7, -8
+ 836              		.cfi_offset 14, -4
+ 837 03da 82B0     		sub	sp, sp, #8
+ 838              	.LCFI40:
+ 839              		.cfi_def_cfa_offset 16
+ 840 03dc 00AF     		add	r7, sp, #0
+ 841              	.LCFI41:
+ 842              		.cfi_def_cfa_register 7
+ 843 03de 7860     		str	r0, [r7, #4]
+ 844 03e0 0B46     		mov	r3, r1
+ 845 03e2 FB70     		strb	r3, [r7, #3]
+ 653:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 654:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 655:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 656:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 657:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 658:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 659:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Make the pin(s) be inputs.
+ 660:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 661:bsp/boards/OpenMote-CC2538/source/gpio.c ****     GPIODirModeSet(ui32Port, ui8Pins, GPIO_DIR_MODE_IN);
+ 846              		.loc 1 661 0
+ 847 03e4 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 848 03e6 7868     		ldr	r0, [r7, #4]
+ 849 03e8 1946     		mov	r1, r3
+ 850 03ea 4FF00002 		mov	r2, #0
+ 851 03ee FFF7FEFF 		bl	GPIODirModeSet
+ 662:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 663:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 664:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Set the pad(s) to no override of the drive type.
+ 665:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 666:bsp/boards/OpenMote-CC2538/source/gpio.c ****     IOCPadConfigSet(ui32Port, ui8Pins, IOC_OVERRIDE_DIS);
+ 852              		.loc 1 666 0
+ 853 03f2 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 854 03f4 7868     		ldr	r0, [r7, #4]
+ 855 03f6 1946     		mov	r1, r3
+ 856 03f8 4FF00002 		mov	r2, #0
+ 857 03fc FFF7FEFF 		bl	IOCPadConfigSet
+ 667:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 858              		.loc 1 667 0
+ 859 0400 07F10807 		add	r7, r7, #8
+ 860 0404 BD46     		mov	sp, r7
+ 861 0406 80BD     		pop	{r7, pc}
+ 862              		.cfi_endproc
+ 863              	.LFE13:
+ 865              		.align	2
+ 866              		.global	GPIOPinTypeGPIOOutput
+ 867              		.thumb
+ 868              		.thumb_func
+ 870              	GPIOPinTypeGPIOOutput:
+ 871              	.LFB14:
+ 668:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 669:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 670:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 671:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Configures pin(s) for use as GPIO outputs
+ 672:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 673:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 674:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+ 675:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 676:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The GPIO pins must be properly configured to function correctly as
+ 677:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! GPIO outputs.  This function provides the proper configuration for those
+ 678:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! pin(s).
+ 679:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 680:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+ 681:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+ 682:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 683:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 684:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 685:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 686:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 687:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 688:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPinTypeGPIOOutput(uint32_t ui32Port, uint8_t ui8Pins)
+ 689:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 872              		.loc 1 689 0
+ 873              		.cfi_startproc
+ 874              		@ args = 0, pretend = 0, frame = 8
+ 875              		@ frame_needed = 1, uses_anonymous_args = 0
+ 876 0408 80B5     		push	{r7, lr}
+ 877              	.LCFI42:
+ 878              		.cfi_def_cfa_offset 8
+ 879              		.cfi_offset 7, -8
+ 880              		.cfi_offset 14, -4
+ 881 040a 82B0     		sub	sp, sp, #8
+ 882              	.LCFI43:
+ 883              		.cfi_def_cfa_offset 16
+ 884 040c 00AF     		add	r7, sp, #0
+ 885              	.LCFI44:
+ 886              		.cfi_def_cfa_register 7
+ 887 040e 7860     		str	r0, [r7, #4]
+ 888 0410 0B46     		mov	r3, r1
+ 889 0412 FB70     		strb	r3, [r7, #3]
+ 690:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 691:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 692:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 693:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 694:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 695:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 696:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Make the pin(s) be outputs.
+ 697:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 698:bsp/boards/OpenMote-CC2538/source/gpio.c ****     GPIODirModeSet(ui32Port, ui8Pins, GPIO_DIR_MODE_OUT);
+ 890              		.loc 1 698 0
+ 891 0414 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 892 0416 7868     		ldr	r0, [r7, #4]
+ 893 0418 1946     		mov	r1, r3
+ 894 041a 4FF00102 		mov	r2, #1
+ 895 041e FFF7FEFF 		bl	GPIODirModeSet
+ 699:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 700:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 701:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Set the pad(s) no override of the drive type.
+ 702:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 703:bsp/boards/OpenMote-CC2538/source/gpio.c ****     IOCPadConfigSet(ui32Port, ui8Pins, IOC_OVERRIDE_DIS);
+ 896              		.loc 1 703 0
+ 897 0422 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 898 0424 7868     		ldr	r0, [r7, #4]
+ 899 0426 1946     		mov	r1, r3
+ 900 0428 4FF00002 		mov	r2, #0
+ 901 042c FFF7FEFF 		bl	IOCPadConfigSet
+ 704:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 902              		.loc 1 704 0
+ 903 0430 07F10807 		add	r7, r7, #8
+ 904 0434 BD46     		mov	sp, r7
+ 905 0436 80BD     		pop	{r7, pc}
+ 906              		.cfi_endproc
+ 907              	.LFE14:
+ 909              		.align	2
+ 910              		.global	GPIOPinTypeI2C
+ 911              		.thumb
+ 912              		.thumb_func
+ 914              	GPIOPinTypeI2C:
+ 915              	.LFB15:
+ 705:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 706:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 707:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 708:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Configures pin(s) for use by the I2C peripheral
+ 709:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 710:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 711:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+ 712:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 713:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The I2C pins must be properly configured for the I2C peripheral to function
+ 714:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! correctly.  This function provides the proper configuration for those
+ 715:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! pin(s).
+ 716:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 717:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+ 718:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+ 719:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 720:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 721:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \note This function cannot be used to turn any pin into an I2C pin; it only
+ 722:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! configures an I2C pin for proper operation.
+ 723:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 724:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 725:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 726:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 727:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 728:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPinTypeI2C(uint32_t ui32Port, uint8_t ui8Pins)
+ 729:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 916              		.loc 1 729 0
+ 917              		.cfi_startproc
+ 918              		@ args = 0, pretend = 0, frame = 8
+ 919              		@ frame_needed = 1, uses_anonymous_args = 0
+ 920 0438 80B5     		push	{r7, lr}
+ 921              	.LCFI45:
+ 922              		.cfi_def_cfa_offset 8
+ 923              		.cfi_offset 7, -8
+ 924              		.cfi_offset 14, -4
+ 925 043a 82B0     		sub	sp, sp, #8
+ 926              	.LCFI46:
+ 927              		.cfi_def_cfa_offset 16
+ 928 043c 00AF     		add	r7, sp, #0
+ 929              	.LCFI47:
+ 930              		.cfi_def_cfa_register 7
+ 931 043e 7860     		str	r0, [r7, #4]
+ 932 0440 0B46     		mov	r3, r1
+ 933 0442 FB70     		strb	r3, [r7, #3]
+ 730:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 731:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 732:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 733:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 734:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 735:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 736:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Make the pin(s) be peripheral controlled.
+ 737:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 738:bsp/boards/OpenMote-CC2538/source/gpio.c ****     GPIODirModeSet(ui32Port, ui8Pins, GPIO_DIR_MODE_HW);
+ 934              		.loc 1 738 0
+ 935 0444 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 936 0446 7868     		ldr	r0, [r7, #4]
+ 937 0448 1946     		mov	r1, r3
+ 938 044a 4FF00202 		mov	r2, #2
+ 939 044e FFF7FEFF 		bl	GPIODirModeSet
+ 739:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 740:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 741:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Set the pad(s) to no drive type.
+ 742:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 743:bsp/boards/OpenMote-CC2538/source/gpio.c ****     IOCPadConfigSet(ui32Port, ui8Pins, IOC_OVERRIDE_DIS);
+ 940              		.loc 1 743 0
+ 941 0452 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 942 0454 7868     		ldr	r0, [r7, #4]
+ 943 0456 1946     		mov	r1, r3
+ 944 0458 4FF00002 		mov	r2, #0
+ 945 045c FFF7FEFF 		bl	IOCPadConfigSet
+ 744:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 946              		.loc 1 744 0
+ 947 0460 07F10807 		add	r7, r7, #8
+ 948 0464 BD46     		mov	sp, r7
+ 949 0466 80BD     		pop	{r7, pc}
+ 950              		.cfi_endproc
+ 951              	.LFE15:
+ 953              		.align	2
+ 954              		.global	GPIOPinTypeSSI
+ 955              		.thumb
+ 956              		.thumb_func
+ 958              	GPIOPinTypeSSI:
+ 959              	.LFB16:
+ 745:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 746:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 747:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 748:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Configures pin(s) for use by the SSI peripheral
+ 749:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 750:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 751:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+ 752:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 753:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The SSI pins must be properly configured for the SSI peripheral to function
+ 754:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! correctly.  This function provides a typical configuration for those
+ 755:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! pin(s); other configurations might work as well depending upon the board
+ 756:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! setup (for example, using the on-chip pull-ups).
+ 757:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 758:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+ 759:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+ 760:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 761:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 762:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \note This function cannot be used to turn any pin into a SSI pin; but only
+ 763:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! configures an SSI pin for proper operation.
+ 764:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 765:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 766:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 767:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 768:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 769:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPinTypeSSI(uint32_t ui32Port, uint8_t ui8Pins)
+ 770:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 960              		.loc 1 770 0
+ 961              		.cfi_startproc
+ 962              		@ args = 0, pretend = 0, frame = 8
+ 963              		@ frame_needed = 1, uses_anonymous_args = 0
+ 964 0468 80B5     		push	{r7, lr}
+ 965              	.LCFI48:
+ 966              		.cfi_def_cfa_offset 8
+ 967              		.cfi_offset 7, -8
+ 968              		.cfi_offset 14, -4
+ 969 046a 82B0     		sub	sp, sp, #8
+ 970              	.LCFI49:
+ 971              		.cfi_def_cfa_offset 16
+ 972 046c 00AF     		add	r7, sp, #0
+ 973              	.LCFI50:
+ 974              		.cfi_def_cfa_register 7
+ 975 046e 7860     		str	r0, [r7, #4]
+ 976 0470 0B46     		mov	r3, r1
+ 977 0472 FB70     		strb	r3, [r7, #3]
+ 771:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 772:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 773:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 774:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 775:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 776:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 777:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Make the pin(s) be peripheral controlled.
+ 778:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 779:bsp/boards/OpenMote-CC2538/source/gpio.c ****     GPIODirModeSet(ui32Port, ui8Pins, GPIO_DIR_MODE_HW);
+ 978              		.loc 1 779 0
+ 979 0474 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 980 0476 7868     		ldr	r0, [r7, #4]
+ 981 0478 1946     		mov	r1, r3
+ 982 047a 4FF00202 		mov	r2, #2
+ 983 047e FFF7FEFF 		bl	GPIODirModeSet
+ 780:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 781:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 782:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Set the pad(s) to no drive type.
+ 783:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 784:bsp/boards/OpenMote-CC2538/source/gpio.c ****     IOCPadConfigSet(ui32Port, ui8Pins, IOC_OVERRIDE_DIS);
+ 984              		.loc 1 784 0
+ 985 0482 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 986 0484 7868     		ldr	r0, [r7, #4]
+ 987 0486 1946     		mov	r1, r3
+ 988 0488 4FF00002 		mov	r2, #0
+ 989 048c FFF7FEFF 		bl	IOCPadConfigSet
+ 785:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 990              		.loc 1 785 0
+ 991 0490 07F10807 		add	r7, r7, #8
+ 992 0494 BD46     		mov	sp, r7
+ 993 0496 80BD     		pop	{r7, pc}
+ 994              		.cfi_endproc
+ 995              	.LFE16:
+ 997              		.align	2
+ 998              		.global	GPIOPinTypeTimer
+ 999              		.thumb
+ 1000              		.thumb_func
+ 1002              	GPIOPinTypeTimer:
+ 1003              	.LFB17:
+ 786:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 787:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 788:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 789:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Configures pin(s) for use by the Timer peripheral
+ 790:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 791:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 792:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+ 793:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 794:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The CCP pins must be properly configured for the timer peripheral to
+ 795:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! function correctly.  This function provides a typical configuration for
+ 796:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! those pin(s); other configurations might work as well depending upon the
+ 797:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! board setup (for example, using the on-chip pull-ups).
+ 798:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 799:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+ 800:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+ 801:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 802:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 803:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \note This function cannot be used to turn any pin into a timer pin but only
+ 804:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! configures a timer pin for proper operation.
+ 805:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 806:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 807:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 808:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 809:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 810:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPinTypeTimer(uint32_t ui32Port, uint8_t ui8Pins)
+ 811:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 1004              		.loc 1 811 0
+ 1005              		.cfi_startproc
+ 1006              		@ args = 0, pretend = 0, frame = 8
+ 1007              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1008 0498 80B5     		push	{r7, lr}
+ 1009              	.LCFI51:
+ 1010              		.cfi_def_cfa_offset 8
+ 1011              		.cfi_offset 7, -8
+ 1012              		.cfi_offset 14, -4
+ 1013 049a 82B0     		sub	sp, sp, #8
+ 1014              	.LCFI52:
+ 1015              		.cfi_def_cfa_offset 16
+ 1016 049c 00AF     		add	r7, sp, #0
+ 1017              	.LCFI53:
+ 1018              		.cfi_def_cfa_register 7
+ 1019 049e 7860     		str	r0, [r7, #4]
+ 1020 04a0 0B46     		mov	r3, r1
+ 1021 04a2 FB70     		strb	r3, [r7, #3]
+ 812:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 813:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 814:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 815:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 816:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 817:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 818:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Make the pin(s) be peripheral controlled.
+ 819:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 820:bsp/boards/OpenMote-CC2538/source/gpio.c ****     GPIODirModeSet(ui32Port, ui8Pins, GPIO_DIR_MODE_HW);
+ 1022              		.loc 1 820 0
+ 1023 04a4 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 1024 04a6 7868     		ldr	r0, [r7, #4]
+ 1025 04a8 1946     		mov	r1, r3
+ 1026 04aa 4FF00202 		mov	r2, #2
+ 1027 04ae FFF7FEFF 		bl	GPIODirModeSet
+ 821:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 822:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 823:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Set the pad(s) to no drive type.
+ 824:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 825:bsp/boards/OpenMote-CC2538/source/gpio.c ****     IOCPadConfigSet(ui32Port, ui8Pins, IOC_OVERRIDE_DIS);
+ 1028              		.loc 1 825 0
+ 1029 04b2 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 1030 04b4 7868     		ldr	r0, [r7, #4]
+ 1031 04b6 1946     		mov	r1, r3
+ 1032 04b8 4FF00002 		mov	r2, #0
+ 1033 04bc FFF7FEFF 		bl	IOCPadConfigSet
+ 826:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 1034              		.loc 1 826 0
+ 1035 04c0 07F10807 		add	r7, r7, #8
+ 1036 04c4 BD46     		mov	sp, r7
+ 1037 04c6 80BD     		pop	{r7, pc}
+ 1038              		.cfi_endproc
+ 1039              	.LFE17:
+ 1041              		.align	2
+ 1042              		.global	GPIOPinTypeUARTInput
+ 1043              		.thumb
+ 1044              		.thumb_func
+ 1046              	GPIOPinTypeUARTInput:
+ 1047              	.LFB18:
+ 827:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 828:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 829:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 830:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Configures input pin(s) for use by the UART peripheral
+ 831:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 832:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 833:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+ 834:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 835:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The UART input pins must be properly configured for the UART peripheral to
+ 836:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! function correctly.  This function provides a typical configuration for
+ 837:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! those pin(s); other configurations might work as well depending upon the
+ 838:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! board setup (for example, using the on-chip pull-ups).
+ 839:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 840:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \note For PC0 through PC3 the function GPIOPinTypeUARTHiDrive() should
+ 841:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! be used to configure these high drive pins.
+ 842:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 843:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+ 844:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+ 845:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 846:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 847:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \note This function cannot be used to turn any pin into a UART pin; but only
+ 848:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! configures a UART pin for proper operation.
+ 849:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 850:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 851:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 852:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 853:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 854:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPinTypeUARTInput(uint32_t ui32Port, uint8_t ui8Pins)
+ 855:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 1048              		.loc 1 855 0
+ 1049              		.cfi_startproc
+ 1050              		@ args = 0, pretend = 0, frame = 8
+ 1051              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1052 04c8 80B5     		push	{r7, lr}
+ 1053              	.LCFI54:
+ 1054              		.cfi_def_cfa_offset 8
+ 1055              		.cfi_offset 7, -8
+ 1056              		.cfi_offset 14, -4
+ 1057 04ca 82B0     		sub	sp, sp, #8
+ 1058              	.LCFI55:
+ 1059              		.cfi_def_cfa_offset 16
+ 1060 04cc 00AF     		add	r7, sp, #0
+ 1061              	.LCFI56:
+ 1062              		.cfi_def_cfa_register 7
+ 1063 04ce 7860     		str	r0, [r7, #4]
+ 1064 04d0 0B46     		mov	r3, r1
+ 1065 04d2 FB70     		strb	r3, [r7, #3]
+ 856:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 857:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 858:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 859:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 860:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(!((ui32Port == GPIO_C_BASE) && ((ui8Pins & 0xf) > 0)));
+ 861:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 862:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 863:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Make the pin(s) be peripheral controlled.
+ 864:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 865:bsp/boards/OpenMote-CC2538/source/gpio.c ****     GPIODirModeSet(ui32Port, ui8Pins, GPIO_DIR_MODE_HW);
+ 1066              		.loc 1 865 0
+ 1067 04d4 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 1068 04d6 7868     		ldr	r0, [r7, #4]
+ 1069 04d8 1946     		mov	r1, r3
+ 1070 04da 4FF00202 		mov	r2, #2
+ 1071 04de FFF7FEFF 		bl	GPIODirModeSet
+ 866:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 867:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 868:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Set the pad(s) to override disable.
+ 869:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 870:bsp/boards/OpenMote-CC2538/source/gpio.c ****     IOCPadConfigSet(ui32Port, ui8Pins, IOC_OVERRIDE_DIS);
+ 1072              		.loc 1 870 0
+ 1073 04e2 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 1074 04e4 7868     		ldr	r0, [r7, #4]
+ 1075 04e6 1946     		mov	r1, r3
+ 1076 04e8 4FF00002 		mov	r2, #0
+ 1077 04ec FFF7FEFF 		bl	IOCPadConfigSet
+ 871:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 1078              		.loc 1 871 0
+ 1079 04f0 07F10807 		add	r7, r7, #8
+ 1080 04f4 BD46     		mov	sp, r7
+ 1081 04f6 80BD     		pop	{r7, pc}
+ 1082              		.cfi_endproc
+ 1083              	.LFE18:
+ 1085              		.align	2
+ 1086              		.global	GPIOPinTypeUARTOutput
+ 1087              		.thumb
+ 1088              		.thumb_func
+ 1090              	GPIOPinTypeUARTOutput:
+ 1091              	.LFB19:
+ 872:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 873:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 874:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 875:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Configures output pin(s) for use by the UART peripheral
+ 876:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 877:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 878:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+ 879:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 880:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The UART output pins must be properly configured for the UART peripheral to
+ 881:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! function correctly.  This function provides a typical configuration for
+ 882:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! those pin(s); other configurations might work as well depending upon the
+ 883:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! board setup (for example, using the on-chip pull-ups).
+ 884:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 885:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+ 886:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+ 887:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 888:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 889:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \note This function cannot be used to turn any pin into a UART pin; but only
+ 890:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! configures a UART pin for proper operation.
+ 891:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 892:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 893:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 894:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 895:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 896:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPinTypeUARTOutput(uint32_t ui32Port, uint8_t ui8Pins)
+ 897:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 1092              		.loc 1 897 0
+ 1093              		.cfi_startproc
+ 1094              		@ args = 0, pretend = 0, frame = 8
+ 1095              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1096 04f8 80B5     		push	{r7, lr}
+ 1097              	.LCFI57:
+ 1098              		.cfi_def_cfa_offset 8
+ 1099              		.cfi_offset 7, -8
+ 1100              		.cfi_offset 14, -4
+ 1101 04fa 82B0     		sub	sp, sp, #8
+ 1102              	.LCFI58:
+ 1103              		.cfi_def_cfa_offset 16
+ 1104 04fc 00AF     		add	r7, sp, #0
+ 1105              	.LCFI59:
+ 1106              		.cfi_def_cfa_register 7
+ 1107 04fe 7860     		str	r0, [r7, #4]
+ 1108 0500 0B46     		mov	r3, r1
+ 1109 0502 FB70     		strb	r3, [r7, #3]
+ 898:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 899:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 900:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 901:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 902:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(!((ui32Port == GPIO_C_BASE) && ((ui8Pins & 0xf) > 0)));
+ 903:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 904:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 905:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Make the pin(s) be peripheral controlled.
+ 906:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 907:bsp/boards/OpenMote-CC2538/source/gpio.c ****     GPIODirModeSet(ui32Port, ui8Pins, GPIO_DIR_MODE_HW);
+ 1110              		.loc 1 907 0
+ 1111 0504 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 1112 0506 7868     		ldr	r0, [r7, #4]
+ 1113 0508 1946     		mov	r1, r3
+ 1114 050a 4FF00202 		mov	r2, #2
+ 1115 050e FFF7FEFF 		bl	GPIODirModeSet
+ 908:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 909:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 910:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Set the pad(s) to output enable.
+ 911:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 912:bsp/boards/OpenMote-CC2538/source/gpio.c ****     IOCPadConfigSet(ui32Port, ui8Pins, IOC_OVERRIDE_OE);
+ 1116              		.loc 1 912 0
+ 1117 0512 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 1118 0514 7868     		ldr	r0, [r7, #4]
+ 1119 0516 1946     		mov	r1, r3
+ 1120 0518 4FF00802 		mov	r2, #8
+ 1121 051c FFF7FEFF 		bl	IOCPadConfigSet
+ 913:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 1122              		.loc 1 913 0
+ 1123 0520 07F10807 		add	r7, r7, #8
+ 1124 0524 BD46     		mov	sp, r7
+ 1125 0526 80BD     		pop	{r7, pc}
+ 1126              		.cfi_endproc
+ 1127              	.LFE19:
+ 1129              		.align	2
+ 1130              		.global	GPIOPowIntTypeSet
+ 1131              		.thumb
+ 1132              		.thumb_func
+ 1134              	GPIOPowIntTypeSet:
+ 1135              	.LFB20:
+ 914:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 915:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 916:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 917:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Sets the power-up interrupt type for the specified pin(s)
+ 918:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 919:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+ 920:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+ 921:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32IntType specifies type of power-up interrupt trigger mechanism.
+ 922:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 923:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! This function sets up the various interrupt trigger mechanisms for the
+ 924:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! specified pin(s) on the selected GPIO port.
+ 925:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 926:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The parameter \e ui32IntType is an enumerated data type that can be one of
+ 927:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! the following values:
+ 928:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 929:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! - \b GPIO_POW_FALLING_EDGE
+ 930:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! - \b GPIO_POW_RISING_EDGE
+ 931:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 932:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+ 933:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+ 934:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+ 935:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 936:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \note To avoid any spurious interrupts, the user must
+ 937:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! ensure that the GPIO inputs remain stable for the duration of
+ 938:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! this function.
+ 939:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+ 940:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+ 941:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 942:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 943:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+ 944:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPowIntTypeSet(uint32_t ui32Port, uint8_t ui8Pins,
+ 945:bsp/boards/OpenMote-CC2538/source/gpio.c ****                   uint32_t ui32IntType)
+ 946:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 1136              		.loc 1 946 0
+ 1137              		.cfi_startproc
+ 1138              		@ args = 0, pretend = 0, frame = 24
+ 1139              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1140              		@ link register save eliminated.
+ 1141 0528 80B4     		push	{r7}
+ 1142              	.LCFI60:
+ 1143              		.cfi_def_cfa_offset 4
+ 1144              		.cfi_offset 7, -4
+ 1145 052a 87B0     		sub	sp, sp, #28
+ 1146              	.LCFI61:
+ 1147              		.cfi_def_cfa_offset 32
+ 1148 052c 00AF     		add	r7, sp, #0
+ 1149              	.LCFI62:
+ 1150              		.cfi_def_cfa_register 7
+ 1151 052e F860     		str	r0, [r7, #12]
+ 1152 0530 0B46     		mov	r3, r1
+ 1153 0532 7A60     		str	r2, [r7, #4]
+ 1154 0534 FB72     		strb	r3, [r7, #11]
+ 947:bsp/boards/OpenMote-CC2538/source/gpio.c ****     uint32_t ui32PortOffset;
+ 948:bsp/boards/OpenMote-CC2538/source/gpio.c ****     uint32_t ui32IntPins;
+ 949:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 950:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 951:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Initialize value
+ 952:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 953:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32PortOffset = 0;
+ 1155              		.loc 1 953 0
+ 1156 0536 4FF00003 		mov	r3, #0
+ 1157 053a 7B61     		str	r3, [r7, #20]
+ 954:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 955:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 956:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+ 957:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 958:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+ 959:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT((ui32IntType == GPIO_POW_FALLING_EDGE) ||
+ 960:bsp/boards/OpenMote-CC2538/source/gpio.c ****            (ui32IntType == GPIO_POW_RISING_EDGE));
+ 961:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 962:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 963:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Find bit mask for wanted pin(s)
+ 964:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 965:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_A_BASE)
+ 1158              		.loc 1 965 0
+ 1159 053c FA68     		ldr	r2, [r7, #12]
+ 1160 053e 4FF41043 		mov	r3, #36864
+ 1161 0542 C4F20D03 		movt	r3, 16397
+ 1162 0546 9A42     		cmp	r2, r3
+ 1163 0548 02D1     		bne	.L51
+ 966:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+ 967:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 0;
+ 1164              		.loc 1 967 0
+ 1165 054a 4FF00003 		mov	r3, #0
+ 1166 054e 7B61     		str	r3, [r7, #20]
+ 1167              	.L51:
+ 968:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+ 969:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_B_BASE)
+ 1168              		.loc 1 969 0
+ 1169 0550 FA68     		ldr	r2, [r7, #12]
+ 1170 0552 4FF42043 		mov	r3, #40960
+ 1171 0556 C4F20D03 		movt	r3, 16397
+ 1172 055a 9A42     		cmp	r2, r3
+ 1173 055c 02D1     		bne	.L52
+ 970:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+ 971:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 8;
+ 1174              		.loc 1 971 0
+ 1175 055e 4FF00803 		mov	r3, #8
+ 1176 0562 7B61     		str	r3, [r7, #20]
+ 1177              	.L52:
+ 972:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+ 973:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_C_BASE)
+ 1178              		.loc 1 973 0
+ 1179 0564 FA68     		ldr	r2, [r7, #12]
+ 1180 0566 4FF43043 		mov	r3, #45056
+ 1181 056a C4F20D03 		movt	r3, 16397
+ 1182 056e 9A42     		cmp	r2, r3
+ 1183 0570 02D1     		bne	.L53
+ 974:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+ 975:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 16;
+ 1184              		.loc 1 975 0
+ 1185 0572 4FF01003 		mov	r3, #16
+ 1186 0576 7B61     		str	r3, [r7, #20]
+ 1187              	.L53:
+ 976:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+ 977:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_D_BASE)
+ 1188              		.loc 1 977 0
+ 1189 0578 FA68     		ldr	r2, [r7, #12]
+ 1190 057a 4FF44043 		mov	r3, #49152
+ 1191 057e C4F20D03 		movt	r3, 16397
+ 1192 0582 9A42     		cmp	r2, r3
+ 1193 0584 02D1     		bne	.L54
+ 978:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+ 979:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 24;
+ 1194              		.loc 1 979 0
+ 1195 0586 4FF01803 		mov	r3, #24
+ 1196 058a 7B61     		str	r3, [r7, #20]
+ 1197              	.L54:
+ 980:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+ 981:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32IntPins = ui8Pins << ui32PortOffset;
+ 1198              		.loc 1 981 0
+ 1199 058c FA7A     		ldrb	r2, [r7, #11]	@ zero_extendqisi2
+ 1200 058e 7B69     		ldr	r3, [r7, #20]
+ 1201 0590 02FA03F3 		lsl	r3, r2, r3
+ 1202 0594 3B61     		str	r3, [r7, #16]
+ 982:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 983:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 984:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Set the pin interrupt type.
+ 985:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+ 986:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32IntType == GPIO_POW_FALLING_EDGE)
+ 1203              		.loc 1 986 0
+ 1204 0596 7B68     		ldr	r3, [r7, #4]
+ 1205 0598 012B     		cmp	r3, #1
+ 1206 059a 0AD1     		bne	.L55
+ 987:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+ 988:bsp/boards/OpenMote-CC2538/source/gpio.c ****         HWREG(ui32Port + GPIO_O_P_EDGE_CTRL) |= ui32IntPins;
+ 1207              		.loc 1 988 0
+ 1208 059c FB68     		ldr	r3, [r7, #12]
+ 1209 059e 03F20473 		addw	r3, r3, #1796
+ 1210 05a2 FA68     		ldr	r2, [r7, #12]
+ 1211 05a4 02F20472 		addw	r2, r2, #1796
+ 1212 05a8 1168     		ldr	r1, [r2, #0]
+ 1213 05aa 3A69     		ldr	r2, [r7, #16]
+ 1214 05ac 0A43     		orrs	r2, r2, r1
+ 1215 05ae 1A60     		str	r2, [r3, #0]
+ 1216 05b0 0BE0     		b	.L50
+ 1217              	.L55:
+ 989:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+ 990:bsp/boards/OpenMote-CC2538/source/gpio.c ****     else  // GPIO_POW_RAISING_EDGE
+ 991:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+ 992:bsp/boards/OpenMote-CC2538/source/gpio.c ****         HWREG(ui32Port + GPIO_O_P_EDGE_CTRL) &= ~(ui32IntPins);
+ 1218              		.loc 1 992 0
+ 1219 05b2 FB68     		ldr	r3, [r7, #12]
+ 1220 05b4 03F20473 		addw	r3, r3, #1796
+ 1221 05b8 FA68     		ldr	r2, [r7, #12]
+ 1222 05ba 02F20472 		addw	r2, r2, #1796
+ 1223 05be 1168     		ldr	r1, [r2, #0]
+ 1224 05c0 3A69     		ldr	r2, [r7, #16]
+ 1225 05c2 6FEA0202 		mvn	r2, r2
+ 1226 05c6 0A40     		ands	r2, r2, r1
+ 1227 05c8 1A60     		str	r2, [r3, #0]
+ 1228              	.L50:
+ 993:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+ 994:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 1229              		.loc 1 994 0
+ 1230 05ca 07F11C07 		add	r7, r7, #28
+ 1231 05ce BD46     		mov	sp, r7
+ 1232 05d0 80BC     		pop	{r7}
+ 1233 05d2 7047     		bx	lr
+ 1234              		.cfi_endproc
+ 1235              	.LFE20:
+ 1237              		.align	2
+ 1238              		.global	GPIOPowIntTypeGet
+ 1239              		.thumb
+ 1240              		.thumb_func
+ 1242              	GPIOPowIntTypeGet:
+ 1243              	.LFB21:
+ 995:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+ 996:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+ 997:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+ 998:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Gets the power-up interrupt type for a pin
+ 999:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1000:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+1001:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pin is the pin number.
+1002:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1003:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! This function gets the interrupt type for a specified pin on the selected
+1004:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! GPIO port.  The pin can be configured as a falling edge, rising edge, or
+1005:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! both edge detected interrupt, or it can be configured as a low level or
+1006:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! high level detected interrupt.  The type of interrupt detection mechanism
+1007:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! is returned as an enumerated data type.
+1008:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1009:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return Returns one of the enumerated data types described for
+1010:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! GPIOIntTypeSet().
+1011:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+1012:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+1013:bsp/boards/OpenMote-CC2538/source/gpio.c **** uint32_t
+1014:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPowIntTypeGet(uint32_t ui32Port, uint8_t ui8Pin)
+1015:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 1244              		.loc 1 1015 0
+ 1245              		.cfi_startproc
+ 1246              		@ args = 0, pretend = 0, frame = 16
+ 1247              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1248              		@ link register save eliminated.
+ 1249 05d4 80B4     		push	{r7}
+ 1250              	.LCFI63:
+ 1251              		.cfi_def_cfa_offset 4
+ 1252              		.cfi_offset 7, -4
+ 1253 05d6 85B0     		sub	sp, sp, #20
+ 1254              	.LCFI64:
+ 1255              		.cfi_def_cfa_offset 24
+ 1256 05d8 00AF     		add	r7, sp, #0
+ 1257              	.LCFI65:
+ 1258              		.cfi_def_cfa_register 7
+ 1259 05da 7860     		str	r0, [r7, #4]
+ 1260 05dc 0B46     		mov	r3, r1
+ 1261 05de FB70     		strb	r3, [r7, #3]
+1016:bsp/boards/OpenMote-CC2538/source/gpio.c ****     uint32_t ui32PortOffset;
+1017:bsp/boards/OpenMote-CC2538/source/gpio.c ****     uint32_t ui32IntPin;
+1018:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1019:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1020:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Initialize value
+1021:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1022:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32PortOffset = 0;
+ 1262              		.loc 1 1022 0
+ 1263 05e0 4FF00003 		mov	r3, #0
+ 1264 05e4 FB60     		str	r3, [r7, #12]
+1023:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1024:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1025:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+1026:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1027:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+1028:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(ui8Pin < 8);
+1029:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1030:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1031:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Convert from a port- pin number to a bit position.
+1032:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1033:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_A_BASE)
+ 1265              		.loc 1 1033 0
+ 1266 05e6 7A68     		ldr	r2, [r7, #4]
+ 1267 05e8 4FF41043 		mov	r3, #36864
+ 1268 05ec C4F20D03 		movt	r3, 16397
+ 1269 05f0 9A42     		cmp	r2, r3
+ 1270 05f2 02D1     		bne	.L58
+1034:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1035:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 0;
+ 1271              		.loc 1 1035 0
+ 1272 05f4 4FF00003 		mov	r3, #0
+ 1273 05f8 FB60     		str	r3, [r7, #12]
+ 1274              	.L58:
+1036:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1037:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_B_BASE)
+ 1275              		.loc 1 1037 0
+ 1276 05fa 7A68     		ldr	r2, [r7, #4]
+ 1277 05fc 4FF42043 		mov	r3, #40960
+ 1278 0600 C4F20D03 		movt	r3, 16397
+ 1279 0604 9A42     		cmp	r2, r3
+ 1280 0606 02D1     		bne	.L59
+1038:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1039:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 8;
+ 1281              		.loc 1 1039 0
+ 1282 0608 4FF00803 		mov	r3, #8
+ 1283 060c FB60     		str	r3, [r7, #12]
+ 1284              	.L59:
+1040:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1041:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_C_BASE)
+ 1285              		.loc 1 1041 0
+ 1286 060e 7A68     		ldr	r2, [r7, #4]
+ 1287 0610 4FF43043 		mov	r3, #45056
+ 1288 0614 C4F20D03 		movt	r3, 16397
+ 1289 0618 9A42     		cmp	r2, r3
+ 1290 061a 02D1     		bne	.L60
+1042:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1043:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 16;
+ 1291              		.loc 1 1043 0
+ 1292 061c 4FF01003 		mov	r3, #16
+ 1293 0620 FB60     		str	r3, [r7, #12]
+ 1294              	.L60:
+1044:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1045:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_D_BASE)
+ 1295              		.loc 1 1045 0
+ 1296 0622 7A68     		ldr	r2, [r7, #4]
+ 1297 0624 4FF44043 		mov	r3, #49152
+ 1298 0628 C4F20D03 		movt	r3, 16397
+ 1299 062c 9A42     		cmp	r2, r3
+ 1300 062e 02D1     		bne	.L61
+1046:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1047:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 24;
+ 1301              		.loc 1 1047 0
+ 1302 0630 4FF01803 		mov	r3, #24
+ 1303 0634 FB60     		str	r3, [r7, #12]
+ 1304              	.L61:
+1048:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1049:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32IntPin = 1 << (ui8Pin + ui32PortOffset);
+ 1305              		.loc 1 1049 0
+ 1306 0636 FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 1307 0638 FB68     		ldr	r3, [r7, #12]
+ 1308 063a D318     		adds	r3, r2, r3
+ 1309 063c 4FF00102 		mov	r2, #1
+ 1310 0640 02FA03F3 		lsl	r3, r2, r3
+ 1311 0644 BB60     		str	r3, [r7, #8]
+1050:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1051:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1052:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Return the pin interrupt type.
+1053:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1054:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(HWREG(ui32Port + GPIO_O_P_EDGE_CTRL) & ui32IntPin)
+ 1312              		.loc 1 1054 0
+ 1313 0646 7B68     		ldr	r3, [r7, #4]
+ 1314 0648 03F20473 		addw	r3, r3, #1796
+ 1315 064c 1A68     		ldr	r2, [r3, #0]
+ 1316 064e BB68     		ldr	r3, [r7, #8]
+ 1317 0650 1340     		ands	r3, r3, r2
+ 1318 0652 002B     		cmp	r3, #0
+ 1319 0654 02D0     		beq	.L62
+1055:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1056:bsp/boards/OpenMote-CC2538/source/gpio.c ****         return(GPIO_POW_FALLING_EDGE);
+ 1320              		.loc 1 1056 0
+ 1321 0656 4FF00103 		mov	r3, #1
+ 1322 065a 01E0     		b	.L63
+ 1323              	.L62:
+1057:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1058:bsp/boards/OpenMote-CC2538/source/gpio.c ****     else
+1059:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1060:bsp/boards/OpenMote-CC2538/source/gpio.c ****         return(GPIO_POW_RISING_EDGE);
+ 1324              		.loc 1 1060 0
+ 1325 065c 4FF00003 		mov	r3, #0
+ 1326              	.L63:
+1061:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1062:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 1327              		.loc 1 1062 0
+ 1328 0660 1846     		mov	r0, r3
+ 1329 0662 07F11407 		add	r7, r7, #20
+ 1330 0666 BD46     		mov	sp, r7
+ 1331 0668 80BC     		pop	{r7}
+ 1332 066a 7047     		bx	lr
+ 1333              		.cfi_endproc
+ 1334              	.LFE21:
+ 1336              		.align	2
+ 1337              		.global	GPIOPowIntEnable
+ 1338              		.thumb
+ 1339              		.thumb_func
+ 1341              	GPIOPowIntEnable:
+ 1342              	.LFB22:
+1063:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1064:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+1065:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+1066:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Enables power-up interrupts for the specified pin(s)
+1067:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1068:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+1069:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+1070:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1071:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Unmasks the interrupt for the specified pin(s).
+1072:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1073:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+1074:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+1075:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+1076:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1077:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+1078:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+1079:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+1080:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+1081:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPowIntEnable(uint32_t ui32Port, uint8_t ui8Pins)
+1082:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 1343              		.loc 1 1082 0
+ 1344              		.cfi_startproc
+ 1345              		@ args = 0, pretend = 0, frame = 16
+ 1346              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1347              		@ link register save eliminated.
+ 1348 066c 80B4     		push	{r7}
+ 1349              	.LCFI66:
+ 1350              		.cfi_def_cfa_offset 4
+ 1351              		.cfi_offset 7, -4
+ 1352 066e 85B0     		sub	sp, sp, #20
+ 1353              	.LCFI67:
+ 1354              		.cfi_def_cfa_offset 24
+ 1355 0670 00AF     		add	r7, sp, #0
+ 1356              	.LCFI68:
+ 1357              		.cfi_def_cfa_register 7
+ 1358 0672 7860     		str	r0, [r7, #4]
+ 1359 0674 0B46     		mov	r3, r1
+ 1360 0676 FB70     		strb	r3, [r7, #3]
+1083:bsp/boards/OpenMote-CC2538/source/gpio.c ****     uint32_t ui32PortOffset;
+1084:bsp/boards/OpenMote-CC2538/source/gpio.c ****     uint32_t ui32IntPins;
+1085:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1086:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1087:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Initialize value
+1088:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1089:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32PortOffset = 0;
+ 1361              		.loc 1 1089 0
+ 1362 0678 4FF00003 		mov	r3, #0
+ 1363 067c FB60     		str	r3, [r7, #12]
+1090:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1091:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1092:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+1093:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1094:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+1095:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1096:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1097:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Find bit mask for wanted pin(s)
+1098:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1099:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_A_BASE)
+ 1364              		.loc 1 1099 0
+ 1365 067e 7A68     		ldr	r2, [r7, #4]
+ 1366 0680 4FF41043 		mov	r3, #36864
+ 1367 0684 C4F20D03 		movt	r3, 16397
+ 1368 0688 9A42     		cmp	r2, r3
+ 1369 068a 02D1     		bne	.L65
+1100:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1101:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 0;
+ 1370              		.loc 1 1101 0
+ 1371 068c 4FF00003 		mov	r3, #0
+ 1372 0690 FB60     		str	r3, [r7, #12]
+ 1373              	.L65:
+1102:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1103:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_B_BASE)
+ 1374              		.loc 1 1103 0
+ 1375 0692 7A68     		ldr	r2, [r7, #4]
+ 1376 0694 4FF42043 		mov	r3, #40960
+ 1377 0698 C4F20D03 		movt	r3, 16397
+ 1378 069c 9A42     		cmp	r2, r3
+ 1379 069e 02D1     		bne	.L66
+1104:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1105:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 8;
+ 1380              		.loc 1 1105 0
+ 1381 06a0 4FF00803 		mov	r3, #8
+ 1382 06a4 FB60     		str	r3, [r7, #12]
+ 1383              	.L66:
+1106:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1107:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_C_BASE)
+ 1384              		.loc 1 1107 0
+ 1385 06a6 7A68     		ldr	r2, [r7, #4]
+ 1386 06a8 4FF43043 		mov	r3, #45056
+ 1387 06ac C4F20D03 		movt	r3, 16397
+ 1388 06b0 9A42     		cmp	r2, r3
+ 1389 06b2 02D1     		bne	.L67
+1108:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1109:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 16;
+ 1390              		.loc 1 1109 0
+ 1391 06b4 4FF01003 		mov	r3, #16
+ 1392 06b8 FB60     		str	r3, [r7, #12]
+ 1393              	.L67:
+1110:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1111:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_D_BASE)
+ 1394              		.loc 1 1111 0
+ 1395 06ba 7A68     		ldr	r2, [r7, #4]
+ 1396 06bc 4FF44043 		mov	r3, #49152
+ 1397 06c0 C4F20D03 		movt	r3, 16397
+ 1398 06c4 9A42     		cmp	r2, r3
+ 1399 06c6 02D1     		bne	.L68
+1112:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1113:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 24;
+ 1400              		.loc 1 1113 0
+ 1401 06c8 4FF01803 		mov	r3, #24
+ 1402 06cc FB60     		str	r3, [r7, #12]
+ 1403              	.L68:
+1114:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1115:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32IntPins = ui8Pins << ui32PortOffset;
+ 1404              		.loc 1 1115 0
+ 1405 06ce FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 1406 06d0 FB68     		ldr	r3, [r7, #12]
+ 1407 06d2 02FA03F3 		lsl	r3, r2, r3
+ 1408 06d6 BB60     		str	r3, [r7, #8]
+1116:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1117:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1118:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Enable the interrupts.
+1119:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1120:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_PI_IEN) |= ui32IntPins;
+ 1409              		.loc 1 1120 0
+ 1410 06d8 7B68     		ldr	r3, [r7, #4]
+ 1411 06da 03F5E263 		add	r3, r3, #1808
+ 1412 06de 7A68     		ldr	r2, [r7, #4]
+ 1413 06e0 02F5E262 		add	r2, r2, #1808
+ 1414 06e4 1168     		ldr	r1, [r2, #0]
+ 1415 06e6 BA68     		ldr	r2, [r7, #8]
+ 1416 06e8 0A43     		orrs	r2, r2, r1
+ 1417 06ea 1A60     		str	r2, [r3, #0]
+1121:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 1418              		.loc 1 1121 0
+ 1419 06ec 07F11407 		add	r7, r7, #20
+ 1420 06f0 BD46     		mov	sp, r7
+ 1421 06f2 80BC     		pop	{r7}
+ 1422 06f4 7047     		bx	lr
+ 1423              		.cfi_endproc
+ 1424              	.LFE22:
+ 1426 06f6 00BF     		.align	2
+ 1427              		.global	GPIOPowIntDisable
+ 1428              		.thumb
+ 1429              		.thumb_func
+ 1431              	GPIOPowIntDisable:
+ 1432              	.LFB23:
+1122:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1123:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+1124:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+1125:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Disables power-up interrupts for the specified pin(s)
+1126:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1127:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+1128:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+1129:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1130:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Masks the interrupt for the specified pin(s).
+1131:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1132:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+1133:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+1134:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+1135:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1136:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+1137:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+1138:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+1139:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+1140:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPowIntDisable(uint32_t ui32Port, uint8_t ui8Pins)
+1141:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 1433              		.loc 1 1141 0
+ 1434              		.cfi_startproc
+ 1435              		@ args = 0, pretend = 0, frame = 16
+ 1436              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1437              		@ link register save eliminated.
+ 1438 06f8 80B4     		push	{r7}
+ 1439              	.LCFI69:
+ 1440              		.cfi_def_cfa_offset 4
+ 1441              		.cfi_offset 7, -4
+ 1442 06fa 85B0     		sub	sp, sp, #20
+ 1443              	.LCFI70:
+ 1444              		.cfi_def_cfa_offset 24
+ 1445 06fc 00AF     		add	r7, sp, #0
+ 1446              	.LCFI71:
+ 1447              		.cfi_def_cfa_register 7
+ 1448 06fe 7860     		str	r0, [r7, #4]
+ 1449 0700 0B46     		mov	r3, r1
+ 1450 0702 FB70     		strb	r3, [r7, #3]
+1142:bsp/boards/OpenMote-CC2538/source/gpio.c ****     uint32_t ui32PortOffset;
+1143:bsp/boards/OpenMote-CC2538/source/gpio.c ****     uint32_t ui32IntPins;
+1144:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1145:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1146:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Initialize value
+1147:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1148:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32PortOffset = 0;
+ 1451              		.loc 1 1148 0
+ 1452 0704 4FF00003 		mov	r3, #0
+ 1453 0708 FB60     		str	r3, [r7, #12]
+1149:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1150:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1151:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+1152:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1153:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+1154:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1155:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1156:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Find bit mask for wanted pin(s)
+1157:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1158:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_A_BASE)
+ 1454              		.loc 1 1158 0
+ 1455 070a 7A68     		ldr	r2, [r7, #4]
+ 1456 070c 4FF41043 		mov	r3, #36864
+ 1457 0710 C4F20D03 		movt	r3, 16397
+ 1458 0714 9A42     		cmp	r2, r3
+ 1459 0716 02D1     		bne	.L70
+1159:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1160:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 0;
+ 1460              		.loc 1 1160 0
+ 1461 0718 4FF00003 		mov	r3, #0
+ 1462 071c FB60     		str	r3, [r7, #12]
+ 1463              	.L70:
+1161:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1162:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_B_BASE)
+ 1464              		.loc 1 1162 0
+ 1465 071e 7A68     		ldr	r2, [r7, #4]
+ 1466 0720 4FF42043 		mov	r3, #40960
+ 1467 0724 C4F20D03 		movt	r3, 16397
+ 1468 0728 9A42     		cmp	r2, r3
+ 1469 072a 02D1     		bne	.L71
+1163:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1164:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 8;
+ 1470              		.loc 1 1164 0
+ 1471 072c 4FF00803 		mov	r3, #8
+ 1472 0730 FB60     		str	r3, [r7, #12]
+ 1473              	.L71:
+1165:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1166:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_C_BASE)
+ 1474              		.loc 1 1166 0
+ 1475 0732 7A68     		ldr	r2, [r7, #4]
+ 1476 0734 4FF43043 		mov	r3, #45056
+ 1477 0738 C4F20D03 		movt	r3, 16397
+ 1478 073c 9A42     		cmp	r2, r3
+ 1479 073e 02D1     		bne	.L72
+1167:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1168:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 16;
+ 1480              		.loc 1 1168 0
+ 1481 0740 4FF01003 		mov	r3, #16
+ 1482 0744 FB60     		str	r3, [r7, #12]
+ 1483              	.L72:
+1169:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1170:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_D_BASE)
+ 1484              		.loc 1 1170 0
+ 1485 0746 7A68     		ldr	r2, [r7, #4]
+ 1486 0748 4FF44043 		mov	r3, #49152
+ 1487 074c C4F20D03 		movt	r3, 16397
+ 1488 0750 9A42     		cmp	r2, r3
+ 1489 0752 02D1     		bne	.L73
+1171:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1172:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 24;
+ 1490              		.loc 1 1172 0
+ 1491 0754 4FF01803 		mov	r3, #24
+ 1492 0758 FB60     		str	r3, [r7, #12]
+ 1493              	.L73:
+1173:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1174:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32IntPins = ui8Pins << ui32PortOffset;
+ 1494              		.loc 1 1174 0
+ 1495 075a FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 1496 075c FB68     		ldr	r3, [r7, #12]
+ 1497 075e 02FA03F3 		lsl	r3, r2, r3
+ 1498 0762 BB60     		str	r3, [r7, #8]
+1175:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1176:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1177:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Disable the interrupts.
+1178:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1179:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_PI_IEN) &= ~(ui32IntPins);
+ 1499              		.loc 1 1179 0
+ 1500 0764 7B68     		ldr	r3, [r7, #4]
+ 1501 0766 03F5E263 		add	r3, r3, #1808
+ 1502 076a 7A68     		ldr	r2, [r7, #4]
+ 1503 076c 02F5E262 		add	r2, r2, #1808
+ 1504 0770 1168     		ldr	r1, [r2, #0]
+ 1505 0772 BA68     		ldr	r2, [r7, #8]
+ 1506 0774 6FEA0202 		mvn	r2, r2
+ 1507 0778 0A40     		ands	r2, r2, r1
+ 1508 077a 1A60     		str	r2, [r3, #0]
+1180:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 1509              		.loc 1 1180 0
+ 1510 077c 07F11407 		add	r7, r7, #20
+ 1511 0780 BD46     		mov	sp, r7
+ 1512 0782 80BC     		pop	{r7}
+ 1513 0784 7047     		bx	lr
+ 1514              		.cfi_endproc
+ 1515              	.LFE23:
+ 1517 0786 00BF     		.align	2
+ 1518              		.global	GPIOPowIntStatus
+ 1519              		.thumb
+ 1520              		.thumb_func
+ 1522              	GPIOPowIntStatus:
+ 1523              	.LFB24:
+1181:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1182:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+1183:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+1184:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Gets power-up interrupt status for the specified GPIO port
+1185:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1186:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+1187:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param bMasked specifies whether masked or raw interrupt status is
+1188:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! returned.
+1189:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1190:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! If \e bMasked is set as \b true, then the masked interrupt status is
+1191:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! returned; otherwise, the raw interrupt status is returned.
+1192:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1193:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return Returns a bit-packed byte, where each bit that is set identifies
+1194:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! an active masked or raw interrupt, and where bit 0 of the byte
+1195:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+1196:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Bits 31:8 should be ignored.
+1197:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+1198:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+1199:bsp/boards/OpenMote-CC2538/source/gpio.c **** uint32_t
+1200:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPowIntStatus(uint32_t ui32Port, bool bMasked)
+1201:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 1524              		.loc 1 1201 0
+ 1525              		.cfi_startproc
+ 1526              		@ args = 0, pretend = 0, frame = 16
+ 1527              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1528              		@ link register save eliminated.
+ 1529 0788 80B4     		push	{r7}
+ 1530              	.LCFI72:
+ 1531              		.cfi_def_cfa_offset 4
+ 1532              		.cfi_offset 7, -4
+ 1533 078a 85B0     		sub	sp, sp, #20
+ 1534              	.LCFI73:
+ 1535              		.cfi_def_cfa_offset 24
+ 1536 078c 00AF     		add	r7, sp, #0
+ 1537              	.LCFI74:
+ 1538              		.cfi_def_cfa_register 7
+ 1539 078e 7860     		str	r0, [r7, #4]
+ 1540 0790 0B46     		mov	r3, r1
+ 1541 0792 FB70     		strb	r3, [r7, #3]
+1202:bsp/boards/OpenMote-CC2538/source/gpio.c ****     uint32_t ui32PortOffset;
+1203:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1204:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1205:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Initialize value
+1206:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1207:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32PortOffset = 0;
+ 1542              		.loc 1 1207 0
+ 1543 0794 4FF00003 		mov	r3, #0
+ 1544 0798 FB60     		str	r3, [r7, #12]
+1208:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1209:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+1210:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+1211:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1212:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1213:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Find bit mask for wanted pin(s)
+1214:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1215:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_A_BASE)
+ 1545              		.loc 1 1215 0
+ 1546 079a 7A68     		ldr	r2, [r7, #4]
+ 1547 079c 4FF41043 		mov	r3, #36864
+ 1548 07a0 C4F20D03 		movt	r3, 16397
+ 1549 07a4 9A42     		cmp	r2, r3
+ 1550 07a6 02D1     		bne	.L75
+1216:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1217:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 0;
+ 1551              		.loc 1 1217 0
+ 1552 07a8 4FF00003 		mov	r3, #0
+ 1553 07ac FB60     		str	r3, [r7, #12]
+ 1554              	.L75:
+1218:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1219:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_B_BASE)
+ 1555              		.loc 1 1219 0
+ 1556 07ae 7A68     		ldr	r2, [r7, #4]
+ 1557 07b0 4FF42043 		mov	r3, #40960
+ 1558 07b4 C4F20D03 		movt	r3, 16397
+ 1559 07b8 9A42     		cmp	r2, r3
+ 1560 07ba 02D1     		bne	.L76
+1220:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1221:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 8;
+ 1561              		.loc 1 1221 0
+ 1562 07bc 4FF00803 		mov	r3, #8
+ 1563 07c0 FB60     		str	r3, [r7, #12]
+ 1564              	.L76:
+1222:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1223:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_C_BASE)
+ 1565              		.loc 1 1223 0
+ 1566 07c2 7A68     		ldr	r2, [r7, #4]
+ 1567 07c4 4FF43043 		mov	r3, #45056
+ 1568 07c8 C4F20D03 		movt	r3, 16397
+ 1569 07cc 9A42     		cmp	r2, r3
+ 1570 07ce 02D1     		bne	.L77
+1224:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1225:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 16;
+ 1571              		.loc 1 1225 0
+ 1572 07d0 4FF01003 		mov	r3, #16
+ 1573 07d4 FB60     		str	r3, [r7, #12]
+ 1574              	.L77:
+1226:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1227:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_D_BASE)
+ 1575              		.loc 1 1227 0
+ 1576 07d6 7A68     		ldr	r2, [r7, #4]
+ 1577 07d8 4FF44043 		mov	r3, #49152
+ 1578 07dc C4F20D03 		movt	r3, 16397
+ 1579 07e0 9A42     		cmp	r2, r3
+ 1580 07e2 02D1     		bne	.L78
+1228:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1229:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 24;
+ 1581              		.loc 1 1229 0
+ 1582 07e4 4FF01803 		mov	r3, #24
+ 1583 07e8 FB60     		str	r3, [r7, #12]
+ 1584              	.L78:
+1230:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1231:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1232:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Return the interrupt status.
+1233:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(bMasked)
+ 1585              		.loc 1 1233 0
+ 1586 07ea FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 1587 07ec 002B     		cmp	r3, #0
+ 1588 07ee 08D0     		beq	.L79
+1234:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1235:bsp/boards/OpenMote-CC2538/source/gpio.c ****         return((HWREG(ui32Port + GPIO_O_IRQ_DETECT_ACK) >> ui32PortOffset) &
+ 1589              		.loc 1 1235 0
+ 1590 07f0 7B68     		ldr	r3, [r7, #4]
+ 1591 07f2 03F5E363 		add	r3, r3, #1816
+ 1592 07f6 1A68     		ldr	r2, [r3, #0]
+ 1593 07f8 FB68     		ldr	r3, [r7, #12]
+ 1594 07fa 22FA03F3 		lsr	r3, r2, r3
+ 1595 07fe DBB2     		uxtb	r3, r3
+ 1596 0800 07E0     		b	.L80
+ 1597              	.L79:
+1236:bsp/boards/OpenMote-CC2538/source/gpio.c ****                0xFF);
+1237:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1238:bsp/boards/OpenMote-CC2538/source/gpio.c ****     else
+1239:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1240:bsp/boards/OpenMote-CC2538/source/gpio.c ****         return((HWREG(ui32Port + GPIO_O_IRQ_DETECT_UNMASK) >> ui32PortOffset) &
+ 1598              		.loc 1 1240 0
+ 1599 0802 7B68     		ldr	r3, [r7, #4]
+ 1600 0804 03F5E463 		add	r3, r3, #1824
+ 1601 0808 1A68     		ldr	r2, [r3, #0]
+ 1602 080a FB68     		ldr	r3, [r7, #12]
+ 1603 080c 22FA03F3 		lsr	r3, r2, r3
+ 1604 0810 DBB2     		uxtb	r3, r3
+ 1605              	.L80:
+1241:bsp/boards/OpenMote-CC2538/source/gpio.c ****                0xFF);
+1242:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1243:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 1606              		.loc 1 1243 0
+ 1607 0812 1846     		mov	r0, r3
+ 1608 0814 07F11407 		add	r7, r7, #20
+ 1609 0818 BD46     		mov	sp, r7
+ 1610 081a 80BC     		pop	{r7}
+ 1611 081c 7047     		bx	lr
+ 1612              		.cfi_endproc
+ 1613              	.LFE24:
+ 1615 081e 00BF     		.align	2
+ 1616              		.global	GPIOPowIntClear
+ 1617              		.thumb
+ 1618              		.thumb_func
+ 1620              	GPIOPowIntClear:
+ 1621              	.LFB25:
+1244:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1245:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+1246:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+1247:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Clears the power-up interrupt for the specified pin(s)
+1248:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1249:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Port is the base address of the GPIO port.
+1250:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui8Pins is the bit-packed representation of the pin(s).
+1251:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1252:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Clears the interrupt for the specified pin(s).
+1253:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1254:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The pin(s) are specified using a bit-packed byte, where each bit that is
+1255:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! set identifies the pin to be accessed, and where bit 0 of the byte
+1256:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! represents GPIO port pin 0, bit 1 represents GPIO port pin 1, and so on.
+1257:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1258:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+1259:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+1260:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+1261:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+1262:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOPowIntClear(uint32_t ui32Port, uint8_t ui8Pins)
+1263:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 1622              		.loc 1 1263 0
+ 1623              		.cfi_startproc
+ 1624              		@ args = 0, pretend = 0, frame = 16
+ 1625              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1626              		@ link register save eliminated.
+ 1627 0820 80B4     		push	{r7}
+ 1628              	.LCFI75:
+ 1629              		.cfi_def_cfa_offset 4
+ 1630              		.cfi_offset 7, -4
+ 1631 0822 85B0     		sub	sp, sp, #20
+ 1632              	.LCFI76:
+ 1633              		.cfi_def_cfa_offset 24
+ 1634 0824 00AF     		add	r7, sp, #0
+ 1635              	.LCFI77:
+ 1636              		.cfi_def_cfa_register 7
+ 1637 0826 7860     		str	r0, [r7, #4]
+ 1638 0828 0B46     		mov	r3, r1
+ 1639 082a FB70     		strb	r3, [r7, #3]
+1264:bsp/boards/OpenMote-CC2538/source/gpio.c ****     uint32_t ui32PortOffset;
+1265:bsp/boards/OpenMote-CC2538/source/gpio.c ****     uint32_t ui32IntPins;
+1266:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1267:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1268:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Initialize value
+1269:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1270:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32PortOffset = 0;
+ 1640              		.loc 1 1270 0
+ 1641 082c 4FF00003 		mov	r3, #0
+ 1642 0830 FB60     		str	r3, [r7, #12]
+1271:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1272:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1273:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Check the arguments.
+1274:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1275:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT(GPIOBaseValid(ui32Port));
+1276:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1277:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1278:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Find bit mask for wanted pin(s)
+1279:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1280:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_A_BASE)
+ 1643              		.loc 1 1280 0
+ 1644 0832 7A68     		ldr	r2, [r7, #4]
+ 1645 0834 4FF41043 		mov	r3, #36864
+ 1646 0838 C4F20D03 		movt	r3, 16397
+ 1647 083c 9A42     		cmp	r2, r3
+ 1648 083e 02D1     		bne	.L82
+1281:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1282:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 0;
+ 1649              		.loc 1 1282 0
+ 1650 0840 4FF00003 		mov	r3, #0
+ 1651 0844 FB60     		str	r3, [r7, #12]
+ 1652              	.L82:
+1283:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1284:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_B_BASE)
+ 1653              		.loc 1 1284 0
+ 1654 0846 7A68     		ldr	r2, [r7, #4]
+ 1655 0848 4FF42043 		mov	r3, #40960
+ 1656 084c C4F20D03 		movt	r3, 16397
+ 1657 0850 9A42     		cmp	r2, r3
+ 1658 0852 02D1     		bne	.L83
+1285:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1286:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 8;
+ 1659              		.loc 1 1286 0
+ 1660 0854 4FF00803 		mov	r3, #8
+ 1661 0858 FB60     		str	r3, [r7, #12]
+ 1662              	.L83:
+1287:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1288:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_C_BASE)
+ 1663              		.loc 1 1288 0
+ 1664 085a 7A68     		ldr	r2, [r7, #4]
+ 1665 085c 4FF43043 		mov	r3, #45056
+ 1666 0860 C4F20D03 		movt	r3, 16397
+ 1667 0864 9A42     		cmp	r2, r3
+ 1668 0866 02D1     		bne	.L84
+1289:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1290:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 16;
+ 1669              		.loc 1 1290 0
+ 1670 0868 4FF01003 		mov	r3, #16
+ 1671 086c FB60     		str	r3, [r7, #12]
+ 1672              	.L84:
+1291:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1292:bsp/boards/OpenMote-CC2538/source/gpio.c ****     if(ui32Port == GPIO_D_BASE)
+ 1673              		.loc 1 1292 0
+ 1674 086e 7A68     		ldr	r2, [r7, #4]
+ 1675 0870 4FF44043 		mov	r3, #49152
+ 1676 0874 C4F20D03 		movt	r3, 16397
+ 1677 0878 9A42     		cmp	r2, r3
+ 1678 087a 02D1     		bne	.L85
+1293:bsp/boards/OpenMote-CC2538/source/gpio.c ****     {
+1294:bsp/boards/OpenMote-CC2538/source/gpio.c ****         ui32PortOffset = 24;
+ 1679              		.loc 1 1294 0
+ 1680 087c 4FF01803 		mov	r3, #24
+ 1681 0880 FB60     		str	r3, [r7, #12]
+ 1682              	.L85:
+1295:bsp/boards/OpenMote-CC2538/source/gpio.c ****     }
+1296:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ui32IntPins = ui8Pins << ui32PortOffset;
+ 1683              		.loc 1 1296 0
+ 1684 0882 FA78     		ldrb	r2, [r7, #3]	@ zero_extendqisi2
+ 1685 0884 FB68     		ldr	r3, [r7, #12]
+ 1686 0886 02FA03F3 		lsl	r3, r2, r3
+ 1687 088a BB60     		str	r3, [r7, #8]
+1297:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1298:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1299:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Clear the interrupts.
+1300:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1301:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(ui32Port + GPIO_O_IRQ_DETECT_ACK) |= ui32IntPins;
+ 1688              		.loc 1 1301 0
+ 1689 088c 7B68     		ldr	r3, [r7, #4]
+ 1690 088e 03F5E363 		add	r3, r3, #1816
+ 1691 0892 7A68     		ldr	r2, [r7, #4]
+ 1692 0894 02F5E362 		add	r2, r2, #1816
+ 1693 0898 1168     		ldr	r1, [r2, #0]
+ 1694 089a BA68     		ldr	r2, [r7, #8]
+ 1695 089c 0A43     		orrs	r2, r2, r1
+ 1696 089e 1A60     		str	r2, [r3, #0]
+1302:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 1697              		.loc 1 1302 0
+ 1698 08a0 07F11407 		add	r7, r7, #20
+ 1699 08a4 BD46     		mov	sp, r7
+ 1700 08a6 80BC     		pop	{r7}
+ 1701 08a8 7047     		bx	lr
+ 1702              		.cfi_endproc
+ 1703              	.LFE25:
+ 1705 08aa 00BF     		.align	2
+ 1706              		.global	GPIOIntWakeupEnable
+ 1707              		.thumb
+ 1708              		.thumb_func
+ 1710              	GPIOIntWakeupEnable:
+ 1711              	.LFB26:
+1303:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1304:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+1305:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+1306:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Enable Wake Up Interrupt
+1307:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1308:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Config is the source to enable wake up on interrupt.
+1309:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1310:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! This function enables wake up on interrupt from the selected sources.
+1311:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1312:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The \e ui32Config argument must be one or the logical or of several of
+1313:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! the following values:
+1314:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1315:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \b GPIO_IWE_PORT_A, \b GPIO_IWE_PORT_B, \b GPIO_IWE_PORT_C,
+1316:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \b GPIO_IWE_PORT_D, \b GPIO_IWE_USB,
+1317:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \b GPIO_IWE_SM_TIMER.
+1318:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1319:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+1320:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+1321:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+1322:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+1323:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOIntWakeupEnable(uint32_t ui32Config)
+1324:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 1712              		.loc 1 1324 0
+ 1713              		.cfi_startproc
+ 1714              		@ args = 0, pretend = 0, frame = 8
+ 1715              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1716              		@ link register save eliminated.
+ 1717 08ac 80B4     		push	{r7}
+ 1718              	.LCFI78:
+ 1719              		.cfi_def_cfa_offset 4
+ 1720              		.cfi_offset 7, -4
+ 1721 08ae 83B0     		sub	sp, sp, #12
+ 1722              	.LCFI79:
+ 1723              		.cfi_def_cfa_offset 16
+ 1724 08b0 00AF     		add	r7, sp, #0
+ 1725              	.LCFI80:
+ 1726              		.cfi_def_cfa_register 7
+ 1727 08b2 7860     		str	r0, [r7, #4]
+1325:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT((ui32Config &
+1326:bsp/boards/OpenMote-CC2538/source/gpio.c ****             (GPIO_IWE_PORT_A |
+1327:bsp/boards/OpenMote-CC2538/source/gpio.c ****              GPIO_IWE_PORT_B |
+1328:bsp/boards/OpenMote-CC2538/source/gpio.c ****              GPIO_IWE_PORT_C |
+1329:bsp/boards/OpenMote-CC2538/source/gpio.c ****              GPIO_IWE_PORT_D |
+1330:bsp/boards/OpenMote-CC2538/source/gpio.c ****              GPIO_IWE_USB |
+1331:bsp/boards/OpenMote-CC2538/source/gpio.c ****              GPIO_IWE_SM_TIMER)) != 0);
+1332:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1333:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1334:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Enable Wakeup from selected Interrupt sources
+1335:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1336:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(SYS_CTRL_IWE) |= ui32Config;
+ 1728              		.loc 1 1336 0
+ 1729 08b4 42F29403 		movw	r3, #8340
+ 1730 08b8 C4F20D03 		movt	r3, 16397
+ 1731 08bc 42F29402 		movw	r2, #8340
+ 1732 08c0 C4F20D02 		movt	r2, 16397
+ 1733 08c4 1168     		ldr	r1, [r2, #0]
+ 1734 08c6 7A68     		ldr	r2, [r7, #4]
+ 1735 08c8 0A43     		orrs	r2, r2, r1
+ 1736 08ca 1A60     		str	r2, [r3, #0]
+1337:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 1737              		.loc 1 1337 0
+ 1738 08cc 07F10C07 		add	r7, r7, #12
+ 1739 08d0 BD46     		mov	sp, r7
+ 1740 08d2 80BC     		pop	{r7}
+ 1741 08d4 7047     		bx	lr
+ 1742              		.cfi_endproc
+ 1743              	.LFE26:
+ 1745 08d6 00BF     		.align	2
+ 1746              		.global	GPIOIntWakeupDisable
+ 1747              		.thumb
+ 1748              		.thumb_func
+ 1750              	GPIOIntWakeupDisable:
+ 1751              	.LFB27:
+1338:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1339:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+1340:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+1341:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! Disable Wake Up Interrupt
+1342:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1343:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \param ui32Config is the source to disable wake on interrupt from.
+1344:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1345:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! This function disables Wake up on interrupt from the selected sources.
+1346:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1347:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! The \e ui32Config argument must be one or the logical or of several of
+1348:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! the following values:
+1349:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1350:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \b GPIO_IWE_PORT_A, \b GPIO_IWE_PORT_B, \b GPIO_IWE_PORT_C,
+1351:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \b GPIO_IWE_PORT_D, \b GPIO_IWE_USB,
+1352:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \b GPIO_IWE_SM_TIMER,
+1353:bsp/boards/OpenMote-CC2538/source/gpio.c **** //!
+1354:bsp/boards/OpenMote-CC2538/source/gpio.c **** //! \return None
+1355:bsp/boards/OpenMote-CC2538/source/gpio.c **** //
+1356:bsp/boards/OpenMote-CC2538/source/gpio.c **** //*****************************************************************************
+1357:bsp/boards/OpenMote-CC2538/source/gpio.c **** void
+1358:bsp/boards/OpenMote-CC2538/source/gpio.c **** GPIOIntWakeupDisable(uint32_t ui32Config)
+1359:bsp/boards/OpenMote-CC2538/source/gpio.c **** {
+ 1752              		.loc 1 1359 0
+ 1753              		.cfi_startproc
+ 1754              		@ args = 0, pretend = 0, frame = 8
+ 1755              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1756              		@ link register save eliminated.
+ 1757 08d8 80B4     		push	{r7}
+ 1758              	.LCFI81:
+ 1759              		.cfi_def_cfa_offset 4
+ 1760              		.cfi_offset 7, -4
+ 1761 08da 83B0     		sub	sp, sp, #12
+ 1762              	.LCFI82:
+ 1763              		.cfi_def_cfa_offset 16
+ 1764 08dc 00AF     		add	r7, sp, #0
+ 1765              	.LCFI83:
+ 1766              		.cfi_def_cfa_register 7
+ 1767 08de 7860     		str	r0, [r7, #4]
+1360:bsp/boards/OpenMote-CC2538/source/gpio.c ****     ASSERT((ui32Config &
+1361:bsp/boards/OpenMote-CC2538/source/gpio.c ****             (GPIO_IWE_PORT_A |
+1362:bsp/boards/OpenMote-CC2538/source/gpio.c ****              GPIO_IWE_PORT_B |
+1363:bsp/boards/OpenMote-CC2538/source/gpio.c ****              GPIO_IWE_PORT_C |
+1364:bsp/boards/OpenMote-CC2538/source/gpio.c ****              GPIO_IWE_PORT_D |
+1365:bsp/boards/OpenMote-CC2538/source/gpio.c ****              GPIO_IWE_USB |
+1366:bsp/boards/OpenMote-CC2538/source/gpio.c ****              GPIO_IWE_SM_TIMER)) != 0);
+1367:bsp/boards/OpenMote-CC2538/source/gpio.c **** 
+1368:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1369:bsp/boards/OpenMote-CC2538/source/gpio.c ****     // Disable Wakeup from selected Interrupt sources
+1370:bsp/boards/OpenMote-CC2538/source/gpio.c ****     //
+1371:bsp/boards/OpenMote-CC2538/source/gpio.c ****     HWREG(SYS_CTRL_IWE) &= ~ui32Config;
+ 1768              		.loc 1 1371 0
+ 1769 08e0 42F29403 		movw	r3, #8340
+ 1770 08e4 C4F20D03 		movt	r3, 16397
+ 1771 08e8 42F29402 		movw	r2, #8340
+ 1772 08ec C4F20D02 		movt	r2, 16397
+ 1773 08f0 1168     		ldr	r1, [r2, #0]
+ 1774 08f2 7A68     		ldr	r2, [r7, #4]
+ 1775 08f4 6FEA0202 		mvn	r2, r2
+ 1776 08f8 0A40     		ands	r2, r2, r1
+ 1777 08fa 1A60     		str	r2, [r3, #0]
+1372:bsp/boards/OpenMote-CC2538/source/gpio.c **** }
+ 1778              		.loc 1 1372 0
+ 1779 08fc 07F10C07 		add	r7, r7, #12
+ 1780 0900 BD46     		mov	sp, r7
+ 1781 0902 80BC     		pop	{r7}
+ 1782 0904 7047     		bx	lr
+ 1783              		.cfi_endproc
+ 1784              	.LFE27:
+ 1786              	.Letext0:
+ 1787              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+DEFINED SYMBOLS
+                            *ABS*:00000000 gpio.c
+     /tmp/ccQ9tw8g.s:18     .text:00000000 $t
+     /tmp/ccQ9tw8g.s:23     .text:00000000 GPIOGetIntNumber
+     /tmp/ccQ9tw8g.s:113    .text:00000080 GPIODirModeSet
+     /tmp/ccQ9tw8g.s:203    .text:000000fc GPIODirModeGet
+     /tmp/ccQ9tw8g.s:277    .text:0000015c GPIOIntTypeSet
+     /tmp/ccQ9tw8g.s:395    .text:0000020c GPIOIntTypeGet
+     /tmp/ccQ9tw8g.s:488    .text:0000028c GPIOPinIntEnable
+     /tmp/ccQ9tw8g.s:530    .text:000002b8 GPIOPinIntDisable
+     /tmp/ccQ9tw8g.s:573    .text:000002e8 GPIOPinIntStatus
+     /tmp/ccQ9tw8g.s:622    .text:00000318 GPIOPinIntClear
+     /tmp/ccQ9tw8g.s:660    .text:00000338 GPIOPortIntRegister
+     /tmp/ccQ9tw8g.s:702    .text:00000360 GPIOPortIntUnregister
+     /tmp/ccQ9tw8g.s:742    .text:00000384 GPIOPinRead
+     /tmp/ccQ9tw8g.s:783    .text:000003ac GPIOPinWrite
+     /tmp/ccQ9tw8g.s:826    .text:000003d8 GPIOPinTypeGPIOInput
+     /tmp/ccQ9tw8g.s:870    .text:00000408 GPIOPinTypeGPIOOutput
+     /tmp/ccQ9tw8g.s:914    .text:00000438 GPIOPinTypeI2C
+     /tmp/ccQ9tw8g.s:958    .text:00000468 GPIOPinTypeSSI
+     /tmp/ccQ9tw8g.s:1002   .text:00000498 GPIOPinTypeTimer
+     /tmp/ccQ9tw8g.s:1046   .text:000004c8 GPIOPinTypeUARTInput
+     /tmp/ccQ9tw8g.s:1090   .text:000004f8 GPIOPinTypeUARTOutput
+     /tmp/ccQ9tw8g.s:1134   .text:00000528 GPIOPowIntTypeSet
+     /tmp/ccQ9tw8g.s:1242   .text:000005d4 GPIOPowIntTypeGet
+     /tmp/ccQ9tw8g.s:1341   .text:0000066c GPIOPowIntEnable
+     /tmp/ccQ9tw8g.s:1431   .text:000006f8 GPIOPowIntDisable
+     /tmp/ccQ9tw8g.s:1522   .text:00000788 GPIOPowIntStatus
+     /tmp/ccQ9tw8g.s:1620   .text:00000820 GPIOPowIntClear
+     /tmp/ccQ9tw8g.s:1710   .text:000008ac GPIOIntWakeupEnable
+     /tmp/ccQ9tw8g.s:1750   .text:000008d8 GPIOIntWakeupDisable
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.hw_gpio.h.39.abbe53cff9a4c1fb5f1c34960fe1e7aa
+                           .group:00000000 wm4.hw_ints.h.42.85b9479f2be35b086f1bb7cbb15bc097
+                           .group:00000000 wm4.hw_memmap.h.39.19283c377d449c9bca5fdd8ccb62628c
+                           .group:00000000 wm4.hw_sys_ctrl.h.39.50b4d7775c38e82076d0eb3bdc2daf82
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.gpio.h.41.604fa3d9f70fb140a75ada50bffeaeff
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.ioc.h.41.7444fe7016a1d045dd9fea497d615b28
+
+UNDEFINED SYMBOLS
+IntRegister
+IntEnable
+IntDisable
+IntUnregister
+IOCPadConfigSet

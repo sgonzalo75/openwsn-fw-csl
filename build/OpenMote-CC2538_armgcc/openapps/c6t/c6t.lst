@@ -1,0 +1,584 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"c6t.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.align	2
+  42              	infoStackName:
+  43 0024 4F70656E 		.ascii	"OpenWSN \000"
+  43      57534E20 
+  43      00
+  44 002d 000000   		.align	2
+  47              	ipAddr_ipsoRD:
+  48 0030 26       		.byte	38
+  49 0031 07       		.byte	7
+  50 0032 F7       		.byte	-9
+  51 0033 40       		.byte	64
+  52 0034 00       		.byte	0
+  53 0035 00       		.byte	0
+  54 0036 00       		.byte	0
+  55 0037 3F       		.byte	63
+  56 0038 00       		.byte	0
+  57 0039 00       		.byte	0
+  58 003a 00       		.byte	0
+  59 003b 00       		.byte	0
+  60 003c 00       		.byte	0
+  61 003d 00       		.byte	0
+  62 003e 0E       		.byte	14
+  63 003f 29       		.byte	41
+  64              		.align	2
+  67              	ipAddr_motesEecs:
+  68 0040 20       		.byte	32
+  69 0041 01       		.byte	1
+  70 0042 04       		.byte	4
+  71 0043 70       		.byte	112
+  72 0044 00       		.byte	0
+  73 0045 66       		.byte	102
+  74 0046 00       		.byte	0
+  75 0047 19       		.byte	25
+  76 0048 00       		.byte	0
+  77 0049 00       		.byte	0
+  78 004a 00       		.byte	0
+  79 004b 00       		.byte	0
+  80 004c 00       		.byte	0
+  81 004d 00       		.byte	0
+  82 004e 00       		.byte	0
+  83 004f 02       		.byte	2
+  84              		.align	2
+  87              	ipAddr_local:
+  88 0050 26       		.byte	38
+  89 0051 07       		.byte	7
+  90 0052 F1       		.byte	-15
+  91 0053 40       		.byte	64
+  92 0054 04       		.byte	4
+  93 0055 00       		.byte	0
+  94 0056 10       		.byte	16
+  95 0057 36       		.byte	54
+  96 0058 4D       		.byte	77
+  97 0059 CD       		.byte	-51
+  98 005a AB       		.byte	-85
+  99 005b 54       		.byte	84
+ 100 005c 81       		.byte	-127
+ 101 005d 99       		.byte	-103
+ 102 005e C1       		.byte	-63
+ 103 005f F7       		.byte	-9
+ 104              		.align	2
+ 107              	ipAddr_motedata:
+ 108 0060 20       		.byte	32
+ 109 0061 01       		.byte	1
+ 110 0062 04       		.byte	4
+ 111 0063 70       		.byte	112
+ 112 0064 00       		.byte	0
+ 113 0065 66       		.byte	102
+ 114 0066 00       		.byte	0
+ 115 0067 17       		.byte	23
+ 116 0068 00       		.byte	0
+ 117 0069 00       		.byte	0
+ 118 006a 00       		.byte	0
+ 119 006b 00       		.byte	0
+ 120 006c 00       		.byte	0
+ 121 006d 00       		.byte	0
+ 122 006e 00       		.byte	0
+ 123 006f 02       		.byte	2
+ 124              		.align	2
+ 127              	all_routers_multicast:
+ 128 0070 FF       		.byte	-1
+ 129 0071 02       		.byte	2
+ 130 0072 00       		.byte	0
+ 131 0073 00       		.byte	0
+ 132 0074 00       		.byte	0
+ 133 0075 00       		.byte	0
+ 134 0076 00       		.byte	0
+ 135 0077 00       		.byte	0
+ 136 0078 00       		.byte	0
+ 137 0079 00       		.byte	0
+ 138 007a 00       		.byte	0
+ 139 007b 00       		.byte	0
+ 140 007c 00       		.byte	0
+ 141 007d 00       		.byte	0
+ 142 007e 00       		.byte	0
+ 143 007f 02       		.byte	2
+ 144              		.global	c6t_path0
+ 145              		.align	2
+ 148              	c6t_path0:
+ 149 0080 367400   		.ascii	"6t\000"
+ 150              		.comm	c6t_vars,36,4
+ 151 0083 00       		.text
+ 152              		.align	2
+ 153              		.global	c6t_init
+ 154              		.thumb
+ 155              		.thumb_func
+ 157              	c6t_init:
+ 158              	.LFB0:
+ 159              		.file 1 "openapps/c6t/c6t.c"
+   1:openapps/c6t/c6t.c **** /**
+   2:openapps/c6t/c6t.c **** \brief CoAP 6top application.
+   3:openapps/c6t/c6t.c **** 
+   4:openapps/c6t/c6t.c **** \author Xavi Vilajosana <xvilajosana@eecs.berkeley.edu>, February 2013.
+   5:openapps/c6t/c6t.c **** \author Thomas Watteyne <watteyne@eecs.berkeley.edu>, July 2014
+   6:openapps/c6t/c6t.c **** */
+   7:openapps/c6t/c6t.c **** 
+   8:openapps/c6t/c6t.c **** #include "opendefs.h"
+   9:openapps/c6t/c6t.c **** #include "c6t.h"
+  10:openapps/c6t/c6t.c **** #include "sixtop.h"
+  11:openapps/c6t/c6t.c **** #include "idmanager.h"
+  12:openapps/c6t/c6t.c **** #include "openqueue.h"
+  13:openapps/c6t/c6t.c **** #include "neighbors.h"
+  14:openapps/c6t/c6t.c **** 
+  15:openapps/c6t/c6t.c **** //=========================== defines =========================================
+  16:openapps/c6t/c6t.c **** 
+  17:openapps/c6t/c6t.c **** const uint8_t c6t_path0[] = "6t";
+  18:openapps/c6t/c6t.c **** 
+  19:openapps/c6t/c6t.c **** //=========================== variables =======================================
+  20:openapps/c6t/c6t.c **** 
+  21:openapps/c6t/c6t.c **** c6t_vars_t c6t_vars;
+  22:openapps/c6t/c6t.c **** 
+  23:openapps/c6t/c6t.c **** //=========================== prototypes ======================================
+  24:openapps/c6t/c6t.c **** 
+  25:openapps/c6t/c6t.c **** owerror_t c6t_receive(
+  26:openapps/c6t/c6t.c ****    OpenQueueEntry_t* msg,
+  27:openapps/c6t/c6t.c ****    coap_header_iht*  coap_header,
+  28:openapps/c6t/c6t.c ****    coap_option_iht*  coap_options
+  29:openapps/c6t/c6t.c **** );
+  30:openapps/c6t/c6t.c **** void    c6t_sendDone(
+  31:openapps/c6t/c6t.c ****    OpenQueueEntry_t* msg,
+  32:openapps/c6t/c6t.c ****    owerror_t         error
+  33:openapps/c6t/c6t.c **** );
+  34:openapps/c6t/c6t.c **** 
+  35:openapps/c6t/c6t.c **** //=========================== public ==========================================
+  36:openapps/c6t/c6t.c **** 
+  37:openapps/c6t/c6t.c **** void c6t_init() {
+ 160              		.loc 1 37 0
+ 161              		.cfi_startproc
+ 162              		@ args = 0, pretend = 0, frame = 0
+ 163              		@ frame_needed = 1, uses_anonymous_args = 0
+ 164 0000 80B5     		push	{r7, lr}
+ 165              	.LCFI0:
+ 166              		.cfi_def_cfa_offset 8
+ 167              		.cfi_offset 7, -8
+ 168              		.cfi_offset 14, -4
+ 169 0002 00AF     		add	r7, sp, #0
+ 170              	.LCFI1:
+ 171              		.cfi_def_cfa_register 7
+  38:openapps/c6t/c6t.c ****    if(idmanager_getIsDAGroot()==TRUE) return; 
+ 172              		.loc 1 38 0
+ 173 0004 FFF7FEFF 		bl	idmanager_getIsDAGroot
+ 174 0008 0346     		mov	r3, r0
+ 175 000a 002B     		cmp	r3, #0
+ 176 000c 3DD1     		bne	.L4
+ 177              	.L2:
+  39:openapps/c6t/c6t.c ****    
+  40:openapps/c6t/c6t.c ****    // prepare the resource descriptor for the /6t path
+  41:openapps/c6t/c6t.c ****    c6t_vars.desc.path0len            = sizeof(c6t_path0)-1;
+ 178              		.loc 1 41 0
+ 179 000e 40F20003 		movw	r3, #:lower16:c6t_vars
+ 180 0012 C0F20003 		movt	r3, #:upper16:c6t_vars
+ 181 0016 4FF00202 		mov	r2, #2
+ 182 001a 1A70     		strb	r2, [r3, #0]
+  42:openapps/c6t/c6t.c ****    c6t_vars.desc.path0val            = (uint8_t*)(&c6t_path0);
+ 183              		.loc 1 42 0
+ 184 001c 40F20003 		movw	r3, #:lower16:c6t_vars
+ 185 0020 C0F20003 		movt	r3, #:upper16:c6t_vars
+ 186 0024 40F20002 		movw	r2, #:lower16:c6t_path0
+ 187 0028 C0F20002 		movt	r2, #:upper16:c6t_path0
+ 188 002c 5A60     		str	r2, [r3, #4]
+  43:openapps/c6t/c6t.c ****    c6t_vars.desc.path1len            = 0;
+ 189              		.loc 1 43 0
+ 190 002e 40F20003 		movw	r3, #:lower16:c6t_vars
+ 191 0032 C0F20003 		movt	r3, #:upper16:c6t_vars
+ 192 0036 4FF00002 		mov	r2, #0
+ 193 003a 1A72     		strb	r2, [r3, #8]
+  44:openapps/c6t/c6t.c ****    c6t_vars.desc.path1val            = NULL;
+ 194              		.loc 1 44 0
+ 195 003c 40F20003 		movw	r3, #:lower16:c6t_vars
+ 196 0040 C0F20003 		movt	r3, #:upper16:c6t_vars
+ 197 0044 4FF00002 		mov	r2, #0
+ 198 0048 DA60     		str	r2, [r3, #12]
+  45:openapps/c6t/c6t.c ****    c6t_vars.desc.componentID         = COMPONENT_C6T;
+ 199              		.loc 1 45 0
+ 200 004a 40F20003 		movw	r3, #:lower16:c6t_vars
+ 201 004e C0F20003 		movt	r3, #:upper16:c6t_vars
+ 202 0052 4FF01A02 		mov	r2, #26
+ 203 0056 1A74     		strb	r2, [r3, #16]
+  46:openapps/c6t/c6t.c ****    c6t_vars.desc.callbackRx          = &c6t_receive;
+ 204              		.loc 1 46 0
+ 205 0058 40F20003 		movw	r3, #:lower16:c6t_vars
+ 206 005c C0F20003 		movt	r3, #:upper16:c6t_vars
+ 207 0060 40F20002 		movw	r2, #:lower16:c6t_receive
+ 208 0064 C0F20002 		movt	r2, #:upper16:c6t_receive
+ 209 0068 9A61     		str	r2, [r3, #24]
+  47:openapps/c6t/c6t.c ****    c6t_vars.desc.callbackSendDone    = &c6t_sendDone;
+ 210              		.loc 1 47 0
+ 211 006a 40F20003 		movw	r3, #:lower16:c6t_vars
+ 212 006e C0F20003 		movt	r3, #:upper16:c6t_vars
+ 213 0072 40F20002 		movw	r2, #:lower16:c6t_sendDone
+ 214 0076 C0F20002 		movt	r2, #:upper16:c6t_sendDone
+ 215 007a DA61     		str	r2, [r3, #28]
+  48:openapps/c6t/c6t.c ****    
+  49:openapps/c6t/c6t.c ****    opencoap_register(&c6t_vars.desc);
+ 216              		.loc 1 49 0
+ 217 007c 40F20000 		movw	r0, #:lower16:c6t_vars
+ 218 0080 C0F20000 		movt	r0, #:upper16:c6t_vars
+ 219 0084 FFF7FEFF 		bl	opencoap_register
+ 220 0088 00E0     		b	.L1
+ 221              	.L4:
+  38:openapps/c6t/c6t.c ****    if(idmanager_getIsDAGroot()==TRUE) return; 
+ 222              		.loc 1 38 0
+ 223 008a 00BF     		nop
+ 224              	.L1:
+  50:openapps/c6t/c6t.c **** }
+ 225              		.loc 1 50 0
+ 226 008c 80BD     		pop	{r7, pc}
+ 227              		.cfi_endproc
+ 228              	.LFE0:
+ 230 008e 00BF     		.align	2
+ 231              		.global	c6t_receive
+ 232              		.thumb
+ 233              		.thumb_func
+ 235              	c6t_receive:
+ 236              	.LFB1:
+  51:openapps/c6t/c6t.c **** 
+  52:openapps/c6t/c6t.c **** //=========================== private =========================================
+  53:openapps/c6t/c6t.c **** 
+  54:openapps/c6t/c6t.c **** /**
+  55:openapps/c6t/c6t.c **** \brief Receives a command and a list of items to be used by the command.
+  56:openapps/c6t/c6t.c **** 
+  57:openapps/c6t/c6t.c **** \param[in] msg          The received message. CoAP header and options already
+  58:openapps/c6t/c6t.c ****    parsed.
+  59:openapps/c6t/c6t.c **** \param[in] coap_header  The CoAP header contained in the message.
+  60:openapps/c6t/c6t.c **** \param[in] coap_options The CoAP options contained in the message.
+  61:openapps/c6t/c6t.c **** 
+  62:openapps/c6t/c6t.c **** \return Whether the response is prepared successfully.
+  63:openapps/c6t/c6t.c **** */
+  64:openapps/c6t/c6t.c **** owerror_t c6t_receive(
+  65:openapps/c6t/c6t.c ****       OpenQueueEntry_t* msg,
+  66:openapps/c6t/c6t.c ****       coap_header_iht*  coap_header,
+  67:openapps/c6t/c6t.c ****       coap_option_iht*  coap_options
+  68:openapps/c6t/c6t.c ****    ) {
+ 237              		.loc 1 68 0
+ 238              		.cfi_startproc
+ 239              		@ args = 0, pretend = 0, frame = 40
+ 240              		@ frame_needed = 1, uses_anonymous_args = 0
+ 241 0090 80B5     		push	{r7, lr}
+ 242              	.LCFI2:
+ 243              		.cfi_def_cfa_offset 8
+ 244              		.cfi_offset 7, -8
+ 245              		.cfi_offset 14, -4
+ 246 0092 8AB0     		sub	sp, sp, #40
+ 247              	.LCFI3:
+ 248              		.cfi_def_cfa_offset 48
+ 249 0094 00AF     		add	r7, sp, #0
+ 250              	.LCFI4:
+ 251              		.cfi_def_cfa_register 7
+ 252 0096 F860     		str	r0, [r7, #12]
+ 253 0098 B960     		str	r1, [r7, #8]
+ 254 009a 7A60     		str	r2, [r7, #4]
+  69:openapps/c6t/c6t.c ****    
+  70:openapps/c6t/c6t.c ****    owerror_t            outcome;
+  71:openapps/c6t/c6t.c ****    open_addr_t          neighbor;
+  72:openapps/c6t/c6t.c ****    bool                 foundNeighbor;
+  73:openapps/c6t/c6t.c ****    
+  74:openapps/c6t/c6t.c ****    switch (coap_header->Code) {
+ 255              		.loc 1 74 0
+ 256 009c BB68     		ldr	r3, [r7, #8]
+ 257 009e DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 258 00a0 032B     		cmp	r3, #3
+ 259 00a2 02D0     		beq	.L7
+ 260 00a4 042B     		cmp	r3, #4
+ 261 00a6 31D0     		beq	.L8
+ 262 00a8 5FE0     		b	.L13
+ 263              	.L7:
+  75:openapps/c6t/c6t.c ****       
+  76:openapps/c6t/c6t.c ****       case COAP_CODE_REQ_PUT:
+  77:openapps/c6t/c6t.c ****          // add a slot
+  78:openapps/c6t/c6t.c ****          
+  79:openapps/c6t/c6t.c ****          // reset packet payload
+  80:openapps/c6t/c6t.c ****          msg->payload                  = &(msg->packet[127]);
+ 264              		.loc 1 80 0
+ 265 00aa FB68     		ldr	r3, [r7, #12]
+ 266 00ac 03F1EA02 		add	r2, r3, #234
+ 267 00b0 FB68     		ldr	r3, [r7, #12]
+ 268 00b2 5A60     		str	r2, [r3, #4]
+  81:openapps/c6t/c6t.c ****          msg->length                   = 0;
+ 269              		.loc 1 81 0
+ 270 00b4 FB68     		ldr	r3, [r7, #12]
+ 271 00b6 4FF00002 		mov	r2, #0
+ 272 00ba 1A72     		strb	r2, [r3, #8]
+  82:openapps/c6t/c6t.c ****          
+  83:openapps/c6t/c6t.c ****          // get preferred parent
+  84:openapps/c6t/c6t.c ****          foundNeighbor = neighbors_getPreferredParentEui64(&neighbor);
+ 273              		.loc 1 84 0
+ 274 00bc 07F11403 		add	r3, r7, #20
+ 275 00c0 1846     		mov	r0, r3
+ 276 00c2 FFF7FEFF 		bl	neighbors_getPreferredParentEui64
+ 277 00c6 0346     		mov	r3, r0
+ 278 00c8 87F82630 		strb	r3, [r7, #38]
+  85:openapps/c6t/c6t.c ****          if (foundNeighbor==FALSE) {
+ 279              		.loc 1 85 0
+ 280 00cc 97F82630 		ldrb	r3, [r7, #38]
+ 281 00d0 83F00103 		eor	r3, r3, #1
+ 282 00d4 DBB2     		uxtb	r3, r3
+ 283 00d6 002B     		cmp	r3, #0
+ 284 00d8 08D0     		beq	.L9
+  86:openapps/c6t/c6t.c ****             outcome                    = E_FAIL;
+ 285              		.loc 1 86 0
+ 286 00da 4FF00103 		mov	r3, #1
+ 287 00de 87F82730 		strb	r3, [r7, #39]
+  87:openapps/c6t/c6t.c ****             coap_header->Code          = COAP_CODE_RESP_PRECONDFAILED;
+ 288              		.loc 1 87 0
+ 289 00e2 BB68     		ldr	r3, [r7, #8]
+ 290 00e4 4FF08C02 		mov	r2, #140
+ 291 00e8 DA70     		strb	r2, [r3, #3]
+  88:openapps/c6t/c6t.c ****             break;
+ 292              		.loc 1 88 0
+ 293 00ea 43E0     		b	.L10
+ 294              	.L9:
+  89:openapps/c6t/c6t.c ****          }
+  90:openapps/c6t/c6t.c ****          
+  91:openapps/c6t/c6t.c ****          // call sixtop
+  92:openapps/c6t/c6t.c ****          sixtop_addCells(
+ 295              		.loc 1 92 0
+ 296 00ec 07F11403 		add	r3, r7, #20
+ 297 00f0 1846     		mov	r0, r3
+ 298 00f2 4FF00101 		mov	r1, #1
+ 299 00f6 FFF7FEFF 		bl	sixtop_addCells
+  93:openapps/c6t/c6t.c ****             &neighbor,
+  94:openapps/c6t/c6t.c ****             1
+  95:openapps/c6t/c6t.c ****          );
+  96:openapps/c6t/c6t.c ****          
+  97:openapps/c6t/c6t.c ****          // set the CoAP header
+  98:openapps/c6t/c6t.c ****          coap_header->Code             = COAP_CODE_RESP_CHANGED;
+ 300              		.loc 1 98 0
+ 301 00fa BB68     		ldr	r3, [r7, #8]
+ 302 00fc 4FF04402 		mov	r2, #68
+ 303 0100 DA70     		strb	r2, [r3, #3]
+  99:openapps/c6t/c6t.c ****          
+ 100:openapps/c6t/c6t.c ****          outcome                       = E_SUCCESS;
+ 304              		.loc 1 100 0
+ 305 0102 4FF00003 		mov	r3, #0
+ 306 0106 87F82730 		strb	r3, [r7, #39]
+ 101:openapps/c6t/c6t.c ****          break;
+ 307              		.loc 1 101 0
+ 308 010a 33E0     		b	.L10
+ 309              	.L8:
+ 102:openapps/c6t/c6t.c ****       
+ 103:openapps/c6t/c6t.c ****       case COAP_CODE_REQ_DELETE:
+ 104:openapps/c6t/c6t.c ****          // delete a slot
+ 105:openapps/c6t/c6t.c ****          
+ 106:openapps/c6t/c6t.c ****          // reset packet payload
+ 107:openapps/c6t/c6t.c ****          msg->payload                  = &(msg->packet[127]);
+ 310              		.loc 1 107 0
+ 311 010c FB68     		ldr	r3, [r7, #12]
+ 312 010e 03F1EA02 		add	r2, r3, #234
+ 313 0112 FB68     		ldr	r3, [r7, #12]
+ 314 0114 5A60     		str	r2, [r3, #4]
+ 108:openapps/c6t/c6t.c ****          msg->length                   = 0;
+ 315              		.loc 1 108 0
+ 316 0116 FB68     		ldr	r3, [r7, #12]
+ 317 0118 4FF00002 		mov	r2, #0
+ 318 011c 1A72     		strb	r2, [r3, #8]
+ 109:openapps/c6t/c6t.c ****          
+ 110:openapps/c6t/c6t.c ****          // get preferred parent
+ 111:openapps/c6t/c6t.c ****          foundNeighbor = neighbors_getPreferredParentEui64(&neighbor);
+ 319              		.loc 1 111 0
+ 320 011e 07F11403 		add	r3, r7, #20
+ 321 0122 1846     		mov	r0, r3
+ 322 0124 FFF7FEFF 		bl	neighbors_getPreferredParentEui64
+ 323 0128 0346     		mov	r3, r0
+ 324 012a 87F82630 		strb	r3, [r7, #38]
+ 112:openapps/c6t/c6t.c ****          if (foundNeighbor==FALSE) {
+ 325              		.loc 1 112 0
+ 326 012e 97F82630 		ldrb	r3, [r7, #38]
+ 327 0132 83F00103 		eor	r3, r3, #1
+ 328 0136 DBB2     		uxtb	r3, r3
+ 329 0138 002B     		cmp	r3, #0
+ 330 013a 08D0     		beq	.L11
+ 113:openapps/c6t/c6t.c ****             outcome                    = E_FAIL;
+ 331              		.loc 1 113 0
+ 332 013c 4FF00103 		mov	r3, #1
+ 333 0140 87F82730 		strb	r3, [r7, #39]
+ 114:openapps/c6t/c6t.c ****             coap_header->Code          = COAP_CODE_RESP_PRECONDFAILED;
+ 334              		.loc 1 114 0
+ 335 0144 BB68     		ldr	r3, [r7, #8]
+ 336 0146 4FF08C02 		mov	r2, #140
+ 337 014a DA70     		strb	r2, [r3, #3]
+ 115:openapps/c6t/c6t.c ****             break;
+ 338              		.loc 1 115 0
+ 339 014c 12E0     		b	.L10
+ 340              	.L11:
+ 116:openapps/c6t/c6t.c ****          }
+ 117:openapps/c6t/c6t.c ****          
+ 118:openapps/c6t/c6t.c ****          // call sixtop
+ 119:openapps/c6t/c6t.c ****          sixtop_removeCell(
+ 341              		.loc 1 119 0
+ 342 014e 07F11403 		add	r3, r7, #20
+ 343 0152 1846     		mov	r0, r3
+ 344 0154 FFF7FEFF 		bl	sixtop_removeCell
+ 120:openapps/c6t/c6t.c ****             &neighbor
+ 121:openapps/c6t/c6t.c ****          );
+ 122:openapps/c6t/c6t.c ****          
+ 123:openapps/c6t/c6t.c ****          // set the CoAP header
+ 124:openapps/c6t/c6t.c ****          coap_header->Code             = COAP_CODE_RESP_CHANGED;
+ 345              		.loc 1 124 0
+ 346 0158 BB68     		ldr	r3, [r7, #8]
+ 347 015a 4FF04402 		mov	r2, #68
+ 348 015e DA70     		strb	r2, [r3, #3]
+ 125:openapps/c6t/c6t.c ****          
+ 126:openapps/c6t/c6t.c ****          outcome                       = E_SUCCESS;
+ 349              		.loc 1 126 0
+ 350 0160 4FF00003 		mov	r3, #0
+ 351 0164 87F82730 		strb	r3, [r7, #39]
+ 127:openapps/c6t/c6t.c ****          break;
+ 352              		.loc 1 127 0
+ 353 0168 04E0     		b	.L10
+ 354              	.L13:
+ 128:openapps/c6t/c6t.c ****          
+ 129:openapps/c6t/c6t.c ****       default:
+ 130:openapps/c6t/c6t.c ****          outcome = E_FAIL;
+ 355              		.loc 1 130 0
+ 356 016a 4FF00103 		mov	r3, #1
+ 357 016e 87F82730 		strb	r3, [r7, #39]
+ 131:openapps/c6t/c6t.c ****          break;
+ 358              		.loc 1 131 0
+ 359 0172 00BF     		nop
+ 360              	.L10:
+ 132:openapps/c6t/c6t.c ****    }
+ 133:openapps/c6t/c6t.c ****    
+ 134:openapps/c6t/c6t.c ****    return outcome;
+ 361              		.loc 1 134 0
+ 362 0174 97F82730 		ldrb	r3, [r7, #39]	@ zero_extendqisi2
+ 135:openapps/c6t/c6t.c **** }
+ 363              		.loc 1 135 0
+ 364 0178 1846     		mov	r0, r3
+ 365 017a 07F12807 		add	r7, r7, #40
+ 366 017e BD46     		mov	sp, r7
+ 367 0180 80BD     		pop	{r7, pc}
+ 368              		.cfi_endproc
+ 369              	.LFE1:
+ 371 0182 00BF     		.align	2
+ 372              		.global	c6t_sendDone
+ 373              		.thumb
+ 374              		.thumb_func
+ 376              	c6t_sendDone:
+ 377              	.LFB2:
+ 136:openapps/c6t/c6t.c **** 
+ 137:openapps/c6t/c6t.c **** void c6t_sendDone(OpenQueueEntry_t* msg, owerror_t error) {
+ 378              		.loc 1 137 0
+ 379              		.cfi_startproc
+ 380              		@ args = 0, pretend = 0, frame = 8
+ 381              		@ frame_needed = 1, uses_anonymous_args = 0
+ 382 0184 80B5     		push	{r7, lr}
+ 383              	.LCFI5:
+ 384              		.cfi_def_cfa_offset 8
+ 385              		.cfi_offset 7, -8
+ 386              		.cfi_offset 14, -4
+ 387 0186 82B0     		sub	sp, sp, #8
+ 388              	.LCFI6:
+ 389              		.cfi_def_cfa_offset 16
+ 390 0188 00AF     		add	r7, sp, #0
+ 391              	.LCFI7:
+ 392              		.cfi_def_cfa_register 7
+ 393 018a 7860     		str	r0, [r7, #4]
+ 394 018c 0B46     		mov	r3, r1
+ 395 018e FB70     		strb	r3, [r7, #3]
+ 138:openapps/c6t/c6t.c ****    openqueue_freePacketBuffer(msg);
+ 396              		.loc 1 138 0
+ 397 0190 7868     		ldr	r0, [r7, #4]
+ 398 0192 FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 139:openapps/c6t/c6t.c **** }
+ 399              		.loc 1 139 0
+ 400 0196 07F10807 		add	r7, r7, #8
+ 401 019a BD46     		mov	sp, r7
+ 402 019c 80BD     		pop	{r7, pc}
+ 403              		.cfi_endproc
+ 404              	.LFE2:
+ 406              	.Letext0:
+ 407              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+ 408              		.file 3 "inc/opendefs.h"
+ 409              		.file 4 "openstack/04-TRAN/opencoap.h"
+ 410              		.file 5 "openapps/c6t/c6t.h"
+ 411              		.file 6 "bsp/boards/OpenMote-CC2538/board_info.h"
+ 412              		.file 7 "openstack/03b-IPv6/icmpv6rpl.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 c6t.c
+     /tmp/ccTaF76f.s:19     .rodata:00000000 $d
+     /tmp/ccTaF76f.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccTaF76f.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccTaF76f.s:32     .rodata:00000010 infouCName
+     /tmp/ccTaF76f.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccTaF76f.s:42     .rodata:00000024 infoStackName
+     /tmp/ccTaF76f.s:47     .rodata:00000030 ipAddr_ipsoRD
+     /tmp/ccTaF76f.s:67     .rodata:00000040 ipAddr_motesEecs
+     /tmp/ccTaF76f.s:87     .rodata:00000050 ipAddr_local
+     /tmp/ccTaF76f.s:107    .rodata:00000060 ipAddr_motedata
+     /tmp/ccTaF76f.s:127    .rodata:00000070 all_routers_multicast
+     /tmp/ccTaF76f.s:148    .rodata:00000080 c6t_path0
+                            *COM*:00000024 c6t_vars
+     /tmp/ccTaF76f.s:152    .text:00000000 $t
+     /tmp/ccTaF76f.s:157    .text:00000000 c6t_init
+     /tmp/ccTaF76f.s:235    .text:00000090 c6t_receive
+     /tmp/ccTaF76f.s:376    .text:00000184 c6t_sendDone
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.toolchain_defs.h.2.e4ebbe6e0a48032a9b79077dc42e1ffd
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
+                           .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
+                           .group:00000000 wm4.opencoap.h.27.763f8732d8ba6438951ce1c4409e9b68
+                           .group:00000000 wm4.schedule.h.2.74f699399ee9cbf3b59178f1204d8511
+                           .group:00000000 wm4.sixtop.h.2.0b8613e8e48e9109b53e6143f3ed1895
+                           .group:00000000 wm4.idmanager.h.2.8c0e2159b32ef3125cbb1e984805cbfe
+                           .group:00000000 wm4.icmpv6rpl.h.2.0ce84dbe8c203c7079b39e7e96c7c01e
+                           .group:00000000 wm4.neighbors.h.15.9f35f180a0332d1bc442efb0ec51905c
+
+UNDEFINED SYMBOLS
+idmanager_getIsDAGroot
+opencoap_register
+neighbors_getPreferredParentEui64
+sixtop_addCells
+sixtop_removeCell
+openqueue_freePacketBuffer

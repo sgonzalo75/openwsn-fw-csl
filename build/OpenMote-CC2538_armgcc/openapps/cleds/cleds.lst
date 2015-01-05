@@ -1,0 +1,534 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"cleds.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.align	2
+  42              	infoStackName:
+  43 0024 4F70656E 		.ascii	"OpenWSN \000"
+  43      57534E20 
+  43      00
+  44 002d 000000   		.align	2
+  47              	ipAddr_ipsoRD:
+  48 0030 26       		.byte	38
+  49 0031 07       		.byte	7
+  50 0032 F7       		.byte	-9
+  51 0033 40       		.byte	64
+  52 0034 00       		.byte	0
+  53 0035 00       		.byte	0
+  54 0036 00       		.byte	0
+  55 0037 3F       		.byte	63
+  56 0038 00       		.byte	0
+  57 0039 00       		.byte	0
+  58 003a 00       		.byte	0
+  59 003b 00       		.byte	0
+  60 003c 00       		.byte	0
+  61 003d 00       		.byte	0
+  62 003e 0E       		.byte	14
+  63 003f 29       		.byte	41
+  64              		.align	2
+  67              	ipAddr_motesEecs:
+  68 0040 20       		.byte	32
+  69 0041 01       		.byte	1
+  70 0042 04       		.byte	4
+  71 0043 70       		.byte	112
+  72 0044 00       		.byte	0
+  73 0045 66       		.byte	102
+  74 0046 00       		.byte	0
+  75 0047 19       		.byte	25
+  76 0048 00       		.byte	0
+  77 0049 00       		.byte	0
+  78 004a 00       		.byte	0
+  79 004b 00       		.byte	0
+  80 004c 00       		.byte	0
+  81 004d 00       		.byte	0
+  82 004e 00       		.byte	0
+  83 004f 02       		.byte	2
+  84              		.align	2
+  87              	ipAddr_local:
+  88 0050 26       		.byte	38
+  89 0051 07       		.byte	7
+  90 0052 F1       		.byte	-15
+  91 0053 40       		.byte	64
+  92 0054 04       		.byte	4
+  93 0055 00       		.byte	0
+  94 0056 10       		.byte	16
+  95 0057 36       		.byte	54
+  96 0058 4D       		.byte	77
+  97 0059 CD       		.byte	-51
+  98 005a AB       		.byte	-85
+  99 005b 54       		.byte	84
+ 100 005c 81       		.byte	-127
+ 101 005d 99       		.byte	-103
+ 102 005e C1       		.byte	-63
+ 103 005f F7       		.byte	-9
+ 104              		.align	2
+ 107              	ipAddr_motedata:
+ 108 0060 20       		.byte	32
+ 109 0061 01       		.byte	1
+ 110 0062 04       		.byte	4
+ 111 0063 70       		.byte	112
+ 112 0064 00       		.byte	0
+ 113 0065 66       		.byte	102
+ 114 0066 00       		.byte	0
+ 115 0067 17       		.byte	23
+ 116 0068 00       		.byte	0
+ 117 0069 00       		.byte	0
+ 118 006a 00       		.byte	0
+ 119 006b 00       		.byte	0
+ 120 006c 00       		.byte	0
+ 121 006d 00       		.byte	0
+ 122 006e 00       		.byte	0
+ 123 006f 02       		.byte	2
+ 124              		.comm	cleds_vars,36,4
+ 125              		.global	cleds_path0
+ 126              		.align	2
+ 129              	cleds_path0:
+ 130 0070 6C00     		.ascii	"l\000"
+ 131 0072 0000     		.text
+ 132              		.align	2
+ 133              		.global	cleds__init
+ 134              		.thumb
+ 135              		.thumb_func
+ 137              	cleds__init:
+ 138              	.LFB0:
+ 139              		.file 1 "openapps/cleds/cleds.c"
+   1:openapps/cleds/cleds.c **** /**
+   2:openapps/cleds/cleds.c **** \brief A CoAP resource which allows an application to GET/SET the state of the
+   3:openapps/cleds/cleds.c ****    error LED.
+   4:openapps/cleds/cleds.c **** */
+   5:openapps/cleds/cleds.c **** 
+   6:openapps/cleds/cleds.c **** #include "opendefs.h"
+   7:openapps/cleds/cleds.c **** #include "cleds.h"
+   8:openapps/cleds/cleds.c **** #include "opencoap.h"
+   9:openapps/cleds/cleds.c **** #include "packetfunctions.h"
+  10:openapps/cleds/cleds.c **** #include "leds.h"
+  11:openapps/cleds/cleds.c **** #include "openqueue.h"
+  12:openapps/cleds/cleds.c **** 
+  13:openapps/cleds/cleds.c **** //=========================== variables =======================================
+  14:openapps/cleds/cleds.c **** 
+  15:openapps/cleds/cleds.c **** cleds_vars_t cleds_vars;
+  16:openapps/cleds/cleds.c **** 
+  17:openapps/cleds/cleds.c **** const uint8_t cleds_path0[]       = "l";
+  18:openapps/cleds/cleds.c **** 
+  19:openapps/cleds/cleds.c **** //=========================== prototypes ======================================
+  20:openapps/cleds/cleds.c **** 
+  21:openapps/cleds/cleds.c **** owerror_t cleds_receive(
+  22:openapps/cleds/cleds.c ****    OpenQueueEntry_t* msg,
+  23:openapps/cleds/cleds.c ****    coap_header_iht*  coap_header,
+  24:openapps/cleds/cleds.c ****    coap_option_iht*  coap_options
+  25:openapps/cleds/cleds.c **** );
+  26:openapps/cleds/cleds.c **** void     cleds_sendDone(
+  27:openapps/cleds/cleds.c ****    OpenQueueEntry_t* msg,
+  28:openapps/cleds/cleds.c ****    owerror_t error
+  29:openapps/cleds/cleds.c **** );
+  30:openapps/cleds/cleds.c **** 
+  31:openapps/cleds/cleds.c **** //=========================== public ==========================================
+  32:openapps/cleds/cleds.c **** 
+  33:openapps/cleds/cleds.c **** void cleds__init() {
+ 140              		.loc 1 33 0
+ 141              		.cfi_startproc
+ 142              		@ args = 0, pretend = 0, frame = 0
+ 143              		@ frame_needed = 1, uses_anonymous_args = 0
+ 144 0000 80B5     		push	{r7, lr}
+ 145              	.LCFI0:
+ 146              		.cfi_def_cfa_offset 8
+ 147              		.cfi_offset 7, -8
+ 148              		.cfi_offset 14, -4
+ 149 0002 00AF     		add	r7, sp, #0
+ 150              	.LCFI1:
+ 151              		.cfi_def_cfa_register 7
+  34:openapps/cleds/cleds.c ****    
+  35:openapps/cleds/cleds.c ****    // prepare the resource descriptor for the /l path
+  36:openapps/cleds/cleds.c ****    cleds_vars.desc.path0len            = sizeof(cleds_path0)-1;
+ 152              		.loc 1 36 0
+ 153 0004 40F20003 		movw	r3, #:lower16:cleds_vars
+ 154 0008 C0F20003 		movt	r3, #:upper16:cleds_vars
+ 155 000c 4FF00102 		mov	r2, #1
+ 156 0010 1A70     		strb	r2, [r3, #0]
+  37:openapps/cleds/cleds.c ****    cleds_vars.desc.path0val            = (uint8_t*)(&cleds_path0);
+ 157              		.loc 1 37 0
+ 158 0012 40F20003 		movw	r3, #:lower16:cleds_vars
+ 159 0016 C0F20003 		movt	r3, #:upper16:cleds_vars
+ 160 001a 40F20002 		movw	r2, #:lower16:cleds_path0
+ 161 001e C0F20002 		movt	r2, #:upper16:cleds_path0
+ 162 0022 5A60     		str	r2, [r3, #4]
+  38:openapps/cleds/cleds.c ****    cleds_vars.desc.path1len            = 0;
+ 163              		.loc 1 38 0
+ 164 0024 40F20003 		movw	r3, #:lower16:cleds_vars
+ 165 0028 C0F20003 		movt	r3, #:upper16:cleds_vars
+ 166 002c 4FF00002 		mov	r2, #0
+ 167 0030 1A72     		strb	r2, [r3, #8]
+  39:openapps/cleds/cleds.c ****    cleds_vars.desc.path1val            = NULL;
+ 168              		.loc 1 39 0
+ 169 0032 40F20003 		movw	r3, #:lower16:cleds_vars
+ 170 0036 C0F20003 		movt	r3, #:upper16:cleds_vars
+ 171 003a 4FF00002 		mov	r2, #0
+ 172 003e DA60     		str	r2, [r3, #12]
+  40:openapps/cleds/cleds.c ****    cleds_vars.desc.componentID         = COMPONENT_CLEDS;
+ 173              		.loc 1 40 0
+ 174 0040 40F20003 		movw	r3, #:lower16:cleds_vars
+ 175 0044 C0F20003 		movt	r3, #:upper16:cleds_vars
+ 176 0048 4FF01D02 		mov	r2, #29
+ 177 004c 1A74     		strb	r2, [r3, #16]
+  41:openapps/cleds/cleds.c ****    cleds_vars.desc.callbackRx          = &cleds_receive;
+ 178              		.loc 1 41 0
+ 179 004e 40F20003 		movw	r3, #:lower16:cleds_vars
+ 180 0052 C0F20003 		movt	r3, #:upper16:cleds_vars
+ 181 0056 40F20002 		movw	r2, #:lower16:cleds_receive
+ 182 005a C0F20002 		movt	r2, #:upper16:cleds_receive
+ 183 005e 9A61     		str	r2, [r3, #24]
+  42:openapps/cleds/cleds.c ****    cleds_vars.desc.callbackSendDone    = &cleds_sendDone;
+ 184              		.loc 1 42 0
+ 185 0060 40F20003 		movw	r3, #:lower16:cleds_vars
+ 186 0064 C0F20003 		movt	r3, #:upper16:cleds_vars
+ 187 0068 40F20002 		movw	r2, #:lower16:cleds_sendDone
+ 188 006c C0F20002 		movt	r2, #:upper16:cleds_sendDone
+ 189 0070 DA61     		str	r2, [r3, #28]
+  43:openapps/cleds/cleds.c ****    
+  44:openapps/cleds/cleds.c ****    // register with the CoAP module
+  45:openapps/cleds/cleds.c ****    opencoap_register(&cleds_vars.desc);
+ 190              		.loc 1 45 0
+ 191 0072 40F20000 		movw	r0, #:lower16:cleds_vars
+ 192 0076 C0F20000 		movt	r0, #:upper16:cleds_vars
+ 193 007a FFF7FEFF 		bl	opencoap_register
+  46:openapps/cleds/cleds.c **** }
+ 194              		.loc 1 46 0
+ 195 007e 80BD     		pop	{r7, pc}
+ 196              		.cfi_endproc
+ 197              	.LFE0:
+ 199              		.align	2
+ 200              		.global	cleds_receive
+ 201              		.thumb
+ 202              		.thumb_func
+ 204              	cleds_receive:
+ 205              	.LFB1:
+  47:openapps/cleds/cleds.c **** 
+  48:openapps/cleds/cleds.c **** //=========================== private =========================================
+  49:openapps/cleds/cleds.c **** 
+  50:openapps/cleds/cleds.c **** /**
+  51:openapps/cleds/cleds.c **** \brief Called when a CoAP message is received for this resource.
+  52:openapps/cleds/cleds.c **** 
+  53:openapps/cleds/cleds.c **** \param[in] msg          The received message. CoAP header and options already
+  54:openapps/cleds/cleds.c ****    parsed.
+  55:openapps/cleds/cleds.c **** \param[in] coap_header  The CoAP header contained in the message.
+  56:openapps/cleds/cleds.c **** \param[in] coap_options The CoAP options contained in the message.
+  57:openapps/cleds/cleds.c **** 
+  58:openapps/cleds/cleds.c **** \return Whether the response is prepared successfully.
+  59:openapps/cleds/cleds.c **** */
+  60:openapps/cleds/cleds.c **** owerror_t cleds_receive(
+  61:openapps/cleds/cleds.c ****       OpenQueueEntry_t* msg,
+  62:openapps/cleds/cleds.c ****       coap_header_iht*  coap_header,
+  63:openapps/cleds/cleds.c ****       coap_option_iht*  coap_options
+  64:openapps/cleds/cleds.c ****    ) {
+ 206              		.loc 1 64 0
+ 207              		.cfi_startproc
+ 208              		@ args = 0, pretend = 0, frame = 24
+ 209              		@ frame_needed = 1, uses_anonymous_args = 0
+ 210 0080 80B5     		push	{r7, lr}
+ 211              	.LCFI2:
+ 212              		.cfi_def_cfa_offset 8
+ 213              		.cfi_offset 7, -8
+ 214              		.cfi_offset 14, -4
+ 215 0082 86B0     		sub	sp, sp, #24
+ 216              	.LCFI3:
+ 217              		.cfi_def_cfa_offset 32
+ 218 0084 00AF     		add	r7, sp, #0
+ 219              	.LCFI4:
+ 220              		.cfi_def_cfa_register 7
+ 221 0086 F860     		str	r0, [r7, #12]
+ 222 0088 B960     		str	r1, [r7, #8]
+ 223 008a 7A60     		str	r2, [r7, #4]
+  65:openapps/cleds/cleds.c ****    owerror_t outcome;
+  66:openapps/cleds/cleds.c ****    
+  67:openapps/cleds/cleds.c ****    switch (coap_header->Code) {
+ 224              		.loc 1 67 0
+ 225 008c BB68     		ldr	r3, [r7, #8]
+ 226 008e DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 227 0090 012B     		cmp	r3, #1
+ 228 0092 02D0     		beq	.L4
+ 229 0094 032B     		cmp	r3, #3
+ 230 0096 2FD0     		beq	.L5
+ 231 0098 51E0     		b	.L13
+ 232              	.L4:
+  68:openapps/cleds/cleds.c ****       case COAP_CODE_REQ_GET:
+  69:openapps/cleds/cleds.c ****          // reset packet payload
+  70:openapps/cleds/cleds.c ****          msg->payload                     = &(msg->packet[127]);
+ 233              		.loc 1 70 0
+ 234 009a FB68     		ldr	r3, [r7, #12]
+ 235 009c 03F1EA02 		add	r2, r3, #234
+ 236 00a0 FB68     		ldr	r3, [r7, #12]
+ 237 00a2 5A60     		str	r2, [r3, #4]
+  71:openapps/cleds/cleds.c ****          msg->length                      = 0;
+ 238              		.loc 1 71 0
+ 239 00a4 FB68     		ldr	r3, [r7, #12]
+ 240 00a6 4FF00002 		mov	r2, #0
+ 241 00aa 1A72     		strb	r2, [r3, #8]
+  72:openapps/cleds/cleds.c ****          
+  73:openapps/cleds/cleds.c ****          // add CoAP payload
+  74:openapps/cleds/cleds.c ****          packetfunctions_reserveHeaderSize(msg,2);
+ 242              		.loc 1 74 0
+ 243 00ac F868     		ldr	r0, [r7, #12]
+ 244 00ae 4FF00201 		mov	r1, #2
+ 245 00b2 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+  75:openapps/cleds/cleds.c ****          msg->payload[0]                  = COAP_PAYLOAD_MARKER;
+ 246              		.loc 1 75 0
+ 247 00b6 FB68     		ldr	r3, [r7, #12]
+ 248 00b8 5B68     		ldr	r3, [r3, #4]
+ 249 00ba 4FF0FF02 		mov	r2, #255
+ 250 00be 1A70     		strb	r2, [r3, #0]
+  76:openapps/cleds/cleds.c **** 
+  77:openapps/cleds/cleds.c ****          if (leds_error_isOn()==1) {
+ 251              		.loc 1 77 0
+ 252 00c0 FFF7FEFF 		bl	leds_error_isOn
+ 253 00c4 0346     		mov	r3, r0
+ 254 00c6 012B     		cmp	r3, #1
+ 255 00c8 07D1     		bne	.L6
+  78:openapps/cleds/cleds.c ****             msg->payload[1]               = '1';
+ 256              		.loc 1 78 0
+ 257 00ca FB68     		ldr	r3, [r7, #12]
+ 258 00cc 5B68     		ldr	r3, [r3, #4]
+ 259 00ce 03F10103 		add	r3, r3, #1
+ 260 00d2 4FF03102 		mov	r2, #49
+ 261 00d6 1A70     		strb	r2, [r3, #0]
+ 262 00d8 06E0     		b	.L7
+ 263              	.L6:
+  79:openapps/cleds/cleds.c ****          } else {
+  80:openapps/cleds/cleds.c ****             msg->payload[1]               = '0';
+ 264              		.loc 1 80 0
+ 265 00da FB68     		ldr	r3, [r7, #12]
+ 266 00dc 5B68     		ldr	r3, [r3, #4]
+ 267 00de 03F10103 		add	r3, r3, #1
+ 268 00e2 4FF03002 		mov	r2, #48
+ 269 00e6 1A70     		strb	r2, [r3, #0]
+ 270              	.L7:
+  81:openapps/cleds/cleds.c ****          }
+  82:openapps/cleds/cleds.c ****             
+  83:openapps/cleds/cleds.c ****          // set the CoAP header
+  84:openapps/cleds/cleds.c ****          coap_header->Code                = COAP_CODE_RESP_CONTENT;
+ 271              		.loc 1 84 0
+ 272 00e8 BB68     		ldr	r3, [r7, #8]
+ 273 00ea 4FF04502 		mov	r2, #69
+ 274 00ee DA70     		strb	r2, [r3, #3]
+  85:openapps/cleds/cleds.c ****          
+  86:openapps/cleds/cleds.c ****          outcome                          = E_SUCCESS;
+ 275              		.loc 1 86 0
+ 276 00f0 4FF00003 		mov	r3, #0
+ 277 00f4 FB75     		strb	r3, [r7, #23]
+  87:openapps/cleds/cleds.c ****          break;
+ 278              		.loc 1 87 0
+ 279 00f6 26E0     		b	.L8
+ 280              	.L5:
+  88:openapps/cleds/cleds.c ****       
+  89:openapps/cleds/cleds.c ****       case COAP_CODE_REQ_PUT:
+  90:openapps/cleds/cleds.c ****       
+  91:openapps/cleds/cleds.c ****          // change the LED's state
+  92:openapps/cleds/cleds.c ****          if (msg->payload[0]=='1') {
+ 281              		.loc 1 92 0
+ 282 00f8 FB68     		ldr	r3, [r7, #12]
+ 283 00fa 5B68     		ldr	r3, [r3, #4]
+ 284 00fc 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 285 00fe 312B     		cmp	r3, #49
+ 286 0100 02D1     		bne	.L9
+  93:openapps/cleds/cleds.c ****             leds_error_on();
+ 287              		.loc 1 93 0
+ 288 0102 FFF7FEFF 		bl	leds_error_on
+ 289 0106 09E0     		b	.L10
+ 290              	.L9:
+  94:openapps/cleds/cleds.c ****          } else if (msg->payload[0]=='2') {
+ 291              		.loc 1 94 0
+ 292 0108 FB68     		ldr	r3, [r7, #12]
+ 293 010a 5B68     		ldr	r3, [r3, #4]
+ 294 010c 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 295 010e 322B     		cmp	r3, #50
+ 296 0110 02D1     		bne	.L11
+  95:openapps/cleds/cleds.c ****             leds_error_toggle();
+ 297              		.loc 1 95 0
+ 298 0112 FFF7FEFF 		bl	leds_error_toggle
+ 299 0116 01E0     		b	.L10
+ 300              	.L11:
+  96:openapps/cleds/cleds.c ****          } else {
+  97:openapps/cleds/cleds.c ****             leds_error_off();
+ 301              		.loc 1 97 0
+ 302 0118 FFF7FEFF 		bl	leds_error_off
+ 303              	.L10:
+  98:openapps/cleds/cleds.c ****          }
+  99:openapps/cleds/cleds.c ****          
+ 100:openapps/cleds/cleds.c ****          // reset packet payload
+ 101:openapps/cleds/cleds.c ****          msg->payload                     = &(msg->packet[127]);
+ 304              		.loc 1 101 0
+ 305 011c FB68     		ldr	r3, [r7, #12]
+ 306 011e 03F1EA02 		add	r2, r3, #234
+ 307 0122 FB68     		ldr	r3, [r7, #12]
+ 308 0124 5A60     		str	r2, [r3, #4]
+ 102:openapps/cleds/cleds.c ****          msg->length                      = 0;
+ 309              		.loc 1 102 0
+ 310 0126 FB68     		ldr	r3, [r7, #12]
+ 311 0128 4FF00002 		mov	r2, #0
+ 312 012c 1A72     		strb	r2, [r3, #8]
+ 103:openapps/cleds/cleds.c ****          
+ 104:openapps/cleds/cleds.c ****          // set the CoAP header
+ 105:openapps/cleds/cleds.c ****          coap_header->Code                = COAP_CODE_RESP_CHANGED;
+ 313              		.loc 1 105 0
+ 314 012e BB68     		ldr	r3, [r7, #8]
+ 315 0130 4FF04402 		mov	r2, #68
+ 316 0134 DA70     		strb	r2, [r3, #3]
+ 106:openapps/cleds/cleds.c ****          
+ 107:openapps/cleds/cleds.c ****          outcome                          = E_SUCCESS;
+ 317              		.loc 1 107 0
+ 318 0136 4FF00003 		mov	r3, #0
+ 319 013a FB75     		strb	r3, [r7, #23]
+ 108:openapps/cleds/cleds.c ****          break;
+ 320              		.loc 1 108 0
+ 321 013c 03E0     		b	.L8
+ 322              	.L13:
+ 109:openapps/cleds/cleds.c ****          
+ 110:openapps/cleds/cleds.c ****       default:
+ 111:openapps/cleds/cleds.c ****          outcome                          = E_FAIL;
+ 323              		.loc 1 111 0
+ 324 013e 4FF00103 		mov	r3, #1
+ 325 0142 FB75     		strb	r3, [r7, #23]
+ 112:openapps/cleds/cleds.c ****          break;
+ 326              		.loc 1 112 0
+ 327 0144 00BF     		nop
+ 328              	.L8:
+ 113:openapps/cleds/cleds.c ****    }
+ 114:openapps/cleds/cleds.c ****    
+ 115:openapps/cleds/cleds.c ****    return outcome;
+ 329              		.loc 1 115 0
+ 330 0146 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 116:openapps/cleds/cleds.c **** }
+ 331              		.loc 1 116 0
+ 332 0148 1846     		mov	r0, r3
+ 333 014a 07F11807 		add	r7, r7, #24
+ 334 014e BD46     		mov	sp, r7
+ 335 0150 80BD     		pop	{r7, pc}
+ 336              		.cfi_endproc
+ 337              	.LFE1:
+ 339 0152 00BF     		.align	2
+ 340              		.global	cleds_sendDone
+ 341              		.thumb
+ 342              		.thumb_func
+ 344              	cleds_sendDone:
+ 345              	.LFB2:
+ 117:openapps/cleds/cleds.c **** 
+ 118:openapps/cleds/cleds.c **** /**
+ 119:openapps/cleds/cleds.c **** \brief The stack indicates that the packet was sent.
+ 120:openapps/cleds/cleds.c **** 
+ 121:openapps/cleds/cleds.c **** \param[in] msg The CoAP message just sent.
+ 122:openapps/cleds/cleds.c **** \param[in] error The outcome of sending it.
+ 123:openapps/cleds/cleds.c **** */
+ 124:openapps/cleds/cleds.c **** void cleds_sendDone(OpenQueueEntry_t* msg, owerror_t error) {
+ 346              		.loc 1 124 0
+ 347              		.cfi_startproc
+ 348              		@ args = 0, pretend = 0, frame = 8
+ 349              		@ frame_needed = 1, uses_anonymous_args = 0
+ 350 0154 80B5     		push	{r7, lr}
+ 351              	.LCFI5:
+ 352              		.cfi_def_cfa_offset 8
+ 353              		.cfi_offset 7, -8
+ 354              		.cfi_offset 14, -4
+ 355 0156 82B0     		sub	sp, sp, #8
+ 356              	.LCFI6:
+ 357              		.cfi_def_cfa_offset 16
+ 358 0158 00AF     		add	r7, sp, #0
+ 359              	.LCFI7:
+ 360              		.cfi_def_cfa_register 7
+ 361 015a 7860     		str	r0, [r7, #4]
+ 362 015c 0B46     		mov	r3, r1
+ 363 015e FB70     		strb	r3, [r7, #3]
+ 125:openapps/cleds/cleds.c ****    openqueue_freePacketBuffer(msg);
+ 364              		.loc 1 125 0
+ 365 0160 7868     		ldr	r0, [r7, #4]
+ 366 0162 FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 126:openapps/cleds/cleds.c **** }...
+ 367              		.loc 1 126 0
+ 368 0166 07F10807 		add	r7, r7, #8
+ 369 016a BD46     		mov	sp, r7
+ 370 016c 80BD     		pop	{r7, pc}
+ 371              		.cfi_endproc
+ 372              	.LFE2:
+ 374              	.Letext0:
+ 375              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+ 376              		.file 3 "inc/opendefs.h"
+ 377              		.file 4 "openstack/04-TRAN/opencoap.h"
+ 378              		.file 5 "openapps/cleds/cleds.h"
+ 379              		.file 6 "bsp/boards/OpenMote-CC2538/board_info.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 cleds.c
+     /tmp/ccMKH3od.s:19     .rodata:00000000 $d
+     /tmp/ccMKH3od.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccMKH3od.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccMKH3od.s:32     .rodata:00000010 infouCName
+     /tmp/ccMKH3od.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccMKH3od.s:42     .rodata:00000024 infoStackName
+     /tmp/ccMKH3od.s:47     .rodata:00000030 ipAddr_ipsoRD
+     /tmp/ccMKH3od.s:67     .rodata:00000040 ipAddr_motesEecs
+     /tmp/ccMKH3od.s:87     .rodata:00000050 ipAddr_local
+     /tmp/ccMKH3od.s:107    .rodata:00000060 ipAddr_motedata
+                            *COM*:00000024 cleds_vars
+     /tmp/ccMKH3od.s:129    .rodata:00000070 cleds_path0
+     /tmp/ccMKH3od.s:132    .text:00000000 $t
+     /tmp/ccMKH3od.s:137    .text:00000000 cleds__init
+     /tmp/ccMKH3od.s:204    .text:00000080 cleds_receive
+     /tmp/ccMKH3od.s:344    .text:00000154 cleds_sendDone
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.toolchain_defs.h.2.e4ebbe6e0a48032a9b79077dc42e1ffd
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
+                           .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
+                           .group:00000000 wm4.opencoap.h.27.763f8732d8ba6438951ce1c4409e9b68
+
+UNDEFINED SYMBOLS
+opencoap_register
+packetfunctions_reserveHeaderSize
+leds_error_isOn
+leds_error_on
+leds_error_toggle
+leds_error_off
+openqueue_freePacketBuffer

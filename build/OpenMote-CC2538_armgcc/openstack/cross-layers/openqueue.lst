@@ -1,0 +1,1617 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"openqueue.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.align	2
+  42              	infoStackName:
+  43 0024 4F70656E 		.ascii	"OpenWSN \000"
+  43      57534E20 
+  43      00
+  44              		.comm	openqueue_vars,2400,4
+  45 002d 000000   		.text
+  46              		.align	2
+  47              		.global	openqueue_init
+  48              		.thumb
+  49              		.thumb_func
+  51              	openqueue_init:
+  52              	.LFB0:
+  53              		.file 1 "openstack/cross-layers/openqueue.c"
+   1:openstack/cross-layers/openqueue.c **** #include "opendefs.h"
+   2:openstack/cross-layers/openqueue.c **** #include "openqueue.h"
+   3:openstack/cross-layers/openqueue.c **** 
+   4:openstack/cross-layers/openqueue.c **** #include "../02a-MAClow/IEEE802154Ecsl.h"
+   5:openstack/cross-layers/openqueue.c **** #include "openserial.h"
+   6:openstack/cross-layers/openqueue.c **** #include "packetfunctions.h"
+   7:openstack/cross-layers/openqueue.c **** 
+   8:openstack/cross-layers/openqueue.c **** //=========================== variables =======================================
+   9:openstack/cross-layers/openqueue.c **** 
+  10:openstack/cross-layers/openqueue.c **** openqueue_vars_t openqueue_vars;
+  11:openstack/cross-layers/openqueue.c **** 
+  12:openstack/cross-layers/openqueue.c **** //=========================== prototypes ======================================
+  13:openstack/cross-layers/openqueue.c **** 
+  14:openstack/cross-layers/openqueue.c **** void openqueue_reset_entry(OpenQueueEntry_t* entry);
+  15:openstack/cross-layers/openqueue.c **** 
+  16:openstack/cross-layers/openqueue.c **** //=========================== public ==========================================
+  17:openstack/cross-layers/openqueue.c **** 
+  18:openstack/cross-layers/openqueue.c **** //======= admin
+  19:openstack/cross-layers/openqueue.c **** 
+  20:openstack/cross-layers/openqueue.c **** /**
+  21:openstack/cross-layers/openqueue.c **** \brief Initialize this module.
+  22:openstack/cross-layers/openqueue.c **** */
+  23:openstack/cross-layers/openqueue.c **** void openqueue_init() {
+  54              		.loc 1 23 0
+  55              		.cfi_startproc
+  56              		@ args = 0, pretend = 0, frame = 8
+  57              		@ frame_needed = 1, uses_anonymous_args = 0
+  58 0000 80B5     		push	{r7, lr}
+  59              	.LCFI0:
+  60              		.cfi_def_cfa_offset 8
+  61              		.cfi_offset 7, -8
+  62              		.cfi_offset 14, -4
+  63 0002 82B0     		sub	sp, sp, #8
+  64              	.LCFI1:
+  65              		.cfi_def_cfa_offset 16
+  66 0004 00AF     		add	r7, sp, #0
+  67              	.LCFI2:
+  68              		.cfi_def_cfa_register 7
+  24:openstack/cross-layers/openqueue.c ****    uint8_t i;
+  25:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++){
+  69              		.loc 1 25 0
+  70 0006 4FF00003 		mov	r3, #0
+  71 000a FB71     		strb	r3, [r7, #7]
+  72 000c 12E0     		b	.L2
+  73              	.L3:
+  26:openstack/cross-layers/openqueue.c ****       openqueue_reset_entry(&(openqueue_vars.queue[i]));
+  74              		.loc 1 26 0 discriminator 2
+  75 000e FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+  76 0010 1346     		mov	r3, r2
+  77 0012 4FEA0313 		lsl	r3, r3, #4
+  78 0016 9B1A     		subs	r3, r3, r2
+  79 0018 4FEA0313 		lsl	r3, r3, #4
+  80 001c 40F20002 		movw	r2, #:lower16:openqueue_vars
+  81 0020 C0F20002 		movt	r2, #:upper16:openqueue_vars
+  82 0024 9B18     		adds	r3, r3, r2
+  83 0026 1846     		mov	r0, r3
+  84 0028 FFF7FEFF 		bl	openqueue_reset_entry
+  25:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++){
+  85              		.loc 1 25 0 discriminator 2
+  86 002c FB79     		ldrb	r3, [r7, #7]
+  87 002e 03F10103 		add	r3, r3, #1
+  88 0032 FB71     		strb	r3, [r7, #7]
+  89              	.L2:
+  25:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++){
+  90              		.loc 1 25 0 is_stmt 0 discriminator 1
+  91 0034 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+  92 0036 092B     		cmp	r3, #9
+  93 0038 E9D9     		bls	.L3
+  27:openstack/cross-layers/openqueue.c ****    }
+  28:openstack/cross-layers/openqueue.c **** }
+  94              		.loc 1 28 0 is_stmt 1
+  95 003a 07F10807 		add	r7, r7, #8
+  96 003e BD46     		mov	sp, r7
+  97 0040 80BD     		pop	{r7, pc}
+  98              		.cfi_endproc
+  99              	.LFE0:
+ 101 0042 00BF     		.align	2
+ 102              		.global	debugPrint_queue
+ 103              		.thumb
+ 104              		.thumb_func
+ 106              	debugPrint_queue:
+ 107              	.LFB1:
+  29:openstack/cross-layers/openqueue.c **** 
+  30:openstack/cross-layers/openqueue.c **** /**
+  31:openstack/cross-layers/openqueue.c **** \brief Trigger this module to print status information, over serial.
+  32:openstack/cross-layers/openqueue.c **** 
+  33:openstack/cross-layers/openqueue.c **** debugPrint_* functions are used by the openserial module to continuously print
+  34:openstack/cross-layers/openqueue.c **** status information about several modules in the OpenWSN stack.
+  35:openstack/cross-layers/openqueue.c **** 
+  36:openstack/cross-layers/openqueue.c **** \returns TRUE if this function printed something, FALSE otherwise.
+  37:openstack/cross-layers/openqueue.c **** */
+  38:openstack/cross-layers/openqueue.c **** bool debugPrint_queue() {
+ 108              		.loc 1 38 0
+ 109              		.cfi_startproc
+ 110              		@ args = 0, pretend = 0, frame = 24
+ 111              		@ frame_needed = 1, uses_anonymous_args = 0
+ 112 0044 80B5     		push	{r7, lr}
+ 113              	.LCFI3:
+ 114              		.cfi_def_cfa_offset 8
+ 115              		.cfi_offset 7, -8
+ 116              		.cfi_offset 14, -4
+ 117 0046 86B0     		sub	sp, sp, #24
+ 118              	.LCFI4:
+ 119              		.cfi_def_cfa_offset 32
+ 120 0048 00AF     		add	r7, sp, #0
+ 121              	.LCFI5:
+ 122              		.cfi_def_cfa_register 7
+  39:openstack/cross-layers/openqueue.c ****    debugOpenQueueEntry_t output[QUEUELENGTH];
+  40:openstack/cross-layers/openqueue.c ****    uint8_t i;
+  41:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 123              		.loc 1 41 0
+ 124 004a 4FF00003 		mov	r3, #0
+ 125 004e FB75     		strb	r3, [r7, #23]
+ 126 0050 2DE0     		b	.L5
+ 127              	.L6:
+  42:openstack/cross-layers/openqueue.c ****       output[i].creator = openqueue_vars.queue[i].creator;
+ 128              		.loc 1 42 0 discriminator 2
+ 129 0052 F87D     		ldrb	r0, [r7, #23]	@ zero_extendqisi2
+ 130 0054 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 131 0056 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 132 005a C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 133 005e 0B46     		mov	r3, r1
+ 134 0060 4FEA0313 		lsl	r3, r3, #4
+ 135 0064 5B1A     		subs	r3, r3, r1
+ 136 0066 4FEA0313 		lsl	r3, r3, #4
+ 137 006a D318     		adds	r3, r2, r3
+ 138 006c 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 139 006e 4FEA4003 		lsl	r3, r0, #1
+ 140 0072 07F11801 		add	r1, r7, #24
+ 141 0076 CB18     		adds	r3, r1, r3
+ 142 0078 03F8182C 		strb	r2, [r3, #-24]
+  43:openstack/cross-layers/openqueue.c ****       output[i].owner   = openqueue_vars.queue[i].owner;
+ 143              		.loc 1 43 0 discriminator 2
+ 144 007c F87D     		ldrb	r0, [r7, #23]	@ zero_extendqisi2
+ 145 007e F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 146 0080 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 147 0084 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 148 0088 0B46     		mov	r3, r1
+ 149 008a 4FEA0313 		lsl	r3, r3, #4
+ 150 008e 5B1A     		subs	r3, r3, r1
+ 151 0090 4FEA0313 		lsl	r3, r3, #4
+ 152 0094 D318     		adds	r3, r2, r3
+ 153 0096 5A78     		ldrb	r2, [r3, #1]	@ zero_extendqisi2
+ 154 0098 4FEA4003 		lsl	r3, r0, #1
+ 155 009c 07F11801 		add	r1, r7, #24
+ 156 00a0 CB18     		adds	r3, r1, r3
+ 157 00a2 03F8172C 		strb	r2, [r3, #-23]
+  41:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 158              		.loc 1 41 0 discriminator 2
+ 159 00a6 FB7D     		ldrb	r3, [r7, #23]
+ 160 00a8 03F10103 		add	r3, r3, #1
+ 161 00ac FB75     		strb	r3, [r7, #23]
+ 162              	.L5:
+  41:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 163              		.loc 1 41 0 is_stmt 0 discriminator 1
+ 164 00ae FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 165 00b0 092B     		cmp	r3, #9
+ 166 00b2 CED9     		bls	.L6
+  44:openstack/cross-layers/openqueue.c ****    }
+  45:openstack/cross-layers/openqueue.c ****    openserial_printStatus(STATUS_QUEUE,(uint8_t*)&output,QUEUELENGTH*sizeof(debugOpenQueueEntry_t))
+ 167              		.loc 1 45 0 is_stmt 1
+ 168 00b4 3B46     		mov	r3, r7
+ 169 00b6 4FF00800 		mov	r0, #8
+ 170 00ba 1946     		mov	r1, r3
+ 171 00bc 4FF01402 		mov	r2, #20
+ 172 00c0 FFF7FEFF 		bl	openserial_printStatus
+  46:openstack/cross-layers/openqueue.c ****    return TRUE;
+ 173              		.loc 1 46 0
+ 174 00c4 4FF00103 		mov	r3, #1
+  47:openstack/cross-layers/openqueue.c **** }
+ 175              		.loc 1 47 0
+ 176 00c8 1846     		mov	r0, r3
+ 177 00ca 07F11807 		add	r7, r7, #24
+ 178 00ce BD46     		mov	sp, r7
+ 179 00d0 80BD     		pop	{r7, pc}
+ 180              		.cfi_endproc
+ 181              	.LFE1:
+ 183 00d2 00BF     		.align	2
+ 184              		.global	openqueue_getFreePacketBuffer
+ 185              		.thumb
+ 186              		.thumb_func
+ 188              	openqueue_getFreePacketBuffer:
+ 189              	.LFB2:
+  48:openstack/cross-layers/openqueue.c **** 
+  49:openstack/cross-layers/openqueue.c **** //======= called by any component
+  50:openstack/cross-layers/openqueue.c **** 
+  51:openstack/cross-layers/openqueue.c **** /**
+  52:openstack/cross-layers/openqueue.c **** \brief Request a new (free) packet buffer.
+  53:openstack/cross-layers/openqueue.c **** 
+  54:openstack/cross-layers/openqueue.c **** Component throughout the protocol stack can call this function is they want to
+  55:openstack/cross-layers/openqueue.c **** get a new packet buffer to start creating a new packet.
+  56:openstack/cross-layers/openqueue.c **** 
+  57:openstack/cross-layers/openqueue.c **** \note Once a packet has been allocated, it is up to the creator of the packet
+  58:openstack/cross-layers/openqueue.c ****       to free it using the openqueue_freePacketBuffer() function.
+  59:openstack/cross-layers/openqueue.c **** 
+  60:openstack/cross-layers/openqueue.c **** \returns A pointer to the queue entry when it could be allocated, or NULL when
+  61:openstack/cross-layers/openqueue.c ****          it could not be allocated (buffer full or not synchronized).
+  62:openstack/cross-layers/openqueue.c **** */
+  63:openstack/cross-layers/openqueue.c **** OpenQueueEntry_t* openqueue_getFreePacketBuffer(uint8_t creator) {
+ 190              		.loc 1 63 0
+ 191              		.cfi_startproc
+ 192              		@ args = 0, pretend = 0, frame = 16
+ 193              		@ frame_needed = 1, uses_anonymous_args = 0
+ 194 00d4 80B5     		push	{r7, lr}
+ 195              	.LCFI6:
+ 196              		.cfi_def_cfa_offset 8
+ 197              		.cfi_offset 7, -8
+ 198              		.cfi_offset 14, -4
+ 199 00d6 84B0     		sub	sp, sp, #16
+ 200              	.LCFI7:
+ 201              		.cfi_def_cfa_offset 24
+ 202 00d8 00AF     		add	r7, sp, #0
+ 203              	.LCFI8:
+ 204              		.cfi_def_cfa_register 7
+ 205 00da 0346     		mov	r3, r0
+ 206 00dc FB71     		strb	r3, [r7, #7]
+  64:openstack/cross-layers/openqueue.c ****    uint8_t i;
+  65:openstack/cross-layers/openqueue.c ****    INTERRUPT_DECLARATION();
+  66:openstack/cross-layers/openqueue.c ****    DISABLE_INTERRUPTS();
+ 207              		.loc 1 66 0
+ 208 00de FFF7FEFF 		bl	IntMasterDisable
+  67:openstack/cross-layers/openqueue.c ****    
+  68:openstack/cross-layers/openqueue.c ****    // refuse to allocate if we're not in sync
+  69:openstack/cross-layers/openqueue.c ****    if (ieee154e_isSynch()==FALSE && creator > COMPONENT_IEEE802154E){
+ 209              		.loc 1 69 0
+ 210 00e2 FFF7FEFF 		bl	ieee154e_isSynch
+ 211 00e6 0346     		mov	r3, r0
+ 212 00e8 83F00103 		eor	r3, r3, #1
+ 213 00ec DBB2     		uxtb	r3, r3
+ 214 00ee 002B     		cmp	r3, #0
+ 215 00f0 07D0     		beq	.L9
+ 216              		.loc 1 69 0 is_stmt 0 discriminator 1
+ 217 00f2 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 218 00f4 092B     		cmp	r3, #9
+ 219 00f6 04D9     		bls	.L9
+  70:openstack/cross-layers/openqueue.c ****      ENABLE_INTERRUPTS();
+ 220              		.loc 1 70 0 is_stmt 1
+ 221 00f8 FFF7FEFF 		bl	IntMasterEnable
+  71:openstack/cross-layers/openqueue.c ****      return NULL;
+ 222              		.loc 1 71 0
+ 223 00fc 4FF00003 		mov	r3, #0
+ 224 0100 49E0     		b	.L10
+ 225              	.L9:
+  72:openstack/cross-layers/openqueue.c ****    }
+  73:openstack/cross-layers/openqueue.c ****    
+  74:openstack/cross-layers/openqueue.c ****    // if you get here, I will try to allocate a buffer for you
+  75:openstack/cross-layers/openqueue.c ****    
+  76:openstack/cross-layers/openqueue.c ****    // walk through queue and find free entry
+  77:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 226              		.loc 1 77 0
+ 227 0102 4FF00003 		mov	r3, #0
+ 228 0106 FB73     		strb	r3, [r7, #15]
+ 229 0108 3EE0     		b	.L11
+ 230              	.L13:
+  78:openstack/cross-layers/openqueue.c ****       if (openqueue_vars.queue[i].owner==COMPONENT_NULL) {
+ 231              		.loc 1 78 0
+ 232 010a F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 233 010c 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 234 0110 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 235 0114 0B46     		mov	r3, r1
+ 236 0116 4FEA0313 		lsl	r3, r3, #4
+ 237 011a 5B1A     		subs	r3, r3, r1
+ 238 011c 4FEA0313 		lsl	r3, r3, #4
+ 239 0120 D318     		adds	r3, r2, r3
+ 240 0122 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 241 0124 002B     		cmp	r3, #0
+ 242 0126 2BD1     		bne	.L12
+  79:openstack/cross-layers/openqueue.c ****          openqueue_vars.queue[i].creator=creator;
+ 243              		.loc 1 79 0
+ 244 0128 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 245 012a 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 246 012e C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 247 0132 0B46     		mov	r3, r1
+ 248 0134 4FEA0313 		lsl	r3, r3, #4
+ 249 0138 5B1A     		subs	r3, r3, r1
+ 250 013a 4FEA0313 		lsl	r3, r3, #4
+ 251 013e D318     		adds	r3, r2, r3
+ 252 0140 FA79     		ldrb	r2, [r7, #7]
+ 253 0142 1A70     		strb	r2, [r3, #0]
+  80:openstack/cross-layers/openqueue.c ****          openqueue_vars.queue[i].owner=COMPONENT_OPENQUEUE;
+ 254              		.loc 1 80 0
+ 255 0144 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 256 0146 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 257 014a C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 258 014e 0B46     		mov	r3, r1
+ 259 0150 4FEA0313 		lsl	r3, r3, #4
+ 260 0154 5B1A     		subs	r3, r3, r1
+ 261 0156 4FEA0313 		lsl	r3, r3, #4
+ 262 015a D318     		adds	r3, r2, r3
+ 263 015c 4FF00302 		mov	r2, #3
+ 264 0160 5A70     		strb	r2, [r3, #1]
+  81:openstack/cross-layers/openqueue.c ****          ENABLE_INTERRUPTS(); 
+ 265              		.loc 1 81 0
+ 266 0162 FFF7FEFF 		bl	IntMasterEnable
+  82:openstack/cross-layers/openqueue.c ****          return &openqueue_vars.queue[i];
+ 267              		.loc 1 82 0
+ 268 0166 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 269 0168 1346     		mov	r3, r2
+ 270 016a 4FEA0313 		lsl	r3, r3, #4
+ 271 016e 9B1A     		subs	r3, r3, r2
+ 272 0170 4FEA0313 		lsl	r3, r3, #4
+ 273 0174 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 274 0178 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 275 017c 9B18     		adds	r3, r3, r2
+ 276 017e 0AE0     		b	.L10
+ 277              	.L12:
+  77:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 278              		.loc 1 77 0
+ 279 0180 FB7B     		ldrb	r3, [r7, #15]
+ 280 0182 03F10103 		add	r3, r3, #1
+ 281 0186 FB73     		strb	r3, [r7, #15]
+ 282              	.L11:
+  77:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 283              		.loc 1 77 0 is_stmt 0 discriminator 1
+ 284 0188 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 285 018a 092B     		cmp	r3, #9
+ 286 018c BDD9     		bls	.L13
+  83:openstack/cross-layers/openqueue.c ****       }
+  84:openstack/cross-layers/openqueue.c ****    }
+  85:openstack/cross-layers/openqueue.c ****    ENABLE_INTERRUPTS();
+ 287              		.loc 1 85 0 is_stmt 1
+ 288 018e FFF7FEFF 		bl	IntMasterEnable
+  86:openstack/cross-layers/openqueue.c ****    return NULL;
+ 289              		.loc 1 86 0
+ 290 0192 4FF00003 		mov	r3, #0
+ 291              	.L10:
+  87:openstack/cross-layers/openqueue.c **** }
+ 292              		.loc 1 87 0
+ 293 0196 1846     		mov	r0, r3
+ 294 0198 07F11007 		add	r7, r7, #16
+ 295 019c BD46     		mov	sp, r7
+ 296 019e 80BD     		pop	{r7, pc}
+ 297              		.cfi_endproc
+ 298              	.LFE2:
+ 300              		.align	2
+ 301              		.global	openqueue_freePacketBuffer
+ 302              		.thumb
+ 303              		.thumb_func
+ 305              	openqueue_freePacketBuffer:
+ 306              	.LFB3:
+  88:openstack/cross-layers/openqueue.c **** 
+  89:openstack/cross-layers/openqueue.c **** 
+  90:openstack/cross-layers/openqueue.c **** /**
+  91:openstack/cross-layers/openqueue.c **** \brief Free a previously-allocated packet buffer.
+  92:openstack/cross-layers/openqueue.c **** 
+  93:openstack/cross-layers/openqueue.c **** \param pkt A pointer to the previsouly-allocated packet buffer.
+  94:openstack/cross-layers/openqueue.c **** 
+  95:openstack/cross-layers/openqueue.c **** \returns E_SUCCESS when the freeing was succeful.
+  96:openstack/cross-layers/openqueue.c **** \returns E_FAIL when the module could not find the specified packet buffer.
+  97:openstack/cross-layers/openqueue.c **** */
+  98:openstack/cross-layers/openqueue.c **** owerror_t openqueue_freePacketBuffer(OpenQueueEntry_t* pkt) {
+ 307              		.loc 1 98 0
+ 308              		.cfi_startproc
+ 309              		@ args = 0, pretend = 0, frame = 16
+ 310              		@ frame_needed = 1, uses_anonymous_args = 0
+ 311 01a0 80B5     		push	{r7, lr}
+ 312              	.LCFI9:
+ 313              		.cfi_def_cfa_offset 8
+ 314              		.cfi_offset 7, -8
+ 315              		.cfi_offset 14, -4
+ 316 01a2 84B0     		sub	sp, sp, #16
+ 317              	.LCFI10:
+ 318              		.cfi_def_cfa_offset 24
+ 319 01a4 00AF     		add	r7, sp, #0
+ 320              	.LCFI11:
+ 321              		.cfi_def_cfa_register 7
+ 322 01a6 7860     		str	r0, [r7, #4]
+  99:openstack/cross-layers/openqueue.c ****    uint8_t i;
+ 100:openstack/cross-layers/openqueue.c ****    INTERRUPT_DECLARATION();
+ 101:openstack/cross-layers/openqueue.c ****    DISABLE_INTERRUPTS();
+ 323              		.loc 1 101 0
+ 324 01a8 FFF7FEFF 		bl	IntMasterDisable
+ 102:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 325              		.loc 1 102 0
+ 326 01ac 4FF00003 		mov	r3, #0
+ 327 01b0 FB73     		strb	r3, [r7, #15]
+ 328 01b2 3FE0     		b	.L15
+ 329              	.L19:
+ 103:openstack/cross-layers/openqueue.c ****       if (&openqueue_vars.queue[i]==pkt) {
+ 330              		.loc 1 103 0
+ 331 01b4 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 332 01b6 1346     		mov	r3, r2
+ 333 01b8 4FEA0313 		lsl	r3, r3, #4
+ 334 01bc 9B1A     		subs	r3, r3, r2
+ 335 01be 4FEA0313 		lsl	r3, r3, #4
+ 336 01c2 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 337 01c6 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 338 01ca 9A18     		adds	r2, r3, r2
+ 339 01cc 7B68     		ldr	r3, [r7, #4]
+ 340 01ce 9A42     		cmp	r2, r3
+ 341 01d0 2CD1     		bne	.L16
+ 104:openstack/cross-layers/openqueue.c ****          if (openqueue_vars.queue[i].owner==COMPONENT_NULL) {
+ 342              		.loc 1 104 0
+ 343 01d2 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 344 01d4 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 345 01d8 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 346 01dc 0B46     		mov	r3, r1
+ 347 01de 4FEA0313 		lsl	r3, r3, #4
+ 348 01e2 5B1A     		subs	r3, r3, r1
+ 349 01e4 4FEA0313 		lsl	r3, r3, #4
+ 350 01e8 D318     		adds	r3, r2, r3
+ 351 01ea 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 352 01ec 002B     		cmp	r3, #0
+ 353 01ee 09D1     		bne	.L17
+ 105:openstack/cross-layers/openqueue.c ****             // log the error
+ 106:openstack/cross-layers/openqueue.c ****             openserial_printCritical(COMPONENT_OPENQUEUE,ERR_FREEING_UNUSED,
+ 354              		.loc 1 106 0
+ 355 01f0 4FF00300 		mov	r0, #3
+ 356 01f4 4FF02D01 		mov	r1, #45
+ 357 01f8 4FF00002 		mov	r2, #0
+ 358 01fc 4FF00003 		mov	r3, #0
+ 359 0200 FFF7FEFF 		bl	openserial_printCritical
+ 360              	.L17:
+ 107:openstack/cross-layers/openqueue.c ****                                   (errorparameter_t)0,
+ 108:openstack/cross-layers/openqueue.c ****                                   (errorparameter_t)0);
+ 109:openstack/cross-layers/openqueue.c ****          }
+ 110:openstack/cross-layers/openqueue.c ****          openqueue_reset_entry(&(openqueue_vars.queue[i]));
+ 361              		.loc 1 110 0
+ 362 0204 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 363 0206 1346     		mov	r3, r2
+ 364 0208 4FEA0313 		lsl	r3, r3, #4
+ 365 020c 9B1A     		subs	r3, r3, r2
+ 366 020e 4FEA0313 		lsl	r3, r3, #4
+ 367 0212 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 368 0216 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 369 021a 9B18     		adds	r3, r3, r2
+ 370 021c 1846     		mov	r0, r3
+ 371 021e FFF7FEFF 		bl	openqueue_reset_entry
+ 111:openstack/cross-layers/openqueue.c ****          ENABLE_INTERRUPTS();
+ 372              		.loc 1 111 0
+ 373 0222 FFF7FEFF 		bl	IntMasterEnable
+ 112:openstack/cross-layers/openqueue.c ****          return E_SUCCESS;
+ 374              		.loc 1 112 0
+ 375 0226 4FF00003 		mov	r3, #0
+ 376 022a 14E0     		b	.L18
+ 377              	.L16:
+ 102:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 378              		.loc 1 102 0
+ 379 022c FB7B     		ldrb	r3, [r7, #15]
+ 380 022e 03F10103 		add	r3, r3, #1
+ 381 0232 FB73     		strb	r3, [r7, #15]
+ 382              	.L15:
+ 102:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 383              		.loc 1 102 0 is_stmt 0 discriminator 1
+ 384 0234 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 385 0236 092B     		cmp	r3, #9
+ 386 0238 BCD9     		bls	.L19
+ 113:openstack/cross-layers/openqueue.c ****       }
+ 114:openstack/cross-layers/openqueue.c ****    }
+ 115:openstack/cross-layers/openqueue.c ****    // log the error
+ 116:openstack/cross-layers/openqueue.c ****    openserial_printCritical(COMPONENT_OPENQUEUE,ERR_FREEING_ERROR,
+ 387              		.loc 1 116 0 is_stmt 1
+ 388 023a 4FF00300 		mov	r0, #3
+ 389 023e 4FF02E01 		mov	r1, #46
+ 390 0242 4FF00002 		mov	r2, #0
+ 391 0246 4FF00003 		mov	r3, #0
+ 392 024a FFF7FEFF 		bl	openserial_printCritical
+ 117:openstack/cross-layers/openqueue.c ****                          (errorparameter_t)0,
+ 118:openstack/cross-layers/openqueue.c ****                          (errorparameter_t)0);
+ 119:openstack/cross-layers/openqueue.c ****    ENABLE_INTERRUPTS();
+ 393              		.loc 1 119 0
+ 394 024e FFF7FEFF 		bl	IntMasterEnable
+ 120:openstack/cross-layers/openqueue.c ****    return E_FAIL;
+ 395              		.loc 1 120 0
+ 396 0252 4FF00103 		mov	r3, #1
+ 397              	.L18:
+ 121:openstack/cross-layers/openqueue.c **** }
+ 398              		.loc 1 121 0
+ 399 0256 1846     		mov	r0, r3
+ 400 0258 07F11007 		add	r7, r7, #16
+ 401 025c BD46     		mov	sp, r7
+ 402 025e 80BD     		pop	{r7, pc}
+ 403              		.cfi_endproc
+ 404              	.LFE3:
+ 406              		.align	2
+ 407              		.global	openqueue_removeAllCreatedBy
+ 408              		.thumb
+ 409              		.thumb_func
+ 411              	openqueue_removeAllCreatedBy:
+ 412              	.LFB4:
+ 122:openstack/cross-layers/openqueue.c **** 
+ 123:openstack/cross-layers/openqueue.c **** /**
+ 124:openstack/cross-layers/openqueue.c **** \brief Free all the packet buffers created by a specific module.
+ 125:openstack/cross-layers/openqueue.c **** 
+ 126:openstack/cross-layers/openqueue.c **** \param creator The identifier of the component, taken in COMPONENT_*.
+ 127:openstack/cross-layers/openqueue.c **** */
+ 128:openstack/cross-layers/openqueue.c **** void openqueue_removeAllCreatedBy(uint8_t creator) {
+ 413              		.loc 1 128 0
+ 414              		.cfi_startproc
+ 415              		@ args = 0, pretend = 0, frame = 16
+ 416              		@ frame_needed = 1, uses_anonymous_args = 0
+ 417 0260 80B5     		push	{r7, lr}
+ 418              	.LCFI12:
+ 419              		.cfi_def_cfa_offset 8
+ 420              		.cfi_offset 7, -8
+ 421              		.cfi_offset 14, -4
+ 422 0262 84B0     		sub	sp, sp, #16
+ 423              	.LCFI13:
+ 424              		.cfi_def_cfa_offset 24
+ 425 0264 00AF     		add	r7, sp, #0
+ 426              	.LCFI14:
+ 427              		.cfi_def_cfa_register 7
+ 428 0266 0346     		mov	r3, r0
+ 429 0268 FB71     		strb	r3, [r7, #7]
+ 129:openstack/cross-layers/openqueue.c ****    uint8_t i;
+ 130:openstack/cross-layers/openqueue.c ****    INTERRUPT_DECLARATION();
+ 131:openstack/cross-layers/openqueue.c ****    DISABLE_INTERRUPTS();
+ 430              		.loc 1 131 0
+ 431 026a FFF7FEFF 		bl	IntMasterDisable
+ 132:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++){
+ 432              		.loc 1 132 0
+ 433 026e 4FF00003 		mov	r3, #0
+ 434 0272 FB73     		strb	r3, [r7, #15]
+ 435 0274 22E0     		b	.L21
+ 436              	.L23:
+ 133:openstack/cross-layers/openqueue.c ****       if (openqueue_vars.queue[i].creator==creator) {
+ 437              		.loc 1 133 0
+ 438 0276 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 439 0278 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 440 027c C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 441 0280 0B46     		mov	r3, r1
+ 442 0282 4FEA0313 		lsl	r3, r3, #4
+ 443 0286 5B1A     		subs	r3, r3, r1
+ 444 0288 4FEA0313 		lsl	r3, r3, #4
+ 445 028c D318     		adds	r3, r2, r3
+ 446 028e 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 447 0290 FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 448 0292 9A42     		cmp	r2, r3
+ 449 0294 0ED1     		bne	.L22
+ 134:openstack/cross-layers/openqueue.c ****          openqueue_reset_entry(&(openqueue_vars.queue[i]));
+ 450              		.loc 1 134 0
+ 451 0296 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 452 0298 1346     		mov	r3, r2
+ 453 029a 4FEA0313 		lsl	r3, r3, #4
+ 454 029e 9B1A     		subs	r3, r3, r2
+ 455 02a0 4FEA0313 		lsl	r3, r3, #4
+ 456 02a4 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 457 02a8 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 458 02ac 9B18     		adds	r3, r3, r2
+ 459 02ae 1846     		mov	r0, r3
+ 460 02b0 FFF7FEFF 		bl	openqueue_reset_entry
+ 461              	.L22:
+ 132:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++){
+ 462              		.loc 1 132 0
+ 463 02b4 FB7B     		ldrb	r3, [r7, #15]
+ 464 02b6 03F10103 		add	r3, r3, #1
+ 465 02ba FB73     		strb	r3, [r7, #15]
+ 466              	.L21:
+ 132:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++){
+ 467              		.loc 1 132 0 is_stmt 0 discriminator 1
+ 468 02bc FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 469 02be 092B     		cmp	r3, #9
+ 470 02c0 D9D9     		bls	.L23
+ 135:openstack/cross-layers/openqueue.c ****       }
+ 136:openstack/cross-layers/openqueue.c ****    }
+ 137:openstack/cross-layers/openqueue.c ****    ENABLE_INTERRUPTS();
+ 471              		.loc 1 137 0 is_stmt 1
+ 472 02c2 FFF7FEFF 		bl	IntMasterEnable
+ 138:openstack/cross-layers/openqueue.c **** }
+ 473              		.loc 1 138 0
+ 474 02c6 07F11007 		add	r7, r7, #16
+ 475 02ca BD46     		mov	sp, r7
+ 476 02cc 80BD     		pop	{r7, pc}
+ 477              		.cfi_endproc
+ 478              	.LFE4:
+ 480 02ce 00BF     		.align	2
+ 481              		.global	openqueue_removeAllOwnedBy
+ 482              		.thumb
+ 483              		.thumb_func
+ 485              	openqueue_removeAllOwnedBy:
+ 486              	.LFB5:
+ 139:openstack/cross-layers/openqueue.c **** 
+ 140:openstack/cross-layers/openqueue.c **** /**
+ 141:openstack/cross-layers/openqueue.c **** \brief Free all the packet buffers owned by a specific module.
+ 142:openstack/cross-layers/openqueue.c **** 
+ 143:openstack/cross-layers/openqueue.c **** \param owner The identifier of the component, taken in COMPONENT_*.
+ 144:openstack/cross-layers/openqueue.c **** */
+ 145:openstack/cross-layers/openqueue.c **** void openqueue_removeAllOwnedBy(uint8_t owner) {
+ 487              		.loc 1 145 0
+ 488              		.cfi_startproc
+ 489              		@ args = 0, pretend = 0, frame = 16
+ 490              		@ frame_needed = 1, uses_anonymous_args = 0
+ 491 02d0 80B5     		push	{r7, lr}
+ 492              	.LCFI15:
+ 493              		.cfi_def_cfa_offset 8
+ 494              		.cfi_offset 7, -8
+ 495              		.cfi_offset 14, -4
+ 496 02d2 84B0     		sub	sp, sp, #16
+ 497              	.LCFI16:
+ 498              		.cfi_def_cfa_offset 24
+ 499 02d4 00AF     		add	r7, sp, #0
+ 500              	.LCFI17:
+ 501              		.cfi_def_cfa_register 7
+ 502 02d6 0346     		mov	r3, r0
+ 503 02d8 FB71     		strb	r3, [r7, #7]
+ 146:openstack/cross-layers/openqueue.c ****    uint8_t i;
+ 147:openstack/cross-layers/openqueue.c ****    INTERRUPT_DECLARATION();
+ 148:openstack/cross-layers/openqueue.c ****    DISABLE_INTERRUPTS();
+ 504              		.loc 1 148 0
+ 505 02da FFF7FEFF 		bl	IntMasterDisable
+ 149:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++){
+ 506              		.loc 1 149 0
+ 507 02de 4FF00003 		mov	r3, #0
+ 508 02e2 FB73     		strb	r3, [r7, #15]
+ 509 02e4 22E0     		b	.L25
+ 510              	.L27:
+ 150:openstack/cross-layers/openqueue.c ****       if (openqueue_vars.queue[i].owner==owner) {
+ 511              		.loc 1 150 0
+ 512 02e6 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 513 02e8 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 514 02ec C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 515 02f0 0B46     		mov	r3, r1
+ 516 02f2 4FEA0313 		lsl	r3, r3, #4
+ 517 02f6 5B1A     		subs	r3, r3, r1
+ 518 02f8 4FEA0313 		lsl	r3, r3, #4
+ 519 02fc D318     		adds	r3, r2, r3
+ 520 02fe 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 521 0300 FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 522 0302 9A42     		cmp	r2, r3
+ 523 0304 0ED1     		bne	.L26
+ 151:openstack/cross-layers/openqueue.c ****          openqueue_reset_entry(&(openqueue_vars.queue[i]));
+ 524              		.loc 1 151 0
+ 525 0306 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 526 0308 1346     		mov	r3, r2
+ 527 030a 4FEA0313 		lsl	r3, r3, #4
+ 528 030e 9B1A     		subs	r3, r3, r2
+ 529 0310 4FEA0313 		lsl	r3, r3, #4
+ 530 0314 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 531 0318 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 532 031c 9B18     		adds	r3, r3, r2
+ 533 031e 1846     		mov	r0, r3
+ 534 0320 FFF7FEFF 		bl	openqueue_reset_entry
+ 535              	.L26:
+ 149:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++){
+ 536              		.loc 1 149 0
+ 537 0324 FB7B     		ldrb	r3, [r7, #15]
+ 538 0326 03F10103 		add	r3, r3, #1
+ 539 032a FB73     		strb	r3, [r7, #15]
+ 540              	.L25:
+ 149:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++){
+ 541              		.loc 1 149 0 is_stmt 0 discriminator 1
+ 542 032c FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 543 032e 092B     		cmp	r3, #9
+ 544 0330 D9D9     		bls	.L27
+ 152:openstack/cross-layers/openqueue.c ****       }
+ 153:openstack/cross-layers/openqueue.c ****    }
+ 154:openstack/cross-layers/openqueue.c ****    ENABLE_INTERRUPTS();
+ 545              		.loc 1 154 0 is_stmt 1
+ 546 0332 FFF7FEFF 		bl	IntMasterEnable
+ 155:openstack/cross-layers/openqueue.c **** }
+ 547              		.loc 1 155 0
+ 548 0336 07F11007 		add	r7, r7, #16
+ 549 033a BD46     		mov	sp, r7
+ 550 033c 80BD     		pop	{r7, pc}
+ 551              		.cfi_endproc
+ 552              	.LFE5:
+ 554 033e 00BF     		.align	2
+ 555              		.global	openqueue_sixtopGetSentPacket
+ 556              		.thumb
+ 557              		.thumb_func
+ 559              	openqueue_sixtopGetSentPacket:
+ 560              	.LFB6:
+ 156:openstack/cross-layers/openqueue.c **** 
+ 157:openstack/cross-layers/openqueue.c **** //======= called by RES
+ 158:openstack/cross-layers/openqueue.c **** 
+ 159:openstack/cross-layers/openqueue.c **** OpenQueueEntry_t* openqueue_sixtopGetSentPacket() {
+ 561              		.loc 1 159 0
+ 562              		.cfi_startproc
+ 563              		@ args = 0, pretend = 0, frame = 8
+ 564              		@ frame_needed = 1, uses_anonymous_args = 0
+ 565 0340 80B5     		push	{r7, lr}
+ 566              	.LCFI18:
+ 567              		.cfi_def_cfa_offset 8
+ 568              		.cfi_offset 7, -8
+ 569              		.cfi_offset 14, -4
+ 570 0342 82B0     		sub	sp, sp, #8
+ 571              	.LCFI19:
+ 572              		.cfi_def_cfa_offset 16
+ 573 0344 00AF     		add	r7, sp, #0
+ 574              	.LCFI20:
+ 575              		.cfi_def_cfa_register 7
+ 160:openstack/cross-layers/openqueue.c ****    uint8_t i;
+ 161:openstack/cross-layers/openqueue.c ****    INTERRUPT_DECLARATION();
+ 162:openstack/cross-layers/openqueue.c ****    DISABLE_INTERRUPTS();
+ 576              		.loc 1 162 0
+ 577 0346 FFF7FEFF 		bl	IntMasterDisable
+ 163:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 578              		.loc 1 163 0
+ 579 034a 4FF00003 		mov	r3, #0
+ 580 034e FB71     		strb	r3, [r7, #7]
+ 581 0350 30E0     		b	.L29
+ 582              	.L32:
+ 164:openstack/cross-layers/openqueue.c ****       if (openqueue_vars.queue[i].owner==COMPONENT_IEEE802154E_TO_SIXTOP &&
+ 583              		.loc 1 164 0
+ 584 0352 F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 585 0354 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 586 0358 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 587 035c 0B46     		mov	r3, r1
+ 588 035e 4FEA0313 		lsl	r3, r3, #4
+ 589 0362 5B1A     		subs	r3, r3, r1
+ 590 0364 4FEA0313 		lsl	r3, r3, #4
+ 591 0368 D318     		adds	r3, r2, r3
+ 592 036a 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 593 036c 0B2B     		cmp	r3, #11
+ 594 036e 1DD1     		bne	.L30
+ 165:openstack/cross-layers/openqueue.c ****           openqueue_vars.queue[i].creator!=COMPONENT_IEEE802154E) {
+ 595              		.loc 1 165 0 discriminator 1
+ 596 0370 F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 597 0372 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 598 0376 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 599 037a 0B46     		mov	r3, r1
+ 600 037c 4FEA0313 		lsl	r3, r3, #4
+ 601 0380 5B1A     		subs	r3, r3, r1
+ 602 0382 4FEA0313 		lsl	r3, r3, #4
+ 603 0386 D318     		adds	r3, r2, r3
+ 604 0388 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 164:openstack/cross-layers/openqueue.c ****       if (openqueue_vars.queue[i].owner==COMPONENT_IEEE802154E_TO_SIXTOP &&
+ 605              		.loc 1 164 0 discriminator 1
+ 606 038a 092B     		cmp	r3, #9
+ 607 038c 0ED0     		beq	.L30
+ 166:openstack/cross-layers/openqueue.c ****          ENABLE_INTERRUPTS();
+ 608              		.loc 1 166 0
+ 609 038e FFF7FEFF 		bl	IntMasterEnable
+ 167:openstack/cross-layers/openqueue.c ****          return &openqueue_vars.queue[i];
+ 610              		.loc 1 167 0
+ 611 0392 FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 612 0394 1346     		mov	r3, r2
+ 613 0396 4FEA0313 		lsl	r3, r3, #4
+ 614 039a 9B1A     		subs	r3, r3, r2
+ 615 039c 4FEA0313 		lsl	r3, r3, #4
+ 616 03a0 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 617 03a4 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 618 03a8 9B18     		adds	r3, r3, r2
+ 619 03aa 0AE0     		b	.L31
+ 620              	.L30:
+ 163:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 621              		.loc 1 163 0
+ 622 03ac FB79     		ldrb	r3, [r7, #7]
+ 623 03ae 03F10103 		add	r3, r3, #1
+ 624 03b2 FB71     		strb	r3, [r7, #7]
+ 625              	.L29:
+ 163:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 626              		.loc 1 163 0 is_stmt 0 discriminator 1
+ 627 03b4 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 628 03b6 092B     		cmp	r3, #9
+ 629 03b8 CBD9     		bls	.L32
+ 168:openstack/cross-layers/openqueue.c ****       }
+ 169:openstack/cross-layers/openqueue.c ****    }
+ 170:openstack/cross-layers/openqueue.c ****    ENABLE_INTERRUPTS();
+ 630              		.loc 1 170 0 is_stmt 1
+ 631 03ba FFF7FEFF 		bl	IntMasterEnable
+ 171:openstack/cross-layers/openqueue.c ****    return NULL;
+ 632              		.loc 1 171 0
+ 633 03be 4FF00003 		mov	r3, #0
+ 634              	.L31:
+ 172:openstack/cross-layers/openqueue.c **** }
+ 635              		.loc 1 172 0
+ 636 03c2 1846     		mov	r0, r3
+ 637 03c4 07F10807 		add	r7, r7, #8
+ 638 03c8 BD46     		mov	sp, r7
+ 639 03ca 80BD     		pop	{r7, pc}
+ 640              		.cfi_endproc
+ 641              	.LFE6:
+ 643              		.align	2
+ 644              		.global	openqueue_sixtopGetReceivedPacket
+ 645              		.thumb
+ 646              		.thumb_func
+ 648              	openqueue_sixtopGetReceivedPacket:
+ 649              	.LFB7:
+ 173:openstack/cross-layers/openqueue.c **** 
+ 174:openstack/cross-layers/openqueue.c **** OpenQueueEntry_t* openqueue_sixtopGetReceivedPacket() {
+ 650              		.loc 1 174 0
+ 651              		.cfi_startproc
+ 652              		@ args = 0, pretend = 0, frame = 8
+ 653              		@ frame_needed = 1, uses_anonymous_args = 0
+ 654 03cc 80B5     		push	{r7, lr}
+ 655              	.LCFI21:
+ 656              		.cfi_def_cfa_offset 8
+ 657              		.cfi_offset 7, -8
+ 658              		.cfi_offset 14, -4
+ 659 03ce 82B0     		sub	sp, sp, #8
+ 660              	.LCFI22:
+ 661              		.cfi_def_cfa_offset 16
+ 662 03d0 00AF     		add	r7, sp, #0
+ 663              	.LCFI23:
+ 664              		.cfi_def_cfa_register 7
+ 175:openstack/cross-layers/openqueue.c ****    uint8_t i;
+ 176:openstack/cross-layers/openqueue.c ****    INTERRUPT_DECLARATION();
+ 177:openstack/cross-layers/openqueue.c ****    DISABLE_INTERRUPTS();
+ 665              		.loc 1 177 0
+ 666 03d2 FFF7FEFF 		bl	IntMasterDisable
+ 178:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 667              		.loc 1 178 0
+ 668 03d6 4FF00003 		mov	r3, #0
+ 669 03da FB71     		strb	r3, [r7, #7]
+ 670 03dc 30E0     		b	.L34
+ 671              	.L37:
+ 179:openstack/cross-layers/openqueue.c ****       if (openqueue_vars.queue[i].owner==COMPONENT_IEEE802154E_TO_SIXTOP &&
+ 672              		.loc 1 179 0
+ 673 03de F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 674 03e0 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 675 03e4 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 676 03e8 0B46     		mov	r3, r1
+ 677 03ea 4FEA0313 		lsl	r3, r3, #4
+ 678 03ee 5B1A     		subs	r3, r3, r1
+ 679 03f0 4FEA0313 		lsl	r3, r3, #4
+ 680 03f4 D318     		adds	r3, r2, r3
+ 681 03f6 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 682 03f8 0B2B     		cmp	r3, #11
+ 683 03fa 1DD1     		bne	.L35
+ 180:openstack/cross-layers/openqueue.c ****           openqueue_vars.queue[i].creator==COMPONENT_IEEE802154E) {
+ 684              		.loc 1 180 0 discriminator 1
+ 685 03fc F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 686 03fe 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 687 0402 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 688 0406 0B46     		mov	r3, r1
+ 689 0408 4FEA0313 		lsl	r3, r3, #4
+ 690 040c 5B1A     		subs	r3, r3, r1
+ 691 040e 4FEA0313 		lsl	r3, r3, #4
+ 692 0412 D318     		adds	r3, r2, r3
+ 693 0414 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 179:openstack/cross-layers/openqueue.c ****       if (openqueue_vars.queue[i].owner==COMPONENT_IEEE802154E_TO_SIXTOP &&
+ 694              		.loc 1 179 0 discriminator 1
+ 695 0416 092B     		cmp	r3, #9
+ 696 0418 0ED1     		bne	.L35
+ 181:openstack/cross-layers/openqueue.c ****          ENABLE_INTERRUPTS();
+ 697              		.loc 1 181 0
+ 698 041a FFF7FEFF 		bl	IntMasterEnable
+ 182:openstack/cross-layers/openqueue.c ****          return &openqueue_vars.queue[i];
+ 699              		.loc 1 182 0
+ 700 041e FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 701 0420 1346     		mov	r3, r2
+ 702 0422 4FEA0313 		lsl	r3, r3, #4
+ 703 0426 9B1A     		subs	r3, r3, r2
+ 704 0428 4FEA0313 		lsl	r3, r3, #4
+ 705 042c 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 706 0430 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 707 0434 9B18     		adds	r3, r3, r2
+ 708 0436 0AE0     		b	.L36
+ 709              	.L35:
+ 178:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 710              		.loc 1 178 0
+ 711 0438 FB79     		ldrb	r3, [r7, #7]
+ 712 043a 03F10103 		add	r3, r3, #1
+ 713 043e FB71     		strb	r3, [r7, #7]
+ 714              	.L34:
+ 178:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 715              		.loc 1 178 0 is_stmt 0 discriminator 1
+ 716 0440 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 717 0442 092B     		cmp	r3, #9
+ 718 0444 CBD9     		bls	.L37
+ 183:openstack/cross-layers/openqueue.c ****       }
+ 184:openstack/cross-layers/openqueue.c ****    }
+ 185:openstack/cross-layers/openqueue.c ****    ENABLE_INTERRUPTS();
+ 719              		.loc 1 185 0 is_stmt 1
+ 720 0446 FFF7FEFF 		bl	IntMasterEnable
+ 186:openstack/cross-layers/openqueue.c ****    return NULL;
+ 721              		.loc 1 186 0
+ 722 044a 4FF00003 		mov	r3, #0
+ 723              	.L36:
+ 187:openstack/cross-layers/openqueue.c **** }
+ 724              		.loc 1 187 0
+ 725 044e 1846     		mov	r0, r3
+ 726 0450 07F10807 		add	r7, r7, #8
+ 727 0454 BD46     		mov	sp, r7
+ 728 0456 80BD     		pop	{r7, pc}
+ 729              		.cfi_endproc
+ 730              	.LFE7:
+ 732              		.align	2
+ 733              		.global	openqueue_macGetDataPacket
+ 734              		.thumb
+ 735              		.thumb_func
+ 737              	openqueue_macGetDataPacket:
+ 738              	.LFB8:
+ 188:openstack/cross-layers/openqueue.c **** 
+ 189:openstack/cross-layers/openqueue.c **** //======= called by IEEE80215E
+ 190:openstack/cross-layers/openqueue.c **** 
+ 191:openstack/cross-layers/openqueue.c **** OpenQueueEntry_t* openqueue_macGetDataPacket(open_addr_t* toNeighbor) {
+ 739              		.loc 1 191 0
+ 740              		.cfi_startproc
+ 741              		@ args = 0, pretend = 0, frame = 16
+ 742              		@ frame_needed = 1, uses_anonymous_args = 0
+ 743 0458 80B5     		push	{r7, lr}
+ 744              	.LCFI24:
+ 745              		.cfi_def_cfa_offset 8
+ 746              		.cfi_offset 7, -8
+ 747              		.cfi_offset 14, -4
+ 748 045a 84B0     		sub	sp, sp, #16
+ 749              	.LCFI25:
+ 750              		.cfi_def_cfa_offset 24
+ 751 045c 00AF     		add	r7, sp, #0
+ 752              	.LCFI26:
+ 753              		.cfi_def_cfa_register 7
+ 754 045e 7860     		str	r0, [r7, #4]
+ 192:openstack/cross-layers/openqueue.c ****    uint8_t i;
+ 193:openstack/cross-layers/openqueue.c ****    INTERRUPT_DECLARATION();
+ 194:openstack/cross-layers/openqueue.c ****    DISABLE_INTERRUPTS();
+ 755              		.loc 1 194 0
+ 756 0460 FFF7FEFF 		bl	IntMasterDisable
+ 195:openstack/cross-layers/openqueue.c ****    if (toNeighbor->type==ADDR_64B) {
+ 757              		.loc 1 195 0
+ 758 0464 7B68     		ldr	r3, [r7, #4]
+ 759 0466 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 760 0468 022B     		cmp	r3, #2
+ 761 046a 3ED1     		bne	.L39
+ 196:openstack/cross-layers/openqueue.c ****       // a neighbor is specified, look for a packet unicast to that neigbhbor
+ 197:openstack/cross-layers/openqueue.c ****       for (i=0;i<QUEUELENGTH;i++) {
+ 762              		.loc 1 197 0
+ 763 046c 4FF00003 		mov	r3, #0
+ 764 0470 FB73     		strb	r3, [r7, #15]
+ 765 0472 36E0     		b	.L40
+ 766              	.L43:
+ 198:openstack/cross-layers/openqueue.c ****          if (openqueue_vars.queue[i].owner==COMPONENT_SIXTOP_TO_IEEE802154E &&
+ 767              		.loc 1 198 0
+ 768 0474 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 769 0476 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 770 047a C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 771 047e 0B46     		mov	r3, r1
+ 772 0480 4FEA0313 		lsl	r3, r3, #4
+ 773 0484 5B1A     		subs	r3, r3, r1
+ 774 0486 4FEA0313 		lsl	r3, r3, #4
+ 775 048a D318     		adds	r3, r2, r3
+ 776 048c 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 777 048e 0A2B     		cmp	r3, #10
+ 778 0490 23D1     		bne	.L41
+ 199:openstack/cross-layers/openqueue.c ****             packetfunctions_sameAddress(toNeighbor,&openqueue_vars.queue[i].l2_nextORpreviousHop)) 
+ 779              		.loc 1 199 0 discriminator 1
+ 780 0492 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 781 0494 1346     		mov	r3, r2
+ 782 0496 4FEA0313 		lsl	r3, r3, #4
+ 783 049a 9B1A     		subs	r3, r3, r2
+ 784 049c 4FEA0313 		lsl	r3, r3, #4
+ 785 04a0 03F13802 		add	r2, r3, #56
+ 786 04a4 40F20003 		movw	r3, #:lower16:openqueue_vars
+ 787 04a8 C0F20003 		movt	r3, #:upper16:openqueue_vars
+ 788 04ac D318     		adds	r3, r2, r3
+ 789 04ae 7868     		ldr	r0, [r7, #4]
+ 790 04b0 1946     		mov	r1, r3
+ 791 04b2 FFF7FEFF 		bl	packetfunctions_sameAddress
+ 792 04b6 0346     		mov	r3, r0
+ 198:openstack/cross-layers/openqueue.c ****          if (openqueue_vars.queue[i].owner==COMPONENT_SIXTOP_TO_IEEE802154E &&
+ 793              		.loc 1 198 0 discriminator 1
+ 794 04b8 002B     		cmp	r3, #0
+ 795 04ba 0ED0     		beq	.L41
+ 200:openstack/cross-layers/openqueue.c ****             ENABLE_INTERRUPTS();
+ 796              		.loc 1 200 0
+ 797 04bc FFF7FEFF 		bl	IntMasterEnable
+ 201:openstack/cross-layers/openqueue.c ****             return &openqueue_vars.queue[i];
+ 798              		.loc 1 201 0
+ 799 04c0 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 800 04c2 1346     		mov	r3, r2
+ 801 04c4 4FEA0313 		lsl	r3, r3, #4
+ 802 04c8 9B1A     		subs	r3, r3, r2
+ 803 04ca 4FEA0313 		lsl	r3, r3, #4
+ 804 04ce 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 805 04d2 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 806 04d6 9B18     		adds	r3, r3, r2
+ 807 04d8 6DE0     		b	.L42
+ 808              	.L41:
+ 197:openstack/cross-layers/openqueue.c ****       for (i=0;i<QUEUELENGTH;i++) {
+ 809              		.loc 1 197 0
+ 810 04da FB7B     		ldrb	r3, [r7, #15]
+ 811 04dc 03F10103 		add	r3, r3, #1
+ 812 04e0 FB73     		strb	r3, [r7, #15]
+ 813              	.L40:
+ 197:openstack/cross-layers/openqueue.c ****       for (i=0;i<QUEUELENGTH;i++) {
+ 814              		.loc 1 197 0 is_stmt 0 discriminator 1
+ 815 04e2 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 816 04e4 092B     		cmp	r3, #9
+ 817 04e6 C5D9     		bls	.L43
+ 197:openstack/cross-layers/openqueue.c ****       for (i=0;i<QUEUELENGTH;i++) {
+ 818              		.loc 1 197 0
+ 819 04e8 61E0     		b	.L44
+ 820              	.L39:
+ 202:openstack/cross-layers/openqueue.c ****          }
+ 203:openstack/cross-layers/openqueue.c ****       }
+ 204:openstack/cross-layers/openqueue.c ****    } else if (toNeighbor->type==ADDR_ANYCAST) {
+ 821              		.loc 1 204 0 is_stmt 1
+ 822 04ea 7B68     		ldr	r3, [r7, #4]
+ 823 04ec 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 824 04ee 062B     		cmp	r3, #6
+ 825 04f0 5DD1     		bne	.L44
+ 205:openstack/cross-layers/openqueue.c ****       // anycast case: look for a packet which is either not created by RES
+ 206:openstack/cross-layers/openqueue.c ****       // or an KA (created by RES, but not broadcast)
+ 207:openstack/cross-layers/openqueue.c ****       for (i=0;i<QUEUELENGTH;i++) {
+ 826              		.loc 1 207 0
+ 827 04f2 4FF00003 		mov	r3, #0
+ 828 04f6 FB73     		strb	r3, [r7, #15]
+ 829 04f8 56E0     		b	.L45
+ 830              	.L48:
+ 208:openstack/cross-layers/openqueue.c ****          if (openqueue_vars.queue[i].owner==COMPONENT_SIXTOP_TO_IEEE802154E &&
+ 831              		.loc 1 208 0
+ 832 04fa F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 833 04fc 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 834 0500 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 835 0504 0B46     		mov	r3, r1
+ 836 0506 4FEA0313 		lsl	r3, r3, #4
+ 837 050a 5B1A     		subs	r3, r3, r1
+ 838 050c 4FEA0313 		lsl	r3, r3, #4
+ 839 0510 D318     		adds	r3, r2, r3
+ 840 0512 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 841 0514 0A2B     		cmp	r3, #10
+ 842 0516 43D1     		bne	.L46
+ 209:openstack/cross-layers/openqueue.c ****              ( openqueue_vars.queue[i].creator!=COMPONENT_SIXTOP ||
+ 843              		.loc 1 209 0 discriminator 1
+ 844 0518 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 845 051a 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 846 051e C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 847 0522 0B46     		mov	r3, r1
+ 848 0524 4FEA0313 		lsl	r3, r3, #4
+ 849 0528 5B1A     		subs	r3, r3, r1
+ 850 052a 4FEA0313 		lsl	r3, r3, #4
+ 851 052e D318     		adds	r3, r2, r3
+ 852 0530 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 208:openstack/cross-layers/openqueue.c ****          if (openqueue_vars.queue[i].owner==COMPONENT_SIXTOP_TO_IEEE802154E &&
+ 853              		.loc 1 208 0 discriminator 1
+ 854 0532 0C2B     		cmp	r3, #12
+ 855 0534 25D1     		bne	.L47
+ 210:openstack/cross-layers/openqueue.c ****                 (
+ 211:openstack/cross-layers/openqueue.c ****                    openqueue_vars.queue[i].creator==COMPONENT_SIXTOP &&
+ 856              		.loc 1 211 0
+ 857 0536 F97B     		ldrb	r1, [r7, #15]	@ zero_extendqisi2
+ 858 0538 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 859 053c C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 860 0540 0B46     		mov	r3, r1
+ 861 0542 4FEA0313 		lsl	r3, r3, #4
+ 862 0546 5B1A     		subs	r3, r3, r1
+ 863 0548 4FEA0313 		lsl	r3, r3, #4
+ 864 054c D318     		adds	r3, r2, r3
+ 865 054e 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 209:openstack/cross-layers/openqueue.c ****              ( openqueue_vars.queue[i].creator!=COMPONENT_SIXTOP ||
+ 866              		.loc 1 209 0
+ 867 0550 0C2B     		cmp	r3, #12
+ 868 0552 25D1     		bne	.L46
+ 212:openstack/cross-layers/openqueue.c ****                    packetfunctions_isBroadcastMulticast(&(openqueue_vars.queue[i].l2_nextORprevious
+ 869              		.loc 1 212 0
+ 870 0554 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 871 0556 1346     		mov	r3, r2
+ 872 0558 4FEA0313 		lsl	r3, r3, #4
+ 873 055c 9B1A     		subs	r3, r3, r2
+ 874 055e 4FEA0313 		lsl	r3, r3, #4
+ 875 0562 03F13802 		add	r2, r3, #56
+ 876 0566 40F20003 		movw	r3, #:lower16:openqueue_vars
+ 877 056a C0F20003 		movt	r3, #:upper16:openqueue_vars
+ 878 056e D318     		adds	r3, r2, r3
+ 879 0570 1846     		mov	r0, r3
+ 880 0572 FFF7FEFF 		bl	packetfunctions_isBroadcastMulticast
+ 881 0576 0346     		mov	r3, r0
+ 882 0578 83F00103 		eor	r3, r3, #1
+ 883 057c DBB2     		uxtb	r3, r3
+ 211:openstack/cross-layers/openqueue.c ****                    openqueue_vars.queue[i].creator==COMPONENT_SIXTOP &&
+ 884              		.loc 1 211 0
+ 885 057e 002B     		cmp	r3, #0
+ 886 0580 0ED0     		beq	.L46
+ 887              	.L47:
+ 213:openstack/cross-layers/openqueue.c ****                 )
+ 214:openstack/cross-layers/openqueue.c ****              )
+ 215:openstack/cross-layers/openqueue.c ****             ) {
+ 216:openstack/cross-layers/openqueue.c ****             ENABLE_INTERRUPTS();
+ 888              		.loc 1 216 0
+ 889 0582 FFF7FEFF 		bl	IntMasterEnable
+ 217:openstack/cross-layers/openqueue.c ****             return &openqueue_vars.queue[i];
+ 890              		.loc 1 217 0
+ 891 0586 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 892 0588 1346     		mov	r3, r2
+ 893 058a 4FEA0313 		lsl	r3, r3, #4
+ 894 058e 9B1A     		subs	r3, r3, r2
+ 895 0590 4FEA0313 		lsl	r3, r3, #4
+ 896 0594 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 897 0598 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 898 059c 9B18     		adds	r3, r3, r2
+ 899 059e 0AE0     		b	.L42
+ 900              	.L46:
+ 207:openstack/cross-layers/openqueue.c ****       for (i=0;i<QUEUELENGTH;i++) {
+ 901              		.loc 1 207 0
+ 902 05a0 FB7B     		ldrb	r3, [r7, #15]
+ 903 05a2 03F10103 		add	r3, r3, #1
+ 904 05a6 FB73     		strb	r3, [r7, #15]
+ 905              	.L45:
+ 207:openstack/cross-layers/openqueue.c ****       for (i=0;i<QUEUELENGTH;i++) {
+ 906              		.loc 1 207 0 is_stmt 0 discriminator 1
+ 907 05a8 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 908 05aa 092B     		cmp	r3, #9
+ 909 05ac A5D9     		bls	.L48
+ 910              	.L44:
+ 218:openstack/cross-layers/openqueue.c ****          }
+ 219:openstack/cross-layers/openqueue.c ****       }
+ 220:openstack/cross-layers/openqueue.c ****    }
+ 221:openstack/cross-layers/openqueue.c ****    ENABLE_INTERRUPTS();
+ 911              		.loc 1 221 0 is_stmt 1
+ 912 05ae FFF7FEFF 		bl	IntMasterEnable
+ 222:openstack/cross-layers/openqueue.c ****    return NULL;
+ 913              		.loc 1 222 0
+ 914 05b2 4FF00003 		mov	r3, #0
+ 915              	.L42:
+ 223:openstack/cross-layers/openqueue.c **** }
+ 916              		.loc 1 223 0
+ 917 05b6 1846     		mov	r0, r3
+ 918 05b8 07F11007 		add	r7, r7, #16
+ 919 05bc BD46     		mov	sp, r7
+ 920 05be 80BD     		pop	{r7, pc}
+ 921              		.cfi_endproc
+ 922              	.LFE8:
+ 924              		.align	2
+ 925              		.global	openqueue_macGetAdvPacket
+ 926              		.thumb
+ 927              		.thumb_func
+ 929              	openqueue_macGetAdvPacket:
+ 930              	.LFB9:
+ 224:openstack/cross-layers/openqueue.c **** 
+ 225:openstack/cross-layers/openqueue.c **** OpenQueueEntry_t* openqueue_macGetAdvPacket() {
+ 931              		.loc 1 225 0
+ 932              		.cfi_startproc
+ 933              		@ args = 0, pretend = 0, frame = 8
+ 934              		@ frame_needed = 1, uses_anonymous_args = 0
+ 935 05c0 80B5     		push	{r7, lr}
+ 936              	.LCFI27:
+ 937              		.cfi_def_cfa_offset 8
+ 938              		.cfi_offset 7, -8
+ 939              		.cfi_offset 14, -4
+ 940 05c2 82B0     		sub	sp, sp, #8
+ 941              	.LCFI28:
+ 942              		.cfi_def_cfa_offset 16
+ 943 05c4 00AF     		add	r7, sp, #0
+ 944              	.LCFI29:
+ 945              		.cfi_def_cfa_register 7
+ 226:openstack/cross-layers/openqueue.c ****    uint8_t i;
+ 227:openstack/cross-layers/openqueue.c ****    INTERRUPT_DECLARATION();
+ 228:openstack/cross-layers/openqueue.c ****    DISABLE_INTERRUPTS();
+ 946              		.loc 1 228 0
+ 947 05c6 FFF7FEFF 		bl	IntMasterDisable
+ 229:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 948              		.loc 1 229 0
+ 949 05ca 4FF00003 		mov	r3, #0
+ 950 05ce FB71     		strb	r3, [r7, #7]
+ 951 05d0 44E0     		b	.L50
+ 952              	.L53:
+ 230:openstack/cross-layers/openqueue.c ****       if (openqueue_vars.queue[i].owner==COMPONENT_SIXTOP_TO_IEEE802154E &&
+ 953              		.loc 1 230 0
+ 954 05d2 F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 955 05d4 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 956 05d8 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 957 05dc 0B46     		mov	r3, r1
+ 958 05de 4FEA0313 		lsl	r3, r3, #4
+ 959 05e2 5B1A     		subs	r3, r3, r1
+ 960 05e4 4FEA0313 		lsl	r3, r3, #4
+ 961 05e8 D318     		adds	r3, r2, r3
+ 962 05ea 5B78     		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 963 05ec 0A2B     		cmp	r3, #10
+ 964 05ee 31D1     		bne	.L51
+ 231:openstack/cross-layers/openqueue.c ****           openqueue_vars.queue[i].creator==COMPONENT_SIXTOP              &&
+ 965              		.loc 1 231 0 discriminator 1
+ 966 05f0 F979     		ldrb	r1, [r7, #7]	@ zero_extendqisi2
+ 967 05f2 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 968 05f6 C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 969 05fa 0B46     		mov	r3, r1
+ 970 05fc 4FEA0313 		lsl	r3, r3, #4
+ 971 0600 5B1A     		subs	r3, r3, r1
+ 972 0602 4FEA0313 		lsl	r3, r3, #4
+ 973 0606 D318     		adds	r3, r2, r3
+ 974 0608 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 230:openstack/cross-layers/openqueue.c ****       if (openqueue_vars.queue[i].owner==COMPONENT_SIXTOP_TO_IEEE802154E &&
+ 975              		.loc 1 230 0 discriminator 1
+ 976 060a 0C2B     		cmp	r3, #12
+ 977 060c 22D1     		bne	.L51
+ 232:openstack/cross-layers/openqueue.c ****           packetfunctions_isBroadcastMulticast(&(openqueue_vars.queue[i].l2_nextORpreviousHop))) {
+ 978              		.loc 1 232 0
+ 979 060e FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 980 0610 1346     		mov	r3, r2
+ 981 0612 4FEA0313 		lsl	r3, r3, #4
+ 982 0616 9B1A     		subs	r3, r3, r2
+ 983 0618 4FEA0313 		lsl	r3, r3, #4
+ 984 061c 03F13802 		add	r2, r3, #56
+ 985 0620 40F20003 		movw	r3, #:lower16:openqueue_vars
+ 986 0624 C0F20003 		movt	r3, #:upper16:openqueue_vars
+ 987 0628 D318     		adds	r3, r2, r3
+ 988 062a 1846     		mov	r0, r3
+ 989 062c FFF7FEFF 		bl	packetfunctions_isBroadcastMulticast
+ 990 0630 0346     		mov	r3, r0
+ 231:openstack/cross-layers/openqueue.c ****           openqueue_vars.queue[i].creator==COMPONENT_SIXTOP              &&
+ 991              		.loc 1 231 0
+ 992 0632 002B     		cmp	r3, #0
+ 993 0634 0ED0     		beq	.L51
+ 233:openstack/cross-layers/openqueue.c ****          ENABLE_INTERRUPTS();
+ 994              		.loc 1 233 0
+ 995 0636 FFF7FEFF 		bl	IntMasterEnable
+ 234:openstack/cross-layers/openqueue.c ****          return &openqueue_vars.queue[i];
+ 996              		.loc 1 234 0
+ 997 063a FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 998 063c 1346     		mov	r3, r2
+ 999 063e 4FEA0313 		lsl	r3, r3, #4
+ 1000 0642 9B1A     		subs	r3, r3, r2
+ 1001 0644 4FEA0313 		lsl	r3, r3, #4
+ 1002 0648 40F20002 		movw	r2, #:lower16:openqueue_vars
+ 1003 064c C0F20002 		movt	r2, #:upper16:openqueue_vars
+ 1004 0650 9B18     		adds	r3, r3, r2
+ 1005 0652 0AE0     		b	.L52
+ 1006              	.L51:
+ 229:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 1007              		.loc 1 229 0
+ 1008 0654 FB79     		ldrb	r3, [r7, #7]
+ 1009 0656 03F10103 		add	r3, r3, #1
+ 1010 065a FB71     		strb	r3, [r7, #7]
+ 1011              	.L50:
+ 229:openstack/cross-layers/openqueue.c ****    for (i=0;i<QUEUELENGTH;i++) {
+ 1012              		.loc 1 229 0 is_stmt 0 discriminator 1
+ 1013 065c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 1014 065e 092B     		cmp	r3, #9
+ 1015 0660 B7D9     		bls	.L53
+ 235:openstack/cross-layers/openqueue.c ****       }
+ 236:openstack/cross-layers/openqueue.c ****    }
+ 237:openstack/cross-layers/openqueue.c ****    ENABLE_INTERRUPTS();
+ 1016              		.loc 1 237 0 is_stmt 1
+ 1017 0662 FFF7FEFF 		bl	IntMasterEnable
+ 238:openstack/cross-layers/openqueue.c ****    return NULL;
+ 1018              		.loc 1 238 0
+ 1019 0666 4FF00003 		mov	r3, #0
+ 1020              	.L52:
+ 239:openstack/cross-layers/openqueue.c **** }
+ 1021              		.loc 1 239 0
+ 1022 066a 1846     		mov	r0, r3
+ 1023 066c 07F10807 		add	r7, r7, #8
+ 1024 0670 BD46     		mov	sp, r7
+ 1025 0672 80BD     		pop	{r7, pc}
+ 1026              		.cfi_endproc
+ 1027              	.LFE9:
+ 1029              		.align	2
+ 1030              		.global	openqueue_reset_entry
+ 1031              		.thumb
+ 1032              		.thumb_func
+ 1034              	openqueue_reset_entry:
+ 1035              	.LFB10:
+ 240:openstack/cross-layers/openqueue.c **** 
+ 241:openstack/cross-layers/openqueue.c **** //=========================== private =========================================
+ 242:openstack/cross-layers/openqueue.c **** 
+ 243:openstack/cross-layers/openqueue.c **** void openqueue_reset_entry(OpenQueueEntry_t* entry) {
+ 1036              		.loc 1 243 0
+ 1037              		.cfi_startproc
+ 1038              		@ args = 0, pretend = 0, frame = 8
+ 1039              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1040              		@ link register save eliminated.
+ 1041 0674 80B4     		push	{r7}
+ 1042              	.LCFI30:
+ 1043              		.cfi_def_cfa_offset 4
+ 1044              		.cfi_offset 7, -4
+ 1045 0676 83B0     		sub	sp, sp, #12
+ 1046              	.LCFI31:
+ 1047              		.cfi_def_cfa_offset 16
+ 1048 0678 00AF     		add	r7, sp, #0
+ 1049              	.LCFI32:
+ 1050              		.cfi_def_cfa_register 7
+ 1051 067a 7860     		str	r0, [r7, #4]
+ 244:openstack/cross-layers/openqueue.c ****    //admin
+ 245:openstack/cross-layers/openqueue.c ****    entry->creator                      = COMPONENT_NULL;
+ 1052              		.loc 1 245 0
+ 1053 067c 7B68     		ldr	r3, [r7, #4]
+ 1054 067e 4FF00002 		mov	r2, #0
+ 1055 0682 1A70     		strb	r2, [r3, #0]
+ 246:openstack/cross-layers/openqueue.c ****    entry->owner                        = COMPONENT_NULL;
+ 1056              		.loc 1 246 0
+ 1057 0684 7B68     		ldr	r3, [r7, #4]
+ 1058 0686 4FF00002 		mov	r2, #0
+ 1059 068a 5A70     		strb	r2, [r3, #1]
+ 247:openstack/cross-layers/openqueue.c ****    entry->payload                      = &(entry->packet[127]);
+ 1060              		.loc 1 247 0
+ 1061 068c 7B68     		ldr	r3, [r7, #4]
+ 1062 068e 03F1EA02 		add	r2, r3, #234
+ 1063 0692 7B68     		ldr	r3, [r7, #4]
+ 1064 0694 5A60     		str	r2, [r3, #4]
+ 248:openstack/cross-layers/openqueue.c ****    entry->length                       = 0;
+ 1065              		.loc 1 248 0
+ 1066 0696 7B68     		ldr	r3, [r7, #4]
+ 1067 0698 4FF00002 		mov	r2, #0
+ 1068 069c 1A72     		strb	r2, [r3, #8]
+ 249:openstack/cross-layers/openqueue.c ****    //l4
+ 250:openstack/cross-layers/openqueue.c ****    entry->l4_protocol                  = IANA_UNDEFINED;
+ 1069              		.loc 1 250 0
+ 1070 069e 7B68     		ldr	r3, [r7, #4]
+ 1071 06a0 4FF0FA02 		mov	r2, #250
+ 1072 06a4 5A72     		strb	r2, [r3, #9]
+ 251:openstack/cross-layers/openqueue.c ****    //l3
+ 252:openstack/cross-layers/openqueue.c ****    entry->l3_destinationAdd.type       = ADDR_NONE;
+ 1073              		.loc 1 252 0
+ 1074 06a6 7B68     		ldr	r3, [r7, #4]
+ 1075 06a8 4FF00002 		mov	r2, #0
+ 1076 06ac 5A75     		strb	r2, [r3, #21]
+ 253:openstack/cross-layers/openqueue.c ****    entry->l3_sourceAdd.type            = ADDR_NONE;
+ 1077              		.loc 1 253 0
+ 1078 06ae 7B68     		ldr	r3, [r7, #4]
+ 1079 06b0 4FF00002 		mov	r2, #0
+ 1080 06b4 83F82620 		strb	r2, [r3, #38]
+ 254:openstack/cross-layers/openqueue.c ****    //l2
+ 255:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.type    = ADDR_NONE;
+ 1081              		.loc 1 255 0
+ 1082 06b8 7B68     		ldr	r3, [r7, #4]
+ 1083 06ba 4FF00002 		mov	r2, #0
+ 1084 06be 83F83820 		strb	r2, [r3, #56]
+ 256:openstack/cross-layers/openqueue.c ****    //CSL TEST
+ 257:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[0]  = 0x00;
+ 1085              		.loc 1 257 0
+ 1086 06c2 7B68     		ldr	r3, [r7, #4]
+ 1087 06c4 4FF00002 		mov	r2, #0
+ 1088 06c8 83F83920 		strb	r2, [r3, #57]
+ 258:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[1]  = 0x00;
+ 1089              		.loc 1 258 0
+ 1090 06cc 7B68     		ldr	r3, [r7, #4]
+ 1091 06ce 4FF00002 		mov	r2, #0
+ 1092 06d2 83F83A20 		strb	r2, [r3, #58]
+ 259:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[2]  = 0x00;
+ 1093              		.loc 1 259 0
+ 1094 06d6 7B68     		ldr	r3, [r7, #4]
+ 1095 06d8 4FF00002 		mov	r2, #0
+ 1096 06dc 83F83B20 		strb	r2, [r3, #59]
+ 260:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[3]  = 0x00;
+ 1097              		.loc 1 260 0
+ 1098 06e0 7B68     		ldr	r3, [r7, #4]
+ 1099 06e2 4FF00002 		mov	r2, #0
+ 1100 06e6 83F83C20 		strb	r2, [r3, #60]
+ 261:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[4]  = 0x00;
+ 1101              		.loc 1 261 0
+ 1102 06ea 7B68     		ldr	r3, [r7, #4]
+ 1103 06ec 4FF00002 		mov	r2, #0
+ 1104 06f0 83F83D20 		strb	r2, [r3, #61]
+ 262:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[5]  = 0x00;
+ 1105              		.loc 1 262 0
+ 1106 06f4 7B68     		ldr	r3, [r7, #4]
+ 1107 06f6 4FF00002 		mov	r2, #0
+ 1108 06fa 83F83E20 		strb	r2, [r3, #62]
+ 263:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[6]  = 0x00;
+ 1109              		.loc 1 263 0
+ 1110 06fe 7B68     		ldr	r3, [r7, #4]
+ 1111 0700 4FF00002 		mov	r2, #0
+ 1112 0704 83F83F20 		strb	r2, [r3, #63]
+ 264:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[7]  = 0x00;
+ 1113              		.loc 1 264 0
+ 1114 0708 7B68     		ldr	r3, [r7, #4]
+ 1115 070a 4FF00002 		mov	r2, #0
+ 1116 070e 83F84020 		strb	r2, [r3, #64]
+ 265:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[8]  = 0x00;
+ 1117              		.loc 1 265 0
+ 1118 0712 7B68     		ldr	r3, [r7, #4]
+ 1119 0714 4FF00002 		mov	r2, #0
+ 1120 0718 83F84120 		strb	r2, [r3, #65]
+ 266:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[9]  = 0x00;
+ 1121              		.loc 1 266 0
+ 1122 071c 7B68     		ldr	r3, [r7, #4]
+ 1123 071e 4FF00002 		mov	r2, #0
+ 1124 0722 83F84220 		strb	r2, [r3, #66]
+ 267:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[10] = 0x00;
+ 1125              		.loc 1 267 0
+ 1126 0726 7B68     		ldr	r3, [r7, #4]
+ 1127 0728 4FF00002 		mov	r2, #0
+ 1128 072c 83F84320 		strb	r2, [r3, #67]
+ 268:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[11] = 0x00;
+ 1129              		.loc 1 268 0
+ 1130 0730 7B68     		ldr	r3, [r7, #4]
+ 1131 0732 4FF00002 		mov	r2, #0
+ 1132 0736 83F84420 		strb	r2, [r3, #68]
+ 269:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[12] = 0x00;
+ 1133              		.loc 1 269 0
+ 1134 073a 7B68     		ldr	r3, [r7, #4]
+ 1135 073c 4FF00002 		mov	r2, #0
+ 1136 0740 83F84520 		strb	r2, [r3, #69]
+ 270:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[13] = 0x00;
+ 1137              		.loc 1 270 0
+ 1138 0744 7B68     		ldr	r3, [r7, #4]
+ 1139 0746 4FF00002 		mov	r2, #0
+ 1140 074a 83F84620 		strb	r2, [r3, #70]
+ 271:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[14] = 0x00;
+ 1141              		.loc 1 271 0
+ 1142 074e 7B68     		ldr	r3, [r7, #4]
+ 1143 0750 4FF00002 		mov	r2, #0
+ 1144 0754 83F84720 		strb	r2, [r3, #71]
+ 272:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[15] = 0x00;
+ 1145              		.loc 1 272 0
+ 1146 0758 7B68     		ldr	r3, [r7, #4]
+ 1147 075a 4FF00002 		mov	r2, #0
+ 1148 075e 83F84820 		strb	r2, [r3, #72]
+ 273:openstack/cross-layers/openqueue.c **** 
+ 274:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[0]   = 0x00;
+ 1149              		.loc 1 274 0
+ 1150 0762 7B68     		ldr	r3, [r7, #4]
+ 1151 0764 4FF00002 		mov	r2, #0
+ 1152 0768 83F83920 		strb	r2, [r3, #57]
+ 275:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[1]   = 0x00;
+ 1153              		.loc 1 275 0
+ 1154 076c 7B68     		ldr	r3, [r7, #4]
+ 1155 076e 4FF00002 		mov	r2, #0
+ 1156 0772 83F83A20 		strb	r2, [r3, #58]
+ 276:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[2]   = 0x00;
+ 1157              		.loc 1 276 0
+ 1158 0776 7B68     		ldr	r3, [r7, #4]
+ 1159 0778 4FF00002 		mov	r2, #0
+ 1160 077c 83F83B20 		strb	r2, [r3, #59]
+ 277:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[3]   = 0x00;
+ 1161              		.loc 1 277 0
+ 1162 0780 7B68     		ldr	r3, [r7, #4]
+ 1163 0782 4FF00002 		mov	r2, #0
+ 1164 0786 83F83C20 		strb	r2, [r3, #60]
+ 278:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[4]   = 0x00;
+ 1165              		.loc 1 278 0
+ 1166 078a 7B68     		ldr	r3, [r7, #4]
+ 1167 078c 4FF00002 		mov	r2, #0
+ 1168 0790 83F83D20 		strb	r2, [r3, #61]
+ 279:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[5]   = 0x00;
+ 1169              		.loc 1 279 0
+ 1170 0794 7B68     		ldr	r3, [r7, #4]
+ 1171 0796 4FF00002 		mov	r2, #0
+ 1172 079a 83F83E20 		strb	r2, [r3, #62]
+ 280:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[6]   = 0x00;
+ 1173              		.loc 1 280 0
+ 1174 079e 7B68     		ldr	r3, [r7, #4]
+ 1175 07a0 4FF00002 		mov	r2, #0
+ 1176 07a4 83F83F20 		strb	r2, [r3, #63]
+ 281:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[7]   = 0x00;
+ 1177              		.loc 1 281 0
+ 1178 07a8 7B68     		ldr	r3, [r7, #4]
+ 1179 07aa 4FF00002 		mov	r2, #0
+ 1180 07ae 83F84020 		strb	r2, [r3, #64]
+ 282:openstack/cross-layers/openqueue.c **** 
+ 283:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_16b[0]   = 0x00;
+ 1181              		.loc 1 283 0
+ 1182 07b2 7B68     		ldr	r3, [r7, #4]
+ 1183 07b4 4FF00002 		mov	r2, #0
+ 1184 07b8 83F83920 		strb	r2, [r3, #57]
+ 284:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_16b[1]   = 0x00;
+ 1185              		.loc 1 284 0
+ 1186 07bc 7B68     		ldr	r3, [r7, #4]
+ 1187 07be 4FF00002 		mov	r2, #0
+ 1188 07c2 83F83A20 		strb	r2, [r3, #58]
+ 285:openstack/cross-layers/openqueue.c **** 
+ 286:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.panid[0]      = 0x00;
+ 1189              		.loc 1 286 0
+ 1190 07c6 7B68     		ldr	r3, [r7, #4]
+ 1191 07c8 4FF00002 		mov	r2, #0
+ 1192 07cc 83F83920 		strb	r2, [r3, #57]
+ 287:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.panid[1]      = 0x00;
+ 1193              		.loc 1 287 0
+ 1194 07d0 7B68     		ldr	r3, [r7, #4]
+ 1195 07d2 4FF00002 		mov	r2, #0
+ 1196 07d6 83F83A20 		strb	r2, [r3, #58]
+ 288:openstack/cross-layers/openqueue.c **** 
+ 289:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[0]     = 0x00;
+ 1197              		.loc 1 289 0
+ 1198 07da 7B68     		ldr	r3, [r7, #4]
+ 1199 07dc 4FF00002 		mov	r2, #0
+ 1200 07e0 83F83920 		strb	r2, [r3, #57]
+ 290:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[1]     = 0x00;
+ 1201              		.loc 1 290 0
+ 1202 07e4 7B68     		ldr	r3, [r7, #4]
+ 1203 07e6 4FF00002 		mov	r2, #0
+ 1204 07ea 83F83A20 		strb	r2, [r3, #58]
+ 291:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[2]     = 0x00;
+ 1205              		.loc 1 291 0
+ 1206 07ee 7B68     		ldr	r3, [r7, #4]
+ 1207 07f0 4FF00002 		mov	r2, #0
+ 1208 07f4 83F83B20 		strb	r2, [r3, #59]
+ 292:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[3]     = 0x00;
+ 1209              		.loc 1 292 0
+ 1210 07f8 7B68     		ldr	r3, [r7, #4]
+ 1211 07fa 4FF00002 		mov	r2, #0
+ 1212 07fe 83F83C20 		strb	r2, [r3, #60]
+ 293:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[4]     = 0x00;
+ 1213              		.loc 1 293 0
+ 1214 0802 7B68     		ldr	r3, [r7, #4]
+ 1215 0804 4FF00002 		mov	r2, #0
+ 1216 0808 83F83D20 		strb	r2, [r3, #61]
+ 294:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[5]     = 0x00;
+ 1217              		.loc 1 294 0
+ 1218 080c 7B68     		ldr	r3, [r7, #4]
+ 1219 080e 4FF00002 		mov	r2, #0
+ 1220 0812 83F83E20 		strb	r2, [r3, #62]
+ 295:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[6]     = 0x00;
+ 1221              		.loc 1 295 0
+ 1222 0816 7B68     		ldr	r3, [r7, #4]
+ 1223 0818 4FF00002 		mov	r2, #0
+ 1224 081c 83F83F20 		strb	r2, [r3, #63]
+ 296:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[7]     = 0x00;
+ 1225              		.loc 1 296 0
+ 1226 0820 7B68     		ldr	r3, [r7, #4]
+ 1227 0822 4FF00002 		mov	r2, #0
+ 1228 0826 83F84020 		strb	r2, [r3, #64]
+ 297:openstack/cross-layers/openqueue.c **** 
+ 298:openstack/cross-layers/openqueue.c ****    //end CSL
+ 299:openstack/cross-layers/openqueue.c **** 
+ 300:openstack/cross-layers/openqueue.c ****    entry->l2_frameType                 = IEEE154_TYPE_UNDEFINED;
+ 1229              		.loc 1 300 0
+ 1230 082a 7B68     		ldr	r3, [r7, #4]
+ 1231 082c 4FF00602 		mov	r2, #6
+ 1232 0830 83F84920 		strb	r2, [r3, #73]
+ 301:openstack/cross-layers/openqueue.c ****    entry->l2_retriesLeft               = 0;
+ 1233              		.loc 1 301 0
+ 1234 0834 7B68     		ldr	r3, [r7, #4]
+ 1235 0836 4FF00002 		mov	r2, #0
+ 1236 083a 83F84B20 		strb	r2, [r3, #75]
+ 302:openstack/cross-layers/openqueue.c ****    entry->l2_IEListPresent             = 0;
+ 1237              		.loc 1 302 0
+ 1238 083e 7B68     		ldr	r3, [r7, #4]
+ 1239 0840 4FF00002 		mov	r2, #0
+ 1240 0844 83F86520 		strb	r2, [r3, #101]
+ 303:openstack/cross-layers/openqueue.c **** }
+ 1241              		.loc 1 303 0
+ 1242 0848 07F10C07 		add	r7, r7, #12
+ 1243 084c BD46     		mov	sp, r7
+ 1244 084e 80BC     		pop	{r7}
+ 1245 0850 7047     		bx	lr
+ 1246              		.cfi_endproc
+ 1247              	.LFE10:
+ 1249              	.Letext0:
+ 1250              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+ 1251              		.file 3 "inc/opendefs.h"
+ 1252              		.file 4 "openstack/cross-layers/openqueue.h"
+ 1253              		.file 5 "bsp/boards/OpenMote-CC2538/board_info.h"
+ 1254              		.file 6 "openstack/02a-MAClow/IEEE802154.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 openqueue.c
+     /tmp/cc9M9GkO.s:19     .rodata:00000000 $d
+     /tmp/cc9M9GkO.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cc9M9GkO.s:27     .rodata:00000008 infoBoardname
+     /tmp/cc9M9GkO.s:32     .rodata:00000010 infouCName
+     /tmp/cc9M9GkO.s:37     .rodata:00000018 infoRadioName
+     /tmp/cc9M9GkO.s:42     .rodata:00000024 infoStackName
+                            *COM*:00000960 openqueue_vars
+     /tmp/cc9M9GkO.s:46     .text:00000000 $t
+     /tmp/cc9M9GkO.s:51     .text:00000000 openqueue_init
+     /tmp/cc9M9GkO.s:1034   .text:00000674 openqueue_reset_entry
+     /tmp/cc9M9GkO.s:106    .text:00000044 debugPrint_queue
+     /tmp/cc9M9GkO.s:188    .text:000000d4 openqueue_getFreePacketBuffer
+     /tmp/cc9M9GkO.s:305    .text:000001a0 openqueue_freePacketBuffer
+     /tmp/cc9M9GkO.s:411    .text:00000260 openqueue_removeAllCreatedBy
+     /tmp/cc9M9GkO.s:485    .text:000002d0 openqueue_removeAllOwnedBy
+     /tmp/cc9M9GkO.s:559    .text:00000340 openqueue_sixtopGetSentPacket
+     /tmp/cc9M9GkO.s:648    .text:000003cc openqueue_sixtopGetReceivedPacket
+     /tmp/cc9M9GkO.s:737    .text:00000458 openqueue_macGetDataPacket
+     /tmp/cc9M9GkO.s:929    .text:000005c0 openqueue_macGetAdvPacket
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.toolchain_defs.h.2.e4ebbe6e0a48032a9b79077dc42e1ffd
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
+                           .group:00000000 wm4.schedule.h.2.74f699399ee9cbf3b59178f1204d8511
+                           .group:00000000 wm4.processIE.h.2.1848f1e3c653035e9779472584ce0441
+                           .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
+                           .group:00000000 wm4.IEEE802154Ecsl.h.21.a46c6cdefbea13cd7501756681c86a21
+                           .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
+
+UNDEFINED SYMBOLS
+openserial_printStatus
+IntMasterDisable
+ieee154e_isSynch
+IntMasterEnable
+openserial_printCritical
+packetfunctions_sameAddress
+packetfunctions_isBroadcastMulticast

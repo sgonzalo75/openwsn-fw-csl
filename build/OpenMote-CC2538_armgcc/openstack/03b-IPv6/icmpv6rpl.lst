@@ -1,0 +1,1963 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"icmpv6rpl.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.align	2
+  42              	infoStackName:
+  43 0024 4F70656E 		.ascii	"OpenWSN \000"
+  43      57534E20 
+  43      00
+  44 002d 000000   		.align	2
+  47              	all_routers_multicast:
+  48 0030 FF       		.byte	-1
+  49 0031 02       		.byte	2
+  50 0032 00       		.byte	0
+  51 0033 00       		.byte	0
+  52 0034 00       		.byte	0
+  53 0035 00       		.byte	0
+  54 0036 00       		.byte	0
+  55 0037 00       		.byte	0
+  56 0038 00       		.byte	0
+  57 0039 00       		.byte	0
+  58 003a 00       		.byte	0
+  59 003b 00       		.byte	0
+  60 003c 00       		.byte	0
+  61 003d 00       		.byte	0
+  62 003e 00       		.byte	0
+  63 003f 02       		.byte	2
+  64              		.comm	icmpv6rpl_vars,84,4
+  65              		.text
+  66              		.align	2
+  67              		.global	icmpv6rpl_init
+  68              		.thumb
+  69              		.thumb_func
+  71              	icmpv6rpl_init:
+  72              	.LFB0:
+  73              		.file 1 "openstack/03b-IPv6/icmpv6rpl.c"
+   1:openstack/03b-IPv6/icmpv6rpl.c **** #include "opendefs.h"
+   2:openstack/03b-IPv6/icmpv6rpl.c **** #include "icmpv6rpl.h"
+   3:openstack/03b-IPv6/icmpv6rpl.c **** 
+   4:openstack/03b-IPv6/icmpv6rpl.c **** #include "../02a-MAClow/IEEE802154Ecsl.h"
+   5:openstack/03b-IPv6/icmpv6rpl.c **** #include "icmpv6.h"
+   6:openstack/03b-IPv6/icmpv6rpl.c **** #include "openserial.h"
+   7:openstack/03b-IPv6/icmpv6rpl.c **** #include "openqueue.h"
+   8:openstack/03b-IPv6/icmpv6rpl.c **** #include "neighbors.h"
+   9:openstack/03b-IPv6/icmpv6rpl.c **** #include "packetfunctions.h"
+  10:openstack/03b-IPv6/icmpv6rpl.c **** #include "openrandom.h"
+  11:openstack/03b-IPv6/icmpv6rpl.c **** #include "scheduler.h"
+  12:openstack/03b-IPv6/icmpv6rpl.c **** #include "idmanager.h"
+  13:openstack/03b-IPv6/icmpv6rpl.c **** #include "opentimers.h"
+  14:openstack/03b-IPv6/icmpv6rpl.c **** 
+  15:openstack/03b-IPv6/icmpv6rpl.c **** //=========================== variables =======================================
+  16:openstack/03b-IPv6/icmpv6rpl.c **** 
+  17:openstack/03b-IPv6/icmpv6rpl.c **** icmpv6rpl_vars_t             icmpv6rpl_vars;
+  18:openstack/03b-IPv6/icmpv6rpl.c **** 
+  19:openstack/03b-IPv6/icmpv6rpl.c **** //=========================== prototypes ======================================
+  20:openstack/03b-IPv6/icmpv6rpl.c **** 
+  21:openstack/03b-IPv6/icmpv6rpl.c **** // DIO-related
+  22:openstack/03b-IPv6/icmpv6rpl.c **** void icmpv6rpl_timer_DIO_cb(void);
+  23:openstack/03b-IPv6/icmpv6rpl.c **** void icmpv6rpl_timer_DIO_task(void);
+  24:openstack/03b-IPv6/icmpv6rpl.c **** void sendDIO(void);
+  25:openstack/03b-IPv6/icmpv6rpl.c **** // DAO-related
+  26:openstack/03b-IPv6/icmpv6rpl.c **** void icmpv6rpl_timer_DAO_cb(void);
+  27:openstack/03b-IPv6/icmpv6rpl.c **** void icmpv6rpl_timer_DAO_task(void);
+  28:openstack/03b-IPv6/icmpv6rpl.c **** void sendDAO(void);
+  29:openstack/03b-IPv6/icmpv6rpl.c **** 
+  30:openstack/03b-IPv6/icmpv6rpl.c **** //=========================== public ==========================================
+  31:openstack/03b-IPv6/icmpv6rpl.c **** 
+  32:openstack/03b-IPv6/icmpv6rpl.c **** /**
+  33:openstack/03b-IPv6/icmpv6rpl.c **** \brief Initialize this module.
+  34:openstack/03b-IPv6/icmpv6rpl.c **** */
+  35:openstack/03b-IPv6/icmpv6rpl.c **** void icmpv6rpl_init() {
+  74              		.loc 1 35 0
+  75              		.cfi_startproc
+  76              		@ args = 0, pretend = 0, frame = 16
+  77              		@ frame_needed = 1, uses_anonymous_args = 0
+  78 0000 B0B5     		push	{r4, r5, r7, lr}
+  79              	.LCFI0:
+  80              		.cfi_def_cfa_offset 16
+  81              		.cfi_offset 4, -16
+  82              		.cfi_offset 5, -12
+  83              		.cfi_offset 7, -8
+  84              		.cfi_offset 14, -4
+  85 0002 84B0     		sub	sp, sp, #16
+  86              	.LCFI1:
+  87              		.cfi_def_cfa_offset 32
+  88 0004 00AF     		add	r7, sp, #0
+  89              	.LCFI2:
+  90              		.cfi_def_cfa_register 7
+  36:openstack/03b-IPv6/icmpv6rpl.c ****    uint8_t         dodagid[16];
+  37:openstack/03b-IPv6/icmpv6rpl.c ****    
+  38:openstack/03b-IPv6/icmpv6rpl.c ****    // retrieve my prefix and EUI64
+  39:openstack/03b-IPv6/icmpv6rpl.c ****    memcpy(&dodagid[0],idmanager_getMyID(ADDR_PREFIX)->prefix,8); // prefix
+  91              		.loc 1 39 0
+  92 0006 4FF00500 		mov	r0, #5
+  93 000a FFF7FEFF 		bl	idmanager_getMyID
+  94 000e 0346     		mov	r3, r0
+  95 0010 03F10103 		add	r3, r3, #1
+  96 0014 3A46     		mov	r2, r7
+  97 0016 1046     		mov	r0, r2
+  98 0018 1946     		mov	r1, r3
+  99 001a 4FF00802 		mov	r2, #8
+ 100 001e FFF7FEFF 		bl	memcpy
+  40:openstack/03b-IPv6/icmpv6rpl.c ****    memcpy(&dodagid[8],idmanager_getMyID(ADDR_64B)->addr_64b,8);  // eui64
+ 101              		.loc 1 40 0
+ 102 0022 4FF00200 		mov	r0, #2
+ 103 0026 FFF7FEFF 		bl	idmanager_getMyID
+ 104 002a 0346     		mov	r3, r0
+ 105 002c 03F10103 		add	r3, r3, #1
+ 106 0030 3A46     		mov	r2, r7
+ 107 0032 02F10802 		add	r2, r2, #8
+ 108 0036 1046     		mov	r0, r2
+ 109 0038 1946     		mov	r1, r3
+ 110 003a 4FF00802 		mov	r2, #8
+ 111 003e FFF7FEFF 		bl	memcpy
+  41:openstack/03b-IPv6/icmpv6rpl.c ****    
+  42:openstack/03b-IPv6/icmpv6rpl.c ****    //===== reset local variables
+  43:openstack/03b-IPv6/icmpv6rpl.c ****    memset(&icmpv6rpl_vars,0,sizeof(icmpv6rpl_vars_t));
+ 112              		.loc 1 43 0
+ 113 0042 40F20000 		movw	r0, #:lower16:icmpv6rpl_vars
+ 114 0046 C0F20000 		movt	r0, #:upper16:icmpv6rpl_vars
+ 115 004a 4FF00001 		mov	r1, #0
+ 116 004e 4FF05402 		mov	r2, #84
+ 117 0052 FFF7FEFF 		bl	memset
+  44:openstack/03b-IPv6/icmpv6rpl.c ****    
+  45:openstack/03b-IPv6/icmpv6rpl.c ****    //=== admin
+  46:openstack/03b-IPv6/icmpv6rpl.c ****    
+  47:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.busySending               = FALSE;
+ 118              		.loc 1 47 0
+ 119 0056 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 120 005a C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 121 005e 4FF00002 		mov	r2, #0
+ 122 0062 1A70     		strb	r2, [r3, #0]
+  48:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.fDodagidWritten           = 0;
+ 123              		.loc 1 48 0
+ 124 0064 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 125 0068 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 126 006c 4FF00002 		mov	r2, #0
+ 127 0070 5A70     		strb	r2, [r3, #1]
+  49:openstack/03b-IPv6/icmpv6rpl.c ****    
+  50:openstack/03b-IPv6/icmpv6rpl.c ****    //=== DIO
+  51:openstack/03b-IPv6/icmpv6rpl.c ****    
+  52:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dio.rplinstanceId         = 0x00;        ///< TODO: put correct value
+ 128              		.loc 1 52 0
+ 129 0072 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 130 0076 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 131 007a 4FF00002 		mov	r2, #0
+ 132 007e 9A70     		strb	r2, [r3, #2]
+  53:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dio.verNumb               = 0x00;        ///< TODO: put correct value
+ 133              		.loc 1 53 0
+ 134 0080 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 135 0084 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 136 0088 4FF00002 		mov	r2, #0
+ 137 008c DA70     		strb	r2, [r3, #3]
+  54:openstack/03b-IPv6/icmpv6rpl.c ****    // rank: to be populated upon TX
+  55:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dio.rplOptions            = MOP_DIO_A | \
+ 138              		.loc 1 55 0
+ 139 008e 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 140 0092 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 141 0096 4FF0B802 		mov	r2, #184
+ 142 009a 9A71     		strb	r2, [r3, #6]
+  56:openstack/03b-IPv6/icmpv6rpl.c ****                                               MOP_DIO_B | \
+  57:openstack/03b-IPv6/icmpv6rpl.c ****                                               MOP_DIO_C | \
+  58:openstack/03b-IPv6/icmpv6rpl.c ****                                               PRF_DIO_A | \
+  59:openstack/03b-IPv6/icmpv6rpl.c ****                                               PRF_DIO_B | \
+  60:openstack/03b-IPv6/icmpv6rpl.c ****                                               PRF_DIO_C | \
+  61:openstack/03b-IPv6/icmpv6rpl.c ****                                               G_DIO ;
+  62:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dio.DTSN                  = 0x33;        ///< TODO: put correct value
+ 143              		.loc 1 62 0
+ 144 009c 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 145 00a0 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 146 00a4 4FF03302 		mov	r2, #51
+ 147 00a8 DA71     		strb	r2, [r3, #7]
+  63:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dio.flags                 = 0x00;
+ 148              		.loc 1 63 0
+ 149 00aa 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 150 00ae C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 151 00b2 4FF00002 		mov	r2, #0
+ 152 00b6 1A72     		strb	r2, [r3, #8]
+  64:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dio.reserved              = 0x00;
+ 153              		.loc 1 64 0
+ 154 00b8 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 155 00bc C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 156 00c0 4FF00002 		mov	r2, #0
+ 157 00c4 5A72     		strb	r2, [r3, #9]
+  65:openstack/03b-IPv6/icmpv6rpl.c ****    memcpy(
+ 158              		.loc 1 65 0
+ 159 00c6 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 160 00ca C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 161 00ce 03F10A04 		add	r4, r3, #10
+ 162 00d2 3D46     		mov	r5, r7
+ 163 00d4 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 164 00d6 2060     		str	r0, [r4, #0]	@ unaligned
+ 165 00d8 6160     		str	r1, [r4, #4]	@ unaligned
+ 166 00da A260     		str	r2, [r4, #8]	@ unaligned
+ 167 00dc E360     		str	r3, [r4, #12]	@ unaligned
+  66:openstack/03b-IPv6/icmpv6rpl.c ****       &(icmpv6rpl_vars.dio.DODAGID[0]),
+  67:openstack/03b-IPv6/icmpv6rpl.c ****       dodagid,
+  68:openstack/03b-IPv6/icmpv6rpl.c ****       sizeof(icmpv6rpl_vars.dio.DODAGID)
+  69:openstack/03b-IPv6/icmpv6rpl.c ****    ); // can be replaced later
+  70:openstack/03b-IPv6/icmpv6rpl.c ****    
+  71:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dioDestination.type = ADDR_128B;
+ 168              		.loc 1 71 0
+ 169 00de 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 170 00e2 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 171 00e6 4FF00302 		mov	r2, #3
+ 172 00ea 9A76     		strb	r2, [r3, #26]
+  72:openstack/03b-IPv6/icmpv6rpl.c ****    memcpy(&icmpv6rpl_vars.dioDestination.addr_128b[0],all_routers_multicast,sizeof(all_routers_mult
+ 173              		.loc 1 72 0
+ 174 00ec 40F20002 		movw	r2, #:lower16:icmpv6rpl_vars
+ 175 00f0 C0F20002 		movt	r2, #:upper16:icmpv6rpl_vars
+ 176 00f4 40F20003 		movw	r3, #:lower16:all_routers_multicast
+ 177 00f8 C0F20003 		movt	r3, #:upper16:all_routers_multicast
+ 178 00fc 02F11B04 		add	r4, r2, #27
+ 179 0100 1D46     		mov	r5, r3
+ 180 0102 0FCD     		ldmia	r5!, {r0, r1, r2, r3}
+ 181 0104 2060     		str	r0, [r4, #0]	@ unaligned
+ 182 0106 6160     		str	r1, [r4, #4]	@ unaligned
+ 183 0108 A260     		str	r2, [r4, #8]	@ unaligned
+ 184 010a E360     		str	r3, [r4, #12]	@ unaligned
+  73:openstack/03b-IPv6/icmpv6rpl.c ****    
+  74:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.periodDIO                 = TIMER_DIO_TIMEOUT+(openrandom_get16b()&0xff);
+ 185              		.loc 1 74 0
+ 186 010c FFF7FEFF 		bl	openrandom_get16b
+ 187 0110 0346     		mov	r3, r0
+ 188 0112 DBB2     		uxtb	r3, r3
+ 189 0114 9BB2     		uxth	r3, r3
+ 190 0116 03F2A463 		addw	r3, r3, #1700
+ 191 011a 9AB2     		uxth	r2, r3
+ 192 011c 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 193 0120 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 194 0124 9A85     		strh	r2, [r3, #44]	@ movhi
+  75:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.timerIdDIO                = opentimers_start(
+  76:openstack/03b-IPv6/icmpv6rpl.c ****                                                 icmpv6rpl_vars.periodDIO,
+ 195              		.loc 1 76 0
+ 196 0126 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 197 012a C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 198 012e 9B8D     		ldrh	r3, [r3, #44]
+  75:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.timerIdDIO                = opentimers_start(
+ 199              		.loc 1 75 0
+ 200 0130 1846     		mov	r0, r3
+ 201 0132 4FF00001 		mov	r1, #0
+ 202 0136 4FF00002 		mov	r2, #0
+ 203 013a 40F20003 		movw	r3, #:lower16:icmpv6rpl_timer_DIO_cb
+ 204 013e C0F20003 		movt	r3, #:upper16:icmpv6rpl_timer_DIO_cb
+ 205 0142 FFF7FEFF 		bl	opentimers_start
+ 206 0146 0346     		mov	r3, r0
+ 207 0148 1A46     		mov	r2, r3
+ 208 014a 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 209 014e C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 210 0152 83F82E20 		strb	r2, [r3, #46]
+  77:openstack/03b-IPv6/icmpv6rpl.c ****                                                 TIMER_PERIODIC,
+  78:openstack/03b-IPv6/icmpv6rpl.c ****                                                 TIME_MS,
+  79:openstack/03b-IPv6/icmpv6rpl.c ****                                                 icmpv6rpl_timer_DIO_cb
+  80:openstack/03b-IPv6/icmpv6rpl.c ****                                              );
+  81:openstack/03b-IPv6/icmpv6rpl.c ****    
+  82:openstack/03b-IPv6/icmpv6rpl.c ****    //=== DAO
+  83:openstack/03b-IPv6/icmpv6rpl.c ****    
+  84:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao.rplinstanceId         = 0x00;        ///< TODO: put correct value
+ 211              		.loc 1 84 0
+ 212 0156 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 213 015a C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 214 015e 4FF00002 		mov	r2, #0
+ 215 0162 83F83020 		strb	r2, [r3, #48]
+  85:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao.K_D_flags             = FLAG_DAO_A   | \
+ 216              		.loc 1 85 0
+ 217 0166 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 218 016a C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 219 016e 4FF04002 		mov	r2, #64
+ 220 0172 83F83120 		strb	r2, [r3, #49]
+  86:openstack/03b-IPv6/icmpv6rpl.c ****                                               FLAG_DAO_B   | \
+  87:openstack/03b-IPv6/icmpv6rpl.c ****                                               FLAG_DAO_C   | \
+  88:openstack/03b-IPv6/icmpv6rpl.c ****                                               FLAG_DAO_D   | \
+  89:openstack/03b-IPv6/icmpv6rpl.c ****                                               FLAG_DAO_E   | \
+  90:openstack/03b-IPv6/icmpv6rpl.c ****                                               PRF_DIO_C    | \
+  91:openstack/03b-IPv6/icmpv6rpl.c ****                                               FLAG_DAO_F   | \
+  92:openstack/03b-IPv6/icmpv6rpl.c ****                                               D_DAO        |
+  93:openstack/03b-IPv6/icmpv6rpl.c ****                                               K_DAO;
+  94:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao.reserved              = 0x00;
+ 221              		.loc 1 94 0
+ 222 0176 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 223 017a C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 224 017e 4FF00002 		mov	r2, #0
+ 225 0182 83F83220 		strb	r2, [r3, #50]
+  95:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao.DAOSequence           = 0x00;
+ 226              		.loc 1 95 0
+ 227 0186 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 228 018a C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 229 018e 4FF00002 		mov	r2, #0
+ 230 0192 83F83320 		strb	r2, [r3, #51]
+  96:openstack/03b-IPv6/icmpv6rpl.c ****    memcpy(
+ 231              		.loc 1 96 0
+ 232 0196 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 233 019a C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 234 019e 03F13404 		add	r4, r3, #52
+ 235 01a2 3B46     		mov	r3, r7
+ 236 01a4 0FCB     		ldmia	r3, {r0, r1, r2, r3}
+ 237 01a6 84E80F00 		stmia	r4, {r0, r1, r2, r3}
+  97:openstack/03b-IPv6/icmpv6rpl.c ****       &(icmpv6rpl_vars.dao.DODAGID[0]),
+  98:openstack/03b-IPv6/icmpv6rpl.c ****       dodagid,
+  99:openstack/03b-IPv6/icmpv6rpl.c ****       sizeof(icmpv6rpl_vars.dao.DODAGID)
+ 100:openstack/03b-IPv6/icmpv6rpl.c ****    );  // can be replaced later
+ 101:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 102:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao_transit.type          = OPTION_TRANSIT_INFORMATION_TYPE;
+ 238              		.loc 1 102 0
+ 239 01aa 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 240 01ae C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 241 01b2 4FF00602 		mov	r2, #6
+ 242 01b6 83F84420 		strb	r2, [r3, #68]
+ 103:openstack/03b-IPv6/icmpv6rpl.c ****    // optionLength: to be populated upon TX
+ 104:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao_transit.E_flags       = E_DAO_Transit_Info;
+ 243              		.loc 1 104 0
+ 244 01ba 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 245 01be C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 246 01c2 4FF00002 		mov	r2, #0
+ 247 01c6 83F84620 		strb	r2, [r3, #70]
+ 105:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao_transit.PathControl   = PC1_A_DAO_Transit_Info | \
+ 248              		.loc 1 105 0
+ 249 01ca 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 250 01ce C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 251 01d2 4FF04002 		mov	r2, #64
+ 252 01d6 83F84720 		strb	r2, [r3, #71]
+ 106:openstack/03b-IPv6/icmpv6rpl.c ****                                               PC1_B_DAO_Transit_Info | \
+ 107:openstack/03b-IPv6/icmpv6rpl.c ****                                               PC2_A_DAO_Transit_Info | \
+ 108:openstack/03b-IPv6/icmpv6rpl.c ****                                               PC2_B_DAO_Transit_Info | \
+ 109:openstack/03b-IPv6/icmpv6rpl.c ****                                               PC3_A_DAO_Transit_Info | \
+ 110:openstack/03b-IPv6/icmpv6rpl.c ****                                               PC3_B_DAO_Transit_Info | \
+ 111:openstack/03b-IPv6/icmpv6rpl.c ****                                               PC4_A_DAO_Transit_Info | \
+ 112:openstack/03b-IPv6/icmpv6rpl.c ****                                               PC4_B_DAO_Transit_Info;  
+ 113:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao_transit.PathSequence  = 0x00; // to be incremented at each TX
+ 253              		.loc 1 113 0
+ 254 01da 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 255 01de C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 256 01e2 4FF00002 		mov	r2, #0
+ 257 01e6 83F84820 		strb	r2, [r3, #72]
+ 114:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao_transit.PathLifetime  = 0xAA;
+ 258              		.loc 1 114 0
+ 259 01ea 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 260 01ee C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 261 01f2 4FF0AA02 		mov	r2, #170
+ 262 01f6 83F84920 		strb	r2, [r3, #73]
+ 115:openstack/03b-IPv6/icmpv6rpl.c ****    //target information
+ 116:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao_target.type  = OPTION_TARGET_INFORMATION_TYPE;
+ 263              		.loc 1 116 0
+ 264 01fa 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 265 01fe C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 266 0202 4FF00502 		mov	r2, #5
+ 267 0206 83F84A20 		strb	r2, [r3, #74]
+ 117:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao_target.optionLength  = 0;
+ 268              		.loc 1 117 0
+ 269 020a 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 270 020e C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 271 0212 4FF00002 		mov	r2, #0
+ 272 0216 83F84B20 		strb	r2, [r3, #75]
+ 118:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao_target.flags  = 0;
+ 273              		.loc 1 118 0
+ 274 021a 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 275 021e C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 276 0222 4FF00002 		mov	r2, #0
+ 277 0226 83F84C20 		strb	r2, [r3, #76]
+ 119:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao_target.prefixLength = 0;
+ 278              		.loc 1 119 0
+ 279 022a 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 280 022e C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 281 0232 4FF00002 		mov	r2, #0
+ 282 0236 83F84D20 		strb	r2, [r3, #77]
+ 120:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 121:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.periodDAO                 = TIMER_DAO_TIMEOUT+(openrandom_get16b()&0xff);
+ 283              		.loc 1 121 0
+ 284 023a FFF7FEFF 		bl	openrandom_get16b
+ 285 023e 0346     		mov	r3, r0
+ 286 0240 DBB2     		uxtb	r3, r3
+ 287 0242 9BB2     		uxth	r3, r3
+ 288 0244 03F51C53 		add	r3, r3, #9984
+ 289 0248 03F11003 		add	r3, r3, #16
+ 290 024c 9AB2     		uxth	r2, r3
+ 291 024e 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 292 0252 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 293 0256 A3F85020 		strh	r2, [r3, #80]	@ movhi
+ 122:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.timerIdDAO                = opentimers_start(
+ 123:openstack/03b-IPv6/icmpv6rpl.c ****                                                 icmpv6rpl_vars.periodDAO,
+ 294              		.loc 1 123 0
+ 295 025a 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 296 025e C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 297 0262 B3F85030 		ldrh	r3, [r3, #80]
+ 122:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.timerIdDAO                = opentimers_start(
+ 298              		.loc 1 122 0
+ 299 0266 1846     		mov	r0, r3
+ 300 0268 4FF00001 		mov	r1, #0
+ 301 026c 4FF00002 		mov	r2, #0
+ 302 0270 40F20003 		movw	r3, #:lower16:icmpv6rpl_timer_DAO_cb
+ 303 0274 C0F20003 		movt	r3, #:upper16:icmpv6rpl_timer_DAO_cb
+ 304 0278 FFF7FEFF 		bl	opentimers_start
+ 305 027c 0346     		mov	r3, r0
+ 306 027e 1A46     		mov	r2, r3
+ 307 0280 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 308 0284 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 309 0288 83F84E20 		strb	r2, [r3, #78]
+ 124:openstack/03b-IPv6/icmpv6rpl.c ****                                                 TIMER_PERIODIC,
+ 125:openstack/03b-IPv6/icmpv6rpl.c ****                                                 TIME_MS,
+ 126:openstack/03b-IPv6/icmpv6rpl.c ****                                                 icmpv6rpl_timer_DAO_cb
+ 127:openstack/03b-IPv6/icmpv6rpl.c ****                                              );
+ 128:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 129:openstack/03b-IPv6/icmpv6rpl.c **** }
+ 310              		.loc 1 129 0
+ 311 028c 07F11007 		add	r7, r7, #16
+ 312 0290 BD46     		mov	sp, r7
+ 313 0292 B0BD     		pop	{r4, r5, r7, pc}
+ 314              		.cfi_endproc
+ 315              	.LFE0:
+ 317              		.align	2
+ 318              		.global	icmpv6rpl_writeDODAGid
+ 319              		.thumb
+ 320              		.thumb_func
+ 322              	icmpv6rpl_writeDODAGid:
+ 323              	.LFB1:
+ 130:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 131:openstack/03b-IPv6/icmpv6rpl.c **** void  icmpv6rpl_writeDODAGid(uint8_t* dodagid) {
+ 324              		.loc 1 131 0
+ 325              		.cfi_startproc
+ 326              		@ args = 0, pretend = 0, frame = 8
+ 327              		@ frame_needed = 1, uses_anonymous_args = 0
+ 328 0294 80B5     		push	{r7, lr}
+ 329              	.LCFI3:
+ 330              		.cfi_def_cfa_offset 8
+ 331              		.cfi_offset 7, -8
+ 332              		.cfi_offset 14, -4
+ 333 0296 82B0     		sub	sp, sp, #8
+ 334              	.LCFI4:
+ 335              		.cfi_def_cfa_offset 16
+ 336 0298 00AF     		add	r7, sp, #0
+ 337              	.LCFI5:
+ 338              		.cfi_def_cfa_register 7
+ 339 029a 7860     		str	r0, [r7, #4]
+ 132:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 133:openstack/03b-IPv6/icmpv6rpl.c ****    // write DODAGID to DIO/DAO
+ 134:openstack/03b-IPv6/icmpv6rpl.c ****    memcpy(
+ 340              		.loc 1 134 0
+ 341 029c 0B48     		ldr	r0, .L3
+ 342 029e 7968     		ldr	r1, [r7, #4]
+ 343 02a0 4FF01002 		mov	r2, #16
+ 344 02a4 FFF7FEFF 		bl	memcpy
+ 135:openstack/03b-IPv6/icmpv6rpl.c ****       &(icmpv6rpl_vars.dio.DODAGID[0]),
+ 136:openstack/03b-IPv6/icmpv6rpl.c ****       dodagid,
+ 137:openstack/03b-IPv6/icmpv6rpl.c ****       sizeof(icmpv6rpl_vars.dio.DODAGID)
+ 138:openstack/03b-IPv6/icmpv6rpl.c ****    );
+ 139:openstack/03b-IPv6/icmpv6rpl.c ****    memcpy(
+ 345              		.loc 1 139 0
+ 346 02a8 0948     		ldr	r0, .L3+4
+ 347 02aa 7968     		ldr	r1, [r7, #4]
+ 348 02ac 4FF01002 		mov	r2, #16
+ 349 02b0 FFF7FEFF 		bl	memcpy
+ 140:openstack/03b-IPv6/icmpv6rpl.c ****       &(icmpv6rpl_vars.dao.DODAGID[0]),
+ 141:openstack/03b-IPv6/icmpv6rpl.c ****       dodagid,
+ 142:openstack/03b-IPv6/icmpv6rpl.c ****       sizeof(icmpv6rpl_vars.dao.DODAGID)
+ 143:openstack/03b-IPv6/icmpv6rpl.c ****    );
+ 144:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 145:openstack/03b-IPv6/icmpv6rpl.c ****    // remember I got a DODAGID
+ 146:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.fDodagidWritten = 1;
+ 350              		.loc 1 146 0
+ 351 02b4 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 352 02b8 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 353 02bc 4FF00102 		mov	r2, #1
+ 354 02c0 5A70     		strb	r2, [r3, #1]
+ 147:openstack/03b-IPv6/icmpv6rpl.c **** }
+ 355              		.loc 1 147 0
+ 356 02c2 07F10807 		add	r7, r7, #8
+ 357 02c6 BD46     		mov	sp, r7
+ 358 02c8 80BD     		pop	{r7, pc}
+ 359              	.L4:
+ 360 02ca 00BF     		.align	2
+ 361              	.L3:
+ 362 02cc 0A000000 		.word	icmpv6rpl_vars+10
+ 363 02d0 34000000 		.word	icmpv6rpl_vars+52
+ 364              		.cfi_endproc
+ 365              	.LFE1:
+ 367              		.align	2
+ 368              		.global	icmpv6rpl_getRPLIntanceID
+ 369              		.thumb
+ 370              		.thumb_func
+ 372              	icmpv6rpl_getRPLIntanceID:
+ 373              	.LFB2:
+ 148:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 149:openstack/03b-IPv6/icmpv6rpl.c **** uint8_t icmpv6rpl_getRPLIntanceID(){
+ 374              		.loc 1 149 0
+ 375              		.cfi_startproc
+ 376              		@ args = 0, pretend = 0, frame = 0
+ 377              		@ frame_needed = 1, uses_anonymous_args = 0
+ 378              		@ link register save eliminated.
+ 379 02d4 80B4     		push	{r7}
+ 380              	.LCFI6:
+ 381              		.cfi_def_cfa_offset 4
+ 382              		.cfi_offset 7, -4
+ 383 02d6 00AF     		add	r7, sp, #0
+ 384              	.LCFI7:
+ 385              		.cfi_def_cfa_register 7
+ 150:openstack/03b-IPv6/icmpv6rpl.c ****    return icmpv6rpl_vars.dao.rplinstanceId;
+ 386              		.loc 1 150 0
+ 387 02d8 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 388 02dc C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 389 02e0 93F83030 		ldrb	r3, [r3, #48]	@ zero_extendqisi2
+ 151:openstack/03b-IPv6/icmpv6rpl.c **** }
+ 390              		.loc 1 151 0
+ 391 02e4 1846     		mov	r0, r3
+ 392 02e6 BD46     		mov	sp, r7
+ 393 02e8 80BC     		pop	{r7}
+ 394 02ea 7047     		bx	lr
+ 395              		.cfi_endproc
+ 396              	.LFE2:
+ 398              		.align	2
+ 399              		.global	icmpv6rpl_sendDone
+ 400              		.thumb
+ 401              		.thumb_func
+ 403              	icmpv6rpl_sendDone:
+ 404              	.LFB3:
+ 152:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 153:openstack/03b-IPv6/icmpv6rpl.c **** /**
+ 154:openstack/03b-IPv6/icmpv6rpl.c **** \brief Called when DIO/DAO was sent.
+ 155:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 156:openstack/03b-IPv6/icmpv6rpl.c **** \param[in] msg   Pointer to the message just sent.
+ 157:openstack/03b-IPv6/icmpv6rpl.c **** \param[in] error Outcome of the sending.
+ 158:openstack/03b-IPv6/icmpv6rpl.c **** */
+ 159:openstack/03b-IPv6/icmpv6rpl.c **** void icmpv6rpl_sendDone(OpenQueueEntry_t* msg, owerror_t error) {
+ 405              		.loc 1 159 0
+ 406              		.cfi_startproc
+ 407              		@ args = 0, pretend = 0, frame = 8
+ 408              		@ frame_needed = 1, uses_anonymous_args = 0
+ 409 02ec 80B5     		push	{r7, lr}
+ 410              	.LCFI8:
+ 411              		.cfi_def_cfa_offset 8
+ 412              		.cfi_offset 7, -8
+ 413              		.cfi_offset 14, -4
+ 414 02ee 82B0     		sub	sp, sp, #8
+ 415              	.LCFI9:
+ 416              		.cfi_def_cfa_offset 16
+ 417 02f0 00AF     		add	r7, sp, #0
+ 418              	.LCFI10:
+ 419              		.cfi_def_cfa_register 7
+ 420 02f2 7860     		str	r0, [r7, #4]
+ 421 02f4 0B46     		mov	r3, r1
+ 422 02f6 FB70     		strb	r3, [r7, #3]
+ 160:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 161:openstack/03b-IPv6/icmpv6rpl.c ****    // take ownership over that packet
+ 162:openstack/03b-IPv6/icmpv6rpl.c ****    msg->owner = COMPONENT_ICMPv6RPL;
+ 423              		.loc 1 162 0
+ 424 02f8 7B68     		ldr	r3, [r7, #4]
+ 425 02fa 4FF01602 		mov	r2, #22
+ 426 02fe 5A70     		strb	r2, [r3, #1]
+ 163:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 164:openstack/03b-IPv6/icmpv6rpl.c ****    // make sure I created it
+ 165:openstack/03b-IPv6/icmpv6rpl.c ****    if (msg->creator!=COMPONENT_ICMPv6RPL) {
+ 427              		.loc 1 165 0
+ 428 0300 7B68     		ldr	r3, [r7, #4]
+ 429 0302 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 430 0304 162B     		cmp	r3, #22
+ 431 0306 09D0     		beq	.L8
+ 166:openstack/03b-IPv6/icmpv6rpl.c ****       openserial_printError(COMPONENT_ICMPv6RPL,ERR_UNEXPECTED_SENDDONE,
+ 432              		.loc 1 166 0
+ 433 0308 4FF01600 		mov	r0, #22
+ 434 030c 4FF02B01 		mov	r1, #43
+ 435 0310 4FF00002 		mov	r2, #0
+ 436 0314 4FF00003 		mov	r3, #0
+ 437 0318 FFF7FEFF 		bl	openserial_printError
+ 438              	.L8:
+ 167:openstack/03b-IPv6/icmpv6rpl.c ****                             (errorparameter_t)0,
+ 168:openstack/03b-IPv6/icmpv6rpl.c ****                             (errorparameter_t)0);
+ 169:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 170:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 171:openstack/03b-IPv6/icmpv6rpl.c ****    // free packet
+ 172:openstack/03b-IPv6/icmpv6rpl.c ****    openqueue_freePacketBuffer(msg);
+ 439              		.loc 1 172 0
+ 440 031c 7868     		ldr	r0, [r7, #4]
+ 441 031e FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 173:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 174:openstack/03b-IPv6/icmpv6rpl.c ****    // I'm not busy sending anymore
+ 175:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.busySending = FALSE;
+ 442              		.loc 1 175 0
+ 443 0322 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 444 0326 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 445 032a 4FF00002 		mov	r2, #0
+ 446 032e 1A70     		strb	r2, [r3, #0]
+ 176:openstack/03b-IPv6/icmpv6rpl.c **** }
+ 447              		.loc 1 176 0
+ 448 0330 07F10807 		add	r7, r7, #8
+ 449 0334 BD46     		mov	sp, r7
+ 450 0336 80BD     		pop	{r7, pc}
+ 451              		.cfi_endproc
+ 452              	.LFE3:
+ 454              		.align	2
+ 455              		.global	icmpv6rpl_receive
+ 456              		.thumb
+ 457              		.thumb_func
+ 459              	icmpv6rpl_receive:
+ 460              	.LFB4:
+ 177:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 178:openstack/03b-IPv6/icmpv6rpl.c **** /**
+ 179:openstack/03b-IPv6/icmpv6rpl.c **** \brief Called when RPL message received.
+ 180:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 181:openstack/03b-IPv6/icmpv6rpl.c **** \param[in] msg   Pointer to the received message.
+ 182:openstack/03b-IPv6/icmpv6rpl.c **** */
+ 183:openstack/03b-IPv6/icmpv6rpl.c **** void icmpv6rpl_receive(OpenQueueEntry_t* msg) {
+ 461              		.loc 1 183 0
+ 462              		.cfi_startproc
+ 463              		@ args = 0, pretend = 0, frame = 32
+ 464              		@ frame_needed = 1, uses_anonymous_args = 0
+ 465 0338 80B5     		push	{r7, lr}
+ 466              	.LCFI11:
+ 467              		.cfi_def_cfa_offset 8
+ 468              		.cfi_offset 7, -8
+ 469              		.cfi_offset 14, -4
+ 470 033a 88B0     		sub	sp, sp, #32
+ 471              	.LCFI12:
+ 472              		.cfi_def_cfa_offset 40
+ 473 033c 00AF     		add	r7, sp, #0
+ 474              	.LCFI13:
+ 475              		.cfi_def_cfa_register 7
+ 476 033e 7860     		str	r0, [r7, #4]
+ 184:openstack/03b-IPv6/icmpv6rpl.c ****    uint8_t      icmpv6code;
+ 185:openstack/03b-IPv6/icmpv6rpl.c ****    open_addr_t  myPrefix;
+ 186:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 187:openstack/03b-IPv6/icmpv6rpl.c ****    // take ownership
+ 188:openstack/03b-IPv6/icmpv6rpl.c ****    msg->owner      = COMPONENT_ICMPv6RPL;
+ 477              		.loc 1 188 0
+ 478 0340 7B68     		ldr	r3, [r7, #4]
+ 479 0342 4FF01602 		mov	r2, #22
+ 480 0346 5A70     		strb	r2, [r3, #1]
+ 189:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 190:openstack/03b-IPv6/icmpv6rpl.c ****    // retrieve ICMPv6 code
+ 191:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6code      = (((ICMPv6_ht*)(msg->payload))->code);
+ 481              		.loc 1 191 0
+ 482 0348 7B68     		ldr	r3, [r7, #4]
+ 483 034a 5B68     		ldr	r3, [r3, #4]
+ 484 034c 5B78     		ldrb	r3, [r3, #1]
+ 485 034e FB77     		strb	r3, [r7, #31]
+ 192:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 193:openstack/03b-IPv6/icmpv6rpl.c ****    // toss ICMPv6 header
+ 194:openstack/03b-IPv6/icmpv6rpl.c ****    packetfunctions_tossHeader(msg,sizeof(ICMPv6_ht));
+ 486              		.loc 1 194 0
+ 487 0350 7868     		ldr	r0, [r7, #4]
+ 488 0352 4FF00401 		mov	r1, #4
+ 489 0356 FFF7FEFF 		bl	packetfunctions_tossHeader
+ 195:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 196:openstack/03b-IPv6/icmpv6rpl.c ****    // handle message
+ 197:openstack/03b-IPv6/icmpv6rpl.c ****    switch (icmpv6code) {
+ 490              		.loc 1 197 0
+ 491 035a FB7F     		ldrb	r3, [r7, #31]	@ zero_extendqisi2
+ 492 035c 012B     		cmp	r3, #1
+ 493 035e 02D0     		beq	.L11
+ 494 0360 022B     		cmp	r3, #2
+ 495 0362 22D0     		beq	.L12
+ 496 0364 2CE0     		b	.L15
+ 497              	.L11:
+ 198:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 199:openstack/03b-IPv6/icmpv6rpl.c ****       case IANA_ICMPv6_RPL_DIO:
+ 200:openstack/03b-IPv6/icmpv6rpl.c ****          if (idmanager_getIsDAGroot()==TRUE) {
+ 498              		.loc 1 200 0
+ 499 0366 FFF7FEFF 		bl	idmanager_getIsDAGroot
+ 500 036a 0346     		mov	r3, r0
+ 501 036c 002B     		cmp	r3, #0
+ 502 036e 33D1     		bne	.L16
+ 503              	.L13:
+ 201:openstack/03b-IPv6/icmpv6rpl.c ****             // stop here if I'm in the DAG root
+ 202:openstack/03b-IPv6/icmpv6rpl.c ****             break; // break, don't return
+ 203:openstack/03b-IPv6/icmpv6rpl.c ****          }
+ 204:openstack/03b-IPv6/icmpv6rpl.c ****          
+ 205:openstack/03b-IPv6/icmpv6rpl.c ****          // update neighbor table
+ 206:openstack/03b-IPv6/icmpv6rpl.c ****          neighbors_indicateRxDIO(msg);
+ 504              		.loc 1 206 0
+ 505 0370 7868     		ldr	r0, [r7, #4]
+ 506 0372 FFF7FEFF 		bl	neighbors_indicateRxDIO
+ 207:openstack/03b-IPv6/icmpv6rpl.c ****          
+ 208:openstack/03b-IPv6/icmpv6rpl.c ****          // write DODAGID in DIO and DAO
+ 209:openstack/03b-IPv6/icmpv6rpl.c ****          icmpv6rpl_writeDODAGid(&(((icmpv6rpl_dio_ht*)(msg->payload))->DODAGID[0]));
+ 507              		.loc 1 209 0
+ 508 0376 7B68     		ldr	r3, [r7, #4]
+ 509 0378 5B68     		ldr	r3, [r3, #4]
+ 510 037a 03F10803 		add	r3, r3, #8
+ 511 037e 1846     		mov	r0, r3
+ 512 0380 FFF7FEFF 		bl	icmpv6rpl_writeDODAGid
+ 210:openstack/03b-IPv6/icmpv6rpl.c ****          
+ 211:openstack/03b-IPv6/icmpv6rpl.c ****          // update my prefix
+ 212:openstack/03b-IPv6/icmpv6rpl.c ****          myPrefix.type = ADDR_PREFIX;
+ 513              		.loc 1 212 0
+ 514 0384 4FF00503 		mov	r3, #5
+ 515 0388 3B73     		strb	r3, [r7, #12]
+ 213:openstack/03b-IPv6/icmpv6rpl.c ****          memcpy(
+ 214:openstack/03b-IPv6/icmpv6rpl.c ****             myPrefix.prefix,
+ 215:openstack/03b-IPv6/icmpv6rpl.c ****             &((icmpv6rpl_dio_ht*)(msg->payload))->DODAGID[0],
+ 516              		.loc 1 215 0
+ 517 038a 7B68     		ldr	r3, [r7, #4]
+ 518 038c 5A68     		ldr	r2, [r3, #4]
+ 213:openstack/03b-IPv6/icmpv6rpl.c ****          memcpy(
+ 519              		.loc 1 213 0
+ 520 038e 07F10D03 		add	r3, r7, #13
+ 521 0392 02F10802 		add	r2, r2, #8
+ 522 0396 1168     		ldr	r1, [r2, #0]	@ unaligned
+ 523 0398 5268     		ldr	r2, [r2, #4]	@ unaligned
+ 524 039a 1960     		str	r1, [r3, #0]	@ unaligned
+ 525 039c 5A60     		str	r2, [r3, #4]	@ unaligned
+ 216:openstack/03b-IPv6/icmpv6rpl.c ****             sizeof(myPrefix.prefix)
+ 217:openstack/03b-IPv6/icmpv6rpl.c ****          );
+ 218:openstack/03b-IPv6/icmpv6rpl.c ****          idmanager_setMyID(&myPrefix);
+ 526              		.loc 1 218 0
+ 527 039e 07F10C03 		add	r3, r7, #12
+ 528 03a2 1846     		mov	r0, r3
+ 529 03a4 FFF7FEFF 		bl	idmanager_setMyID
+ 219:openstack/03b-IPv6/icmpv6rpl.c ****          
+ 220:openstack/03b-IPv6/icmpv6rpl.c ****          break;
+ 530              		.loc 1 220 0
+ 531 03a8 17E0     		b	.L14
+ 532              	.L12:
+ 221:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 222:openstack/03b-IPv6/icmpv6rpl.c ****       case IANA_ICMPv6_RPL_DAO:
+ 223:openstack/03b-IPv6/icmpv6rpl.c ****          // this should never happen
+ 224:openstack/03b-IPv6/icmpv6rpl.c ****          openserial_printCritical(COMPONENT_ICMPv6RPL,ERR_UNEXPECTED_DAO,
+ 533              		.loc 1 224 0
+ 534 03aa 4FF01600 		mov	r0, #22
+ 535 03ae 4FF00A01 		mov	r1, #10
+ 536 03b2 4FF00002 		mov	r2, #0
+ 537 03b6 4FF00003 		mov	r3, #0
+ 538 03ba FFF7FEFF 		bl	openserial_printCritical
+ 225:openstack/03b-IPv6/icmpv6rpl.c ****                                (errorparameter_t)0,
+ 226:openstack/03b-IPv6/icmpv6rpl.c ****                                (errorparameter_t)0);
+ 227:openstack/03b-IPv6/icmpv6rpl.c ****          break;
+ 539              		.loc 1 227 0
+ 540 03be 0CE0     		b	.L14
+ 541              	.L15:
+ 228:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 229:openstack/03b-IPv6/icmpv6rpl.c ****       default:
+ 230:openstack/03b-IPv6/icmpv6rpl.c ****          // this should never happen
+ 231:openstack/03b-IPv6/icmpv6rpl.c ****          openserial_printCritical(COMPONENT_ICMPv6RPL,ERR_MSG_UNKNOWN_TYPE,
+ 542              		.loc 1 231 0
+ 543 03c0 FB7F     		ldrb	r3, [r7, #31]	@ zero_extendqisi2
+ 544 03c2 9BB2     		uxth	r3, r3
+ 545 03c4 4FF01600 		mov	r0, #22
+ 546 03c8 4FF03001 		mov	r1, #48
+ 547 03cc 1A46     		mov	r2, r3
+ 548 03ce 4FF00003 		mov	r3, #0
+ 549 03d2 FFF7FEFF 		bl	openserial_printCritical
+ 232:openstack/03b-IPv6/icmpv6rpl.c ****                                (errorparameter_t)icmpv6code,
+ 233:openstack/03b-IPv6/icmpv6rpl.c ****                                (errorparameter_t)0);
+ 234:openstack/03b-IPv6/icmpv6rpl.c ****          break;
+ 550              		.loc 1 234 0
+ 551 03d6 00E0     		b	.L14
+ 552              	.L16:
+ 202:openstack/03b-IPv6/icmpv6rpl.c ****             break; // break, don't return
+ 553              		.loc 1 202 0
+ 554 03d8 00BF     		nop
+ 555              	.L14:
+ 235:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 236:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 237:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 238:openstack/03b-IPv6/icmpv6rpl.c ****    // free message
+ 239:openstack/03b-IPv6/icmpv6rpl.c ****    openqueue_freePacketBuffer(msg);
+ 556              		.loc 1 239 0
+ 557 03da 7868     		ldr	r0, [r7, #4]
+ 558 03dc FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 240:openstack/03b-IPv6/icmpv6rpl.c **** }
+ 559              		.loc 1 240 0
+ 560 03e0 07F12007 		add	r7, r7, #32
+ 561 03e4 BD46     		mov	sp, r7
+ 562 03e6 80BD     		pop	{r7, pc}
+ 563              		.cfi_endproc
+ 564              	.LFE4:
+ 566              		.align	2
+ 567              		.global	icmpv6rpl_timer_DIO_cb
+ 568              		.thumb
+ 569              		.thumb_func
+ 571              	icmpv6rpl_timer_DIO_cb:
+ 572              	.LFB5:
+ 241:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 242:openstack/03b-IPv6/icmpv6rpl.c **** //=========================== private =========================================
+ 243:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 244:openstack/03b-IPv6/icmpv6rpl.c **** //===== DIO-related
+ 245:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 246:openstack/03b-IPv6/icmpv6rpl.c **** /**
+ 247:openstack/03b-IPv6/icmpv6rpl.c **** \brief DIO timer callback function.
+ 248:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 249:openstack/03b-IPv6/icmpv6rpl.c **** \note This function is executed in interrupt context, and should only push a 
+ 250:openstack/03b-IPv6/icmpv6rpl.c ****    task.
+ 251:openstack/03b-IPv6/icmpv6rpl.c **** */
+ 252:openstack/03b-IPv6/icmpv6rpl.c **** void icmpv6rpl_timer_DIO_cb() {
+ 573              		.loc 1 252 0
+ 574              		.cfi_startproc
+ 575              		@ args = 0, pretend = 0, frame = 0
+ 576              		@ frame_needed = 1, uses_anonymous_args = 0
+ 577 03e8 80B5     		push	{r7, lr}
+ 578              	.LCFI14:
+ 579              		.cfi_def_cfa_offset 8
+ 580              		.cfi_offset 7, -8
+ 581              		.cfi_offset 14, -4
+ 582 03ea 00AF     		add	r7, sp, #0
+ 583              	.LCFI15:
+ 584              		.cfi_def_cfa_register 7
+ 253:openstack/03b-IPv6/icmpv6rpl.c ****    scheduler_push_task(icmpv6rpl_timer_DIO_task,TASKPRIO_RPL);
+ 585              		.loc 1 253 0
+ 586 03ec 40F20000 		movw	r0, #:lower16:icmpv6rpl_timer_DIO_task
+ 587 03f0 C0F20000 		movt	r0, #:upper16:icmpv6rpl_timer_DIO_task
+ 588 03f4 4FF00401 		mov	r1, #4
+ 589 03f8 FFF7FEFF 		bl	scheduler_push_task
+ 254:openstack/03b-IPv6/icmpv6rpl.c **** }
+ 590              		.loc 1 254 0
+ 591 03fc 80BD     		pop	{r7, pc}
+ 592              		.cfi_endproc
+ 593              	.LFE5:
+ 595 03fe 00BF     		.align	2
+ 596              		.global	icmpv6rpl_timer_DIO_task
+ 597              		.thumb
+ 598              		.thumb_func
+ 600              	icmpv6rpl_timer_DIO_task:
+ 601              	.LFB6:
+ 255:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 256:openstack/03b-IPv6/icmpv6rpl.c **** /**
+ 257:openstack/03b-IPv6/icmpv6rpl.c **** \brief Handler for DIO timer event.
+ 258:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 259:openstack/03b-IPv6/icmpv6rpl.c **** \note This function is executed in task context, called by the scheduler.
+ 260:openstack/03b-IPv6/icmpv6rpl.c **** */
+ 261:openstack/03b-IPv6/icmpv6rpl.c **** void icmpv6rpl_timer_DIO_task() {
+ 602              		.loc 1 261 0
+ 603              		.cfi_startproc
+ 604              		@ args = 0, pretend = 0, frame = 0
+ 605              		@ frame_needed = 1, uses_anonymous_args = 0
+ 606 0400 80B5     		push	{r7, lr}
+ 607              	.LCFI16:
+ 608              		.cfi_def_cfa_offset 8
+ 609              		.cfi_offset 7, -8
+ 610              		.cfi_offset 14, -4
+ 611 0402 00AF     		add	r7, sp, #0
+ 612              	.LCFI17:
+ 613              		.cfi_def_cfa_register 7
+ 262:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 263:openstack/03b-IPv6/icmpv6rpl.c ****    // update the delayDIO
+ 264:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.delayDIO = (icmpv6rpl_vars.delayDIO+1)%5;
+ 614              		.loc 1 264 0
+ 615 0404 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 616 0408 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 617 040c 93F82F30 		ldrb	r3, [r3, #47]	@ zero_extendqisi2
+ 618 0410 03F10101 		add	r1, r3, #1
+ 619 0414 46F26763 		movw	r3, #26215
+ 620 0418 C6F26663 		movt	r3, 26214
+ 621 041c 83FB0123 		smull	r2, r3, r3, r1
+ 622 0420 4FEA6302 		asr	r2, r3, #1
+ 623 0424 4FEAE173 		asr	r3, r1, #31
+ 624 0428 D21A     		subs	r2, r2, r3
+ 625 042a 1346     		mov	r3, r2
+ 626 042c 4FEA8303 		lsl	r3, r3, #2
+ 627 0430 9B18     		adds	r3, r3, r2
+ 628 0432 CA1A     		subs	r2, r1, r3
+ 629 0434 D2B2     		uxtb	r2, r2
+ 630 0436 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 631 043a C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 632 043e 83F82F20 		strb	r2, [r3, #47]
+ 265:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 266:openstack/03b-IPv6/icmpv6rpl.c ****    // check whether we need to send DIO
+ 267:openstack/03b-IPv6/icmpv6rpl.c ****    if (icmpv6rpl_vars.delayDIO==0) {
+ 633              		.loc 1 267 0
+ 634 0442 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 635 0446 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 636 044a 93F82F30 		ldrb	r3, [r3, #47]	@ zero_extendqisi2
+ 637 044e 002B     		cmp	r3, #0
+ 638 0450 1FD1     		bne	.L18
+ 268:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 269:openstack/03b-IPv6/icmpv6rpl.c ****       // send DIO
+ 270:openstack/03b-IPv6/icmpv6rpl.c ****       sendDIO();
+ 639              		.loc 1 270 0
+ 640 0452 FFF7FEFF 		bl	sendDIO
+ 271:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 272:openstack/03b-IPv6/icmpv6rpl.c ****       // pick a new pseudo-random periodDIO
+ 273:openstack/03b-IPv6/icmpv6rpl.c ****       icmpv6rpl_vars.periodDIO = TIMER_DIO_TIMEOUT+(openrandom_get16b()&0xff);
+ 641              		.loc 1 273 0
+ 642 0456 FFF7FEFF 		bl	openrandom_get16b
+ 643 045a 0346     		mov	r3, r0
+ 644 045c DBB2     		uxtb	r3, r3
+ 645 045e 9BB2     		uxth	r3, r3
+ 646 0460 03F2A463 		addw	r3, r3, #1700
+ 647 0464 9AB2     		uxth	r2, r3
+ 648 0466 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 649 046a C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 650 046e 9A85     		strh	r2, [r3, #44]	@ movhi
+ 274:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 275:openstack/03b-IPv6/icmpv6rpl.c ****       // arm the DIO timer with this new value
+ 276:openstack/03b-IPv6/icmpv6rpl.c ****       opentimers_setPeriod(
+ 651              		.loc 1 276 0
+ 652 0470 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 653 0474 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 654 0478 93F82E20 		ldrb	r2, [r3, #46]	@ zero_extendqisi2
+ 277:openstack/03b-IPv6/icmpv6rpl.c ****          icmpv6rpl_vars.timerIdDIO,
+ 278:openstack/03b-IPv6/icmpv6rpl.c ****          TIME_MS,
+ 279:openstack/03b-IPv6/icmpv6rpl.c ****          icmpv6rpl_vars.periodDIO
+ 655              		.loc 1 279 0
+ 656 047c 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 657 0480 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 658 0484 9B8D     		ldrh	r3, [r3, #44]
+ 276:openstack/03b-IPv6/icmpv6rpl.c ****       opentimers_setPeriod(
+ 659              		.loc 1 276 0
+ 660 0486 1046     		mov	r0, r2
+ 661 0488 4FF00001 		mov	r1, #0
+ 662 048c 1A46     		mov	r2, r3
+ 663 048e FFF7FEFF 		bl	opentimers_setPeriod
+ 664              	.L18:
+ 280:openstack/03b-IPv6/icmpv6rpl.c ****       );
+ 281:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 282:openstack/03b-IPv6/icmpv6rpl.c **** }
+ 665              		.loc 1 282 0
+ 666 0492 80BD     		pop	{r7, pc}
+ 667              		.cfi_endproc
+ 668              	.LFE6:
+ 670              		.align	2
+ 671              		.global	sendDIO
+ 672              		.thumb
+ 673              		.thumb_func
+ 675              	sendDIO:
+ 676              	.LFB7:
+ 283:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 284:openstack/03b-IPv6/icmpv6rpl.c **** /**
+ 285:openstack/03b-IPv6/icmpv6rpl.c **** \brief Prepare and a send a RPL DIO.
+ 286:openstack/03b-IPv6/icmpv6rpl.c **** */
+ 287:openstack/03b-IPv6/icmpv6rpl.c **** void sendDIO() {
+ 677              		.loc 1 287 0
+ 678              		.cfi_startproc
+ 679              		@ args = 0, pretend = 0, frame = 8
+ 680              		@ frame_needed = 1, uses_anonymous_args = 0
+ 681 0494 B0B5     		push	{r4, r5, r7, lr}
+ 682              	.LCFI18:
+ 683              		.cfi_def_cfa_offset 16
+ 684              		.cfi_offset 4, -16
+ 685              		.cfi_offset 5, -12
+ 686              		.cfi_offset 7, -8
+ 687              		.cfi_offset 14, -4
+ 688 0496 82B0     		sub	sp, sp, #8
+ 689              	.LCFI19:
+ 690              		.cfi_def_cfa_offset 24
+ 691 0498 00AF     		add	r7, sp, #0
+ 692              	.LCFI20:
+ 693              		.cfi_def_cfa_register 7
+ 288:openstack/03b-IPv6/icmpv6rpl.c ****    OpenQueueEntry_t*    msg;
+ 289:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 290:openstack/03b-IPv6/icmpv6rpl.c ****    // stop if I'm not sync'ed
+ 291:openstack/03b-IPv6/icmpv6rpl.c ****    if (ieee154e_isSynch()==FALSE) {
+ 694              		.loc 1 291 0
+ 695 049a FFF7FEFF 		bl	ieee154e_isSynch
+ 696 049e 0346     		mov	r3, r0
+ 697 04a0 83F00103 		eor	r3, r3, #1
+ 698 04a4 DBB2     		uxtb	r3, r3
+ 699 04a6 002B     		cmp	r3, #0
+ 700 04a8 0BD0     		beq	.L21
+ 292:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 293:openstack/03b-IPv6/icmpv6rpl.c ****       // remove packets genereted by this module (DIO and DAO) from openqueue
+ 294:openstack/03b-IPv6/icmpv6rpl.c ****       openqueue_removeAllCreatedBy(COMPONENT_ICMPv6RPL);
+ 701              		.loc 1 294 0
+ 702 04aa 4FF01600 		mov	r0, #22
+ 703 04ae FFF7FEFF 		bl	openqueue_removeAllCreatedBy
+ 295:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 296:openstack/03b-IPv6/icmpv6rpl.c ****       // I'm not busy sending a DIO/DAO
+ 297:openstack/03b-IPv6/icmpv6rpl.c ****       icmpv6rpl_vars.busySending  = FALSE;
+ 704              		.loc 1 297 0
+ 705 04b2 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 706 04b6 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 707 04ba 4FF00002 		mov	r2, #0
+ 708 04be 1A70     		strb	r2, [r3, #0]
+ 298:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 299:openstack/03b-IPv6/icmpv6rpl.c ****       // stop here
+ 300:openstack/03b-IPv6/icmpv6rpl.c ****       return;
+ 709              		.loc 1 300 0
+ 710 04c0 AAE0     		b	.L20
+ 711              	.L21:
+ 301:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 302:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 303:openstack/03b-IPv6/icmpv6rpl.c ****    // do not send DIO if I have the default DAG rank
+ 304:openstack/03b-IPv6/icmpv6rpl.c ****    if (neighbors_getMyDAGrank()==DEFAULTDAGRANK) {
+ 712              		.loc 1 304 0
+ 713 04c2 FFF7FEFF 		bl	neighbors_getMyDAGrank
+ 714 04c6 0346     		mov	r3, r0
+ 715 04c8 1A46     		mov	r2, r3
+ 716 04ca 4FF6FF73 		movw	r3, #65535
+ 717 04ce 9A42     		cmp	r2, r3
+ 718 04d0 00F09F80 		beq	.L27
+ 719              	.L23:
+ 305:openstack/03b-IPv6/icmpv6rpl.c ****       return;
+ 306:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 307:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 308:openstack/03b-IPv6/icmpv6rpl.c ****    // do not send DIO if I'm already busy sending
+ 309:openstack/03b-IPv6/icmpv6rpl.c ****    if (icmpv6rpl_vars.busySending==TRUE) {
+ 720              		.loc 1 309 0
+ 721 04d4 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 722 04d8 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 723 04dc 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 724 04de 002B     		cmp	r3, #0
+ 725 04e0 40F09980 		bne	.L28
+ 726              	.L24:
+ 310:openstack/03b-IPv6/icmpv6rpl.c ****       return;
+ 311:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 312:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 313:openstack/03b-IPv6/icmpv6rpl.c ****    // if you get here, all good to send a DIO
+ 314:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 315:openstack/03b-IPv6/icmpv6rpl.c ****    // I'm now busy sending
+ 316:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.busySending = TRUE;
+ 727              		.loc 1 316 0
+ 728 04e4 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 729 04e8 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 730 04ec 4FF00102 		mov	r2, #1
+ 731 04f0 1A70     		strb	r2, [r3, #0]
+ 317:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 318:openstack/03b-IPv6/icmpv6rpl.c ****    // reserve a free packet buffer for DIO
+ 319:openstack/03b-IPv6/icmpv6rpl.c ****    msg = openqueue_getFreePacketBuffer(COMPONENT_ICMPv6RPL);
+ 732              		.loc 1 319 0
+ 733 04f2 4FF01600 		mov	r0, #22
+ 734 04f6 FFF7FEFF 		bl	openqueue_getFreePacketBuffer
+ 735 04fa 7860     		str	r0, [r7, #4]
+ 320:openstack/03b-IPv6/icmpv6rpl.c ****    if (msg==NULL) {
+ 736              		.loc 1 320 0
+ 737 04fc 7B68     		ldr	r3, [r7, #4]
+ 738 04fe 002B     		cmp	r3, #0
+ 739 0500 11D1     		bne	.L25
+ 321:openstack/03b-IPv6/icmpv6rpl.c ****       openserial_printError(COMPONENT_ICMPv6RPL,ERR_NO_FREE_PACKET_BUFFER,
+ 740              		.loc 1 321 0
+ 741 0502 4FF01600 		mov	r0, #22
+ 742 0506 4FF02C01 		mov	r1, #44
+ 743 050a 4FF00002 		mov	r2, #0
+ 744 050e 4FF00003 		mov	r3, #0
+ 745 0512 FFF7FEFF 		bl	openserial_printError
+ 322:openstack/03b-IPv6/icmpv6rpl.c ****                             (errorparameter_t)0,
+ 323:openstack/03b-IPv6/icmpv6rpl.c ****                             (errorparameter_t)0);
+ 324:openstack/03b-IPv6/icmpv6rpl.c ****       icmpv6rpl_vars.busySending = FALSE;
+ 746              		.loc 1 324 0
+ 747 0516 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 748 051a C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 749 051e 4FF00002 		mov	r2, #0
+ 750 0522 1A70     		strb	r2, [r3, #0]
+ 325:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 326:openstack/03b-IPv6/icmpv6rpl.c ****       return;
+ 751              		.loc 1 326 0
+ 752 0524 78E0     		b	.L20
+ 753              	.L25:
+ 327:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 328:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 329:openstack/03b-IPv6/icmpv6rpl.c ****    // take ownership
+ 330:openstack/03b-IPv6/icmpv6rpl.c ****    msg->creator                             = COMPONENT_ICMPv6RPL;
+ 754              		.loc 1 330 0
+ 755 0526 7B68     		ldr	r3, [r7, #4]
+ 756 0528 4FF01602 		mov	r2, #22
+ 757 052c 1A70     		strb	r2, [r3, #0]
+ 331:openstack/03b-IPv6/icmpv6rpl.c ****    msg->owner                               = COMPONENT_ICMPv6RPL;
+ 758              		.loc 1 331 0
+ 759 052e 7B68     		ldr	r3, [r7, #4]
+ 760 0530 4FF01602 		mov	r2, #22
+ 761 0534 5A70     		strb	r2, [r3, #1]
+ 332:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 333:openstack/03b-IPv6/icmpv6rpl.c ****    // set transport information
+ 334:openstack/03b-IPv6/icmpv6rpl.c ****    msg->l4_protocol                         = IANA_ICMPv6;
+ 762              		.loc 1 334 0
+ 763 0536 7B68     		ldr	r3, [r7, #4]
+ 764 0538 4FF03A02 		mov	r2, #58
+ 765 053c 5A72     		strb	r2, [r3, #9]
+ 335:openstack/03b-IPv6/icmpv6rpl.c ****    msg->l4_sourcePortORicmpv6Type           = IANA_ICMPv6_RPL;
+ 766              		.loc 1 335 0
+ 767 053e 7B68     		ldr	r3, [r7, #4]
+ 768 0540 4FF09B02 		mov	r2, #155
+ 769 0544 9A81     		strh	r2, [r3, #12]	@ movhi
+ 336:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 337:openstack/03b-IPv6/icmpv6rpl.c ****    // set DIO destination
+ 338:openstack/03b-IPv6/icmpv6rpl.c ****    memcpy(&(msg->l3_destinationAdd),&icmpv6rpl_vars.dioDestination,sizeof(open_addr_t));
+ 770              		.loc 1 338 0
+ 771 0546 7B68     		ldr	r3, [r7, #4]
+ 772 0548 03F11503 		add	r3, r3, #21
+ 773 054c 40F20002 		movw	r2, #:lower16:icmpv6rpl_vars
+ 774 0550 C0F20002 		movt	r2, #:upper16:icmpv6rpl_vars
+ 775 0554 02F11A02 		add	r2, r2, #26
+ 776 0558 1568     		ldr	r5, [r2, #0]	@ unaligned
+ 777 055a 5468     		ldr	r4, [r2, #4]	@ unaligned
+ 778 055c 9068     		ldr	r0, [r2, #8]	@ unaligned
+ 779 055e D168     		ldr	r1, [r2, #12]	@ unaligned
+ 780 0560 1D60     		str	r5, [r3, #0]	@ unaligned
+ 781 0562 5C60     		str	r4, [r3, #4]	@ unaligned
+ 782 0564 9860     		str	r0, [r3, #8]	@ unaligned
+ 783 0566 D960     		str	r1, [r3, #12]	@ unaligned
+ 784 0568 127C     		ldrb	r2, [r2, #16]
+ 785 056a 1A74     		strb	r2, [r3, #16]
+ 339:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 340:openstack/03b-IPv6/icmpv6rpl.c ****    //===== DIO payload
+ 341:openstack/03b-IPv6/icmpv6rpl.c ****    // note: DIO is already mostly populated
+ 342:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dio.rank                  = neighbors_getMyDAGrank();
+ 786              		.loc 1 342 0
+ 787 056c FFF7FEFF 		bl	neighbors_getMyDAGrank
+ 788 0570 0346     		mov	r3, r0
+ 789 0572 1A46     		mov	r2, r3
+ 790 0574 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 791 0578 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 792 057c 9A80     		strh	r2, [r3, #4]	@ movhi
+ 343:openstack/03b-IPv6/icmpv6rpl.c ****    packetfunctions_reserveHeaderSize(msg,sizeof(icmpv6rpl_dio_ht));
+ 793              		.loc 1 343 0
+ 794 057e 7868     		ldr	r0, [r7, #4]
+ 795 0580 4FF01801 		mov	r1, #24
+ 796 0584 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 344:openstack/03b-IPv6/icmpv6rpl.c ****    memcpy(
+ 345:openstack/03b-IPv6/icmpv6rpl.c ****       ((icmpv6rpl_dio_ht*)(msg->payload)),
+ 797              		.loc 1 345 0
+ 798 0588 7B68     		ldr	r3, [r7, #4]
+ 799 058a 5B68     		ldr	r3, [r3, #4]
+ 344:openstack/03b-IPv6/icmpv6rpl.c ****    memcpy(
+ 800              		.loc 1 344 0
+ 801 058c 40F20002 		movw	r2, #:lower16:icmpv6rpl_vars
+ 802 0590 C0F20002 		movt	r2, #:upper16:icmpv6rpl_vars
+ 803 0594 02F10202 		add	r2, r2, #2
+ 804 0598 1068     		ldr	r0, [r2, #0]	@ unaligned
+ 805 059a 5168     		ldr	r1, [r2, #4]	@ unaligned
+ 806 059c 9568     		ldr	r5, [r2, #8]	@ unaligned
+ 807 059e D468     		ldr	r4, [r2, #12]	@ unaligned
+ 808 05a0 1860     		str	r0, [r3, #0]	@ unaligned
+ 809 05a2 5960     		str	r1, [r3, #4]	@ unaligned
+ 810 05a4 9D60     		str	r5, [r3, #8]	@ unaligned
+ 811 05a6 DC60     		str	r4, [r3, #12]	@ unaligned
+ 812 05a8 1069     		ldr	r0, [r2, #16]	@ unaligned
+ 813 05aa 5169     		ldr	r1, [r2, #20]	@ unaligned
+ 814 05ac 1861     		str	r0, [r3, #16]	@ unaligned
+ 815 05ae 5961     		str	r1, [r3, #20]	@ unaligned
+ 346:openstack/03b-IPv6/icmpv6rpl.c ****       &(icmpv6rpl_vars.dio),
+ 347:openstack/03b-IPv6/icmpv6rpl.c ****       sizeof(icmpv6rpl_dio_ht)
+ 348:openstack/03b-IPv6/icmpv6rpl.c ****    );
+ 349:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 350:openstack/03b-IPv6/icmpv6rpl.c ****    //===== ICMPv6 header
+ 351:openstack/03b-IPv6/icmpv6rpl.c ****    packetfunctions_reserveHeaderSize(msg,sizeof(ICMPv6_ht));
+ 816              		.loc 1 351 0
+ 817 05b0 7868     		ldr	r0, [r7, #4]
+ 818 05b2 4FF00401 		mov	r1, #4
+ 819 05b6 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 352:openstack/03b-IPv6/icmpv6rpl.c ****    ((ICMPv6_ht*)(msg->payload))->type       = msg->l4_sourcePortORicmpv6Type;
+ 820              		.loc 1 352 0
+ 821 05ba 7B68     		ldr	r3, [r7, #4]
+ 822 05bc 5B68     		ldr	r3, [r3, #4]
+ 823 05be 7A68     		ldr	r2, [r7, #4]
+ 824 05c0 9289     		ldrh	r2, [r2, #12]
+ 825 05c2 D2B2     		uxtb	r2, r2
+ 826 05c4 1A70     		strb	r2, [r3, #0]
+ 353:openstack/03b-IPv6/icmpv6rpl.c ****    ((ICMPv6_ht*)(msg->payload))->code       = IANA_ICMPv6_RPL_DIO;
+ 827              		.loc 1 353 0
+ 828 05c6 7B68     		ldr	r3, [r7, #4]
+ 829 05c8 5B68     		ldr	r3, [r3, #4]
+ 830 05ca 4FF00102 		mov	r2, #1
+ 831 05ce 5A70     		strb	r2, [r3, #1]
+ 354:openstack/03b-IPv6/icmpv6rpl.c ****    packetfunctions_calculateChecksum(msg,(uint8_t*)&(((ICMPv6_ht*)(msg->payload))->checksum));//cal
+ 832              		.loc 1 354 0
+ 833 05d0 7B68     		ldr	r3, [r7, #4]
+ 834 05d2 5B68     		ldr	r3, [r3, #4]
+ 835 05d4 03F10203 		add	r3, r3, #2
+ 836 05d8 7868     		ldr	r0, [r7, #4]
+ 837 05da 1946     		mov	r1, r3
+ 838 05dc FFF7FEFF 		bl	packetfunctions_calculateChecksum
+ 355:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 356:openstack/03b-IPv6/icmpv6rpl.c ****    //send
+ 357:openstack/03b-IPv6/icmpv6rpl.c ****    if (icmpv6_send(msg)!=E_SUCCESS) {
+ 839              		.loc 1 357 0
+ 840 05e0 7868     		ldr	r0, [r7, #4]
+ 841 05e2 FFF7FEFF 		bl	icmpv6_send
+ 842 05e6 0346     		mov	r3, r0
+ 843 05e8 002B     		cmp	r3, #0
+ 844 05ea 0AD0     		beq	.L26
+ 358:openstack/03b-IPv6/icmpv6rpl.c ****       icmpv6rpl_vars.busySending = FALSE;
+ 845              		.loc 1 358 0
+ 846 05ec 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 847 05f0 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 848 05f4 4FF00002 		mov	r2, #0
+ 849 05f8 1A70     		strb	r2, [r3, #0]
+ 359:openstack/03b-IPv6/icmpv6rpl.c ****       openqueue_freePacketBuffer(msg);
+ 850              		.loc 1 359 0
+ 851 05fa 7868     		ldr	r0, [r7, #4]
+ 852 05fc FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 853 0600 0AE0     		b	.L20
+ 854              	.L26:
+ 360:openstack/03b-IPv6/icmpv6rpl.c ****    } else {
+ 361:openstack/03b-IPv6/icmpv6rpl.c ****       icmpv6rpl_vars.busySending = FALSE; 
+ 855              		.loc 1 361 0
+ 856 0602 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 857 0606 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 858 060a 4FF00002 		mov	r2, #0
+ 859 060e 1A70     		strb	r2, [r3, #0]
+ 860 0610 02E0     		b	.L20
+ 861              	.L27:
+ 305:openstack/03b-IPv6/icmpv6rpl.c ****       return;
+ 862              		.loc 1 305 0
+ 863 0612 00BF     		nop
+ 864 0614 00E0     		b	.L20
+ 865              	.L28:
+ 310:openstack/03b-IPv6/icmpv6rpl.c ****       return;
+ 866              		.loc 1 310 0
+ 867 0616 00BF     		nop
+ 868              	.L20:
+ 362:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 363:openstack/03b-IPv6/icmpv6rpl.c **** }
+ 869              		.loc 1 363 0
+ 870 0618 07F10807 		add	r7, r7, #8
+ 871 061c BD46     		mov	sp, r7
+ 872 061e B0BD     		pop	{r4, r5, r7, pc}
+ 873              		.cfi_endproc
+ 874              	.LFE7:
+ 876              		.align	2
+ 877              		.global	icmpv6rpl_timer_DAO_cb
+ 878              		.thumb
+ 879              		.thumb_func
+ 881              	icmpv6rpl_timer_DAO_cb:
+ 882              	.LFB8:
+ 364:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 365:openstack/03b-IPv6/icmpv6rpl.c **** //===== DAO-related
+ 366:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 367:openstack/03b-IPv6/icmpv6rpl.c **** /**
+ 368:openstack/03b-IPv6/icmpv6rpl.c **** \brief DAO timer callback function.
+ 369:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 370:openstack/03b-IPv6/icmpv6rpl.c **** \note This function is executed in interrupt context, and should only push a
+ 371:openstack/03b-IPv6/icmpv6rpl.c ****    task.
+ 372:openstack/03b-IPv6/icmpv6rpl.c **** */
+ 373:openstack/03b-IPv6/icmpv6rpl.c **** void icmpv6rpl_timer_DAO_cb() {
+ 883              		.loc 1 373 0
+ 884              		.cfi_startproc
+ 885              		@ args = 0, pretend = 0, frame = 0
+ 886              		@ frame_needed = 1, uses_anonymous_args = 0
+ 887 0620 80B5     		push	{r7, lr}
+ 888              	.LCFI21:
+ 889              		.cfi_def_cfa_offset 8
+ 890              		.cfi_offset 7, -8
+ 891              		.cfi_offset 14, -4
+ 892 0622 00AF     		add	r7, sp, #0
+ 893              	.LCFI22:
+ 894              		.cfi_def_cfa_register 7
+ 374:openstack/03b-IPv6/icmpv6rpl.c ****    scheduler_push_task(icmpv6rpl_timer_DAO_task,TASKPRIO_RPL);
+ 895              		.loc 1 374 0
+ 896 0624 40F20000 		movw	r0, #:lower16:icmpv6rpl_timer_DAO_task
+ 897 0628 C0F20000 		movt	r0, #:upper16:icmpv6rpl_timer_DAO_task
+ 898 062c 4FF00401 		mov	r1, #4
+ 899 0630 FFF7FEFF 		bl	scheduler_push_task
+ 375:openstack/03b-IPv6/icmpv6rpl.c **** }
+ 900              		.loc 1 375 0
+ 901 0634 80BD     		pop	{r7, pc}
+ 902              		.cfi_endproc
+ 903              	.LFE8:
+ 905 0636 00BF     		.align	2
+ 906              		.global	icmpv6rpl_timer_DAO_task
+ 907              		.thumb
+ 908              		.thumb_func
+ 910              	icmpv6rpl_timer_DAO_task:
+ 911              	.LFB9:
+ 376:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 377:openstack/03b-IPv6/icmpv6rpl.c **** /**
+ 378:openstack/03b-IPv6/icmpv6rpl.c **** \brief Handler for DAO timer event.
+ 379:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 380:openstack/03b-IPv6/icmpv6rpl.c **** \note This function is executed in task context, called by the scheduler.
+ 381:openstack/03b-IPv6/icmpv6rpl.c **** */
+ 382:openstack/03b-IPv6/icmpv6rpl.c **** void icmpv6rpl_timer_DAO_task() {
+ 912              		.loc 1 382 0
+ 913              		.cfi_startproc
+ 914              		@ args = 0, pretend = 0, frame = 0
+ 915              		@ frame_needed = 1, uses_anonymous_args = 0
+ 916 0638 80B5     		push	{r7, lr}
+ 917              	.LCFI23:
+ 918              		.cfi_def_cfa_offset 8
+ 919              		.cfi_offset 7, -8
+ 920              		.cfi_offset 14, -4
+ 921 063a 00AF     		add	r7, sp, #0
+ 922              	.LCFI24:
+ 923              		.cfi_def_cfa_register 7
+ 383:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 384:openstack/03b-IPv6/icmpv6rpl.c ****    // update the delayDAO
+ 385:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.delayDAO = (icmpv6rpl_vars.delayDAO+1)%5;
+ 924              		.loc 1 385 0
+ 925 063c 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 926 0640 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 927 0644 93F85230 		ldrb	r3, [r3, #82]	@ zero_extendqisi2
+ 928 0648 03F10101 		add	r1, r3, #1
+ 929 064c 46F26763 		movw	r3, #26215
+ 930 0650 C6F26663 		movt	r3, 26214
+ 931 0654 83FB0123 		smull	r2, r3, r3, r1
+ 932 0658 4FEA6302 		asr	r2, r3, #1
+ 933 065c 4FEAE173 		asr	r3, r1, #31
+ 934 0660 D21A     		subs	r2, r2, r3
+ 935 0662 1346     		mov	r3, r2
+ 936 0664 4FEA8303 		lsl	r3, r3, #2
+ 937 0668 9B18     		adds	r3, r3, r2
+ 938 066a CA1A     		subs	r2, r1, r3
+ 939 066c D2B2     		uxtb	r2, r2
+ 940 066e 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 941 0672 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 942 0676 83F85220 		strb	r2, [r3, #82]
+ 386:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 387:openstack/03b-IPv6/icmpv6rpl.c ****    // check whether we need to send DAO
+ 388:openstack/03b-IPv6/icmpv6rpl.c ****    if (icmpv6rpl_vars.delayDAO==0) {
+ 943              		.loc 1 388 0
+ 944 067a 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 945 067e C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 946 0682 93F85230 		ldrb	r3, [r3, #82]	@ zero_extendqisi2
+ 947 0686 002B     		cmp	r3, #0
+ 948 0688 23D1     		bne	.L30
+ 389:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 390:openstack/03b-IPv6/icmpv6rpl.c ****       // send DAO
+ 391:openstack/03b-IPv6/icmpv6rpl.c ****       sendDAO();
+ 949              		.loc 1 391 0
+ 950 068a FFF7FEFF 		bl	sendDAO
+ 392:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 393:openstack/03b-IPv6/icmpv6rpl.c ****       // pick a new pseudo-random periodDAO
+ 394:openstack/03b-IPv6/icmpv6rpl.c ****       icmpv6rpl_vars.periodDAO = TIMER_DAO_TIMEOUT+(openrandom_get16b()&0xff);
+ 951              		.loc 1 394 0
+ 952 068e FFF7FEFF 		bl	openrandom_get16b
+ 953 0692 0346     		mov	r3, r0
+ 954 0694 DBB2     		uxtb	r3, r3
+ 955 0696 9BB2     		uxth	r3, r3
+ 956 0698 03F51C53 		add	r3, r3, #9984
+ 957 069c 03F11003 		add	r3, r3, #16
+ 958 06a0 9AB2     		uxth	r2, r3
+ 959 06a2 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 960 06a6 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 961 06aa A3F85020 		strh	r2, [r3, #80]	@ movhi
+ 395:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 396:openstack/03b-IPv6/icmpv6rpl.c ****       // arm the DAO timer with this new value
+ 397:openstack/03b-IPv6/icmpv6rpl.c ****       opentimers_setPeriod(
+ 962              		.loc 1 397 0
+ 963 06ae 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 964 06b2 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 965 06b6 93F84E20 		ldrb	r2, [r3, #78]	@ zero_extendqisi2
+ 398:openstack/03b-IPv6/icmpv6rpl.c ****          icmpv6rpl_vars.timerIdDAO,
+ 399:openstack/03b-IPv6/icmpv6rpl.c ****          TIME_MS,
+ 400:openstack/03b-IPv6/icmpv6rpl.c ****          icmpv6rpl_vars.periodDAO
+ 966              		.loc 1 400 0
+ 967 06ba 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 968 06be C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 969 06c2 B3F85030 		ldrh	r3, [r3, #80]
+ 397:openstack/03b-IPv6/icmpv6rpl.c ****       opentimers_setPeriod(
+ 970              		.loc 1 397 0
+ 971 06c6 1046     		mov	r0, r2
+ 972 06c8 4FF00001 		mov	r1, #0
+ 973 06cc 1A46     		mov	r2, r3
+ 974 06ce FFF7FEFF 		bl	opentimers_setPeriod
+ 975              	.L30:
+ 401:openstack/03b-IPv6/icmpv6rpl.c ****       );
+ 402:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 403:openstack/03b-IPv6/icmpv6rpl.c **** }
+ 976              		.loc 1 403 0
+ 977 06d2 80BD     		pop	{r7, pc}
+ 978              		.cfi_endproc
+ 979              	.LFE9:
+ 981              		.align	2
+ 982              		.global	sendDAO
+ 983              		.thumb
+ 984              		.thumb_func
+ 986              	sendDAO:
+ 987              	.LFB10:
+ 404:openstack/03b-IPv6/icmpv6rpl.c **** 
+ 405:openstack/03b-IPv6/icmpv6rpl.c **** /**
+ 406:openstack/03b-IPv6/icmpv6rpl.c **** \brief Prepare and a send a RPL DAO.
+ 407:openstack/03b-IPv6/icmpv6rpl.c **** */
+ 408:openstack/03b-IPv6/icmpv6rpl.c **** void sendDAO() {
+ 988              		.loc 1 408 0
+ 989              		.cfi_startproc
+ 990              		@ args = 0, pretend = 0, frame = 40
+ 991              		@ frame_needed = 1, uses_anonymous_args = 0
+ 992 06d4 B0B5     		push	{r4, r5, r7, lr}
+ 993              	.LCFI25:
+ 994              		.cfi_def_cfa_offset 16
+ 995              		.cfi_offset 4, -16
+ 996              		.cfi_offset 5, -12
+ 997              		.cfi_offset 7, -8
+ 998              		.cfi_offset 14, -4
+ 999 06d6 8AB0     		sub	sp, sp, #40
+ 1000              	.LCFI26:
+ 1001              		.cfi_def_cfa_offset 56
+ 1002 06d8 00AF     		add	r7, sp, #0
+ 1003              	.LCFI27:
+ 1004              		.cfi_def_cfa_register 7
+ 409:openstack/03b-IPv6/icmpv6rpl.c ****    OpenQueueEntry_t*    msg;                // pointer to DAO messages
+ 410:openstack/03b-IPv6/icmpv6rpl.c ****    uint8_t              nbrIdx;             // running neighbor index
+ 411:openstack/03b-IPv6/icmpv6rpl.c ****    uint8_t              numTransitParents,numTargetParents;  // the number of parents indicated in 
+ 412:openstack/03b-IPv6/icmpv6rpl.c ****    open_addr_t         address;
+ 413:openstack/03b-IPv6/icmpv6rpl.c ****    open_addr_t*        prefix;
+ 414:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 415:openstack/03b-IPv6/icmpv6rpl.c ****    if (ieee154e_isSynch()==FALSE) {
+ 1005              		.loc 1 415 0
+ 1006 06da FFF7FEFF 		bl	ieee154e_isSynch
+ 1007 06de 0346     		mov	r3, r0
+ 1008 06e0 83F00103 		eor	r3, r3, #1
+ 1009 06e4 DBB2     		uxtb	r3, r3
+ 1010 06e6 002B     		cmp	r3, #0
+ 1011 06e8 0BD0     		beq	.L33
+ 416:openstack/03b-IPv6/icmpv6rpl.c ****       // I'm not sync'ed 
+ 417:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 418:openstack/03b-IPv6/icmpv6rpl.c ****       // delete packets genereted by this module (DIO and DAO) from openqueue
+ 419:openstack/03b-IPv6/icmpv6rpl.c ****       openqueue_removeAllCreatedBy(COMPONENT_ICMPv6RPL);
+ 1012              		.loc 1 419 0
+ 1013 06ea 4FF01600 		mov	r0, #22
+ 1014 06ee FFF7FEFF 		bl	openqueue_removeAllCreatedBy
+ 420:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 421:openstack/03b-IPv6/icmpv6rpl.c ****       // I'm not busy sending a DIO/DAO
+ 422:openstack/03b-IPv6/icmpv6rpl.c ****       icmpv6rpl_vars.busySending = FALSE;
+ 1015              		.loc 1 422 0
+ 1016 06f2 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 1017 06f6 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 1018 06fa 4FF00002 		mov	r2, #0
+ 1019 06fe 1A70     		strb	r2, [r3, #0]
+ 1020 0700 5DE1     		b	.L32
+ 1021              	.L33:
+ 423:openstack/03b-IPv6/icmpv6rpl.c ****       
+ 424:openstack/03b-IPv6/icmpv6rpl.c ****       // stop here
+ 425:openstack/03b-IPv6/icmpv6rpl.c ****       return;
+ 426:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 427:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 428:openstack/03b-IPv6/icmpv6rpl.c ****    // dont' send a DAO if you're the DAG root
+ 429:openstack/03b-IPv6/icmpv6rpl.c ****    if (idmanager_getIsDAGroot()==TRUE) {
+ 1022              		.loc 1 429 0
+ 1023 0702 FFF7FEFF 		bl	idmanager_getIsDAGroot
+ 1024 0706 0346     		mov	r3, r0
+ 1025 0708 002B     		cmp	r3, #0
+ 1026 070a 40F05881 		bne	.L32
+ 430:openstack/03b-IPv6/icmpv6rpl.c ****       return;
+ 431:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 432:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 433:openstack/03b-IPv6/icmpv6rpl.c ****    // dont' send a DAO if you did not acquire a DAGrank
+ 434:openstack/03b-IPv6/icmpv6rpl.c ****    if (neighbors_getMyDAGrank()==DEFAULTDAGRANK) {
+ 1027              		.loc 1 434 0
+ 1028 070e FFF7FEFF 		bl	neighbors_getMyDAGrank
+ 1029 0712 0346     		mov	r3, r0
+ 1030 0714 1A46     		mov	r2, r3
+ 1031 0716 4FF6FF73 		movw	r3, #65535
+ 1032 071a 9A42     		cmp	r2, r3
+ 1033 071c 00F04F81 		beq	.L32
+ 435:openstack/03b-IPv6/icmpv6rpl.c ****        return;
+ 436:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 437:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 438:openstack/03b-IPv6/icmpv6rpl.c ****    // dont' send a DAO if you're still busy sending the previous one
+ 439:openstack/03b-IPv6/icmpv6rpl.c ****    if (icmpv6rpl_vars.busySending==TRUE) {
+ 1034              		.loc 1 439 0
+ 1035 0720 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 1036 0724 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 1037 0728 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1038 072a 002B     		cmp	r3, #0
+ 1039 072c 40F04781 		bne	.L32
+ 440:openstack/03b-IPv6/icmpv6rpl.c ****       return;
+ 441:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 442:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 443:openstack/03b-IPv6/icmpv6rpl.c ****    // if you get here, you start construct DAO
+ 444:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 445:openstack/03b-IPv6/icmpv6rpl.c ****    // reserve a free packet buffer for DAO
+ 446:openstack/03b-IPv6/icmpv6rpl.c ****    msg = openqueue_getFreePacketBuffer(COMPONENT_ICMPv6RPL);
+ 1040              		.loc 1 446 0
+ 1041 0730 4FF01600 		mov	r0, #22
+ 1042 0734 FFF7FEFF 		bl	openqueue_getFreePacketBuffer
+ 1043 0738 3862     		str	r0, [r7, #32]
+ 447:openstack/03b-IPv6/icmpv6rpl.c ****    if (msg==NULL) {
+ 1044              		.loc 1 447 0
+ 1045 073a 3B6A     		ldr	r3, [r7, #32]
+ 1046 073c 002B     		cmp	r3, #0
+ 1047 073e 0AD1     		bne	.L35
+ 448:openstack/03b-IPv6/icmpv6rpl.c ****       openserial_printError(COMPONENT_ICMPv6RPL,ERR_NO_FREE_PACKET_BUFFER,
+ 1048              		.loc 1 448 0
+ 1049 0740 4FF01600 		mov	r0, #22
+ 1050 0744 4FF02C01 		mov	r1, #44
+ 1051 0748 4FF00002 		mov	r2, #0
+ 1052 074c 4FF00003 		mov	r3, #0
+ 1053 0750 FFF7FEFF 		bl	openserial_printError
+ 1054 0754 33E1     		b	.L32
+ 1055              	.L35:
+ 449:openstack/03b-IPv6/icmpv6rpl.c ****                             (errorparameter_t)0,
+ 450:openstack/03b-IPv6/icmpv6rpl.c ****                             (errorparameter_t)0);
+ 451:openstack/03b-IPv6/icmpv6rpl.c ****       return;
+ 452:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 453:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 454:openstack/03b-IPv6/icmpv6rpl.c ****    // take ownership
+ 455:openstack/03b-IPv6/icmpv6rpl.c ****    msg->creator                             = COMPONENT_ICMPv6RPL;
+ 1056              		.loc 1 455 0
+ 1057 0756 3B6A     		ldr	r3, [r7, #32]
+ 1058 0758 4FF01602 		mov	r2, #22
+ 1059 075c 1A70     		strb	r2, [r3, #0]
+ 456:openstack/03b-IPv6/icmpv6rpl.c ****    msg->owner                               = COMPONENT_ICMPv6RPL;
+ 1060              		.loc 1 456 0
+ 1061 075e 3B6A     		ldr	r3, [r7, #32]
+ 1062 0760 4FF01602 		mov	r2, #22
+ 1063 0764 5A70     		strb	r2, [r3, #1]
+ 457:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 458:openstack/03b-IPv6/icmpv6rpl.c ****    // set transport information
+ 459:openstack/03b-IPv6/icmpv6rpl.c ****    msg->l4_protocol                         = IANA_ICMPv6;
+ 1064              		.loc 1 459 0
+ 1065 0766 3B6A     		ldr	r3, [r7, #32]
+ 1066 0768 4FF03A02 		mov	r2, #58
+ 1067 076c 5A72     		strb	r2, [r3, #9]
+ 460:openstack/03b-IPv6/icmpv6rpl.c ****    msg->l4_sourcePortORicmpv6Type           = IANA_ICMPv6_RPL;
+ 1068              		.loc 1 460 0
+ 1069 076e 3B6A     		ldr	r3, [r7, #32]
+ 1070 0770 4FF09B02 		mov	r2, #155
+ 1071 0774 9A81     		strh	r2, [r3, #12]	@ movhi
+ 461:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 462:openstack/03b-IPv6/icmpv6rpl.c ****    // set DAO destination
+ 463:openstack/03b-IPv6/icmpv6rpl.c ****    msg->l3_destinationAdd.type=ADDR_128B;
+ 1072              		.loc 1 463 0
+ 1073 0776 3B6A     		ldr	r3, [r7, #32]
+ 1074 0778 4FF00302 		mov	r2, #3
+ 1075 077c 5A75     		strb	r2, [r3, #21]
+ 464:openstack/03b-IPv6/icmpv6rpl.c ****    memcpy(msg->l3_destinationAdd.addr_128b,icmpv6rpl_vars.dio.DODAGID,sizeof(icmpv6rpl_vars.dio.DOD
+ 1076              		.loc 1 464 0
+ 1077 077e 3B6A     		ldr	r3, [r7, #32]
+ 1078 0780 03F11603 		add	r3, r3, #22
+ 1079 0784 40F20002 		movw	r2, #:lower16:icmpv6rpl_vars
+ 1080 0788 C0F20002 		movt	r2, #:upper16:icmpv6rpl_vars
+ 1081 078c 02F10A02 		add	r2, r2, #10
+ 1082 0790 1468     		ldr	r4, [r2, #0]	@ unaligned
+ 1083 0792 5068     		ldr	r0, [r2, #4]	@ unaligned
+ 1084 0794 9168     		ldr	r1, [r2, #8]	@ unaligned
+ 1085 0796 D268     		ldr	r2, [r2, #12]	@ unaligned
+ 1086 0798 1C60     		str	r4, [r3, #0]	@ unaligned
+ 1087 079a 5860     		str	r0, [r3, #4]	@ unaligned
+ 1088 079c 9960     		str	r1, [r3, #8]	@ unaligned
+ 1089 079e DA60     		str	r2, [r3, #12]	@ unaligned
+ 465:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 466:openstack/03b-IPv6/icmpv6rpl.c ****    //===== fill in packet
+ 467:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 468:openstack/03b-IPv6/icmpv6rpl.c ****    //NOTE: limit to preferrred parent only the number of DAO transit addresses to send
+ 469:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 470:openstack/03b-IPv6/icmpv6rpl.c ****    //=== transit option -- from RFC 6550, page 55 - 1 transit information header per parent is requ
+ 471:openstack/03b-IPv6/icmpv6rpl.c ****    //getting only preferred parent as transit
+ 472:openstack/03b-IPv6/icmpv6rpl.c ****    numTransitParents=0;
+ 1090              		.loc 1 472 0
+ 1091 07a0 4FF00003 		mov	r3, #0
+ 1092 07a4 FB77     		strb	r3, [r7, #31]
+ 473:openstack/03b-IPv6/icmpv6rpl.c ****    neighbors_getPreferredParentEui64(&address);
+ 1093              		.loc 1 473 0
+ 1094 07a6 07F10403 		add	r3, r7, #4
+ 1095 07aa 1846     		mov	r0, r3
+ 1096 07ac FFF7FEFF 		bl	neighbors_getPreferredParentEui64
+ 474:openstack/03b-IPv6/icmpv6rpl.c ****    packetfunctions_writeAddress(msg,&address,OW_BIG_ENDIAN);
+ 1097              		.loc 1 474 0
+ 1098 07b0 07F10403 		add	r3, r7, #4
+ 1099 07b4 386A     		ldr	r0, [r7, #32]
+ 1100 07b6 1946     		mov	r1, r3
+ 1101 07b8 4FF00002 		mov	r2, #0
+ 1102 07bc FFF7FEFF 		bl	packetfunctions_writeAddress
+ 475:openstack/03b-IPv6/icmpv6rpl.c ****    prefix=idmanager_getMyID(ADDR_PREFIX);
+ 1103              		.loc 1 475 0
+ 1104 07c0 4FF00500 		mov	r0, #5
+ 1105 07c4 FFF7FEFF 		bl	idmanager_getMyID
+ 1106 07c8 B861     		str	r0, [r7, #24]
+ 476:openstack/03b-IPv6/icmpv6rpl.c ****    packetfunctions_writeAddress(msg,prefix,OW_BIG_ENDIAN);
+ 1107              		.loc 1 476 0
+ 1108 07ca 386A     		ldr	r0, [r7, #32]
+ 1109 07cc B969     		ldr	r1, [r7, #24]
+ 1110 07ce 4FF00002 		mov	r2, #0
+ 1111 07d2 FFF7FEFF 		bl	packetfunctions_writeAddress
+ 477:openstack/03b-IPv6/icmpv6rpl.c ****    // update transit info fields
+ 478:openstack/03b-IPv6/icmpv6rpl.c ****    // from rfc6550 p.55 -- Variable, depending on whether or not the DODAG ParentAddress subfield i
+ 479:openstack/03b-IPv6/icmpv6rpl.c ****    // poipoi xv: it is not very clear if this includes all fields in the header. or as target info 
+ 480:openstack/03b-IPv6/icmpv6rpl.c ****    // using the same pattern as in target information.
+ 481:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao_transit.optionLength  = LENGTH_ADDR128b + sizeof(icmpv6rpl_dao_transit_ht)-2;
+ 1112              		.loc 1 481 0
+ 1113 07d6 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 1114 07da C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 1115 07de 4FF01402 		mov	r2, #20
+ 1116 07e2 83F84520 		strb	r2, [r3, #69]
+ 482:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao_transit.PathControl=0; //todo. this is to set the preference of this parent. 
+ 1117              		.loc 1 482 0
+ 1118 07e6 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 1119 07ea C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 1120 07ee 4FF00002 		mov	r2, #0
+ 1121 07f2 83F84720 		strb	r2, [r3, #71]
+ 483:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao_transit.type=OPTION_TRANSIT_INFORMATION_TYPE;
+ 1122              		.loc 1 483 0
+ 1123 07f6 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 1124 07fa C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 1125 07fe 4FF00602 		mov	r2, #6
+ 1126 0802 83F84420 		strb	r2, [r3, #68]
+ 484:openstack/03b-IPv6/icmpv6rpl.c ****            
+ 485:openstack/03b-IPv6/icmpv6rpl.c ****    // write transit info in packet
+ 486:openstack/03b-IPv6/icmpv6rpl.c ****    packetfunctions_reserveHeaderSize(msg,sizeof(icmpv6rpl_dao_transit_ht));
+ 1127              		.loc 1 486 0
+ 1128 0806 386A     		ldr	r0, [r7, #32]
+ 1129 0808 4FF00601 		mov	r1, #6
+ 1130 080c FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 487:openstack/03b-IPv6/icmpv6rpl.c ****    memcpy(
+ 488:openstack/03b-IPv6/icmpv6rpl.c ****           ((icmpv6rpl_dao_transit_ht*)(msg->payload)),
+ 1131              		.loc 1 488 0
+ 1132 0810 3B6A     		ldr	r3, [r7, #32]
+ 1133 0812 5A68     		ldr	r2, [r3, #4]
+ 487:openstack/03b-IPv6/icmpv6rpl.c ****    memcpy(
+ 1134              		.loc 1 487 0
+ 1135 0814 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 1136 0818 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 1137 081c 03F14403 		add	r3, r3, #68
+ 1138 0820 1868     		ldr	r0, [r3, #0]	@ unaligned
+ 1139 0822 1060     		str	r0, [r2, #0]	@ unaligned
+ 1140 0824 9B88     		ldrh	r3, [r3, #4]	@ unaligned
+ 1141 0826 9380     		strh	r3, [r2, #4]	@ unaligned
+ 489:openstack/03b-IPv6/icmpv6rpl.c ****           &(icmpv6rpl_vars.dao_transit),
+ 490:openstack/03b-IPv6/icmpv6rpl.c ****           sizeof(icmpv6rpl_dao_transit_ht)
+ 491:openstack/03b-IPv6/icmpv6rpl.c ****    );
+ 492:openstack/03b-IPv6/icmpv6rpl.c ****    numTransitParents++;
+ 1142              		.loc 1 492 0
+ 1143 0828 FB7F     		ldrb	r3, [r7, #31]
+ 1144 082a 03F10103 		add	r3, r3, #1
+ 1145 082e FB77     		strb	r3, [r7, #31]
+ 493:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 494:openstack/03b-IPv6/icmpv6rpl.c ****    //target information is required. RFC 6550 page 55.
+ 495:openstack/03b-IPv6/icmpv6rpl.c ****    /*
+ 496:openstack/03b-IPv6/icmpv6rpl.c ****    One or more Transit Information options MUST be preceded by one or
+ 497:openstack/03b-IPv6/icmpv6rpl.c ****    more RPL Target options.   
+ 498:openstack/03b-IPv6/icmpv6rpl.c ****    */
+ 499:openstack/03b-IPv6/icmpv6rpl.c ****     numTargetParents                        = 0;
+ 1146              		.loc 1 499 0
+ 1147 0830 4FF00003 		mov	r3, #0
+ 1148 0834 87F82630 		strb	r3, [r7, #38]
+ 500:openstack/03b-IPv6/icmpv6rpl.c ****     for (nbrIdx=0;nbrIdx<MAXNUMNEIGHBORS;nbrIdx++) {
+ 1149              		.loc 1 500 0
+ 1150 0838 4FF00003 		mov	r3, #0
+ 1151 083c 87F82730 		strb	r3, [r7, #39]
+ 1152 0840 63E0     		b	.L36
+ 1153              	.L40:
+ 501:openstack/03b-IPv6/icmpv6rpl.c ****       if ((neighbors_isNeighborWithHigherDAGrank(nbrIdx))==TRUE) {
+ 1154              		.loc 1 501 0
+ 1155 0842 97F82730 		ldrb	r3, [r7, #39]	@ zero_extendqisi2
+ 1156 0846 1846     		mov	r0, r3
+ 1157 0848 FFF7FEFF 		bl	neighbors_isNeighborWithHigherDAGrank
+ 1158 084c 0346     		mov	r3, r0
+ 1159 084e 002B     		cmp	r3, #0
+ 1160 0850 51D0     		beq	.L37
+ 502:openstack/03b-IPv6/icmpv6rpl.c ****          // this neighbor is of higher DAGrank as I am. so it is my child
+ 503:openstack/03b-IPv6/icmpv6rpl.c ****          
+ 504:openstack/03b-IPv6/icmpv6rpl.c ****          // write it's address in DAO RFC6550 page 80 check point 1.
+ 505:openstack/03b-IPv6/icmpv6rpl.c ****          neighbors_getNeighbor(&address,ADDR_64B,nbrIdx); 
+ 1161              		.loc 1 505 0
+ 1162 0852 07F10402 		add	r2, r7, #4
+ 1163 0856 97F82730 		ldrb	r3, [r7, #39]	@ zero_extendqisi2
+ 1164 085a 1046     		mov	r0, r2
+ 1165 085c 4FF00201 		mov	r1, #2
+ 1166 0860 1A46     		mov	r2, r3
+ 1167 0862 FFF7FEFF 		bl	neighbors_getNeighbor
+ 506:openstack/03b-IPv6/icmpv6rpl.c ****          packetfunctions_writeAddress(msg,&address,OW_BIG_ENDIAN);
+ 1168              		.loc 1 506 0
+ 1169 0866 07F10403 		add	r3, r7, #4
+ 1170 086a 386A     		ldr	r0, [r7, #32]
+ 1171 086c 1946     		mov	r1, r3
+ 1172 086e 4FF00002 		mov	r2, #0
+ 1173 0872 FFF7FEFF 		bl	packetfunctions_writeAddress
+ 507:openstack/03b-IPv6/icmpv6rpl.c ****          prefix=idmanager_getMyID(ADDR_PREFIX);
+ 1174              		.loc 1 507 0
+ 1175 0876 4FF00500 		mov	r0, #5
+ 1176 087a FFF7FEFF 		bl	idmanager_getMyID
+ 1177 087e B861     		str	r0, [r7, #24]
+ 508:openstack/03b-IPv6/icmpv6rpl.c ****          packetfunctions_writeAddress(msg,prefix,OW_BIG_ENDIAN);
+ 1178              		.loc 1 508 0
+ 1179 0880 386A     		ldr	r0, [r7, #32]
+ 1180 0882 B969     		ldr	r1, [r7, #24]
+ 1181 0884 4FF00002 		mov	r2, #0
+ 1182 0888 FFF7FEFF 		bl	packetfunctions_writeAddress
+ 509:openstack/03b-IPv6/icmpv6rpl.c ****         
+ 510:openstack/03b-IPv6/icmpv6rpl.c ****          // update target info fields 
+ 511:openstack/03b-IPv6/icmpv6rpl.c ****          // from rfc6550 p.55 -- Variable, length of the option in octets excluding the Type and Le
+ 512:openstack/03b-IPv6/icmpv6rpl.c ****          // poipoi xv: assuming that type and length fields refer to the 2 first bytes of the heade
+ 513:openstack/03b-IPv6/icmpv6rpl.c ****          icmpv6rpl_vars.dao_target.optionLength  = LENGTH_ADDR128b +sizeof(icmpv6rpl_dao_target_ht)
+ 1183              		.loc 1 513 0
+ 1184 088c 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 1185 0890 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 1186 0894 4FF01202 		mov	r2, #18
+ 1187 0898 83F84B20 		strb	r2, [r3, #75]
+ 514:openstack/03b-IPv6/icmpv6rpl.c ****          icmpv6rpl_vars.dao_target.type  = OPTION_TARGET_INFORMATION_TYPE;
+ 1188              		.loc 1 514 0
+ 1189 089c 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 1190 08a0 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 1191 08a4 4FF00502 		mov	r2, #5
+ 1192 08a8 83F84A20 		strb	r2, [r3, #74]
+ 515:openstack/03b-IPv6/icmpv6rpl.c ****          icmpv6rpl_vars.dao_target.flags  = 0;       //must be 0
+ 1193              		.loc 1 515 0
+ 1194 08ac 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 1195 08b0 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 1196 08b4 4FF00002 		mov	r2, #0
+ 1197 08b8 83F84C20 		strb	r2, [r3, #76]
+ 516:openstack/03b-IPv6/icmpv6rpl.c ****          icmpv6rpl_vars.dao_target.prefixLength = 128; //128 leading bits  -- full address.
+ 1198              		.loc 1 516 0
+ 1199 08bc 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 1200 08c0 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 1201 08c4 4FF08002 		mov	r2, #128
+ 1202 08c8 83F84D20 		strb	r2, [r3, #77]
+ 517:openstack/03b-IPv6/icmpv6rpl.c ****          
+ 518:openstack/03b-IPv6/icmpv6rpl.c ****          // write transit info in packet
+ 519:openstack/03b-IPv6/icmpv6rpl.c ****          packetfunctions_reserveHeaderSize(msg,sizeof(icmpv6rpl_dao_target_ht));
+ 1203              		.loc 1 519 0
+ 1204 08cc 386A     		ldr	r0, [r7, #32]
+ 1205 08ce 4FF00401 		mov	r1, #4
+ 1206 08d2 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 520:openstack/03b-IPv6/icmpv6rpl.c ****          memcpy(
+ 521:openstack/03b-IPv6/icmpv6rpl.c ****                ((icmpv6rpl_dao_target_ht*)(msg->payload)),
+ 1207              		.loc 1 521 0
+ 1208 08d6 3B6A     		ldr	r3, [r7, #32]
+ 1209 08d8 5A68     		ldr	r2, [r3, #4]
+ 520:openstack/03b-IPv6/icmpv6rpl.c ****          memcpy(
+ 1210              		.loc 1 520 0
+ 1211 08da 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 1212 08de C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 1213 08e2 03F14A03 		add	r3, r3, #74
+ 1214 08e6 1B68     		ldr	r3, [r3, #0]	@ unaligned
+ 1215 08e8 1360     		str	r3, [r2, #0]	@ unaligned
+ 522:openstack/03b-IPv6/icmpv6rpl.c ****                &(icmpv6rpl_vars.dao_target),
+ 523:openstack/03b-IPv6/icmpv6rpl.c ****                sizeof(icmpv6rpl_dao_target_ht)
+ 524:openstack/03b-IPv6/icmpv6rpl.c ****          );
+ 525:openstack/03b-IPv6/icmpv6rpl.c ****          
+ 526:openstack/03b-IPv6/icmpv6rpl.c ****          // remember I found it
+ 527:openstack/03b-IPv6/icmpv6rpl.c ****          numTargetParents++;
+ 1216              		.loc 1 527 0
+ 1217 08ea 97F82630 		ldrb	r3, [r7, #38]
+ 1218 08ee 03F10103 		add	r3, r3, #1
+ 1219 08f2 87F82630 		strb	r3, [r7, #38]
+ 1220              	.L37:
+ 528:openstack/03b-IPv6/icmpv6rpl.c ****       }  
+ 529:openstack/03b-IPv6/icmpv6rpl.c ****       //limit to MAX_TARGET_PARENTS the number of DAO target addresses to send
+ 530:openstack/03b-IPv6/icmpv6rpl.c ****       //section 8.2.1 pag 67 RFC6550 -- using a subset
+ 531:openstack/03b-IPv6/icmpv6rpl.c ****       // poipoi TODO base selection on ETX rather than first X.
+ 532:openstack/03b-IPv6/icmpv6rpl.c ****       if (numTargetParents>=MAX_TARGET_PARENTS) break;
+ 1221              		.loc 1 532 0
+ 1222 08f6 97F82630 		ldrb	r3, [r7, #38]	@ zero_extendqisi2
+ 1223 08fa 002B     		cmp	r3, #0
+ 1224 08fc 0AD1     		bne	.L45
+ 1225              	.L38:
+ 500:openstack/03b-IPv6/icmpv6rpl.c ****     for (nbrIdx=0;nbrIdx<MAXNUMNEIGHBORS;nbrIdx++) {
+ 1226              		.loc 1 500 0
+ 1227 08fe 97F82730 		ldrb	r3, [r7, #39]
+ 1228 0902 03F10103 		add	r3, r3, #1
+ 1229 0906 87F82730 		strb	r3, [r7, #39]
+ 1230              	.L36:
+ 500:openstack/03b-IPv6/icmpv6rpl.c ****     for (nbrIdx=0;nbrIdx<MAXNUMNEIGHBORS;nbrIdx++) {
+ 1231              		.loc 1 500 0 is_stmt 0 discriminator 1
+ 1232 090a 97F82730 		ldrb	r3, [r7, #39]	@ zero_extendqisi2
+ 1233 090e 092B     		cmp	r3, #9
+ 1234 0910 97D9     		bls	.L40
+ 1235 0912 00E0     		b	.L39
+ 1236              	.L45:
+ 1237              		.loc 1 532 0 is_stmt 1
+ 1238 0914 00BF     		nop
+ 1239              	.L39:
+ 533:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 534:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 535:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 536:openstack/03b-IPv6/icmpv6rpl.c ****    // stop here if no parents found
+ 537:openstack/03b-IPv6/icmpv6rpl.c ****    if (numTransitParents==0) {
+ 1240              		.loc 1 537 0
+ 1241 0916 FB7F     		ldrb	r3, [r7, #31]	@ zero_extendqisi2
+ 1242 0918 002B     		cmp	r3, #0
+ 1243 091a 03D1     		bne	.L41
+ 538:openstack/03b-IPv6/icmpv6rpl.c ****       openqueue_freePacketBuffer(msg);
+ 1244              		.loc 1 538 0
+ 1245 091c 386A     		ldr	r0, [r7, #32]
+ 1246 091e FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 1247 0922 4CE0     		b	.L32
+ 1248              	.L41:
+ 539:openstack/03b-IPv6/icmpv6rpl.c ****       return;
+ 540:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 541:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 542:openstack/03b-IPv6/icmpv6rpl.c ****    icmpv6rpl_vars.dao_transit.PathSequence++; //increment path sequence.
+ 1249              		.loc 1 542 0
+ 1250 0924 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 1251 0928 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 1252 092c 93F84830 		ldrb	r3, [r3, #72]	@ zero_extendqisi2
+ 1253 0930 03F10103 		add	r3, r3, #1
+ 1254 0934 DAB2     		uxtb	r2, r3
+ 1255 0936 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 1256 093a C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 1257 093e 83F84820 		strb	r2, [r3, #72]
+ 543:openstack/03b-IPv6/icmpv6rpl.c ****    // if you get here, you will send a DAO
+ 544:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 545:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 546:openstack/03b-IPv6/icmpv6rpl.c ****    //=== DAO header
+ 547:openstack/03b-IPv6/icmpv6rpl.c ****    packetfunctions_reserveHeaderSize(msg,sizeof(icmpv6rpl_dao_ht));
+ 1258              		.loc 1 547 0
+ 1259 0942 386A     		ldr	r0, [r7, #32]
+ 1260 0944 4FF01401 		mov	r1, #20
+ 1261 0948 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 548:openstack/03b-IPv6/icmpv6rpl.c ****    memcpy(
+ 549:openstack/03b-IPv6/icmpv6rpl.c ****       ((icmpv6rpl_dao_ht*)(msg->payload)),
+ 1262              		.loc 1 549 0
+ 1263 094c 3B6A     		ldr	r3, [r7, #32]
+ 1264 094e 5A68     		ldr	r2, [r3, #4]
+ 548:openstack/03b-IPv6/icmpv6rpl.c ****    memcpy(
+ 1265              		.loc 1 548 0
+ 1266 0950 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 1267 0954 C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 1268 0958 1546     		mov	r5, r2
+ 1269 095a 03F13004 		add	r4, r3, #48
+ 1270 095e 0FCC     		ldmia	r4!, {r0, r1, r2, r3}
+ 1271 0960 2860     		str	r0, [r5, #0]	@ unaligned
+ 1272 0962 6960     		str	r1, [r5, #4]	@ unaligned
+ 1273 0964 AA60     		str	r2, [r5, #8]	@ unaligned
+ 1274 0966 EB60     		str	r3, [r5, #12]	@ unaligned
+ 1275 0968 2068     		ldr	r0, [r4, #0]	@ unaligned
+ 1276 096a 2861     		str	r0, [r5, #16]	@ unaligned
+ 550:openstack/03b-IPv6/icmpv6rpl.c ****       &(icmpv6rpl_vars.dao),
+ 551:openstack/03b-IPv6/icmpv6rpl.c ****       sizeof(icmpv6rpl_dao_ht)
+ 552:openstack/03b-IPv6/icmpv6rpl.c ****    );
+ 553:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 554:openstack/03b-IPv6/icmpv6rpl.c ****    //=== ICMPv6 header
+ 555:openstack/03b-IPv6/icmpv6rpl.c ****    packetfunctions_reserveHeaderSize(msg,sizeof(ICMPv6_ht));
+ 1277              		.loc 1 555 0
+ 1278 096c 386A     		ldr	r0, [r7, #32]
+ 1279 096e 4FF00401 		mov	r1, #4
+ 1280 0972 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 556:openstack/03b-IPv6/icmpv6rpl.c ****    ((ICMPv6_ht*)(msg->payload))->type       = msg->l4_sourcePortORicmpv6Type;
+ 1281              		.loc 1 556 0
+ 1282 0976 3B6A     		ldr	r3, [r7, #32]
+ 1283 0978 5B68     		ldr	r3, [r3, #4]
+ 1284 097a 3A6A     		ldr	r2, [r7, #32]
+ 1285 097c 9289     		ldrh	r2, [r2, #12]
+ 1286 097e D2B2     		uxtb	r2, r2
+ 1287 0980 1A70     		strb	r2, [r3, #0]
+ 557:openstack/03b-IPv6/icmpv6rpl.c ****    ((ICMPv6_ht*)(msg->payload))->code       = IANA_ICMPv6_RPL_DAO;
+ 1288              		.loc 1 557 0
+ 1289 0982 3B6A     		ldr	r3, [r7, #32]
+ 1290 0984 5B68     		ldr	r3, [r3, #4]
+ 1291 0986 4FF00202 		mov	r2, #2
+ 1292 098a 5A70     		strb	r2, [r3, #1]
+ 558:openstack/03b-IPv6/icmpv6rpl.c ****    packetfunctions_calculateChecksum(msg,(uint8_t*)&(((ICMPv6_ht*)(msg->payload))->checksum)); //ca
+ 1293              		.loc 1 558 0
+ 1294 098c 3B6A     		ldr	r3, [r7, #32]
+ 1295 098e 5B68     		ldr	r3, [r3, #4]
+ 1296 0990 03F10203 		add	r3, r3, #2
+ 1297 0994 386A     		ldr	r0, [r7, #32]
+ 1298 0996 1946     		mov	r1, r3
+ 1299 0998 FFF7FEFF 		bl	packetfunctions_calculateChecksum
+ 559:openstack/03b-IPv6/icmpv6rpl.c ****    
+ 560:openstack/03b-IPv6/icmpv6rpl.c ****    //===== send
+ 561:openstack/03b-IPv6/icmpv6rpl.c ****    if (icmpv6_send(msg)==E_SUCCESS) {
+ 1300              		.loc 1 561 0
+ 1301 099c 386A     		ldr	r0, [r7, #32]
+ 1302 099e FFF7FEFF 		bl	icmpv6_send
+ 1303 09a2 0346     		mov	r3, r0
+ 1304 09a4 002B     		cmp	r3, #0
+ 1305 09a6 07D1     		bne	.L42
+ 562:openstack/03b-IPv6/icmpv6rpl.c ****       icmpv6rpl_vars.busySending = TRUE;
+ 1306              		.loc 1 562 0
+ 1307 09a8 40F20003 		movw	r3, #:lower16:icmpv6rpl_vars
+ 1308 09ac C0F20003 		movt	r3, #:upper16:icmpv6rpl_vars
+ 1309 09b0 4FF00102 		mov	r2, #1
+ 1310 09b4 1A70     		strb	r2, [r3, #0]
+ 1311 09b6 02E0     		b	.L32
+ 1312              	.L42:
+ 563:openstack/03b-IPv6/icmpv6rpl.c ****    } else {
+ 564:openstack/03b-IPv6/icmpv6rpl.c ****       openqueue_freePacketBuffer(msg);
+ 1313              		.loc 1 564 0
+ 1314 09b8 386A     		ldr	r0, [r7, #32]
+ 1315 09ba FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 1316              	.L32:
+ 565:openstack/03b-IPv6/icmpv6rpl.c ****    }
+ 566:openstack/03b-IPv6/icmpv6rpl.c **** }
+ 1317              		.loc 1 566 0
+ 1318 09be 07F12807 		add	r7, r7, #40
+ 1319 09c2 BD46     		mov	sp, r7
+ 1320 09c4 B0BD     		pop	{r4, r5, r7, pc}
+ 1321              		.cfi_endproc
+ 1322              	.LFE10:
+ 1324              	.Letext0:
+ 1325              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+ 1326              		.file 3 "inc/opendefs.h"
+ 1327              		.file 4 "drivers/common/opentimers.h"
+ 1328              		.file 5 "openstack/03b-IPv6/icmpv6rpl.h"
+ 1329              		.file 6 "openstack/03b-IPv6/icmpv6.h"
+ 1330              		.file 7 "kernel/scheduler.h"
+ 1331              		.file 8 "bsp/boards/OpenMote-CC2538/board_info.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 icmpv6rpl.c
+     /tmp/ccvu3coj.s:19     .rodata:00000000 $d
+     /tmp/ccvu3coj.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccvu3coj.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccvu3coj.s:32     .rodata:00000010 infouCName
+     /tmp/ccvu3coj.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccvu3coj.s:42     .rodata:00000024 infoStackName
+     /tmp/ccvu3coj.s:47     .rodata:00000030 all_routers_multicast
+                            *COM*:00000054 icmpv6rpl_vars
+     /tmp/ccvu3coj.s:66     .text:00000000 $t
+     /tmp/ccvu3coj.s:71     .text:00000000 icmpv6rpl_init
+     /tmp/ccvu3coj.s:571    .text:000003e8 icmpv6rpl_timer_DIO_cb
+     /tmp/ccvu3coj.s:881    .text:00000620 icmpv6rpl_timer_DAO_cb
+     /tmp/ccvu3coj.s:322    .text:00000294 icmpv6rpl_writeDODAGid
+     /tmp/ccvu3coj.s:362    .text:000002cc $d
+     /tmp/ccvu3coj.s:367    .text:000002d4 $t
+     /tmp/ccvu3coj.s:372    .text:000002d4 icmpv6rpl_getRPLIntanceID
+     /tmp/ccvu3coj.s:403    .text:000002ec icmpv6rpl_sendDone
+     /tmp/ccvu3coj.s:459    .text:00000338 icmpv6rpl_receive
+     /tmp/ccvu3coj.s:600    .text:00000400 icmpv6rpl_timer_DIO_task
+     /tmp/ccvu3coj.s:675    .text:00000494 sendDIO
+     /tmp/ccvu3coj.s:910    .text:00000638 icmpv6rpl_timer_DAO_task
+     /tmp/ccvu3coj.s:986    .text:000006d4 sendDAO
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.toolchain_defs.h.2.e4ebbe6e0a48032a9b79077dc42e1ffd
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
+                           .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
+                           .group:00000000 wm4.icmpv6rpl.h.15.89c5061c19a4811537f699fd2b74755c
+                           .group:00000000 wm4.schedule.h.2.74f699399ee9cbf3b59178f1204d8511
+                           .group:00000000 wm4.processIE.h.2.1848f1e3c653035e9779472584ce0441
+                           .group:00000000 wm4.IEEE802154Ecsl.h.21.a46c6cdefbea13cd7501756681c86a21
+                           .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
+                           .group:00000000 wm4.neighbors.h.15.9f35f180a0332d1bc442efb0ec51905c
+                           .group:00000000 wm4.scheduler.h.2.ca320b72942c5204a6e225e3c9c0814e
+                           .group:00000000 wm4.idmanager.h.2.8c0e2159b32ef3125cbb1e984805cbfe
+
+UNDEFINED SYMBOLS
+idmanager_getMyID
+memcpy
+memset
+openrandom_get16b
+opentimers_start
+openserial_printError
+openqueue_freePacketBuffer
+packetfunctions_tossHeader
+idmanager_getIsDAGroot
+neighbors_indicateRxDIO
+idmanager_setMyID
+openserial_printCritical
+scheduler_push_task
+opentimers_setPeriod
+ieee154e_isSynch
+openqueue_removeAllCreatedBy
+neighbors_getMyDAGrank
+openqueue_getFreePacketBuffer
+packetfunctions_reserveHeaderSize
+packetfunctions_calculateChecksum
+icmpv6_send
+neighbors_getPreferredParentEui64
+packetfunctions_writeAddress
+neighbors_isNeighborWithHigherDAGrank
+neighbors_getNeighbor

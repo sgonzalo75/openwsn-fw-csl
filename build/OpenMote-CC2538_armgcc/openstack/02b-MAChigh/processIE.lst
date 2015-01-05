@@ -1,0 +1,2017 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"processIE.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.align	2
+  42              	infoStackName:
+  43 0024 4F70656E 		.ascii	"OpenWSN \000"
+  43      57534E20 
+  43      00
+  44 002d 000000   		.align	2
+  47              	all_routers_multicast:
+  48 0030 FF       		.byte	-1
+  49 0031 02       		.byte	2
+  50 0032 00       		.byte	0
+  51 0033 00       		.byte	0
+  52 0034 00       		.byte	0
+  53 0035 00       		.byte	0
+  54 0036 00       		.byte	0
+  55 0037 00       		.byte	0
+  56 0038 00       		.byte	0
+  57 0039 00       		.byte	0
+  58 003a 00       		.byte	0
+  59 003b 00       		.byte	0
+  60 003c 00       		.byte	0
+  61 003d 00       		.byte	0
+  62 003e 00       		.byte	0
+  63 003f 02       		.byte	2
+  64              		.text
+  65              		.align	2
+  66              		.global	processIE_prependMLMEIE
+  67              		.thumb
+  68              		.thumb_func
+  70              	processIE_prependMLMEIE:
+  71              	.LFB0:
+  72              		.file 1 "openstack/02b-MAChigh/processIE.c"
+   1:openstack/02b-MAChigh/processIE.c **** #include "opendefs.h"
+   2:openstack/02b-MAChigh/processIE.c **** #include "processIE.h"
+   3:openstack/02b-MAChigh/processIE.c **** 
+   4:openstack/02b-MAChigh/processIE.c **** #include "../02a-MAClow/IEEE802154Ecsl.h"
+   5:openstack/02b-MAChigh/processIE.c **** #include "sixtop.h"
+   6:openstack/02b-MAChigh/processIE.c **** #include "idmanager.h"
+   7:openstack/02b-MAChigh/processIE.c **** #include "openserial.h"
+   8:openstack/02b-MAChigh/processIE.c **** #include "IEEE802154.h"
+   9:openstack/02b-MAChigh/processIE.c **** #include "openqueue.h"
+  10:openstack/02b-MAChigh/processIE.c **** #include "neighbors.h"
+  11:openstack/02b-MAChigh/processIE.c **** #include "schedule.h"
+  12:openstack/02b-MAChigh/processIE.c **** #include "scheduler.h"
+  13:openstack/02b-MAChigh/processIE.c **** #include "packetfunctions.h"
+  14:openstack/02b-MAChigh/processIE.c **** 
+  15:openstack/02b-MAChigh/processIE.c **** //=========================== variables =======================================
+  16:openstack/02b-MAChigh/processIE.c **** 
+  17:openstack/02b-MAChigh/processIE.c **** //=========================== public ==========================================
+  18:openstack/02b-MAChigh/processIE.c **** 
+  19:openstack/02b-MAChigh/processIE.c **** port_INLINE void processIE_prependMLMEIE(
+  20:openstack/02b-MAChigh/processIE.c ****       OpenQueueEntry_t* pkt, 
+  21:openstack/02b-MAChigh/processIE.c ****       uint8_t           len
+  22:openstack/02b-MAChigh/processIE.c ****    ){
+  73              		.loc 1 22 0
+  74              		.cfi_startproc
+  75              		@ args = 0, pretend = 0, frame = 16
+  76              		@ frame_needed = 1, uses_anonymous_args = 0
+  77 0000 80B5     		push	{r7, lr}
+  78              	.LCFI0:
+  79              		.cfi_def_cfa_offset 8
+  80              		.cfi_offset 7, -8
+  81              		.cfi_offset 14, -4
+  82 0002 84B0     		sub	sp, sp, #16
+  83              	.LCFI1:
+  84              		.cfi_def_cfa_offset 24
+  85 0004 00AF     		add	r7, sp, #0
+  86              	.LCFI2:
+  87              		.cfi_def_cfa_register 7
+  88 0006 7860     		str	r0, [r7, #4]
+  89 0008 0B46     		mov	r3, r1
+  90 000a FB70     		strb	r3, [r7, #3]
+  23:openstack/02b-MAChigh/processIE.c ****    payload_IE_ht payload_IE_desc;
+  24:openstack/02b-MAChigh/processIE.c ****    
+  25:openstack/02b-MAChigh/processIE.c ****    // reserve space
+  26:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(
+  91              		.loc 1 26 0
+  92 000c 7868     		ldr	r0, [r7, #4]
+  93 000e 4FF00201 		mov	r1, #2
+  94 0012 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+  27:openstack/02b-MAChigh/processIE.c ****       pkt, 
+  28:openstack/02b-MAChigh/processIE.c ****       sizeof(payload_IE_ht)
+  29:openstack/02b-MAChigh/processIE.c ****    );
+  30:openstack/02b-MAChigh/processIE.c ****    
+  31:openstack/02b-MAChigh/processIE.c ****    // prepare header
+  32:openstack/02b-MAChigh/processIE.c ****    payload_IE_desc.length_groupid_type = 
+  95              		.loc 1 32 0
+  96 0016 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+  97 0018 9BB2     		uxth	r3, r3
+  98 001a 4FEA4313 		lsl	r3, r3, #5
+  99 001e 9BB2     		uxth	r3, r3
+ 100 0020 BB81     		strh	r3, [r7, #12]	@ movhi
+  33:openstack/02b-MAChigh/processIE.c ****       len << IEEE802154E_DESC_LEN_PAYLOAD_IE_SHIFT;
+  34:openstack/02b-MAChigh/processIE.c ****    payload_IE_desc.length_groupid_type |= 
+ 101              		.loc 1 34 0
+ 102 0022 BB89     		ldrh	r3, [r7, #12]
+ 103 0024 43F00303 		orr	r3, r3, #3
+ 104 0028 9BB2     		uxth	r3, r3
+ 105 002a BB81     		strh	r3, [r7, #12]	@ movhi
+  35:openstack/02b-MAChigh/processIE.c ****       (IEEE802154E_PAYLOAD_DESC_GROUP_ID_MLME  | IEEE802154E_DESC_TYPE_LONG); 
+  36:openstack/02b-MAChigh/processIE.c ****    
+  37:openstack/02b-MAChigh/processIE.c ****    // copy header
+  38:openstack/02b-MAChigh/processIE.c ****    pkt->payload[0] =  payload_IE_desc.length_groupid_type       & 0xFF;
+ 106              		.loc 1 38 0
+ 107 002c 7B68     		ldr	r3, [r7, #4]
+ 108 002e 5B68     		ldr	r3, [r3, #4]
+ 109 0030 BA89     		ldrh	r2, [r7, #12]
+ 110 0032 D2B2     		uxtb	r2, r2
+ 111 0034 1A70     		strb	r2, [r3, #0]
+  39:openstack/02b-MAChigh/processIE.c ****    pkt->payload[1] = (payload_IE_desc.length_groupid_type >> 8) & 0xFF;
+ 112              		.loc 1 39 0
+ 113 0036 7B68     		ldr	r3, [r7, #4]
+ 114 0038 5B68     		ldr	r3, [r3, #4]
+ 115 003a 03F10103 		add	r3, r3, #1
+ 116 003e BA89     		ldrh	r2, [r7, #12]
+ 117 0040 4FEA1222 		lsr	r2, r2, #8
+ 118 0044 92B2     		uxth	r2, r2
+ 119 0046 D2B2     		uxtb	r2, r2
+ 120 0048 1A70     		strb	r2, [r3, #0]
+  40:openstack/02b-MAChigh/processIE.c **** }
+ 121              		.loc 1 40 0
+ 122 004a 07F11007 		add	r7, r7, #16
+ 123 004e BD46     		mov	sp, r7
+ 124 0050 80BD     		pop	{r7, pc}
+ 125              		.cfi_endproc
+ 126              	.LFE0:
+ 128 0052 00BF     		.align	2
+ 129              		.global	processIE_prependSyncIE
+ 130              		.thumb
+ 131              		.thumb_func
+ 133              	processIE_prependSyncIE:
+ 134              	.LFB1:
+  41:openstack/02b-MAChigh/processIE.c **** 
+  42:openstack/02b-MAChigh/processIE.c **** //===== prepend IEs
+  43:openstack/02b-MAChigh/processIE.c **** 
+  44:openstack/02b-MAChigh/processIE.c **** port_INLINE uint8_t processIE_prependSyncIE(OpenQueueEntry_t* pkt){
+ 135              		.loc 1 44 0
+ 136              		.cfi_startproc
+ 137              		@ args = 0, pretend = 0, frame = 16
+ 138              		@ frame_needed = 1, uses_anonymous_args = 0
+ 139 0054 80B5     		push	{r7, lr}
+ 140              	.LCFI3:
+ 141              		.cfi_def_cfa_offset 8
+ 142              		.cfi_offset 7, -8
+ 143              		.cfi_offset 14, -4
+ 144 0056 84B0     		sub	sp, sp, #16
+ 145              	.LCFI4:
+ 146              		.cfi_def_cfa_offset 24
+ 147 0058 00AF     		add	r7, sp, #0
+ 148              	.LCFI5:
+ 149              		.cfi_def_cfa_register 7
+ 150 005a 7860     		str	r0, [r7, #4]
+  45:openstack/02b-MAChigh/processIE.c ****    mlme_IE_ht mlme_subHeader;
+  46:openstack/02b-MAChigh/processIE.c ****    uint8_t    len;
+  47:openstack/02b-MAChigh/processIE.c ****   
+  48:openstack/02b-MAChigh/processIE.c ****    len = 0;
+ 151              		.loc 1 48 0
+ 152 005c 4FF00003 		mov	r3, #0
+ 153 0060 FB73     		strb	r3, [r7, #15]
+  49:openstack/02b-MAChigh/processIE.c ****   
+  50:openstack/02b-MAChigh/processIE.c ****    //=== sync IE
+  51:openstack/02b-MAChigh/processIE.c ****    
+  52:openstack/02b-MAChigh/processIE.c ****    // reserve space
+  53:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(
+ 154              		.loc 1 53 0
+ 155 0062 7868     		ldr	r0, [r7, #4]
+ 156 0064 4FF00601 		mov	r1, #6
+ 157 0068 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+  54:openstack/02b-MAChigh/processIE.c ****       pkt,
+  55:openstack/02b-MAChigh/processIE.c ****       sizeof(sync_IE_ht)
+  56:openstack/02b-MAChigh/processIE.c ****    );
+  57:openstack/02b-MAChigh/processIE.c ****    
+  58:openstack/02b-MAChigh/processIE.c ****    // Keep a pointer to where the ASN will be
+  59:openstack/02b-MAChigh/processIE.c ****    // Note: the actual value of the current ASN and JP will be written by the
+  60:openstack/02b-MAChigh/processIE.c ****    //    IEEE802.15.4e when transmitting
+  61:openstack/02b-MAChigh/processIE.c ****    pkt->l2_ASNpayload               = pkt->payload; 
+ 158              		.loc 1 61 0
+ 159 006c 7B68     		ldr	r3, [r7, #4]
+ 160 006e 5A68     		ldr	r2, [r3, #4]
+ 161 0070 7B68     		ldr	r3, [r7, #4]
+ 162 0072 1A66     		str	r2, [r3, #96]
+  62:openstack/02b-MAChigh/processIE.c ****    
+  63:openstack/02b-MAChigh/processIE.c ****    len += sizeof(sync_IE_ht);
+ 163              		.loc 1 63 0
+ 164 0074 FB7B     		ldrb	r3, [r7, #15]
+ 165 0076 03F10603 		add	r3, r3, #6
+ 166 007a FB73     		strb	r3, [r7, #15]
+  64:openstack/02b-MAChigh/processIE.c ****   
+  65:openstack/02b-MAChigh/processIE.c ****    //=== MLME IE
+  66:openstack/02b-MAChigh/processIE.c ****   
+  67:openstack/02b-MAChigh/processIE.c ****    // reserve space
+  68:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(
+ 167              		.loc 1 68 0
+ 168 007c 7868     		ldr	r0, [r7, #4]
+ 169 007e 4FF00201 		mov	r1, #2
+ 170 0082 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+  69:openstack/02b-MAChigh/processIE.c ****       pkt,
+  70:openstack/02b-MAChigh/processIE.c ****       sizeof(mlme_IE_ht)
+  71:openstack/02b-MAChigh/processIE.c ****    );
+  72:openstack/02b-MAChigh/processIE.c ****    
+  73:openstack/02b-MAChigh/processIE.c ****    // prepare header
+  74:openstack/02b-MAChigh/processIE.c ****    mlme_subHeader.length_subID_type = 
+ 171              		.loc 1 74 0
+ 172 0086 4FF4C063 		mov	r3, #1536
+ 173 008a BB81     		strh	r3, [r7, #12]	@ movhi
+  75:openstack/02b-MAChigh/processIE.c ****       sizeof(sync_IE_ht) << IEEE802154E_DESC_LEN_SHORT_MLME_IE_SHIFT;
+  76:openstack/02b-MAChigh/processIE.c ****    mlme_subHeader.length_subID_type |= 
+ 174              		.loc 1 76 0
+ 175 008c BB89     		ldrh	r3, [r7, #12]
+ 176 008e 43F03403 		orr	r3, r3, #52
+ 177 0092 9BB2     		uxth	r3, r3
+ 178 0094 BB81     		strh	r3, [r7, #12]	@ movhi
+  77:openstack/02b-MAChigh/processIE.c ****       (IEEE802154E_MLME_SYNC_IE_SUBID << IEEE802154E_MLME_SYNC_IE_SUBID_SHIFT)|
+  78:openstack/02b-MAChigh/processIE.c ****       IEEE802154E_DESC_TYPE_SHORT;
+  79:openstack/02b-MAChigh/processIE.c ****    
+  80:openstack/02b-MAChigh/processIE.c ****    // copy header
+  81:openstack/02b-MAChigh/processIE.c ****    pkt->payload[0]= mlme_subHeader.length_subID_type & 0xFF;
+ 179              		.loc 1 81 0
+ 180 0096 7B68     		ldr	r3, [r7, #4]
+ 181 0098 5B68     		ldr	r3, [r3, #4]
+ 182 009a BA89     		ldrh	r2, [r7, #12]
+ 183 009c D2B2     		uxtb	r2, r2
+ 184 009e 1A70     		strb	r2, [r3, #0]
+  82:openstack/02b-MAChigh/processIE.c ****    pkt->payload[1]= (mlme_subHeader.length_subID_type >> 8) & 0xFF;
+ 185              		.loc 1 82 0
+ 186 00a0 7B68     		ldr	r3, [r7, #4]
+ 187 00a2 5B68     		ldr	r3, [r3, #4]
+ 188 00a4 03F10103 		add	r3, r3, #1
+ 189 00a8 BA89     		ldrh	r2, [r7, #12]
+ 190 00aa 4FEA1222 		lsr	r2, r2, #8
+ 191 00ae 92B2     		uxth	r2, r2
+ 192 00b0 D2B2     		uxtb	r2, r2
+ 193 00b2 1A70     		strb	r2, [r3, #0]
+  83:openstack/02b-MAChigh/processIE.c ****    
+  84:openstack/02b-MAChigh/processIE.c ****    len += 2;
+ 194              		.loc 1 84 0
+ 195 00b4 FB7B     		ldrb	r3, [r7, #15]
+ 196 00b6 03F10203 		add	r3, r3, #2
+ 197 00ba FB73     		strb	r3, [r7, #15]
+  85:openstack/02b-MAChigh/processIE.c ****    
+  86:openstack/02b-MAChigh/processIE.c ****    return len;
+ 198              		.loc 1 86 0
+ 199 00bc FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+  87:openstack/02b-MAChigh/processIE.c **** }
+ 200              		.loc 1 87 0
+ 201 00be 1846     		mov	r0, r3
+ 202 00c0 07F11007 		add	r7, r7, #16
+ 203 00c4 BD46     		mov	sp, r7
+ 204 00c6 80BD     		pop	{r7, pc}
+ 205              		.cfi_endproc
+ 206              	.LFE1:
+ 208              		.align	2
+ 209              		.global	processIE_prependSlotframeLinkIE
+ 210              		.thumb
+ 211              		.thumb_func
+ 213              	processIE_prependSlotframeLinkIE:
+ 214              	.LFB2:
+  88:openstack/02b-MAChigh/processIE.c **** 
+  89:openstack/02b-MAChigh/processIE.c **** port_INLINE uint8_t processIE_prependSlotframeLinkIE(OpenQueueEntry_t* pkt){
+ 215              		.loc 1 89 0
+ 216              		.cfi_startproc
+ 217              		@ args = 0, pretend = 0, frame = 16
+ 218              		@ frame_needed = 1, uses_anonymous_args = 0
+ 219 00c8 80B5     		push	{r7, lr}
+ 220              	.LCFI6:
+ 221              		.cfi_def_cfa_offset 8
+ 222              		.cfi_offset 7, -8
+ 223              		.cfi_offset 14, -4
+ 224 00ca 84B0     		sub	sp, sp, #16
+ 225              	.LCFI7:
+ 226              		.cfi_def_cfa_offset 24
+ 227 00cc 00AF     		add	r7, sp, #0
+ 228              	.LCFI8:
+ 229              		.cfi_def_cfa_register 7
+ 230 00ce 7860     		str	r0, [r7, #4]
+  90:openstack/02b-MAChigh/processIE.c ****    mlme_IE_ht mlme_subHeader;
+  91:openstack/02b-MAChigh/processIE.c ****    uint8_t    len;
+  92:openstack/02b-MAChigh/processIE.c ****    uint8_t    linkOption;
+  93:openstack/02b-MAChigh/processIE.c ****    uint16_t   slot;
+  94:openstack/02b-MAChigh/processIE.c ****   
+  95:openstack/02b-MAChigh/processIE.c ****    len        = 0;
+ 231              		.loc 1 95 0
+ 232 00d0 4FF00003 		mov	r3, #0
+ 233 00d4 FB73     		strb	r3, [r7, #15]
+  96:openstack/02b-MAChigh/processIE.c ****    linkOption = 0;
+ 234              		.loc 1 96 0
+ 235 00d6 4FF00003 		mov	r3, #0
+ 236 00da FB72     		strb	r3, [r7, #11]
+  97:openstack/02b-MAChigh/processIE.c ****    slot       = SCHEDULE_MINIMAL_6TISCH_ACTIVE_CELLS+\
+ 237              		.loc 1 97 0
+ 238 00dc 4FF00603 		mov	r3, #6
+ 239 00e0 BB81     		strh	r3, [r7, #12]	@ movhi
+  98:openstack/02b-MAChigh/processIE.c ****                 SCHEDULE_MINIMAL_6TISCH_EB_CELLS;
+  99:openstack/02b-MAChigh/processIE.c ****    
+ 100:openstack/02b-MAChigh/processIE.c ****    // for each link in the default schedule, add:
+ 101:openstack/02b-MAChigh/processIE.c ****    // - [1B] linkOption bitmap
+ 102:openstack/02b-MAChigh/processIE.c ****    // - [2B] channel offset
+ 103:openstack/02b-MAChigh/processIE.c ****    // - [2B] timeslot
+ 104:openstack/02b-MAChigh/processIE.c ****  
+ 105:openstack/02b-MAChigh/processIE.c ****    //===== shared cells
+ 106:openstack/02b-MAChigh/processIE.c ****    
+ 107:openstack/02b-MAChigh/processIE.c ****    linkOption = (1<<FLAG_TX_S)|(1<<FLAG_RX_S)|(1<<FLAG_SHARED_S);
+ 240              		.loc 1 107 0
+ 241 00e2 4FF0E003 		mov	r3, #224
+ 242 00e6 FB72     		strb	r3, [r7, #11]
+ 108:openstack/02b-MAChigh/processIE.c ****    while(slot>SCHEDULE_MINIMAL_6TISCH_EB_CELLS){
+ 243              		.loc 1 108 0
+ 244 00e8 2FE0     		b	.L5
+ 245              	.L6:
+ 109:openstack/02b-MAChigh/processIE.c ****       packetfunctions_reserveHeaderSize(pkt,5);
+ 246              		.loc 1 109 0
+ 247 00ea 7868     		ldr	r0, [r7, #4]
+ 248 00ec 4FF00501 		mov	r1, #5
+ 249 00f0 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 110:openstack/02b-MAChigh/processIE.c ****       pkt->payload[0]   =  slot       & 0xFF;
+ 250              		.loc 1 110 0
+ 251 00f4 7B68     		ldr	r3, [r7, #4]
+ 252 00f6 5B68     		ldr	r3, [r3, #4]
+ 253 00f8 BA89     		ldrh	r2, [r7, #12]	@ movhi
+ 254 00fa D2B2     		uxtb	r2, r2
+ 255 00fc 1A70     		strb	r2, [r3, #0]
+ 111:openstack/02b-MAChigh/processIE.c ****       pkt->payload[1]   = (slot >> 8) & 0xFF;
+ 256              		.loc 1 111 0
+ 257 00fe 7B68     		ldr	r3, [r7, #4]
+ 258 0100 5B68     		ldr	r3, [r3, #4]
+ 259 0102 03F10103 		add	r3, r3, #1
+ 260 0106 BA89     		ldrh	r2, [r7, #12]
+ 261 0108 4FEA1222 		lsr	r2, r2, #8
+ 262 010c 92B2     		uxth	r2, r2
+ 263 010e D2B2     		uxtb	r2, r2
+ 264 0110 1A70     		strb	r2, [r3, #0]
+ 112:openstack/02b-MAChigh/processIE.c ****       pkt->payload[2]   = 0x00;             // channel offset
+ 265              		.loc 1 112 0
+ 266 0112 7B68     		ldr	r3, [r7, #4]
+ 267 0114 5B68     		ldr	r3, [r3, #4]
+ 268 0116 03F10203 		add	r3, r3, #2
+ 269 011a 4FF00002 		mov	r2, #0
+ 270 011e 1A70     		strb	r2, [r3, #0]
+ 113:openstack/02b-MAChigh/processIE.c ****       pkt->payload[3]   = 0x00;
+ 271              		.loc 1 113 0
+ 272 0120 7B68     		ldr	r3, [r7, #4]
+ 273 0122 5B68     		ldr	r3, [r3, #4]
+ 274 0124 03F10303 		add	r3, r3, #3
+ 275 0128 4FF00002 		mov	r2, #0
+ 276 012c 1A70     		strb	r2, [r3, #0]
+ 114:openstack/02b-MAChigh/processIE.c ****       pkt->payload[4]   = linkOption;       // linkOption
+ 277              		.loc 1 114 0
+ 278 012e 7B68     		ldr	r3, [r7, #4]
+ 279 0130 5B68     		ldr	r3, [r3, #4]
+ 280 0132 03F10403 		add	r3, r3, #4
+ 281 0136 FA7A     		ldrb	r2, [r7, #11]
+ 282 0138 1A70     		strb	r2, [r3, #0]
+ 115:openstack/02b-MAChigh/processIE.c ****       len+=5;
+ 283              		.loc 1 115 0
+ 284 013a FB7B     		ldrb	r3, [r7, #15]
+ 285 013c 03F10503 		add	r3, r3, #5
+ 286 0140 FB73     		strb	r3, [r7, #15]
+ 116:openstack/02b-MAChigh/processIE.c ****       slot--;
+ 287              		.loc 1 116 0
+ 288 0142 BB89     		ldrh	r3, [r7, #12]	@ movhi
+ 289 0144 03F1FF33 		add	r3, r3, #-1
+ 290 0148 BB81     		strh	r3, [r7, #12]	@ movhi
+ 291              	.L5:
+ 108:openstack/02b-MAChigh/processIE.c ****    while(slot>SCHEDULE_MINIMAL_6TISCH_EB_CELLS){
+ 292              		.loc 1 108 0 discriminator 1
+ 293 014a BB89     		ldrh	r3, [r7, #12]
+ 294 014c 012B     		cmp	r3, #1
+ 295 014e CCD8     		bhi	.L6
+ 117:openstack/02b-MAChigh/processIE.c ****    }
+ 118:openstack/02b-MAChigh/processIE.c ****  
+ 119:openstack/02b-MAChigh/processIE.c ****    //===== EB cell
+ 120:openstack/02b-MAChigh/processIE.c ****    
+ 121:openstack/02b-MAChigh/processIE.c ****    linkOption = (1<<FLAG_TX_S)          |
+ 296              		.loc 1 121 0
+ 297 0150 4FF0F003 		mov	r3, #240
+ 298 0154 FB72     		strb	r3, [r7, #11]
+ 122:openstack/02b-MAChigh/processIE.c ****                 (1<<FLAG_RX_S)          |
+ 123:openstack/02b-MAChigh/processIE.c ****                 (1<<FLAG_SHARED_S)      |
+ 124:openstack/02b-MAChigh/processIE.c ****                 (1<<FLAG_TIMEKEEPING_S);
+ 125:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(pkt,5);
+ 299              		.loc 1 125 0
+ 300 0156 7868     		ldr	r0, [r7, #4]
+ 301 0158 4FF00501 		mov	r1, #5
+ 302 015c FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 126:openstack/02b-MAChigh/processIE.c ****    pkt->payload[0] =  SCHEDULE_MINIMAL_6TISCH_EB_CELLS       & 0xFF;
+ 303              		.loc 1 126 0
+ 304 0160 7B68     		ldr	r3, [r7, #4]
+ 305 0162 5B68     		ldr	r3, [r3, #4]
+ 306 0164 4FF00102 		mov	r2, #1
+ 307 0168 1A70     		strb	r2, [r3, #0]
+ 127:openstack/02b-MAChigh/processIE.c ****    pkt->payload[1] = (SCHEDULE_MINIMAL_6TISCH_EB_CELLS >> 8) & 0xFF;
+ 308              		.loc 1 127 0
+ 309 016a 7B68     		ldr	r3, [r7, #4]
+ 310 016c 5B68     		ldr	r3, [r3, #4]
+ 311 016e 03F10103 		add	r3, r3, #1
+ 312 0172 4FF00002 		mov	r2, #0
+ 313 0176 1A70     		strb	r2, [r3, #0]
+ 128:openstack/02b-MAChigh/processIE.c ****    pkt->payload[2] = 0x00; //  channel offset
+ 314              		.loc 1 128 0
+ 315 0178 7B68     		ldr	r3, [r7, #4]
+ 316 017a 5B68     		ldr	r3, [r3, #4]
+ 317 017c 03F10203 		add	r3, r3, #2
+ 318 0180 4FF00002 		mov	r2, #0
+ 319 0184 1A70     		strb	r2, [r3, #0]
+ 129:openstack/02b-MAChigh/processIE.c ****    pkt->payload[3] = 0x00;
+ 320              		.loc 1 129 0
+ 321 0186 7B68     		ldr	r3, [r7, #4]
+ 322 0188 5B68     		ldr	r3, [r3, #4]
+ 323 018a 03F10303 		add	r3, r3, #3
+ 324 018e 4FF00002 		mov	r2, #0
+ 325 0192 1A70     		strb	r2, [r3, #0]
+ 130:openstack/02b-MAChigh/processIE.c ****    pkt->payload[4] = linkOption;
+ 326              		.loc 1 130 0
+ 327 0194 7B68     		ldr	r3, [r7, #4]
+ 328 0196 5B68     		ldr	r3, [r3, #4]
+ 329 0198 03F10403 		add	r3, r3, #4
+ 330 019c FA7A     		ldrb	r2, [r7, #11]
+ 331 019e 1A70     		strb	r2, [r3, #0]
+ 131:openstack/02b-MAChigh/processIE.c ****    
+ 132:openstack/02b-MAChigh/processIE.c ****    len+=5;
+ 332              		.loc 1 132 0
+ 333 01a0 FB7B     		ldrb	r3, [r7, #15]
+ 334 01a2 03F10503 		add	r3, r3, #5
+ 335 01a6 FB73     		strb	r3, [r7, #15]
+ 133:openstack/02b-MAChigh/processIE.c ****    
+ 134:openstack/02b-MAChigh/processIE.c ****    //===== slotframe IE header
+ 135:openstack/02b-MAChigh/processIE.c ****    
+ 136:openstack/02b-MAChigh/processIE.c ****    // - [1B] number of links (6)
+ 137:openstack/02b-MAChigh/processIE.c ****    // - [2B] Slotframe Size (101)
+ 138:openstack/02b-MAChigh/processIE.c ****    // - [1B] slotframe handle (id)
+ 139:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(pkt,5);
+ 336              		.loc 1 139 0
+ 337 01a8 7868     		ldr	r0, [r7, #4]
+ 338 01aa 4FF00501 		mov	r1, #5
+ 339 01ae FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 140:openstack/02b-MAChigh/processIE.c ****    pkt->payload[0] = SCHEDULE_MINIMAL_6TISCH_DEFAULT_SLOTFRAME_NUMBER;  
+ 340              		.loc 1 140 0
+ 341 01b2 7B68     		ldr	r3, [r7, #4]
+ 342 01b4 5B68     		ldr	r3, [r3, #4]
+ 343 01b6 4FF00102 		mov	r2, #1
+ 344 01ba 1A70     		strb	r2, [r3, #0]
+ 141:openstack/02b-MAChigh/processIE.c ****    pkt->payload[1] = SCHEDULE_MINIMAL_6TISCH_DEFAULT_SLOTFRAME_HANDLE;
+ 345              		.loc 1 141 0
+ 346 01bc 7B68     		ldr	r3, [r7, #4]
+ 347 01be 5B68     		ldr	r3, [r3, #4]
+ 348 01c0 03F10103 		add	r3, r3, #1
+ 349 01c4 4FF00102 		mov	r2, #1
+ 350 01c8 1A70     		strb	r2, [r3, #0]
+ 142:openstack/02b-MAChigh/processIE.c ****    pkt->payload[2] =  SCHEDULE_MINIMAL_6TISCH_SLOTFRAME_SIZE       & 0xFF;
+ 351              		.loc 1 142 0
+ 352 01ca 7B68     		ldr	r3, [r7, #4]
+ 353 01cc 5B68     		ldr	r3, [r3, #4]
+ 354 01ce 03F10203 		add	r3, r3, #2
+ 355 01d2 4FF06502 		mov	r2, #101
+ 356 01d6 1A70     		strb	r2, [r3, #0]
+ 143:openstack/02b-MAChigh/processIE.c ****    pkt->payload[3] = (SCHEDULE_MINIMAL_6TISCH_SLOTFRAME_SIZE >> 8) & 0xFF;
+ 357              		.loc 1 143 0
+ 358 01d8 7B68     		ldr	r3, [r7, #4]
+ 359 01da 5B68     		ldr	r3, [r3, #4]
+ 360 01dc 03F10303 		add	r3, r3, #3
+ 361 01e0 4FF00002 		mov	r2, #0
+ 362 01e4 1A70     		strb	r2, [r3, #0]
+ 144:openstack/02b-MAChigh/processIE.c ****    pkt->payload[4] = 0x06; //number of links
+ 363              		.loc 1 144 0
+ 364 01e6 7B68     		ldr	r3, [r7, #4]
+ 365 01e8 5B68     		ldr	r3, [r3, #4]
+ 366 01ea 03F10403 		add	r3, r3, #4
+ 367 01ee 4FF00602 		mov	r2, #6
+ 368 01f2 1A70     		strb	r2, [r3, #0]
+ 145:openstack/02b-MAChigh/processIE.c ****   
+ 146:openstack/02b-MAChigh/processIE.c ****    len+=5;
+ 369              		.loc 1 146 0
+ 370 01f4 FB7B     		ldrb	r3, [r7, #15]
+ 371 01f6 03F10503 		add	r3, r3, #5
+ 372 01fa FB73     		strb	r3, [r7, #15]
+ 147:openstack/02b-MAChigh/processIE.c ****    
+ 148:openstack/02b-MAChigh/processIE.c ****    //===== MLME IE header
+ 149:openstack/02b-MAChigh/processIE.c ****    // - [1b] 15 short ==0x00
+ 150:openstack/02b-MAChigh/processIE.c ****    // - [7b] 8-14 Sub-ID=0x1b
+ 151:openstack/02b-MAChigh/processIE.c ****    // - [8b] Length
+ 152:openstack/02b-MAChigh/processIE.c ****    
+ 153:openstack/02b-MAChigh/processIE.c ****    // reserve space
+ 154:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(
+ 373              		.loc 1 154 0
+ 374 01fc 7868     		ldr	r0, [r7, #4]
+ 375 01fe 4FF00201 		mov	r1, #2
+ 376 0202 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 155:openstack/02b-MAChigh/processIE.c ****       pkt,
+ 156:openstack/02b-MAChigh/processIE.c ****       sizeof(mlme_IE_ht)
+ 157:openstack/02b-MAChigh/processIE.c ****    );
+ 158:openstack/02b-MAChigh/processIE.c ****    
+ 159:openstack/02b-MAChigh/processIE.c ****    // prepare header
+ 160:openstack/02b-MAChigh/processIE.c ****    mlme_subHeader.length_subID_type = 
+ 377              		.loc 1 160 0
+ 378 0206 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 379 0208 9BB2     		uxth	r3, r3
+ 380 020a 4FEA0323 		lsl	r3, r3, #8
+ 381 020e 9BB2     		uxth	r3, r3
+ 382 0210 3B81     		strh	r3, [r7, #8]	@ movhi
+ 161:openstack/02b-MAChigh/processIE.c ****       len << IEEE802154E_DESC_LEN_SHORT_MLME_IE_SHIFT;
+ 162:openstack/02b-MAChigh/processIE.c ****    mlme_subHeader.length_subID_type |= 
+ 383              		.loc 1 162 0
+ 384 0212 3B89     		ldrh	r3, [r7, #8]
+ 385 0214 43F03603 		orr	r3, r3, #54
+ 386 0218 9BB2     		uxth	r3, r3
+ 387 021a 3B81     		strh	r3, [r7, #8]	@ movhi
+ 163:openstack/02b-MAChigh/processIE.c ****       (IEEE802154E_MLME_SLOTFRAME_LINK_IE_SUBID << 
+ 164:openstack/02b-MAChigh/processIE.c ****          IEEE802154E_MLME_SYNC_IE_SUBID_SHIFT)      | 
+ 165:openstack/02b-MAChigh/processIE.c ****       IEEE802154E_DESC_TYPE_SHORT;
+ 166:openstack/02b-MAChigh/processIE.c ****   
+ 167:openstack/02b-MAChigh/processIE.c ****    // copy header
+ 168:openstack/02b-MAChigh/processIE.c ****    pkt->payload[0]=  mlme_subHeader.length_subID_type       & 0xFF;
+ 388              		.loc 1 168 0
+ 389 021c 7B68     		ldr	r3, [r7, #4]
+ 390 021e 5B68     		ldr	r3, [r3, #4]
+ 391 0220 3A89     		ldrh	r2, [r7, #8]
+ 392 0222 D2B2     		uxtb	r2, r2
+ 393 0224 1A70     		strb	r2, [r3, #0]
+ 169:openstack/02b-MAChigh/processIE.c ****    pkt->payload[1]= (mlme_subHeader.length_subID_type >> 8) & 0xFF;
+ 394              		.loc 1 169 0
+ 395 0226 7B68     		ldr	r3, [r7, #4]
+ 396 0228 5B68     		ldr	r3, [r3, #4]
+ 397 022a 03F10103 		add	r3, r3, #1
+ 398 022e 3A89     		ldrh	r2, [r7, #8]
+ 399 0230 4FEA1222 		lsr	r2, r2, #8
+ 400 0234 92B2     		uxth	r2, r2
+ 401 0236 D2B2     		uxtb	r2, r2
+ 402 0238 1A70     		strb	r2, [r3, #0]
+ 170:openstack/02b-MAChigh/processIE.c ****    
+ 171:openstack/02b-MAChigh/processIE.c ****    len+=2;
+ 403              		.loc 1 171 0
+ 404 023a FB7B     		ldrb	r3, [r7, #15]
+ 405 023c 03F10203 		add	r3, r3, #2
+ 406 0240 FB73     		strb	r3, [r7, #15]
+ 172:openstack/02b-MAChigh/processIE.c ****    
+ 173:openstack/02b-MAChigh/processIE.c ****    return len;
+ 407              		.loc 1 173 0
+ 408 0242 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 174:openstack/02b-MAChigh/processIE.c **** }
+ 409              		.loc 1 174 0
+ 410 0244 1846     		mov	r0, r3
+ 411 0246 07F11007 		add	r7, r7, #16
+ 412 024a BD46     		mov	sp, r7
+ 413 024c 80BD     		pop	{r7, pc}
+ 414              		.cfi_endproc
+ 415              	.LFE2:
+ 417 024e 00BF     		.align	2
+ 418              		.global	processIE_prependOpcodeIE
+ 419              		.thumb
+ 420              		.thumb_func
+ 422              	processIE_prependOpcodeIE:
+ 423              	.LFB3:
+ 175:openstack/02b-MAChigh/processIE.c **** 
+ 176:openstack/02b-MAChigh/processIE.c **** port_INLINE uint8_t processIE_prependOpcodeIE(
+ 177:openstack/02b-MAChigh/processIE.c ****       OpenQueueEntry_t* pkt,
+ 178:openstack/02b-MAChigh/processIE.c ****       uint8_t           uResCommandID
+ 179:openstack/02b-MAChigh/processIE.c ****    ){
+ 424              		.loc 1 179 0
+ 425              		.cfi_startproc
+ 426              		@ args = 0, pretend = 0, frame = 16
+ 427              		@ frame_needed = 1, uses_anonymous_args = 0
+ 428 0250 80B5     		push	{r7, lr}
+ 429              	.LCFI9:
+ 430              		.cfi_def_cfa_offset 8
+ 431              		.cfi_offset 7, -8
+ 432              		.cfi_offset 14, -4
+ 433 0252 84B0     		sub	sp, sp, #16
+ 434              	.LCFI10:
+ 435              		.cfi_def_cfa_offset 24
+ 436 0254 00AF     		add	r7, sp, #0
+ 437              	.LCFI11:
+ 438              		.cfi_def_cfa_register 7
+ 439 0256 7860     		str	r0, [r7, #4]
+ 440 0258 0B46     		mov	r3, r1
+ 441 025a FB70     		strb	r3, [r7, #3]
+ 180:openstack/02b-MAChigh/processIE.c ****    uint8_t    len;
+ 181:openstack/02b-MAChigh/processIE.c ****    mlme_IE_ht mlme_subHeader;
+ 182:openstack/02b-MAChigh/processIE.c ****   
+ 183:openstack/02b-MAChigh/processIE.c ****    len = 0;
+ 442              		.loc 1 183 0
+ 443 025c 4FF00003 		mov	r3, #0
+ 444 0260 FB73     		strb	r3, [r7, #15]
+ 184:openstack/02b-MAChigh/processIE.c ****    
+ 185:openstack/02b-MAChigh/processIE.c ****    //===== command ID
+ 186:openstack/02b-MAChigh/processIE.c ****    
+ 187:openstack/02b-MAChigh/processIE.c ****    // reserve space
+ 188:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(pkt,sizeof(uint8_t));
+ 445              		.loc 1 188 0
+ 446 0262 7868     		ldr	r0, [r7, #4]
+ 447 0264 4FF00101 		mov	r1, #1
+ 448 0268 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 189:openstack/02b-MAChigh/processIE.c ****    
+ 190:openstack/02b-MAChigh/processIE.c ****    // write header
+ 191:openstack/02b-MAChigh/processIE.c ****    *((uint8_t*)(pkt->payload)) = uResCommandID;
+ 449              		.loc 1 191 0
+ 450 026c 7B68     		ldr	r3, [r7, #4]
+ 451 026e 5B68     		ldr	r3, [r3, #4]
+ 452 0270 FA78     		ldrb	r2, [r7, #3]
+ 453 0272 1A70     		strb	r2, [r3, #0]
+ 192:openstack/02b-MAChigh/processIE.c ****    
+ 193:openstack/02b-MAChigh/processIE.c ****    len += 1;  
+ 454              		.loc 1 193 0
+ 455 0274 FB7B     		ldrb	r3, [r7, #15]
+ 456 0276 03F10103 		add	r3, r3, #1
+ 457 027a FB73     		strb	r3, [r7, #15]
+ 194:openstack/02b-MAChigh/processIE.c ****   
+ 195:openstack/02b-MAChigh/processIE.c ****    //===== MLME IE header
+ 196:openstack/02b-MAChigh/processIE.c ****    
+ 197:openstack/02b-MAChigh/processIE.c ****    // reserve space
+ 198:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(pkt, sizeof(mlme_IE_ht));
+ 458              		.loc 1 198 0
+ 459 027c 7868     		ldr	r0, [r7, #4]
+ 460 027e 4FF00201 		mov	r1, #2
+ 461 0282 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 199:openstack/02b-MAChigh/processIE.c ****    
+ 200:openstack/02b-MAChigh/processIE.c ****    // prepare header
+ 201:openstack/02b-MAChigh/processIE.c ****    mlme_subHeader.length_subID_type  = 
+ 462              		.loc 1 201 0
+ 463 0286 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 464 0288 9BB2     		uxth	r3, r3
+ 465 028a 4FEA0323 		lsl	r3, r3, #8
+ 466 028e 9BB2     		uxth	r3, r3
+ 467 0290 BB81     		strh	r3, [r7, #12]	@ movhi
+ 202:openstack/02b-MAChigh/processIE.c ****       len << IEEE802154E_DESC_LEN_SHORT_MLME_IE_SHIFT;
+ 203:openstack/02b-MAChigh/processIE.c ****    mlme_subHeader.length_subID_type |= 
+ 468              		.loc 1 203 0
+ 469 0292 BB89     		ldrh	r3, [r7, #12]
+ 470 0294 43F08203 		orr	r3, r3, #130
+ 471 0298 9BB2     		uxth	r3, r3
+ 472 029a BB81     		strh	r3, [r7, #12]	@ movhi
+ 204:openstack/02b-MAChigh/processIE.c ****       MLME_IE_SUBID_OPCODE << MLME_IE_SUBID_SHIFT|
+ 205:openstack/02b-MAChigh/processIE.c ****       IEEE802154E_DESC_TYPE_SHORT;
+ 206:openstack/02b-MAChigh/processIE.c ****    
+ 207:openstack/02b-MAChigh/processIE.c ****    // copy header
+ 208:openstack/02b-MAChigh/processIE.c ****    pkt->payload[0] =  mlme_subHeader.length_subID_type       & 0xFF;
+ 473              		.loc 1 208 0
+ 474 029c 7B68     		ldr	r3, [r7, #4]
+ 475 029e 5B68     		ldr	r3, [r3, #4]
+ 476 02a0 BA89     		ldrh	r2, [r7, #12]
+ 477 02a2 D2B2     		uxtb	r2, r2
+ 478 02a4 1A70     		strb	r2, [r3, #0]
+ 209:openstack/02b-MAChigh/processIE.c ****    pkt->payload[1] = (mlme_subHeader.length_subID_type >> 8) & 0xFF;
+ 479              		.loc 1 209 0
+ 480 02a6 7B68     		ldr	r3, [r7, #4]
+ 481 02a8 5B68     		ldr	r3, [r3, #4]
+ 482 02aa 03F10103 		add	r3, r3, #1
+ 483 02ae BA89     		ldrh	r2, [r7, #12]
+ 484 02b0 4FEA1222 		lsr	r2, r2, #8
+ 485 02b4 92B2     		uxth	r2, r2
+ 486 02b6 D2B2     		uxtb	r2, r2
+ 487 02b8 1A70     		strb	r2, [r3, #0]
+ 210:openstack/02b-MAChigh/processIE.c ****    
+ 211:openstack/02b-MAChigh/processIE.c ****    len += 2;
+ 488              		.loc 1 211 0
+ 489 02ba FB7B     		ldrb	r3, [r7, #15]
+ 490 02bc 03F10203 		add	r3, r3, #2
+ 491 02c0 FB73     		strb	r3, [r7, #15]
+ 212:openstack/02b-MAChigh/processIE.c ****   
+ 213:openstack/02b-MAChigh/processIE.c ****    return len;
+ 492              		.loc 1 213 0
+ 493 02c2 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 214:openstack/02b-MAChigh/processIE.c **** }
+ 494              		.loc 1 214 0
+ 495 02c4 1846     		mov	r0, r3
+ 496 02c6 07F11007 		add	r7, r7, #16
+ 497 02ca BD46     		mov	sp, r7
+ 498 02cc 80BD     		pop	{r7, pc}
+ 499              		.cfi_endproc
+ 500              	.LFE3:
+ 502 02ce 00BF     		.align	2
+ 503              		.global	processIE_prependBandwidthIE
+ 504              		.thumb
+ 505              		.thumb_func
+ 507              	processIE_prependBandwidthIE:
+ 508              	.LFB4:
+ 215:openstack/02b-MAChigh/processIE.c **** 
+ 216:openstack/02b-MAChigh/processIE.c **** port_INLINE uint8_t processIE_prependBandwidthIE(
+ 217:openstack/02b-MAChigh/processIE.c ****       OpenQueueEntry_t* pkt, 
+ 218:openstack/02b-MAChigh/processIE.c ****       uint8_t           numOfLinks, 
+ 219:openstack/02b-MAChigh/processIE.c ****       uint8_t           slotframeID
+ 220:openstack/02b-MAChigh/processIE.c ****    ){
+ 509              		.loc 1 220 0
+ 510              		.cfi_startproc
+ 511              		@ args = 0, pretend = 0, frame = 16
+ 512              		@ frame_needed = 1, uses_anonymous_args = 0
+ 513 02d0 80B5     		push	{r7, lr}
+ 514              	.LCFI12:
+ 515              		.cfi_def_cfa_offset 8
+ 516              		.cfi_offset 7, -8
+ 517              		.cfi_offset 14, -4
+ 518 02d2 84B0     		sub	sp, sp, #16
+ 519              	.LCFI13:
+ 520              		.cfi_def_cfa_offset 24
+ 521 02d4 00AF     		add	r7, sp, #0
+ 522              	.LCFI14:
+ 523              		.cfi_def_cfa_register 7
+ 524 02d6 7860     		str	r0, [r7, #4]
+ 525 02d8 1346     		mov	r3, r2
+ 526 02da 0A46     		mov	r2, r1
+ 527 02dc FA70     		strb	r2, [r7, #3]
+ 528 02de BB70     		strb	r3, [r7, #2]
+ 221:openstack/02b-MAChigh/processIE.c ****    
+ 222:openstack/02b-MAChigh/processIE.c ****    uint8_t    len;
+ 223:openstack/02b-MAChigh/processIE.c ****    mlme_IE_ht mlme_subHeader;
+ 224:openstack/02b-MAChigh/processIE.c ****    
+ 225:openstack/02b-MAChigh/processIE.c ****    len = 0;
+ 529              		.loc 1 225 0
+ 530 02e0 4FF00003 		mov	r3, #0
+ 531 02e4 FB73     		strb	r3, [r7, #15]
+ 226:openstack/02b-MAChigh/processIE.c ****    
+ 227:openstack/02b-MAChigh/processIE.c ****    //===== number of cells
+ 228:openstack/02b-MAChigh/processIE.c ****    
+ 229:openstack/02b-MAChigh/processIE.c ****    // reserve space
+ 230:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(pkt,sizeof(uint8_t));
+ 532              		.loc 1 230 0
+ 533 02e6 7868     		ldr	r0, [r7, #4]
+ 534 02e8 4FF00101 		mov	r1, #1
+ 535 02ec FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 231:openstack/02b-MAChigh/processIE.c ****    
+ 232:openstack/02b-MAChigh/processIE.c ****    // write header
+ 233:openstack/02b-MAChigh/processIE.c ****    *((uint8_t*)(pkt->payload)) = numOfLinks;
+ 536              		.loc 1 233 0
+ 537 02f0 7B68     		ldr	r3, [r7, #4]
+ 538 02f2 5B68     		ldr	r3, [r3, #4]
+ 539 02f4 FA78     		ldrb	r2, [r7, #3]
+ 540 02f6 1A70     		strb	r2, [r3, #0]
+ 234:openstack/02b-MAChigh/processIE.c ****    
+ 235:openstack/02b-MAChigh/processIE.c ****    len += 1;
+ 541              		.loc 1 235 0
+ 542 02f8 FB7B     		ldrb	r3, [r7, #15]
+ 543 02fa 03F10103 		add	r3, r3, #1
+ 544 02fe FB73     		strb	r3, [r7, #15]
+ 236:openstack/02b-MAChigh/processIE.c ****    
+ 237:openstack/02b-MAChigh/processIE.c ****    //===== number of cells
+ 238:openstack/02b-MAChigh/processIE.c ****    
+ 239:openstack/02b-MAChigh/processIE.c ****    // reserve space
+ 240:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(pkt,sizeof(uint8_t));
+ 545              		.loc 1 240 0
+ 546 0300 7868     		ldr	r0, [r7, #4]
+ 547 0302 4FF00101 		mov	r1, #1
+ 548 0306 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 241:openstack/02b-MAChigh/processIE.c ****    
+ 242:openstack/02b-MAChigh/processIE.c ****    // write header
+ 243:openstack/02b-MAChigh/processIE.c ****    *((uint8_t*)(pkt->payload)) = slotframeID;
+ 549              		.loc 1 243 0
+ 550 030a 7B68     		ldr	r3, [r7, #4]
+ 551 030c 5B68     		ldr	r3, [r3, #4]
+ 552 030e BA78     		ldrb	r2, [r7, #2]
+ 553 0310 1A70     		strb	r2, [r3, #0]
+ 244:openstack/02b-MAChigh/processIE.c ****    
+ 245:openstack/02b-MAChigh/processIE.c ****    len += 1;
+ 554              		.loc 1 245 0
+ 555 0312 FB7B     		ldrb	r3, [r7, #15]
+ 556 0314 03F10103 		add	r3, r3, #1
+ 557 0318 FB73     		strb	r3, [r7, #15]
+ 246:openstack/02b-MAChigh/processIE.c ****    
+ 247:openstack/02b-MAChigh/processIE.c ****    //===== MLME IE header
+ 248:openstack/02b-MAChigh/processIE.c ****    
+ 249:openstack/02b-MAChigh/processIE.c ****    // reserve space
+ 250:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(pkt, sizeof(mlme_IE_ht));
+ 558              		.loc 1 250 0
+ 559 031a 7868     		ldr	r0, [r7, #4]
+ 560 031c 4FF00201 		mov	r1, #2
+ 561 0320 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 251:openstack/02b-MAChigh/processIE.c ****    
+ 252:openstack/02b-MAChigh/processIE.c ****    // prepare header
+ 253:openstack/02b-MAChigh/processIE.c ****    mlme_subHeader.length_subID_type  = 
+ 562              		.loc 1 253 0
+ 563 0324 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 564 0326 9BB2     		uxth	r3, r3
+ 565 0328 4FEA0323 		lsl	r3, r3, #8
+ 566 032c 9BB2     		uxth	r3, r3
+ 567 032e BB81     		strh	r3, [r7, #12]	@ movhi
+ 254:openstack/02b-MAChigh/processIE.c ****       len << IEEE802154E_DESC_LEN_SHORT_MLME_IE_SHIFT;
+ 255:openstack/02b-MAChigh/processIE.c ****    mlme_subHeader.length_subID_type |= 
+ 568              		.loc 1 255 0
+ 569 0330 BB89     		ldrh	r3, [r7, #12]
+ 570 0332 43F08403 		orr	r3, r3, #132
+ 571 0336 9BB2     		uxth	r3, r3
+ 572 0338 BB81     		strh	r3, [r7, #12]	@ movhi
+ 256:openstack/02b-MAChigh/processIE.c ****       (MLME_IE_SUBID_BANDWIDTH << 
+ 257:openstack/02b-MAChigh/processIE.c ****          MLME_IE_SUBID_SHIFT) |
+ 258:openstack/02b-MAChigh/processIE.c ****       IEEE802154E_DESC_TYPE_SHORT;
+ 259:openstack/02b-MAChigh/processIE.c ****    
+ 260:openstack/02b-MAChigh/processIE.c ****    // copy header
+ 261:openstack/02b-MAChigh/processIE.c ****    pkt->payload[0] =  mlme_subHeader.length_subID_type       & 0xFF;
+ 573              		.loc 1 261 0
+ 574 033a 7B68     		ldr	r3, [r7, #4]
+ 575 033c 5B68     		ldr	r3, [r3, #4]
+ 576 033e BA89     		ldrh	r2, [r7, #12]
+ 577 0340 D2B2     		uxtb	r2, r2
+ 578 0342 1A70     		strb	r2, [r3, #0]
+ 262:openstack/02b-MAChigh/processIE.c ****    pkt->payload[1] = (mlme_subHeader.length_subID_type >> 8) & 0xFF;
+ 579              		.loc 1 262 0
+ 580 0344 7B68     		ldr	r3, [r7, #4]
+ 581 0346 5B68     		ldr	r3, [r3, #4]
+ 582 0348 03F10103 		add	r3, r3, #1
+ 583 034c BA89     		ldrh	r2, [r7, #12]
+ 584 034e 4FEA1222 		lsr	r2, r2, #8
+ 585 0352 92B2     		uxth	r2, r2
+ 586 0354 D2B2     		uxtb	r2, r2
+ 587 0356 1A70     		strb	r2, [r3, #0]
+ 263:openstack/02b-MAChigh/processIE.c ****    
+ 264:openstack/02b-MAChigh/processIE.c ****    len += 2;
+ 588              		.loc 1 264 0
+ 589 0358 FB7B     		ldrb	r3, [r7, #15]
+ 590 035a 03F10203 		add	r3, r3, #2
+ 591 035e FB73     		strb	r3, [r7, #15]
+ 265:openstack/02b-MAChigh/processIE.c ****   
+ 266:openstack/02b-MAChigh/processIE.c ****    return len;
+ 592              		.loc 1 266 0
+ 593 0360 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 267:openstack/02b-MAChigh/processIE.c **** }
+ 594              		.loc 1 267 0
+ 595 0362 1846     		mov	r0, r3
+ 596 0364 07F11007 		add	r7, r7, #16
+ 597 0368 BD46     		mov	sp, r7
+ 598 036a 80BD     		pop	{r7, pc}
+ 599              		.cfi_endproc
+ 600              	.LFE4:
+ 602              		.align	2
+ 603              		.global	processIE_prependSheduleIE
+ 604              		.thumb
+ 605              		.thumb_func
+ 607              	processIE_prependSheduleIE:
+ 608              	.LFB5:
+ 268:openstack/02b-MAChigh/processIE.c **** 
+ 269:openstack/02b-MAChigh/processIE.c **** port_INLINE uint8_t processIE_prependSheduleIE(
+ 270:openstack/02b-MAChigh/processIE.c ****       OpenQueueEntry_t* pkt,
+ 271:openstack/02b-MAChigh/processIE.c ****       uint8_t           type,
+ 272:openstack/02b-MAChigh/processIE.c ****       uint8_t           frameID,
+ 273:openstack/02b-MAChigh/processIE.c ****       uint8_t           flag,
+ 274:openstack/02b-MAChigh/processIE.c ****       cellInfo_ht*      cellList
+ 275:openstack/02b-MAChigh/processIE.c ****    ){
+ 609              		.loc 1 275 0
+ 610              		.cfi_startproc
+ 611              		@ args = 4, pretend = 0, frame = 16
+ 612              		@ frame_needed = 1, uses_anonymous_args = 0
+ 613 036c 80B5     		push	{r7, lr}
+ 614              	.LCFI15:
+ 615              		.cfi_def_cfa_offset 8
+ 616              		.cfi_offset 7, -8
+ 617              		.cfi_offset 14, -4
+ 618 036e 84B0     		sub	sp, sp, #16
+ 619              	.LCFI16:
+ 620              		.cfi_def_cfa_offset 24
+ 621 0370 00AF     		add	r7, sp, #0
+ 622              	.LCFI17:
+ 623              		.cfi_def_cfa_register 7
+ 624 0372 7860     		str	r0, [r7, #4]
+ 625 0374 F970     		strb	r1, [r7, #3]
+ 626 0376 BA70     		strb	r2, [r7, #2]
+ 627 0378 7B70     		strb	r3, [r7, #1]
+ 276:openstack/02b-MAChigh/processIE.c ****    uint8_t    i;
+ 277:openstack/02b-MAChigh/processIE.c ****    uint8_t    len;
+ 278:openstack/02b-MAChigh/processIE.c ****    uint8_t    temp8b;
+ 279:openstack/02b-MAChigh/processIE.c ****    uint8_t    numOfCells;
+ 280:openstack/02b-MAChigh/processIE.c ****    mlme_IE_ht mlme_subHeader;
+ 281:openstack/02b-MAChigh/processIE.c ****   
+ 282:openstack/02b-MAChigh/processIE.c ****    len        = 0;
+ 628              		.loc 1 282 0
+ 629 037a 4FF00003 		mov	r3, #0
+ 630 037e BB73     		strb	r3, [r7, #14]
+ 283:openstack/02b-MAChigh/processIE.c ****    numOfCells = 0;
+ 631              		.loc 1 283 0
+ 632 0380 4FF00003 		mov	r3, #0
+ 633 0384 7B73     		strb	r3, [r7, #13]
+ 284:openstack/02b-MAChigh/processIE.c ****    
+ 285:openstack/02b-MAChigh/processIE.c ****    //===== cell list
+ 286:openstack/02b-MAChigh/processIE.c ****    
+ 287:openstack/02b-MAChigh/processIE.c ****    for(i=0;i<SCHEDULEIEMAXNUMCELLS;i++) {
+ 634              		.loc 1 287 0
+ 635 0386 4FF00003 		mov	r3, #0
+ 636 038a FB73     		strb	r3, [r7, #15]
+ 637 038c 47E0     		b	.L13
+ 638              	.L15:
+ 288:openstack/02b-MAChigh/processIE.c ****       if(cellList[i].linkoptions != CELLTYPE_OFF){
+ 639              		.loc 1 288 0
+ 640 038e FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 641 0390 1346     		mov	r3, r2
+ 642 0392 4FEA8303 		lsl	r3, r3, #2
+ 643 0396 9B18     		adds	r3, r3, r2
+ 644 0398 BA69     		ldr	r2, [r7, #24]
+ 645 039a D318     		adds	r3, r2, r3
+ 646 039c 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
+ 647 039e 002B     		cmp	r3, #0
+ 648 03a0 39D0     		beq	.L14
+ 289:openstack/02b-MAChigh/processIE.c ****          // cellobjects:
+ 290:openstack/02b-MAChigh/processIE.c ****          // - [2B] slotOffset
+ 291:openstack/02b-MAChigh/processIE.c ****          // - [2B] channelOffset
+ 292:openstack/02b-MAChigh/processIE.c ****          // - [1B] link_type
+ 293:openstack/02b-MAChigh/processIE.c ****          packetfunctions_reserveHeaderSize(pkt,5); 
+ 649              		.loc 1 293 0
+ 650 03a2 7868     		ldr	r0, [r7, #4]
+ 651 03a4 4FF00501 		mov	r1, #5
+ 652 03a8 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 294:openstack/02b-MAChigh/processIE.c ****          packetfunctions_htons(cellList[i].tsNum,    &(pkt->payload[0])); 
+ 653              		.loc 1 294 0
+ 654 03ac FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 655 03ae 1346     		mov	r3, r2
+ 656 03b0 4FEA8303 		lsl	r3, r3, #2
+ 657 03b4 9B18     		adds	r3, r3, r2
+ 658 03b6 BA69     		ldr	r2, [r7, #24]
+ 659 03b8 D318     		adds	r3, r2, r3
+ 660 03ba 1B88     		ldrh	r3, [r3, #0]	@ unaligned
+ 661 03bc 9AB2     		uxth	r2, r3
+ 662 03be 7B68     		ldr	r3, [r7, #4]
+ 663 03c0 5B68     		ldr	r3, [r3, #4]
+ 664 03c2 1046     		mov	r0, r2
+ 665 03c4 1946     		mov	r1, r3
+ 666 03c6 FFF7FEFF 		bl	packetfunctions_htons
+ 295:openstack/02b-MAChigh/processIE.c ****          packetfunctions_htons(cellList[i].choffset, &(pkt->payload[2]));
+ 667              		.loc 1 295 0
+ 668 03ca FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 669 03cc 1346     		mov	r3, r2
+ 670 03ce 4FEA8303 		lsl	r3, r3, #2
+ 671 03d2 9B18     		adds	r3, r3, r2
+ 672 03d4 BA69     		ldr	r2, [r7, #24]
+ 673 03d6 D318     		adds	r3, r2, r3
+ 674 03d8 5B88     		ldrh	r3, [r3, #2]	@ unaligned
+ 675 03da 9AB2     		uxth	r2, r3
+ 676 03dc 7B68     		ldr	r3, [r7, #4]
+ 677 03de 5B68     		ldr	r3, [r3, #4]
+ 678 03e0 03F10203 		add	r3, r3, #2
+ 679 03e4 1046     		mov	r0, r2
+ 680 03e6 1946     		mov	r1, r3
+ 681 03e8 FFF7FEFF 		bl	packetfunctions_htons
+ 296:openstack/02b-MAChigh/processIE.c ****          pkt->payload[4] = cellList[i].linkoptions;
+ 682              		.loc 1 296 0
+ 683 03ec 7B68     		ldr	r3, [r7, #4]
+ 684 03ee 5B68     		ldr	r3, [r3, #4]
+ 685 03f0 03F10401 		add	r1, r3, #4
+ 686 03f4 FA7B     		ldrb	r2, [r7, #15]	@ zero_extendqisi2
+ 687 03f6 1346     		mov	r3, r2
+ 688 03f8 4FEA8303 		lsl	r3, r3, #2
+ 689 03fc 9B18     		adds	r3, r3, r2
+ 690 03fe BA69     		ldr	r2, [r7, #24]
+ 691 0400 D318     		adds	r3, r2, r3
+ 692 0402 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
+ 693 0404 0B70     		strb	r3, [r1, #0]
+ 297:openstack/02b-MAChigh/processIE.c ****          len += 5;
+ 694              		.loc 1 297 0
+ 695 0406 BB7B     		ldrb	r3, [r7, #14]
+ 696 0408 03F10503 		add	r3, r3, #5
+ 697 040c BB73     		strb	r3, [r7, #14]
+ 298:openstack/02b-MAChigh/processIE.c ****          numOfCells++;
+ 698              		.loc 1 298 0
+ 699 040e 7B7B     		ldrb	r3, [r7, #13]
+ 700 0410 03F10103 		add	r3, r3, #1
+ 701 0414 7B73     		strb	r3, [r7, #13]
+ 702              	.L14:
+ 287:openstack/02b-MAChigh/processIE.c ****    for(i=0;i<SCHEDULEIEMAXNUMCELLS;i++) {
+ 703              		.loc 1 287 0
+ 704 0416 FB7B     		ldrb	r3, [r7, #15]
+ 705 0418 03F10103 		add	r3, r3, #1
+ 706 041c FB73     		strb	r3, [r7, #15]
+ 707              	.L13:
+ 287:openstack/02b-MAChigh/processIE.c ****    for(i=0;i<SCHEDULEIEMAXNUMCELLS;i++) {
+ 708              		.loc 1 287 0 is_stmt 0 discriminator 1
+ 709 041e FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 710 0420 022B     		cmp	r3, #2
+ 711 0422 B4D9     		bls	.L15
+ 299:openstack/02b-MAChigh/processIE.c ****       }
+ 300:openstack/02b-MAChigh/processIE.c ****    }
+ 301:openstack/02b-MAChigh/processIE.c ****    
+ 302:openstack/02b-MAChigh/processIE.c ****    // record the position of cellObjects
+ 303:openstack/02b-MAChigh/processIE.c ****    pkt->l2_scheduleIE_numOfCells  = numOfCells;
+ 712              		.loc 1 303 0 is_stmt 1
+ 713 0424 7B68     		ldr	r3, [r7, #4]
+ 714 0426 7A7B     		ldrb	r2, [r7, #13]
+ 715 0428 83F85C20 		strb	r2, [r3, #92]
+ 304:openstack/02b-MAChigh/processIE.c ****    pkt->l2_scheduleIE_cellObjects = pkt->payload;
+ 716              		.loc 1 304 0
+ 717 042c 7B68     		ldr	r3, [r7, #4]
+ 718 042e 5A68     		ldr	r2, [r3, #4]
+ 719 0430 7B68     		ldr	r3, [r7, #4]
+ 720 0432 9A65     		str	r2, [r3, #88]
+ 305:openstack/02b-MAChigh/processIE.c ****    
+ 306:openstack/02b-MAChigh/processIE.c ****    //===== number of cells
+ 307:openstack/02b-MAChigh/processIE.c ****    
+ 308:openstack/02b-MAChigh/processIE.c ****    // reserve space
+ 309:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(pkt,sizeof(uint8_t));
+ 721              		.loc 1 309 0
+ 722 0434 7868     		ldr	r0, [r7, #4]
+ 723 0436 4FF00101 		mov	r1, #1
+ 724 043a FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 310:openstack/02b-MAChigh/processIE.c ****    
+ 311:openstack/02b-MAChigh/processIE.c ****    // prepare header
+ 312:openstack/02b-MAChigh/processIE.c ****    temp8b  = 0;
+ 725              		.loc 1 312 0
+ 726 043e 4FF00003 		mov	r3, #0
+ 727 0442 3B73     		strb	r3, [r7, #12]
+ 313:openstack/02b-MAChigh/processIE.c ****    temp8b |= numOfCells << 1;
+ 728              		.loc 1 313 0
+ 729 0444 7B7B     		ldrb	r3, [r7, #13]	@ zero_extendqisi2
+ 730 0446 4FEA4303 		lsl	r3, r3, #1
+ 731 044a DAB2     		uxtb	r2, r3
+ 732 044c 3B7B     		ldrb	r3, [r7, #12]	@ zero_extendqisi2
+ 733 044e 1343     		orrs	r3, r3, r2
+ 734 0450 DBB2     		uxtb	r3, r3
+ 735 0452 3B73     		strb	r3, [r7, #12]
+ 314:openstack/02b-MAChigh/processIE.c ****    temp8b |= flag << 0;
+ 736              		.loc 1 314 0
+ 737 0454 3A7B     		ldrb	r2, [r7, #12]
+ 738 0456 7B78     		ldrb	r3, [r7, #1]
+ 739 0458 1343     		orrs	r3, r3, r2
+ 740 045a 3B73     		strb	r3, [r7, #12]
+ 315:openstack/02b-MAChigh/processIE.c ****    
+ 316:openstack/02b-MAChigh/processIE.c ****    // copy header
+ 317:openstack/02b-MAChigh/processIE.c ****    *((uint8_t*)(pkt->payload)) = temp8b;
+ 741              		.loc 1 317 0
+ 742 045c 7B68     		ldr	r3, [r7, #4]
+ 743 045e 5B68     		ldr	r3, [r3, #4]
+ 744 0460 3A7B     		ldrb	r2, [r7, #12]
+ 745 0462 1A70     		strb	r2, [r3, #0]
+ 318:openstack/02b-MAChigh/processIE.c ****    
+ 319:openstack/02b-MAChigh/processIE.c ****    len += 1;
+ 746              		.loc 1 319 0
+ 747 0464 BB7B     		ldrb	r3, [r7, #14]
+ 748 0466 03F10103 		add	r3, r3, #1
+ 749 046a BB73     		strb	r3, [r7, #14]
+ 320:openstack/02b-MAChigh/processIE.c ****    
+ 321:openstack/02b-MAChigh/processIE.c ****    //===== slotframeID
+ 322:openstack/02b-MAChigh/processIE.c ****    
+ 323:openstack/02b-MAChigh/processIE.c ****    // reserve space
+ 324:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(pkt,sizeof(uint8_t));
+ 750              		.loc 1 324 0
+ 751 046c 7868     		ldr	r0, [r7, #4]
+ 752 046e 4FF00101 		mov	r1, #1
+ 753 0472 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 325:openstack/02b-MAChigh/processIE.c ****    
+ 326:openstack/02b-MAChigh/processIE.c ****    // prepare header
+ 327:openstack/02b-MAChigh/processIE.c ****    temp8b = frameID;
+ 754              		.loc 1 327 0
+ 755 0476 BB78     		ldrb	r3, [r7, #2]
+ 756 0478 3B73     		strb	r3, [r7, #12]
+ 328:openstack/02b-MAChigh/processIE.c ****    
+ 329:openstack/02b-MAChigh/processIE.c ****    // copy header
+ 330:openstack/02b-MAChigh/processIE.c ****    *((uint8_t*)(pkt->payload)) = temp8b;
+ 757              		.loc 1 330 0
+ 758 047a 7B68     		ldr	r3, [r7, #4]
+ 759 047c 5B68     		ldr	r3, [r3, #4]
+ 760 047e 3A7B     		ldrb	r2, [r7, #12]
+ 761 0480 1A70     		strb	r2, [r3, #0]
+ 331:openstack/02b-MAChigh/processIE.c ****    
+ 332:openstack/02b-MAChigh/processIE.c ****    len += 1;
+ 762              		.loc 1 332 0
+ 763 0482 BB7B     		ldrb	r3, [r7, #14]
+ 764 0484 03F10103 		add	r3, r3, #1
+ 765 0488 BB73     		strb	r3, [r7, #14]
+ 333:openstack/02b-MAChigh/processIE.c ****   
+ 334:openstack/02b-MAChigh/processIE.c ****    // record the frameID 
+ 335:openstack/02b-MAChigh/processIE.c ****    pkt->l2_scheduleIE_frameID = frameID;
+ 766              		.loc 1 335 0
+ 767 048a 7B68     		ldr	r3, [r7, #4]
+ 768 048c BA78     		ldrb	r2, [r7, #2]
+ 769 048e 83F85D20 		strb	r2, [r3, #93]
+ 336:openstack/02b-MAChigh/processIE.c ****    
+ 337:openstack/02b-MAChigh/processIE.c ****    //===== length
+ 338:openstack/02b-MAChigh/processIE.c ****    
+ 339:openstack/02b-MAChigh/processIE.c ****    // reserve space
+ 340:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(pkt,sizeof(uint8_t));
+ 770              		.loc 1 340 0
+ 771 0492 7868     		ldr	r0, [r7, #4]
+ 772 0494 4FF00101 		mov	r1, #1
+ 773 0498 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 341:openstack/02b-MAChigh/processIE.c ****    
+ 342:openstack/02b-MAChigh/processIE.c ****    // prepare header
+ 343:openstack/02b-MAChigh/processIE.c ****    temp8b = len;
+ 774              		.loc 1 343 0
+ 775 049c BB7B     		ldrb	r3, [r7, #14]
+ 776 049e 3B73     		strb	r3, [r7, #12]
+ 344:openstack/02b-MAChigh/processIE.c ****    
+ 345:openstack/02b-MAChigh/processIE.c ****    // copy header
+ 346:openstack/02b-MAChigh/processIE.c ****    *((uint8_t*)(pkt->payload)) = temp8b;
+ 777              		.loc 1 346 0
+ 778 04a0 7B68     		ldr	r3, [r7, #4]
+ 779 04a2 5B68     		ldr	r3, [r3, #4]
+ 780 04a4 3A7B     		ldrb	r2, [r7, #12]
+ 781 04a6 1A70     		strb	r2, [r3, #0]
+ 347:openstack/02b-MAChigh/processIE.c ****    
+ 348:openstack/02b-MAChigh/processIE.c ****    // length
+ 349:openstack/02b-MAChigh/processIE.c ****    len += 1;
+ 782              		.loc 1 349 0
+ 783 04a8 BB7B     		ldrb	r3, [r7, #14]
+ 784 04aa 03F10103 		add	r3, r3, #1
+ 785 04ae BB73     		strb	r3, [r7, #14]
+ 350:openstack/02b-MAChigh/processIE.c ****   
+ 351:openstack/02b-MAChigh/processIE.c ****    //===== type
+ 352:openstack/02b-MAChigh/processIE.c ****    
+ 353:openstack/02b-MAChigh/processIE.c ****    // reserve space
+ 354:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(pkt,sizeof(uint8_t));
+ 786              		.loc 1 354 0
+ 787 04b0 7868     		ldr	r0, [r7, #4]
+ 788 04b2 4FF00101 		mov	r1, #1
+ 789 04b6 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 355:openstack/02b-MAChigh/processIE.c ****    
+ 356:openstack/02b-MAChigh/processIE.c ****    // prepare header
+ 357:openstack/02b-MAChigh/processIE.c ****    temp8b = type;
+ 790              		.loc 1 357 0
+ 791 04ba FB78     		ldrb	r3, [r7, #3]
+ 792 04bc 3B73     		strb	r3, [r7, #12]
+ 358:openstack/02b-MAChigh/processIE.c ****    
+ 359:openstack/02b-MAChigh/processIE.c ****    // copy header
+ 360:openstack/02b-MAChigh/processIE.c ****    *((uint8_t*)(pkt->payload)) = temp8b;
+ 793              		.loc 1 360 0
+ 794 04be 7B68     		ldr	r3, [r7, #4]
+ 795 04c0 5B68     		ldr	r3, [r3, #4]
+ 796 04c2 3A7B     		ldrb	r2, [r7, #12]
+ 797 04c4 1A70     		strb	r2, [r3, #0]
+ 361:openstack/02b-MAChigh/processIE.c ****    
+ 362:openstack/02b-MAChigh/processIE.c ****    len += 1;
+ 798              		.loc 1 362 0
+ 799 04c6 BB7B     		ldrb	r3, [r7, #14]
+ 800 04c8 03F10103 		add	r3, r3, #1
+ 801 04cc BB73     		strb	r3, [r7, #14]
+ 363:openstack/02b-MAChigh/processIE.c ****    
+ 364:openstack/02b-MAChigh/processIE.c ****    //===== MLME IE header
+ 365:openstack/02b-MAChigh/processIE.c ****    
+ 366:openstack/02b-MAChigh/processIE.c ****    // reserve space
+ 367:openstack/02b-MAChigh/processIE.c ****    packetfunctions_reserveHeaderSize(pkt, sizeof(mlme_IE_ht));
+ 802              		.loc 1 367 0
+ 803 04ce 7868     		ldr	r0, [r7, #4]
+ 804 04d0 4FF00201 		mov	r1, #2
+ 805 04d4 FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+ 368:openstack/02b-MAChigh/processIE.c ****    
+ 369:openstack/02b-MAChigh/processIE.c ****    // prepare header
+ 370:openstack/02b-MAChigh/processIE.c ****    mlme_subHeader.length_subID_type  = 
+ 806              		.loc 1 370 0
+ 807 04d8 BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 808 04da 9BB2     		uxth	r3, r3
+ 809 04dc 4FEA0323 		lsl	r3, r3, #8
+ 810 04e0 9BB2     		uxth	r3, r3
+ 811 04e2 3B81     		strh	r3, [r7, #8]	@ movhi
+ 371:openstack/02b-MAChigh/processIE.c ****       len << IEEE802154E_DESC_LEN_SHORT_MLME_IE_SHIFT;
+ 372:openstack/02b-MAChigh/processIE.c ****    mlme_subHeader.length_subID_type |= 
+ 812              		.loc 1 372 0
+ 813 04e4 3B89     		ldrh	r3, [r7, #8]
+ 814 04e6 43F08803 		orr	r3, r3, #136
+ 815 04ea 9BB2     		uxth	r3, r3
+ 816 04ec 3B81     		strh	r3, [r7, #8]	@ movhi
+ 373:openstack/02b-MAChigh/processIE.c ****       (MLME_IE_SUBID_SCHEDULE << 
+ 374:openstack/02b-MAChigh/processIE.c ****          MLME_IE_SUBID_SHIFT) | 
+ 375:openstack/02b-MAChigh/processIE.c ****       IEEE802154E_DESC_TYPE_SHORT;
+ 376:openstack/02b-MAChigh/processIE.c ****    
+ 377:openstack/02b-MAChigh/processIE.c ****    // copy header
+ 378:openstack/02b-MAChigh/processIE.c ****    pkt->payload[0] = mlme_subHeader.length_subID_type & 0xFF;
+ 817              		.loc 1 378 0
+ 818 04ee 7B68     		ldr	r3, [r7, #4]
+ 819 04f0 5B68     		ldr	r3, [r3, #4]
+ 820 04f2 3A89     		ldrh	r2, [r7, #8]
+ 821 04f4 D2B2     		uxtb	r2, r2
+ 822 04f6 1A70     		strb	r2, [r3, #0]
+ 379:openstack/02b-MAChigh/processIE.c ****    pkt->payload[1] = (mlme_subHeader.length_subID_type >> 8) & 0xFF;
+ 823              		.loc 1 379 0
+ 824 04f8 7B68     		ldr	r3, [r7, #4]
+ 825 04fa 5B68     		ldr	r3, [r3, #4]
+ 826 04fc 03F10103 		add	r3, r3, #1
+ 827 0500 3A89     		ldrh	r2, [r7, #8]
+ 828 0502 4FEA1222 		lsr	r2, r2, #8
+ 829 0506 92B2     		uxth	r2, r2
+ 830 0508 D2B2     		uxtb	r2, r2
+ 831 050a 1A70     		strb	r2, [r3, #0]
+ 380:openstack/02b-MAChigh/processIE.c ****    
+ 381:openstack/02b-MAChigh/processIE.c ****    len+=2;
+ 832              		.loc 1 381 0
+ 833 050c BB7B     		ldrb	r3, [r7, #14]
+ 834 050e 03F10203 		add	r3, r3, #2
+ 835 0512 BB73     		strb	r3, [r7, #14]
+ 382:openstack/02b-MAChigh/processIE.c ****   
+ 383:openstack/02b-MAChigh/processIE.c ****    return len;
+ 836              		.loc 1 383 0
+ 837 0514 BB7B     		ldrb	r3, [r7, #14]	@ zero_extendqisi2
+ 384:openstack/02b-MAChigh/processIE.c **** }
+ 838              		.loc 1 384 0
+ 839 0516 1846     		mov	r0, r3
+ 840 0518 07F11007 		add	r7, r7, #16
+ 841 051c BD46     		mov	sp, r7
+ 842 051e 80BD     		pop	{r7, pc}
+ 843              		.cfi_endproc
+ 844              	.LFE5:
+ 846              		.align	2
+ 847              		.global	processIE_retrieveSlotframeLinkIE
+ 848              		.thumb
+ 849              		.thumb_func
+ 851              	processIE_retrieveSlotframeLinkIE:
+ 852              	.LFB6:
+ 385:openstack/02b-MAChigh/processIE.c **** 
+ 386:openstack/02b-MAChigh/processIE.c **** //===== retrieve IEs
+ 387:openstack/02b-MAChigh/processIE.c **** 
+ 388:openstack/02b-MAChigh/processIE.c **** port_INLINE void processIE_retrieveSlotframeLinkIE(
+ 389:openstack/02b-MAChigh/processIE.c ****       OpenQueueEntry_t* pkt,
+ 390:openstack/02b-MAChigh/processIE.c ****       uint8_t*          ptr
+ 391:openstack/02b-MAChigh/processIE.c ****    ){
+ 853              		.loc 1 391 0
+ 854              		.cfi_startproc
+ 855              		@ args = 0, pretend = 0, frame = 24
+ 856              		@ frame_needed = 1, uses_anonymous_args = 0
+ 857              		@ link register save eliminated.
+ 858 0520 80B4     		push	{r7}
+ 859              	.LCFI18:
+ 860              		.cfi_def_cfa_offset 4
+ 861              		.cfi_offset 7, -4
+ 862 0522 87B0     		sub	sp, sp, #28
+ 863              	.LCFI19:
+ 864              		.cfi_def_cfa_offset 32
+ 865 0524 00AF     		add	r7, sp, #0
+ 866              	.LCFI20:
+ 867              		.cfi_def_cfa_register 7
+ 868 0526 7860     		str	r0, [r7, #4]
+ 869 0528 3960     		str	r1, [r7, #0]
+ 392:openstack/02b-MAChigh/processIE.c ****    uint8_t              numSlotFrames;
+ 393:openstack/02b-MAChigh/processIE.c ****    uint8_t              i;
+ 394:openstack/02b-MAChigh/processIE.c ****    uint8_t              j;
+ 395:openstack/02b-MAChigh/processIE.c ****    uint8_t              localptr;
+ 396:openstack/02b-MAChigh/processIE.c ****    slotframeLink_IE_ht  sfInfo; 
+ 397:openstack/02b-MAChigh/processIE.c ****    cellInfo_ht          linkInfo;
+ 398:openstack/02b-MAChigh/processIE.c ****    
+ 399:openstack/02b-MAChigh/processIE.c ****    localptr = *ptr; 
+ 870              		.loc 1 399 0
+ 871 052a 3B68     		ldr	r3, [r7, #0]
+ 872 052c 1B78     		ldrb	r3, [r3, #0]
+ 873 052e 7B75     		strb	r3, [r7, #21]
+ 400:openstack/02b-MAChigh/processIE.c ****   
+ 401:openstack/02b-MAChigh/processIE.c ****    // number of slot frames 1B
+ 402:openstack/02b-MAChigh/processIE.c ****    numSlotFrames = *((uint8_t*)(pkt->payload)+localptr);
+ 874              		.loc 1 402 0
+ 875 0530 7B68     		ldr	r3, [r7, #4]
+ 876 0532 5A68     		ldr	r2, [r3, #4]
+ 877 0534 7B7D     		ldrb	r3, [r7, #21]	@ zero_extendqisi2
+ 878 0536 D318     		adds	r3, r2, r3
+ 879 0538 1B78     		ldrb	r3, [r3, #0]
+ 880 053a 3B75     		strb	r3, [r7, #20]
+ 403:openstack/02b-MAChigh/processIE.c ****    localptr++;
+ 881              		.loc 1 403 0
+ 882 053c 7B7D     		ldrb	r3, [r7, #21]
+ 883 053e 03F10103 		add	r3, r3, #1
+ 884 0542 7B75     		strb	r3, [r7, #21]
+ 404:openstack/02b-MAChigh/processIE.c ****    
+ 405:openstack/02b-MAChigh/processIE.c ****    // for each slotframe
+ 406:openstack/02b-MAChigh/processIE.c ****    i=0;
+ 885              		.loc 1 406 0
+ 886 0544 4FF00003 		mov	r3, #0
+ 887 0548 FB75     		strb	r3, [r7, #23]
+ 407:openstack/02b-MAChigh/processIE.c ****    while(i < numSlotFrames){
+ 888              		.loc 1 407 0
+ 889 054a 85E0     		b	.L18
+ 890              	.L21:
+ 408:openstack/02b-MAChigh/processIE.c ****       
+ 409:openstack/02b-MAChigh/processIE.c ****       // [1B] slotftramehandle 1B
+ 410:openstack/02b-MAChigh/processIE.c ****       sfInfo.slotframehandle =*((uint8_t*)(pkt->payload)+localptr);
+ 891              		.loc 1 410 0
+ 892 054c 7B68     		ldr	r3, [r7, #4]
+ 893 054e 5A68     		ldr	r2, [r3, #4]
+ 894 0550 7B7D     		ldrb	r3, [r7, #21]	@ zero_extendqisi2
+ 895 0552 D318     		adds	r3, r2, r3
+ 896 0554 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 897 0556 3B74     		strb	r3, [r7, #16]
+ 411:openstack/02b-MAChigh/processIE.c ****       localptr++;
+ 898              		.loc 1 411 0
+ 899 0558 7B7D     		ldrb	r3, [r7, #21]
+ 900 055a 03F10103 		add	r3, r3, #1
+ 901 055e 7B75     		strb	r3, [r7, #21]
+ 412:openstack/02b-MAChigh/processIE.c ****       
+ 413:openstack/02b-MAChigh/processIE.c ****       // [2B] slotframe size
+ 414:openstack/02b-MAChigh/processIE.c ****       sfInfo.slotframesize   = *((uint8_t*)(pkt->payload)+localptr);
+ 902              		.loc 1 414 0
+ 903 0560 7B68     		ldr	r3, [r7, #4]
+ 904 0562 5A68     		ldr	r2, [r3, #4]
+ 905 0564 7B7D     		ldrb	r3, [r7, #21]	@ zero_extendqisi2
+ 906 0566 D318     		adds	r3, r2, r3
+ 907 0568 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 908 056a A7F81130 		strh	r3, [r7, #17]	@ unaligned
+ 415:openstack/02b-MAChigh/processIE.c ****       localptr++;
+ 909              		.loc 1 415 0
+ 910 056e 7B7D     		ldrb	r3, [r7, #21]
+ 911 0570 03F10103 		add	r3, r3, #1
+ 912 0574 7B75     		strb	r3, [r7, #21]
+ 416:openstack/02b-MAChigh/processIE.c ****       sfInfo.slotframesize  |= (*((uint8_t*)(pkt->payload)+localptr))<<8;
+ 913              		.loc 1 416 0
+ 914 0576 B7F81130 		ldrh	r3, [r7, #17]	@ unaligned
+ 915 057a 9BB2     		uxth	r3, r3
+ 916 057c 9AB2     		uxth	r2, r3
+ 917 057e 7B68     		ldr	r3, [r7, #4]
+ 918 0580 5968     		ldr	r1, [r3, #4]
+ 919 0582 7B7D     		ldrb	r3, [r7, #21]	@ zero_extendqisi2
+ 920 0584 CB18     		adds	r3, r1, r3
+ 921 0586 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 922 0588 4FEA0323 		lsl	r3, r3, #8
+ 923 058c 9BB2     		uxth	r3, r3
+ 924 058e 1343     		orrs	r3, r3, r2
+ 925 0590 9BB2     		uxth	r3, r3
+ 926 0592 9BB2     		uxth	r3, r3
+ 927 0594 A7F81130 		strh	r3, [r7, #17]	@ unaligned
+ 417:openstack/02b-MAChigh/processIE.c ****       localptr++;;
+ 928              		.loc 1 417 0
+ 929 0598 7B7D     		ldrb	r3, [r7, #21]
+ 930 059a 03F10103 		add	r3, r3, #1
+ 931 059e 7B75     		strb	r3, [r7, #21]
+ 418:openstack/02b-MAChigh/processIE.c ****       
+ 419:openstack/02b-MAChigh/processIE.c ****       // [1B] number of links
+ 420:openstack/02b-MAChigh/processIE.c ****       sfInfo.numlinks        = *((uint8_t*)(pkt->payload)+localptr);
+ 932              		.loc 1 420 0
+ 933 05a0 7B68     		ldr	r3, [r7, #4]
+ 934 05a2 5A68     		ldr	r2, [r3, #4]
+ 935 05a4 7B7D     		ldrb	r3, [r7, #21]	@ zero_extendqisi2
+ 936 05a6 D318     		adds	r3, r2, r3
+ 937 05a8 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 938 05aa FB74     		strb	r3, [r7, #19]
+ 421:openstack/02b-MAChigh/processIE.c ****       localptr++;
+ 939              		.loc 1 421 0
+ 940 05ac 7B7D     		ldrb	r3, [r7, #21]
+ 941 05ae 03F10103 		add	r3, r3, #1
+ 942 05b2 7B75     		strb	r3, [r7, #21]
+ 422:openstack/02b-MAChigh/processIE.c ****       
+ 423:openstack/02b-MAChigh/processIE.c ****       for (j=0;j<sfInfo.numlinks;j++){
+ 943              		.loc 1 423 0
+ 944 05b4 4FF00003 		mov	r3, #0
+ 945 05b8 BB75     		strb	r3, [r7, #22]
+ 946 05ba 45E0     		b	.L19
+ 947              	.L20:
+ 424:openstack/02b-MAChigh/processIE.c ****          
+ 425:openstack/02b-MAChigh/processIE.c ****          // [2B] TimeSlot
+ 426:openstack/02b-MAChigh/processIE.c ****          linkInfo.tsNum = *((uint8_t*)(pkt->payload)+localptr);
+ 948              		.loc 1 426 0 discriminator 2
+ 949 05bc 7B68     		ldr	r3, [r7, #4]
+ 950 05be 5A68     		ldr	r2, [r3, #4]
+ 951 05c0 7B7D     		ldrb	r3, [r7, #21]	@ zero_extendqisi2
+ 952 05c2 D318     		adds	r3, r2, r3
+ 953 05c4 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 954 05c6 3B81     		strh	r3, [r7, #8]	@ movhi
+ 427:openstack/02b-MAChigh/processIE.c ****          localptr++;
+ 955              		.loc 1 427 0 discriminator 2
+ 956 05c8 7B7D     		ldrb	r3, [r7, #21]
+ 957 05ca 03F10103 		add	r3, r3, #1
+ 958 05ce 7B75     		strb	r3, [r7, #21]
+ 428:openstack/02b-MAChigh/processIE.c ****          linkInfo.tsNum  |= (*((uint8_t*)(pkt->payload)+localptr))<<8;
+ 959              		.loc 1 428 0 discriminator 2
+ 960 05d0 3B89     		ldrh	r3, [r7, #8]
+ 961 05d2 9AB2     		uxth	r2, r3
+ 962 05d4 7B68     		ldr	r3, [r7, #4]
+ 963 05d6 5968     		ldr	r1, [r3, #4]
+ 964 05d8 7B7D     		ldrb	r3, [r7, #21]	@ zero_extendqisi2
+ 965 05da CB18     		adds	r3, r1, r3
+ 966 05dc 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 967 05de 4FEA0323 		lsl	r3, r3, #8
+ 968 05e2 9BB2     		uxth	r3, r3
+ 969 05e4 1343     		orrs	r3, r3, r2
+ 970 05e6 9BB2     		uxth	r3, r3
+ 971 05e8 9BB2     		uxth	r3, r3
+ 972 05ea 3B81     		strh	r3, [r7, #8]	@ movhi
+ 429:openstack/02b-MAChigh/processIE.c ****          localptr++;
+ 973              		.loc 1 429 0 discriminator 2
+ 974 05ec 7B7D     		ldrb	r3, [r7, #21]
+ 975 05ee 03F10103 		add	r3, r3, #1
+ 976 05f2 7B75     		strb	r3, [r7, #21]
+ 430:openstack/02b-MAChigh/processIE.c ****          
+ 431:openstack/02b-MAChigh/processIE.c ****          // [2B] Ch.Offset
+ 432:openstack/02b-MAChigh/processIE.c ****          linkInfo.choffset = *((uint8_t*)(pkt->payload)+localptr);
+ 977              		.loc 1 432 0 discriminator 2
+ 978 05f4 7B68     		ldr	r3, [r7, #4]
+ 979 05f6 5A68     		ldr	r2, [r3, #4]
+ 980 05f8 7B7D     		ldrb	r3, [r7, #21]	@ zero_extendqisi2
+ 981 05fa D318     		adds	r3, r2, r3
+ 982 05fc 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 983 05fe 7B81     		strh	r3, [r7, #10]	@ movhi
+ 433:openstack/02b-MAChigh/processIE.c ****          localptr++;
+ 984              		.loc 1 433 0 discriminator 2
+ 985 0600 7B7D     		ldrb	r3, [r7, #21]
+ 986 0602 03F10103 		add	r3, r3, #1
+ 987 0606 7B75     		strb	r3, [r7, #21]
+ 434:openstack/02b-MAChigh/processIE.c ****          linkInfo.choffset  |= (*((uint8_t*)(pkt->payload)+localptr))<<8;
+ 988              		.loc 1 434 0 discriminator 2
+ 989 0608 7B89     		ldrh	r3, [r7, #10]
+ 990 060a 9AB2     		uxth	r2, r3
+ 991 060c 7B68     		ldr	r3, [r7, #4]
+ 992 060e 5968     		ldr	r1, [r3, #4]
+ 993 0610 7B7D     		ldrb	r3, [r7, #21]	@ zero_extendqisi2
+ 994 0612 CB18     		adds	r3, r1, r3
+ 995 0614 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 996 0616 4FEA0323 		lsl	r3, r3, #8
+ 997 061a 9BB2     		uxth	r3, r3
+ 998 061c 1343     		orrs	r3, r3, r2
+ 999 061e 9BB2     		uxth	r3, r3
+ 1000 0620 9BB2     		uxth	r3, r3
+ 1001 0622 7B81     		strh	r3, [r7, #10]	@ movhi
+ 435:openstack/02b-MAChigh/processIE.c ****          localptr++;
+ 1002              		.loc 1 435 0 discriminator 2
+ 1003 0624 7B7D     		ldrb	r3, [r7, #21]
+ 1004 0626 03F10103 		add	r3, r3, #1
+ 1005 062a 7B75     		strb	r3, [r7, #21]
+ 436:openstack/02b-MAChigh/processIE.c ****          
+ 437:openstack/02b-MAChigh/processIE.c ****          // [1B] LinkOption bitmap
+ 438:openstack/02b-MAChigh/processIE.c ****          linkInfo.linkoptions = *((uint8_t*)(pkt->payload)+localptr);
+ 1006              		.loc 1 438 0 discriminator 2
+ 1007 062c 7B68     		ldr	r3, [r7, #4]
+ 1008 062e 5A68     		ldr	r2, [r3, #4]
+ 1009 0630 7B7D     		ldrb	r3, [r7, #21]	@ zero_extendqisi2
+ 1010 0632 D318     		adds	r3, r2, r3
+ 1011 0634 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 1012 0636 3B73     		strb	r3, [r7, #12]
+ 439:openstack/02b-MAChigh/processIE.c ****          localptr++;
+ 1013              		.loc 1 439 0 discriminator 2
+ 1014 0638 7B7D     		ldrb	r3, [r7, #21]
+ 1015 063a 03F10103 		add	r3, r3, #1
+ 1016 063e 7B75     		strb	r3, [r7, #21]
+ 423:openstack/02b-MAChigh/processIE.c ****       for (j=0;j<sfInfo.numlinks;j++){
+ 1017              		.loc 1 423 0 discriminator 2
+ 1018 0640 BB7D     		ldrb	r3, [r7, #22]
+ 1019 0642 03F10103 		add	r3, r3, #1
+ 1020 0646 BB75     		strb	r3, [r7, #22]
+ 1021              	.L19:
+ 423:openstack/02b-MAChigh/processIE.c ****       for (j=0;j<sfInfo.numlinks;j++){
+ 1022              		.loc 1 423 0 is_stmt 0 discriminator 1
+ 1023 0648 FB7C     		ldrb	r3, [r7, #19]	@ zero_extendqisi2
+ 1024 064a BA7D     		ldrb	r2, [r7, #22]	@ zero_extendqisi2
+ 1025 064c 9A42     		cmp	r2, r3
+ 1026 064e B5D3     		bcc	.L20
+ 440:openstack/02b-MAChigh/processIE.c ****          
+ 441:openstack/02b-MAChigh/processIE.c ****          // TODO: inform schedule of that link so it can update if needed.
+ 442:openstack/02b-MAChigh/processIE.c ****       } 
+ 443:openstack/02b-MAChigh/processIE.c ****       i++;
+ 1027              		.loc 1 443 0 is_stmt 1
+ 1028 0650 FB7D     		ldrb	r3, [r7, #23]
+ 1029 0652 03F10103 		add	r3, r3, #1
+ 1030 0656 FB75     		strb	r3, [r7, #23]
+ 1031              	.L18:
+ 407:openstack/02b-MAChigh/processIE.c ****    while(i < numSlotFrames){
+ 1032              		.loc 1 407 0 discriminator 1
+ 1033 0658 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 1034 065a 3B7D     		ldrb	r3, [r7, #20]	@ zero_extendqisi2
+ 1035 065c 9A42     		cmp	r2, r3
+ 1036 065e FFF475AF 		bcc	.L21
+ 444:openstack/02b-MAChigh/processIE.c ****    }
+ 445:openstack/02b-MAChigh/processIE.c ****    
+ 446:openstack/02b-MAChigh/processIE.c ****    *ptr=localptr;
+ 1037              		.loc 1 446 0
+ 1038 0662 3B68     		ldr	r3, [r7, #0]
+ 1039 0664 7A7D     		ldrb	r2, [r7, #21]
+ 1040 0666 1A70     		strb	r2, [r3, #0]
+ 447:openstack/02b-MAChigh/processIE.c **** } 
+ 1041              		.loc 1 447 0
+ 1042 0668 07F11C07 		add	r7, r7, #28
+ 1043 066c BD46     		mov	sp, r7
+ 1044 066e 80BC     		pop	{r7}
+ 1045 0670 7047     		bx	lr
+ 1046              		.cfi_endproc
+ 1047              	.LFE6:
+ 1049 0672 00BF     		.align	2
+ 1050              		.global	processIE_retrieveOpcodeIE
+ 1051              		.thumb
+ 1052              		.thumb_func
+ 1054              	processIE_retrieveOpcodeIE:
+ 1055              	.LFB7:
+ 448:openstack/02b-MAChigh/processIE.c **** 
+ 449:openstack/02b-MAChigh/processIE.c **** port_INLINE void processIE_retrieveOpcodeIE(
+ 450:openstack/02b-MAChigh/processIE.c ****       OpenQueueEntry_t* pkt,
+ 451:openstack/02b-MAChigh/processIE.c ****       uint8_t*          ptr,
+ 452:openstack/02b-MAChigh/processIE.c ****       opcode_IE_ht*     opcodeInfo
+ 453:openstack/02b-MAChigh/processIE.c ****    ){
+ 1056              		.loc 1 453 0
+ 1057              		.cfi_startproc
+ 1058              		@ args = 0, pretend = 0, frame = 24
+ 1059              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1060              		@ link register save eliminated.
+ 1061 0674 80B4     		push	{r7}
+ 1062              	.LCFI21:
+ 1063              		.cfi_def_cfa_offset 4
+ 1064              		.cfi_offset 7, -4
+ 1065 0676 87B0     		sub	sp, sp, #28
+ 1066              	.LCFI22:
+ 1067              		.cfi_def_cfa_offset 32
+ 1068 0678 00AF     		add	r7, sp, #0
+ 1069              	.LCFI23:
+ 1070              		.cfi_def_cfa_register 7
+ 1071 067a F860     		str	r0, [r7, #12]
+ 1072 067c B960     		str	r1, [r7, #8]
+ 1073 067e 7A60     		str	r2, [r7, #4]
+ 454:openstack/02b-MAChigh/processIE.c ****    uint8_t localptr;
+ 455:openstack/02b-MAChigh/processIE.c ****    
+ 456:openstack/02b-MAChigh/processIE.c ****    localptr=*ptr; 
+ 1074              		.loc 1 456 0
+ 1075 0680 BB68     		ldr	r3, [r7, #8]
+ 1076 0682 1B78     		ldrb	r3, [r3, #0]
+ 1077 0684 FB75     		strb	r3, [r7, #23]
+ 457:openstack/02b-MAChigh/processIE.c ****    
+ 458:openstack/02b-MAChigh/processIE.c ****    opcodeInfo->opcode = *((uint8_t*)(pkt->payload)+localptr);
+ 1078              		.loc 1 458 0
+ 1079 0686 FB68     		ldr	r3, [r7, #12]
+ 1080 0688 5A68     		ldr	r2, [r3, #4]
+ 1081 068a FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 1082 068c D318     		adds	r3, r2, r3
+ 1083 068e 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1084 0690 7B68     		ldr	r3, [r7, #4]
+ 1085 0692 1A70     		strb	r2, [r3, #0]
+ 459:openstack/02b-MAChigh/processIE.c ****    localptr++;
+ 1086              		.loc 1 459 0
+ 1087 0694 FB7D     		ldrb	r3, [r7, #23]
+ 1088 0696 03F10103 		add	r3, r3, #1
+ 1089 069a FB75     		strb	r3, [r7, #23]
+ 460:openstack/02b-MAChigh/processIE.c ****   
+ 461:openstack/02b-MAChigh/processIE.c ****    *ptr=localptr; 
+ 1090              		.loc 1 461 0
+ 1091 069c BB68     		ldr	r3, [r7, #8]
+ 1092 069e FA7D     		ldrb	r2, [r7, #23]
+ 1093 06a0 1A70     		strb	r2, [r3, #0]
+ 462:openstack/02b-MAChigh/processIE.c **** } 
+ 1094              		.loc 1 462 0
+ 1095 06a2 07F11C07 		add	r7, r7, #28
+ 1096 06a6 BD46     		mov	sp, r7
+ 1097 06a8 80BC     		pop	{r7}
+ 1098 06aa 7047     		bx	lr
+ 1099              		.cfi_endproc
+ 1100              	.LFE7:
+ 1102              		.align	2
+ 1103              		.global	processIE_retrieveBandwidthIE
+ 1104              		.thumb
+ 1105              		.thumb_func
+ 1107              	processIE_retrieveBandwidthIE:
+ 1108              	.LFB8:
+ 463:openstack/02b-MAChigh/processIE.c **** 
+ 464:openstack/02b-MAChigh/processIE.c **** port_INLINE void processIE_retrieveBandwidthIE(
+ 465:openstack/02b-MAChigh/processIE.c ****       OpenQueueEntry_t* pkt,
+ 466:openstack/02b-MAChigh/processIE.c ****       uint8_t *         ptr,
+ 467:openstack/02b-MAChigh/processIE.c ****       bandwidth_IE_ht*  bandwidthInfo
+ 468:openstack/02b-MAChigh/processIE.c ****    ){
+ 1109              		.loc 1 468 0
+ 1110              		.cfi_startproc
+ 1111              		@ args = 0, pretend = 0, frame = 24
+ 1112              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1113              		@ link register save eliminated.
+ 1114 06ac 80B4     		push	{r7}
+ 1115              	.LCFI24:
+ 1116              		.cfi_def_cfa_offset 4
+ 1117              		.cfi_offset 7, -4
+ 1118 06ae 87B0     		sub	sp, sp, #28
+ 1119              	.LCFI25:
+ 1120              		.cfi_def_cfa_offset 32
+ 1121 06b0 00AF     		add	r7, sp, #0
+ 1122              	.LCFI26:
+ 1123              		.cfi_def_cfa_register 7
+ 1124 06b2 F860     		str	r0, [r7, #12]
+ 1125 06b4 B960     		str	r1, [r7, #8]
+ 1126 06b6 7A60     		str	r2, [r7, #4]
+ 469:openstack/02b-MAChigh/processIE.c ****    uint8_t localptr;
+ 470:openstack/02b-MAChigh/processIE.c ****    
+ 471:openstack/02b-MAChigh/processIE.c ****    localptr=*ptr; 
+ 1127              		.loc 1 471 0
+ 1128 06b8 BB68     		ldr	r3, [r7, #8]
+ 1129 06ba 1B78     		ldrb	r3, [r3, #0]
+ 1130 06bc FB75     		strb	r3, [r7, #23]
+ 472:openstack/02b-MAChigh/processIE.c ****    
+ 473:openstack/02b-MAChigh/processIE.c ****    // [1B] slotframeID
+ 474:openstack/02b-MAChigh/processIE.c ****    bandwidthInfo->slotframeID = *((uint8_t*)(pkt->payload)+localptr);
+ 1131              		.loc 1 474 0
+ 1132 06be FB68     		ldr	r3, [r7, #12]
+ 1133 06c0 5A68     		ldr	r2, [r3, #4]
+ 1134 06c2 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 1135 06c4 D318     		adds	r3, r2, r3
+ 1136 06c6 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1137 06c8 7B68     		ldr	r3, [r7, #4]
+ 1138 06ca 1A70     		strb	r2, [r3, #0]
+ 475:openstack/02b-MAChigh/processIE.c ****    localptr++;
+ 1139              		.loc 1 475 0
+ 1140 06cc FB7D     		ldrb	r3, [r7, #23]
+ 1141 06ce 03F10103 		add	r3, r3, #1
+ 1142 06d2 FB75     		strb	r3, [r7, #23]
+ 476:openstack/02b-MAChigh/processIE.c ****    
+ 477:openstack/02b-MAChigh/processIE.c ****    // [1B] number of cells
+ 478:openstack/02b-MAChigh/processIE.c ****    bandwidthInfo->numOfLinks = *((uint8_t*)(pkt->payload)+localptr);
+ 1143              		.loc 1 478 0
+ 1144 06d4 FB68     		ldr	r3, [r7, #12]
+ 1145 06d6 5A68     		ldr	r2, [r3, #4]
+ 1146 06d8 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
+ 1147 06da D318     		adds	r3, r2, r3
+ 1148 06dc 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1149 06de 7B68     		ldr	r3, [r7, #4]
+ 1150 06e0 5A70     		strb	r2, [r3, #1]
+ 479:openstack/02b-MAChigh/processIE.c ****    localptr++;
+ 1151              		.loc 1 479 0
+ 1152 06e2 FB7D     		ldrb	r3, [r7, #23]
+ 1153 06e4 03F10103 		add	r3, r3, #1
+ 1154 06e8 FB75     		strb	r3, [r7, #23]
+ 480:openstack/02b-MAChigh/processIE.c ****    
+ 481:openstack/02b-MAChigh/processIE.c ****    *ptr=localptr; 
+ 1155              		.loc 1 481 0
+ 1156 06ea BB68     		ldr	r3, [r7, #8]
+ 1157 06ec FA7D     		ldrb	r2, [r7, #23]
+ 1158 06ee 1A70     		strb	r2, [r3, #0]
+ 482:openstack/02b-MAChigh/processIE.c **** }
+ 1159              		.loc 1 482 0
+ 1160 06f0 07F11C07 		add	r7, r7, #28
+ 1161 06f4 BD46     		mov	sp, r7
+ 1162 06f6 80BC     		pop	{r7}
+ 1163 06f8 7047     		bx	lr
+ 1164              		.cfi_endproc
+ 1165              	.LFE8:
+ 1167 06fa 00BF     		.align	2
+ 1168              		.global	processIE_retrieveSheduleIE
+ 1169              		.thumb
+ 1170              		.thumb_func
+ 1172              	processIE_retrieveSheduleIE:
+ 1173              	.LFB9:
+ 483:openstack/02b-MAChigh/processIE.c **** 
+ 484:openstack/02b-MAChigh/processIE.c **** port_INLINE void processIE_retrieveSheduleIE(
+ 485:openstack/02b-MAChigh/processIE.c ****       OpenQueueEntry_t* pkt,
+ 486:openstack/02b-MAChigh/processIE.c ****       uint8_t*          ptr,
+ 487:openstack/02b-MAChigh/processIE.c ****       schedule_IE_ht*   scheduleInfo
+ 488:openstack/02b-MAChigh/processIE.c ****    ){
+ 1174              		.loc 1 488 0
+ 1175              		.cfi_startproc
+ 1176              		@ args = 0, pretend = 0, frame = 24
+ 1177              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1178              		@ link register save eliminated.
+ 1179 06fc 80B4     		push	{r7}
+ 1180              	.LCFI27:
+ 1181              		.cfi_def_cfa_offset 4
+ 1182              		.cfi_offset 7, -4
+ 1183 06fe 87B0     		sub	sp, sp, #28
+ 1184              	.LCFI28:
+ 1185              		.cfi_def_cfa_offset 32
+ 1186 0700 00AF     		add	r7, sp, #0
+ 1187              	.LCFI29:
+ 1188              		.cfi_def_cfa_register 7
+ 1189 0702 F860     		str	r0, [r7, #12]
+ 1190 0704 B960     		str	r1, [r7, #8]
+ 1191 0706 7A60     		str	r2, [r7, #4]
+ 489:openstack/02b-MAChigh/processIE.c ****    uint8_t i;
+ 490:openstack/02b-MAChigh/processIE.c ****    uint8_t temp8b;
+ 491:openstack/02b-MAChigh/processIE.c ****    uint8_t localptr;
+ 492:openstack/02b-MAChigh/processIE.c ****   
+ 493:openstack/02b-MAChigh/processIE.c ****    localptr=*ptr;
+ 1192              		.loc 1 493 0
+ 1193 0708 BB68     		ldr	r3, [r7, #8]
+ 1194 070a 1B78     		ldrb	r3, [r3, #0]
+ 1195 070c BB75     		strb	r3, [r7, #22]
+ 494:openstack/02b-MAChigh/processIE.c ****    
+ 495:openstack/02b-MAChigh/processIE.c ****    // [1B] type
+ 496:openstack/02b-MAChigh/processIE.c ****    scheduleInfo->type             = *((uint8_t*)(pkt->payload)+localptr);
+ 1196              		.loc 1 496 0
+ 1197 070e FB68     		ldr	r3, [r7, #12]
+ 1198 0710 5A68     		ldr	r2, [r3, #4]
+ 1199 0712 BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 1200 0714 D318     		adds	r3, r2, r3
+ 1201 0716 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1202 0718 7B68     		ldr	r3, [r7, #4]
+ 1203 071a 1A70     		strb	r2, [r3, #0]
+ 497:openstack/02b-MAChigh/processIE.c ****    localptr++;
+ 1204              		.loc 1 497 0
+ 1205 071c BB7D     		ldrb	r3, [r7, #22]
+ 1206 071e 03F10103 		add	r3, r3, #1
+ 1207 0722 BB75     		strb	r3, [r7, #22]
+ 498:openstack/02b-MAChigh/processIE.c ****    
+ 499:openstack/02b-MAChigh/processIE.c ****    // [1B] length
+ 500:openstack/02b-MAChigh/processIE.c ****    scheduleInfo->length           = *((uint8_t*)(pkt->payload)+localptr);
+ 1208              		.loc 1 500 0
+ 1209 0724 FB68     		ldr	r3, [r7, #12]
+ 1210 0726 5A68     		ldr	r2, [r3, #4]
+ 1211 0728 BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 1212 072a D318     		adds	r3, r2, r3
+ 1213 072c 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1214 072e 7B68     		ldr	r3, [r7, #4]
+ 1215 0730 5A70     		strb	r2, [r3, #1]
+ 501:openstack/02b-MAChigh/processIE.c ****    localptr++;
+ 1216              		.loc 1 501 0
+ 1217 0732 BB7D     		ldrb	r3, [r7, #22]
+ 1218 0734 03F10103 		add	r3, r3, #1
+ 1219 0738 BB75     		strb	r3, [r7, #22]
+ 502:openstack/02b-MAChigh/processIE.c ****    
+ 503:openstack/02b-MAChigh/processIE.c ****    // [1B] frameID
+ 504:openstack/02b-MAChigh/processIE.c ****    scheduleInfo->frameID          = *((uint8_t*)(pkt->payload)+localptr);
+ 1220              		.loc 1 504 0
+ 1221 073a FB68     		ldr	r3, [r7, #12]
+ 1222 073c 5A68     		ldr	r2, [r3, #4]
+ 1223 073e BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 1224 0740 D318     		adds	r3, r2, r3
+ 1225 0742 1A78     		ldrb	r2, [r3, #0]	@ zero_extendqisi2
+ 1226 0744 7B68     		ldr	r3, [r7, #4]
+ 1227 0746 9A70     		strb	r2, [r3, #2]
+ 505:openstack/02b-MAChigh/processIE.c ****    localptr++;
+ 1228              		.loc 1 505 0
+ 1229 0748 BB7D     		ldrb	r3, [r7, #22]
+ 1230 074a 03F10103 		add	r3, r3, #1
+ 1231 074e BB75     		strb	r3, [r7, #22]
+ 506:openstack/02b-MAChigh/processIE.c ****    
+ 507:openstack/02b-MAChigh/processIE.c ****    // [1B] number of cell and flag
+ 508:openstack/02b-MAChigh/processIE.c ****    temp8b = *((uint8_t*)(pkt->payload)+localptr);
+ 1232              		.loc 1 508 0
+ 1233 0750 FB68     		ldr	r3, [r7, #12]
+ 1234 0752 5A68     		ldr	r2, [r3, #4]
+ 1235 0754 BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 1236 0756 D318     		adds	r3, r2, r3
+ 1237 0758 1B78     		ldrb	r3, [r3, #0]
+ 1238 075a 7B75     		strb	r3, [r7, #21]
+ 509:openstack/02b-MAChigh/processIE.c ****    scheduleInfo->numberOfcells    = temp8b >> 1;
+ 1239              		.loc 1 509 0
+ 1240 075c 7B7D     		ldrb	r3, [r7, #21]	@ zero_extendqisi2
+ 1241 075e 4FEA5303 		lsr	r3, r3, #1
+ 1242 0762 DAB2     		uxtb	r2, r3
+ 1243 0764 7B68     		ldr	r3, [r7, #4]
+ 1244 0766 DA70     		strb	r2, [r3, #3]
+ 510:openstack/02b-MAChigh/processIE.c ****    scheduleInfo->flag             = temp8b & 0xFE ? TRUE : FALSE;
+ 1245              		.loc 1 510 0
+ 1246 0768 7B7D     		ldrb	r3, [r7, #21]	@ zero_extendqisi2
+ 1247 076a 03F0FE03 		and	r3, r3, #254
+ 1248 076e 002B     		cmp	r3, #0
+ 1249 0770 0CBF     		ite	eq
+ 1250 0772 0023     		moveq	r3, #0
+ 1251 0774 0123     		movne	r3, #1
+ 1252 0776 DAB2     		uxtb	r2, r3
+ 1253 0778 7B68     		ldr	r3, [r7, #4]
+ 1254 077a 1A71     		strb	r2, [r3, #4]
+ 511:openstack/02b-MAChigh/processIE.c ****    localptr++;
+ 1255              		.loc 1 511 0
+ 1256 077c BB7D     		ldrb	r3, [r7, #22]
+ 1257 077e 03F10103 		add	r3, r3, #1
+ 1258 0782 BB75     		strb	r3, [r7, #22]
+ 512:openstack/02b-MAChigh/processIE.c ****   
+ 513:openstack/02b-MAChigh/processIE.c ****    if(scheduleInfo->numberOfcells > SCHEDULEIEMAXNUMCELLS) {
+ 1259              		.loc 1 513 0
+ 1260 0784 7B68     		ldr	r3, [r7, #4]
+ 1261 0786 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 1262 0788 032B     		cmp	r3, #3
+ 1263 078a 00F29080 		bhi	.L29
+ 1264              	.L25:
+ 514:openstack/02b-MAChigh/processIE.c ****       //log error
+ 515:openstack/02b-MAChigh/processIE.c ****       return;
+ 516:openstack/02b-MAChigh/processIE.c ****    }
+ 517:openstack/02b-MAChigh/processIE.c ****    
+ 518:openstack/02b-MAChigh/processIE.c ****    for (i=0;i<scheduleInfo->numberOfcells;i++){
+ 1265              		.loc 1 518 0
+ 1266 078e 4FF00003 		mov	r3, #0
+ 1267 0792 FB75     		strb	r3, [r7, #23]
+ 1268 0794 81E0     		b	.L27
+ 1269              	.L28:
+ 519:openstack/02b-MAChigh/processIE.c ****       
+ 520:openstack/02b-MAChigh/processIE.c ****       // [1B] TimeSlot
+ 521:openstack/02b-MAChigh/processIE.c ****       scheduleInfo->cellList[i].tsNum = 
+ 1270              		.loc 1 521 0 discriminator 2
+ 1271 0796 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 522:openstack/02b-MAChigh/processIE.c ****          (*((uint8_t*)(pkt->payload)+localptr))<<8;
+ 1272              		.loc 1 522 0 discriminator 2
+ 1273 0798 FB68     		ldr	r3, [r7, #12]
+ 1274 079a 5968     		ldr	r1, [r3, #4]
+ 1275 079c BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 1276 079e CB18     		adds	r3, r1, r3
+ 1277 07a0 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 521:openstack/02b-MAChigh/processIE.c ****       scheduleInfo->cellList[i].tsNum = 
+ 1278              		.loc 1 521 0 discriminator 2
+ 1279 07a2 4FEA0323 		lsl	r3, r3, #8
+ 1280 07a6 99B2     		uxth	r1, r3
+ 1281 07a8 7868     		ldr	r0, [r7, #4]
+ 1282 07aa 1346     		mov	r3, r2
+ 1283 07ac 4FEA8303 		lsl	r3, r3, #2
+ 1284 07b0 9B18     		adds	r3, r3, r2
+ 1285 07b2 C318     		adds	r3, r0, r3
+ 1286 07b4 0A46     		mov	r2, r1	@ movhi
+ 1287 07b6 A3F80520 		strh	r2, [r3, #5]	@ unaligned
+ 523:openstack/02b-MAChigh/processIE.c ****       localptr++;
+ 1288              		.loc 1 523 0 discriminator 2
+ 1289 07ba BB7D     		ldrb	r3, [r7, #22]
+ 1290 07bc 03F10103 		add	r3, r3, #1
+ 1291 07c0 BB75     		strb	r3, [r7, #22]
+ 524:openstack/02b-MAChigh/processIE.c ****       
+ 525:openstack/02b-MAChigh/processIE.c ****       scheduleInfo->cellList[i].tsNum  |= 
+ 1292              		.loc 1 525 0 discriminator 2
+ 1293 07c2 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 1294 07c4 F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1295 07c6 7868     		ldr	r0, [r7, #4]
+ 1296 07c8 0B46     		mov	r3, r1
+ 1297 07ca 4FEA8303 		lsl	r3, r3, #2
+ 1298 07ce 5B18     		adds	r3, r3, r1
+ 1299 07d0 C318     		adds	r3, r0, r3
+ 1300 07d2 B3F80530 		ldrh	r3, [r3, #5]	@ unaligned
+ 1301 07d6 99B2     		uxth	r1, r3
+ 526:openstack/02b-MAChigh/processIE.c ****          *((uint8_t*)(pkt->payload)+localptr);
+ 1302              		.loc 1 526 0 discriminator 2
+ 1303 07d8 FB68     		ldr	r3, [r7, #12]
+ 1304 07da 5868     		ldr	r0, [r3, #4]
+ 1305 07dc BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 1306 07de C318     		adds	r3, r0, r3
+ 1307 07e0 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 525:openstack/02b-MAChigh/processIE.c ****       scheduleInfo->cellList[i].tsNum  |= 
+ 1308              		.loc 1 525 0 discriminator 2
+ 1309 07e2 0B43     		orrs	r3, r3, r1
+ 1310 07e4 99B2     		uxth	r1, r3
+ 1311 07e6 7868     		ldr	r0, [r7, #4]
+ 1312 07e8 1346     		mov	r3, r2
+ 1313 07ea 4FEA8303 		lsl	r3, r3, #2
+ 1314 07ee 9B18     		adds	r3, r3, r2
+ 1315 07f0 C318     		adds	r3, r0, r3
+ 1316 07f2 0A46     		mov	r2, r1	@ movhi
+ 1317 07f4 A3F80520 		strh	r2, [r3, #5]	@ unaligned
+ 527:openstack/02b-MAChigh/processIE.c ****       localptr++;
+ 1318              		.loc 1 527 0 discriminator 2
+ 1319 07f8 BB7D     		ldrb	r3, [r7, #22]
+ 1320 07fa 03F10103 		add	r3, r3, #1
+ 1321 07fe BB75     		strb	r3, [r7, #22]
+ 528:openstack/02b-MAChigh/processIE.c ****       
+ 529:openstack/02b-MAChigh/processIE.c ****       // [2B] Ch.Offset
+ 530:openstack/02b-MAChigh/processIE.c ****       scheduleInfo->cellList[i].choffset = 
+ 1322              		.loc 1 530 0 discriminator 2
+ 1323 0800 FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 531:openstack/02b-MAChigh/processIE.c ****          (*((uint8_t*)(pkt->payload)+localptr))<<8;
+ 1324              		.loc 1 531 0 discriminator 2
+ 1325 0802 FB68     		ldr	r3, [r7, #12]
+ 1326 0804 5968     		ldr	r1, [r3, #4]
+ 1327 0806 BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 1328 0808 CB18     		adds	r3, r1, r3
+ 1329 080a 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 530:openstack/02b-MAChigh/processIE.c ****       scheduleInfo->cellList[i].choffset = 
+ 1330              		.loc 1 530 0 discriminator 2
+ 1331 080c 4FEA0323 		lsl	r3, r3, #8
+ 1332 0810 99B2     		uxth	r1, r3
+ 1333 0812 7868     		ldr	r0, [r7, #4]
+ 1334 0814 1346     		mov	r3, r2
+ 1335 0816 4FEA8303 		lsl	r3, r3, #2
+ 1336 081a 9B18     		adds	r3, r3, r2
+ 1337 081c C318     		adds	r3, r0, r3
+ 1338 081e 0A46     		mov	r2, r1	@ movhi
+ 1339 0820 A3F80720 		strh	r2, [r3, #7]	@ unaligned
+ 532:openstack/02b-MAChigh/processIE.c ****       localptr++;
+ 1340              		.loc 1 532 0 discriminator 2
+ 1341 0824 BB7D     		ldrb	r3, [r7, #22]
+ 1342 0826 03F10103 		add	r3, r3, #1
+ 1343 082a BB75     		strb	r3, [r7, #22]
+ 533:openstack/02b-MAChigh/processIE.c ****       
+ 534:openstack/02b-MAChigh/processIE.c ****       scheduleInfo->cellList[i].choffset  |= 
+ 1344              		.loc 1 534 0 discriminator 2
+ 1345 082c FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 1346 082e F97D     		ldrb	r1, [r7, #23]	@ zero_extendqisi2
+ 1347 0830 7868     		ldr	r0, [r7, #4]
+ 1348 0832 0B46     		mov	r3, r1
+ 1349 0834 4FEA8303 		lsl	r3, r3, #2
+ 1350 0838 5B18     		adds	r3, r3, r1
+ 1351 083a C318     		adds	r3, r0, r3
+ 1352 083c B3F80730 		ldrh	r3, [r3, #7]	@ unaligned
+ 1353 0840 99B2     		uxth	r1, r3
+ 535:openstack/02b-MAChigh/processIE.c ****          *((uint8_t*)(pkt->payload)+localptr);
+ 1354              		.loc 1 535 0 discriminator 2
+ 1355 0842 FB68     		ldr	r3, [r7, #12]
+ 1356 0844 5868     		ldr	r0, [r3, #4]
+ 1357 0846 BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 1358 0848 C318     		adds	r3, r0, r3
+ 1359 084a 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 534:openstack/02b-MAChigh/processIE.c ****       scheduleInfo->cellList[i].choffset  |= 
+ 1360              		.loc 1 534 0 discriminator 2
+ 1361 084c 0B43     		orrs	r3, r3, r1
+ 1362 084e 99B2     		uxth	r1, r3
+ 1363 0850 7868     		ldr	r0, [r7, #4]
+ 1364 0852 1346     		mov	r3, r2
+ 1365 0854 4FEA8303 		lsl	r3, r3, #2
+ 1366 0858 9B18     		adds	r3, r3, r2
+ 1367 085a C318     		adds	r3, r0, r3
+ 1368 085c 0A46     		mov	r2, r1	@ movhi
+ 1369 085e A3F80720 		strh	r2, [r3, #7]	@ unaligned
+ 536:openstack/02b-MAChigh/processIE.c ****       localptr++;
+ 1370              		.loc 1 536 0 discriminator 2
+ 1371 0862 BB7D     		ldrb	r3, [r7, #22]
+ 1372 0864 03F10103 		add	r3, r3, #1
+ 1373 0868 BB75     		strb	r3, [r7, #22]
+ 537:openstack/02b-MAChigh/processIE.c ****       
+ 538:openstack/02b-MAChigh/processIE.c ****       // [1B] LinkOption bitmap
+ 539:openstack/02b-MAChigh/processIE.c ****       scheduleInfo->cellList[i].linkoptions = 
+ 1374              		.loc 1 539 0 discriminator 2
+ 1375 086a FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 540:openstack/02b-MAChigh/processIE.c ****          *((uint8_t*)(pkt->payload)+localptr);
+ 1376              		.loc 1 540 0 discriminator 2
+ 1377 086c FB68     		ldr	r3, [r7, #12]
+ 1378 086e 5968     		ldr	r1, [r3, #4]
+ 1379 0870 BB7D     		ldrb	r3, [r7, #22]	@ zero_extendqisi2
+ 1380 0872 CB18     		adds	r3, r1, r3
+ 1381 0874 1978     		ldrb	r1, [r3, #0]	@ zero_extendqisi2
+ 539:openstack/02b-MAChigh/processIE.c ****       scheduleInfo->cellList[i].linkoptions = 
+ 1382              		.loc 1 539 0 discriminator 2
+ 1383 0876 7868     		ldr	r0, [r7, #4]
+ 1384 0878 1346     		mov	r3, r2
+ 1385 087a 4FEA8303 		lsl	r3, r3, #2
+ 1386 087e 9B18     		adds	r3, r3, r2
+ 1387 0880 C318     		adds	r3, r0, r3
+ 1388 0882 03F10903 		add	r3, r3, #9
+ 1389 0886 0A46     		mov	r2, r1
+ 1390 0888 1A70     		strb	r2, [r3, #0]
+ 541:openstack/02b-MAChigh/processIE.c ****       localptr++;
+ 1391              		.loc 1 541 0 discriminator 2
+ 1392 088a BB7D     		ldrb	r3, [r7, #22]
+ 1393 088c 03F10103 		add	r3, r3, #1
+ 1394 0890 BB75     		strb	r3, [r7, #22]
+ 518:openstack/02b-MAChigh/processIE.c ****    for (i=0;i<scheduleInfo->numberOfcells;i++){
+ 1395              		.loc 1 518 0 discriminator 2
+ 1396 0892 FB7D     		ldrb	r3, [r7, #23]
+ 1397 0894 03F10103 		add	r3, r3, #1
+ 1398 0898 FB75     		strb	r3, [r7, #23]
+ 1399              	.L27:
+ 518:openstack/02b-MAChigh/processIE.c ****    for (i=0;i<scheduleInfo->numberOfcells;i++){
+ 1400              		.loc 1 518 0 is_stmt 0 discriminator 1
+ 1401 089a 7B68     		ldr	r3, [r7, #4]
+ 1402 089c DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
+ 1403 089e FA7D     		ldrb	r2, [r7, #23]	@ zero_extendqisi2
+ 1404 08a0 9A42     		cmp	r2, r3
+ 1405 08a2 FFF478AF 		bcc	.L28
+ 542:openstack/02b-MAChigh/processIE.c ****    }
+ 543:openstack/02b-MAChigh/processIE.c ****    *ptr=localptr; 
+ 1406              		.loc 1 543 0 is_stmt 1
+ 1407 08a6 BB68     		ldr	r3, [r7, #8]
+ 1408 08a8 BA7D     		ldrb	r2, [r7, #22]
+ 1409 08aa 1A70     		strb	r2, [r3, #0]
+ 1410 08ac 00E0     		b	.L24
+ 1411              	.L29:
+ 515:openstack/02b-MAChigh/processIE.c ****       return;
+ 1412              		.loc 1 515 0
+ 1413 08ae 00BF     		nop
+ 1414              	.L24:
+ 544:openstack/02b-MAChigh/processIE.c **** }
+ 1415              		.loc 1 544 0
+ 1416 08b0 07F11C07 		add	r7, r7, #28
+ 1417 08b4 BD46     		mov	sp, r7
+ 1418 08b6 80BC     		pop	{r7}
+ 1419 08b8 7047     		bx	lr
+ 1420              		.cfi_endproc
+ 1421              	.LFE9:
+ 1423              	.Letext0:
+ 1424              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+ 1425              		.file 3 "inc/opendefs.h"
+ 1426              		.file 4 "openstack/02b-MAChigh/processIE.h"
+ 1427              		.file 5 "bsp/boards/OpenMote-CC2538/board_info.h"
+ 1428              		.file 6 "openstack/03b-IPv6/icmpv6rpl.h"
+ 1429              		.file 7 "openstack/02b-MAChigh/schedule.h"
+ 1430              		.file 8 "openstack/02b-MAChigh/../02a-MAClow/IEEE802154Ecsl.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 processIE.c
+     /tmp/ccXdPmTv.s:19     .rodata:00000000 $d
+     /tmp/ccXdPmTv.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccXdPmTv.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccXdPmTv.s:32     .rodata:00000010 infouCName
+     /tmp/ccXdPmTv.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccXdPmTv.s:42     .rodata:00000024 infoStackName
+     /tmp/ccXdPmTv.s:47     .rodata:00000030 all_routers_multicast
+     /tmp/ccXdPmTv.s:65     .text:00000000 $t
+     /tmp/ccXdPmTv.s:70     .text:00000000 processIE_prependMLMEIE
+     /tmp/ccXdPmTv.s:133    .text:00000054 processIE_prependSyncIE
+     /tmp/ccXdPmTv.s:213    .text:000000c8 processIE_prependSlotframeLinkIE
+     /tmp/ccXdPmTv.s:422    .text:00000250 processIE_prependOpcodeIE
+     /tmp/ccXdPmTv.s:507    .text:000002d0 processIE_prependBandwidthIE
+     /tmp/ccXdPmTv.s:607    .text:0000036c processIE_prependSheduleIE
+     /tmp/ccXdPmTv.s:851    .text:00000520 processIE_retrieveSlotframeLinkIE
+     /tmp/ccXdPmTv.s:1054   .text:00000674 processIE_retrieveOpcodeIE
+     /tmp/ccXdPmTv.s:1107   .text:000006ac processIE_retrieveBandwidthIE
+     /tmp/ccXdPmTv.s:1172   .text:000006fc processIE_retrieveSheduleIE
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.toolchain_defs.h.2.e4ebbe6e0a48032a9b79077dc42e1ffd
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
+                           .group:00000000 wm4.processIE.h.2.1848f1e3c653035e9779472584ce0441
+                           .group:00000000 wm4.schedule.h.2.74f699399ee9cbf3b59178f1204d8511
+                           .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
+                           .group:00000000 wm4.IEEE802154Ecsl.h.21.a46c6cdefbea13cd7501756681c86a21
+                           .group:00000000 wm4.sixtop.h.2.0b8613e8e48e9109b53e6143f3ed1895
+                           .group:00000000 wm4.idmanager.h.2.8c0e2159b32ef3125cbb1e984805cbfe
+                           .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
+                           .group:00000000 wm4.openqueue.h.2.1444d8e45168655382012311da8d8519
+                           .group:00000000 wm4.icmpv6rpl.h.2.0ce84dbe8c203c7079b39e7e96c7c01e
+                           .group:00000000 wm4.neighbors.h.15.9f35f180a0332d1bc442efb0ec51905c
+                           .group:00000000 wm4.scheduler.h.2.ca320b72942c5204a6e225e3c9c0814e
+
+UNDEFINED SYMBOLS
+packetfunctions_reserveHeaderSize
+packetfunctions_htons

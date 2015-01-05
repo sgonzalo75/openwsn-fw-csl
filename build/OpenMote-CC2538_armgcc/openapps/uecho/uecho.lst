@@ -1,0 +1,344 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"uecho.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.align	2
+  42              	infoStackName:
+  43 0024 4F70656E 		.ascii	"OpenWSN \000"
+  43      57534E20 
+  43      00
+  44 002d 000000   		.text
+  45              		.align	2
+  46              		.global	uecho_init
+  47              		.thumb
+  48              		.thumb_func
+  50              	uecho_init:
+  51              	.LFB0:
+  52              		.file 1 "openapps/uecho/uecho.c"
+   1:openapps/uecho/uecho.c **** #include "opendefs.h"
+   2:openapps/uecho/uecho.c **** #include "uecho.h"
+   3:openapps/uecho/uecho.c **** #include "openudp.h"
+   4:openapps/uecho/uecho.c **** #include "openqueue.h"
+   5:openapps/uecho/uecho.c **** #include "openserial.h"
+   6:openapps/uecho/uecho.c **** #include "packetfunctions.h"
+   7:openapps/uecho/uecho.c **** 
+   8:openapps/uecho/uecho.c **** //=========================== variables =======================================
+   9:openapps/uecho/uecho.c **** 
+  10:openapps/uecho/uecho.c **** //=========================== prototypes ======================================
+  11:openapps/uecho/uecho.c **** 
+  12:openapps/uecho/uecho.c **** //=========================== public ==========================================
+  13:openapps/uecho/uecho.c **** 
+  14:openapps/uecho/uecho.c **** void uecho_init() {
+  53              		.loc 1 14 0
+  54              		.cfi_startproc
+  55              		@ args = 0, pretend = 0, frame = 0
+  56              		@ frame_needed = 1, uses_anonymous_args = 0
+  57              		@ link register save eliminated.
+  58 0000 80B4     		push	{r7}
+  59              	.LCFI0:
+  60              		.cfi_def_cfa_offset 4
+  61              		.cfi_offset 7, -4
+  62 0002 00AF     		add	r7, sp, #0
+  63              	.LCFI1:
+  64              		.cfi_def_cfa_register 7
+  15:openapps/uecho/uecho.c **** }
+  65              		.loc 1 15 0
+  66 0004 BD46     		mov	sp, r7
+  67 0006 80BC     		pop	{r7}
+  68 0008 7047     		bx	lr
+  69              		.cfi_endproc
+  70              	.LFE0:
+  72 000a 00BF     		.align	2
+  73              		.global	uecho_receive
+  74              		.thumb
+  75              		.thumb_func
+  77              	uecho_receive:
+  78              	.LFB1:
+  16:openapps/uecho/uecho.c **** 
+  17:openapps/uecho/uecho.c **** void uecho_receive(OpenQueueEntry_t* request) {
+  79              		.loc 1 17 0
+  80              		.cfi_startproc
+  81              		@ args = 0, pretend = 0, frame = 16
+  82              		@ frame_needed = 1, uses_anonymous_args = 0
+  83 000c 80B5     		push	{r7, lr}
+  84              	.LCFI2:
+  85              		.cfi_def_cfa_offset 8
+  86              		.cfi_offset 7, -8
+  87              		.cfi_offset 14, -4
+  88 000e 84B0     		sub	sp, sp, #16
+  89              	.LCFI3:
+  90              		.cfi_def_cfa_offset 24
+  91 0010 00AF     		add	r7, sp, #0
+  92              	.LCFI4:
+  93              		.cfi_def_cfa_register 7
+  94 0012 7860     		str	r0, [r7, #4]
+  18:openapps/uecho/uecho.c ****    uint16_t          temp_l4_destination_port;
+  19:openapps/uecho/uecho.c ****    OpenQueueEntry_t* reply;
+  20:openapps/uecho/uecho.c ****    
+  21:openapps/uecho/uecho.c ****    reply = openqueue_getFreePacketBuffer(COMPONENT_UECHO);
+  95              		.loc 1 21 0
+  96 0014 4FF02200 		mov	r0, #34
+  97 0018 FFF7FEFF 		bl	openqueue_getFreePacketBuffer
+  98 001c F860     		str	r0, [r7, #12]
+  22:openapps/uecho/uecho.c ****    if (reply==NULL) {
+  99              		.loc 1 22 0
+ 100 001e FB68     		ldr	r3, [r7, #12]
+ 101 0020 002B     		cmp	r3, #0
+ 102 0022 0AD1     		bne	.L3
+  23:openapps/uecho/uecho.c ****       openserial_printError(
+ 103              		.loc 1 23 0
+ 104 0024 4FF02200 		mov	r0, #34
+ 105 0028 4FF02C01 		mov	r1, #44
+ 106 002c 4FF00002 		mov	r2, #0
+ 107 0030 4FF00003 		mov	r3, #0
+ 108 0034 FFF7FEFF 		bl	openserial_printError
+  24:openapps/uecho/uecho.c ****          COMPONENT_UECHO,
+  25:openapps/uecho/uecho.c ****          ERR_NO_FREE_PACKET_BUFFER,
+  26:openapps/uecho/uecho.c ****          (errorparameter_t)0,
+  27:openapps/uecho/uecho.c ****          (errorparameter_t)0
+  28:openapps/uecho/uecho.c ****       );
+  29:openapps/uecho/uecho.c ****       return;
+ 109              		.loc 1 29 0
+ 110 0038 42E0     		b	.L2
+ 111              	.L3:
+  30:openapps/uecho/uecho.c ****    }
+  31:openapps/uecho/uecho.c ****    
+  32:openapps/uecho/uecho.c ****    reply->owner                         = COMPONENT_UECHO;
+ 112              		.loc 1 32 0
+ 113 003a FB68     		ldr	r3, [r7, #12]
+ 114 003c 4FF02202 		mov	r2, #34
+ 115 0040 5A70     		strb	r2, [r3, #1]
+  33:openapps/uecho/uecho.c ****    
+  34:openapps/uecho/uecho.c ****    // reply with the same OpenQueueEntry_t
+  35:openapps/uecho/uecho.c ****    reply->creator                       = COMPONENT_UECHO;
+ 116              		.loc 1 35 0
+ 117 0042 FB68     		ldr	r3, [r7, #12]
+ 118 0044 4FF02202 		mov	r2, #34
+ 119 0048 1A70     		strb	r2, [r3, #0]
+  36:openapps/uecho/uecho.c ****    reply->l4_protocol                   = IANA_UDP;
+ 120              		.loc 1 36 0
+ 121 004a FB68     		ldr	r3, [r7, #12]
+ 122 004c 4FF01102 		mov	r2, #17
+ 123 0050 5A72     		strb	r2, [r3, #9]
+  37:openapps/uecho/uecho.c ****    temp_l4_destination_port           = request->l4_destination_port;
+ 124              		.loc 1 37 0
+ 125 0052 7B68     		ldr	r3, [r7, #4]
+ 126 0054 DB89     		ldrh	r3, [r3, #14]	@ movhi
+ 127 0056 7B81     		strh	r3, [r7, #10]	@ movhi
+  38:openapps/uecho/uecho.c ****    reply->l4_destination_port           = request->l4_sourcePortORicmpv6Type;
+ 128              		.loc 1 38 0
+ 129 0058 7B68     		ldr	r3, [r7, #4]
+ 130 005a 9A89     		ldrh	r2, [r3, #12]
+ 131 005c FB68     		ldr	r3, [r7, #12]
+ 132 005e DA81     		strh	r2, [r3, #14]	@ movhi
+  39:openapps/uecho/uecho.c ****    reply->l4_sourcePortORicmpv6Type     = temp_l4_destination_port;
+ 133              		.loc 1 39 0
+ 134 0060 FB68     		ldr	r3, [r7, #12]
+ 135 0062 7A89     		ldrh	r2, [r7, #10]	@ movhi
+ 136 0064 9A81     		strh	r2, [r3, #12]	@ movhi
+  40:openapps/uecho/uecho.c ****    reply->l3_destinationAdd.type        = ADDR_128B;
+ 137              		.loc 1 40 0
+ 138 0066 FB68     		ldr	r3, [r7, #12]
+ 139 0068 4FF00302 		mov	r2, #3
+ 140 006c 5A75     		strb	r2, [r3, #21]
+  41:openapps/uecho/uecho.c ****    
+  42:openapps/uecho/uecho.c ****    // copy source to destination to echo.
+  43:openapps/uecho/uecho.c ****    memcpy(&reply->l3_destinationAdd.addr_128b[0],&request->l3_sourceAdd.addr_128b[0],16);
+ 141              		.loc 1 43 0
+ 142 006e FB68     		ldr	r3, [r7, #12]
+ 143 0070 03F11602 		add	r2, r3, #22
+ 144 0074 7B68     		ldr	r3, [r7, #4]
+ 145 0076 03F12703 		add	r3, r3, #39
+ 146 007a 1046     		mov	r0, r2
+ 147 007c 1946     		mov	r1, r3
+ 148 007e 4FF01002 		mov	r2, #16
+ 149 0082 FFF7FEFF 		bl	memcpy
+  44:openapps/uecho/uecho.c ****    
+  45:openapps/uecho/uecho.c ****    packetfunctions_reserveHeaderSize(reply,request->length);
+ 150              		.loc 1 45 0
+ 151 0086 7B68     		ldr	r3, [r7, #4]
+ 152 0088 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 153 008a F868     		ldr	r0, [r7, #12]
+ 154 008c 1946     		mov	r1, r3
+ 155 008e FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+  46:openapps/uecho/uecho.c ****    memcpy(&reply->payload[0],&request->payload[0],request->length);
+ 156              		.loc 1 46 0
+ 157 0092 FB68     		ldr	r3, [r7, #12]
+ 158 0094 5968     		ldr	r1, [r3, #4]
+ 159 0096 7B68     		ldr	r3, [r7, #4]
+ 160 0098 5A68     		ldr	r2, [r3, #4]
+ 161 009a 7B68     		ldr	r3, [r7, #4]
+ 162 009c 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 163 009e 0846     		mov	r0, r1
+ 164 00a0 1146     		mov	r1, r2
+ 165 00a2 1A46     		mov	r2, r3
+ 166 00a4 FFF7FEFF 		bl	memcpy
+  47:openapps/uecho/uecho.c ****    openqueue_freePacketBuffer(request);
+ 167              		.loc 1 47 0
+ 168 00a8 7868     		ldr	r0, [r7, #4]
+ 169 00aa FFF7FEFF 		bl	openqueue_freePacketBuffer
+  48:openapps/uecho/uecho.c ****    
+  49:openapps/uecho/uecho.c ****    if ((openudp_send(reply))==E_FAIL) {
+ 170              		.loc 1 49 0
+ 171 00ae F868     		ldr	r0, [r7, #12]
+ 172 00b0 FFF7FEFF 		bl	openudp_send
+ 173 00b4 0346     		mov	r3, r0
+ 174 00b6 012B     		cmp	r3, #1
+ 175 00b8 02D1     		bne	.L2
+  50:openapps/uecho/uecho.c ****       openqueue_freePacketBuffer(reply);
+ 176              		.loc 1 50 0
+ 177 00ba F868     		ldr	r0, [r7, #12]
+ 178 00bc FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 179              	.L2:
+  51:openapps/uecho/uecho.c ****    }
+  52:openapps/uecho/uecho.c **** }
+ 180              		.loc 1 52 0
+ 181 00c0 07F11007 		add	r7, r7, #16
+ 182 00c4 BD46     		mov	sp, r7
+ 183 00c6 80BD     		pop	{r7, pc}
+ 184              		.cfi_endproc
+ 185              	.LFE1:
+ 187              		.align	2
+ 188              		.global	uecho_sendDone
+ 189              		.thumb
+ 190              		.thumb_func
+ 192              	uecho_sendDone:
+ 193              	.LFB2:
+  53:openapps/uecho/uecho.c **** 
+  54:openapps/uecho/uecho.c **** void uecho_sendDone(OpenQueueEntry_t* msg, owerror_t error) {
+ 194              		.loc 1 54 0
+ 195              		.cfi_startproc
+ 196              		@ args = 0, pretend = 0, frame = 8
+ 197              		@ frame_needed = 1, uses_anonymous_args = 0
+ 198 00c8 80B5     		push	{r7, lr}
+ 199              	.LCFI5:
+ 200              		.cfi_def_cfa_offset 8
+ 201              		.cfi_offset 7, -8
+ 202              		.cfi_offset 14, -4
+ 203 00ca 82B0     		sub	sp, sp, #8
+ 204              	.LCFI6:
+ 205              		.cfi_def_cfa_offset 16
+ 206 00cc 00AF     		add	r7, sp, #0
+ 207              	.LCFI7:
+ 208              		.cfi_def_cfa_register 7
+ 209 00ce 7860     		str	r0, [r7, #4]
+ 210 00d0 0B46     		mov	r3, r1
+ 211 00d2 FB70     		strb	r3, [r7, #3]
+  55:openapps/uecho/uecho.c ****    openqueue_freePacketBuffer(msg);
+ 212              		.loc 1 55 0
+ 213 00d4 7868     		ldr	r0, [r7, #4]
+ 214 00d6 FFF7FEFF 		bl	openqueue_freePacketBuffer
+  56:openapps/uecho/uecho.c **** }
+ 215              		.loc 1 56 0
+ 216 00da 07F10807 		add	r7, r7, #8
+ 217 00de BD46     		mov	sp, r7
+ 218 00e0 80BD     		pop	{r7, pc}
+ 219              		.cfi_endproc
+ 220              	.LFE2:
+ 222 00e2 00BF     		.align	2
+ 223              		.global	uecho_debugPrint
+ 224              		.thumb
+ 225              		.thumb_func
+ 227              	uecho_debugPrint:
+ 228              	.LFB3:
+  57:openapps/uecho/uecho.c **** 
+  58:openapps/uecho/uecho.c **** bool uecho_debugPrint() {
+ 229              		.loc 1 58 0
+ 230              		.cfi_startproc
+ 231              		@ args = 0, pretend = 0, frame = 0
+ 232              		@ frame_needed = 1, uses_anonymous_args = 0
+ 233              		@ link register save eliminated.
+ 234 00e4 80B4     		push	{r7}
+ 235              	.LCFI8:
+ 236              		.cfi_def_cfa_offset 4
+ 237              		.cfi_offset 7, -4
+ 238 00e6 00AF     		add	r7, sp, #0
+ 239              	.LCFI9:
+ 240              		.cfi_def_cfa_register 7
+  59:openapps/uecho/uecho.c ****    return FALSE;
+ 241              		.loc 1 59 0
+ 242 00e8 4FF00003 		mov	r3, #0
+  60:openapps/uecho/uecho.c **** }
+ 243              		.loc 1 60 0
+ 244 00ec 1846     		mov	r0, r3
+ 245 00ee BD46     		mov	sp, r7
+ 246 00f0 80BC     		pop	{r7}
+ 247 00f2 7047     		bx	lr
+ 248              		.cfi_endproc
+ 249              	.LFE3:
+ 251              	.Letext0:
+ 252              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+ 253              		.file 3 "inc/opendefs.h"
+ 254              		.file 4 "bsp/boards/OpenMote-CC2538/board_info.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 uecho.c
+     /tmp/ccgYTvdr.s:19     .rodata:00000000 $d
+     /tmp/ccgYTvdr.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccgYTvdr.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccgYTvdr.s:32     .rodata:00000010 infouCName
+     /tmp/ccgYTvdr.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccgYTvdr.s:42     .rodata:00000024 infoStackName
+     /tmp/ccgYTvdr.s:45     .text:00000000 $t
+     /tmp/ccgYTvdr.s:50     .text:00000000 uecho_init
+     /tmp/ccgYTvdr.s:77     .text:0000000c uecho_receive
+     /tmp/ccgYTvdr.s:192    .text:000000c8 uecho_sendDone
+     /tmp/ccgYTvdr.s:227    .text:000000e4 uecho_debugPrint
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.toolchain_defs.h.2.e4ebbe6e0a48032a9b79077dc42e1ffd
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
+                           .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
+
+UNDEFINED SYMBOLS
+openqueue_getFreePacketBuffer
+openserial_printError
+memcpy
+packetfunctions_reserveHeaderSize
+openqueue_freePacketBuffer
+openudp_send

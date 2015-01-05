@@ -1,0 +1,750 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"openudp.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.section	.rodata
+  19              		.align	2
+  22              	rreg_uriquery:
+  23 0000 683D7563 		.ascii	"h=ucb\000"
+  23      6200
+  24 0006 0000     		.align	2
+  27              	infoBoardname:
+  28 0008 43433235 		.ascii	"CC2538\000"
+  28      333800
+  29 000f 00       		.align	2
+  32              	infouCName:
+  33 0010 43433235 		.ascii	"CC2538\000"
+  33      333800
+  34 0017 00       		.align	2
+  37              	infoRadioName:
+  38 0018 43433235 		.ascii	"CC2538 SoC\000"
+  38      33382053 
+  38      6F4300
+  39 0023 00       		.align	2
+  42              	infoStackName:
+  43 0024 4F70656E 		.ascii	"OpenWSN \000"
+  43      57534E20 
+  43      00
+  44 002d 000000   		.align	2
+  47              	ipAddr_ipsoRD:
+  48 0030 26       		.byte	38
+  49 0031 07       		.byte	7
+  50 0032 F7       		.byte	-9
+  51 0033 40       		.byte	64
+  52 0034 00       		.byte	0
+  53 0035 00       		.byte	0
+  54 0036 00       		.byte	0
+  55 0037 3F       		.byte	63
+  56 0038 00       		.byte	0
+  57 0039 00       		.byte	0
+  58 003a 00       		.byte	0
+  59 003b 00       		.byte	0
+  60 003c 00       		.byte	0
+  61 003d 00       		.byte	0
+  62 003e 0E       		.byte	14
+  63 003f 29       		.byte	41
+  64              		.align	2
+  67              	ipAddr_motesEecs:
+  68 0040 20       		.byte	32
+  69 0041 01       		.byte	1
+  70 0042 04       		.byte	4
+  71 0043 70       		.byte	112
+  72 0044 00       		.byte	0
+  73 0045 66       		.byte	102
+  74 0046 00       		.byte	0
+  75 0047 19       		.byte	25
+  76 0048 00       		.byte	0
+  77 0049 00       		.byte	0
+  78 004a 00       		.byte	0
+  79 004b 00       		.byte	0
+  80 004c 00       		.byte	0
+  81 004d 00       		.byte	0
+  82 004e 00       		.byte	0
+  83 004f 02       		.byte	2
+  84              		.align	2
+  87              	ipAddr_local:
+  88 0050 26       		.byte	38
+  89 0051 07       		.byte	7
+  90 0052 F1       		.byte	-15
+  91 0053 40       		.byte	64
+  92 0054 04       		.byte	4
+  93 0055 00       		.byte	0
+  94 0056 10       		.byte	16
+  95 0057 36       		.byte	54
+  96 0058 4D       		.byte	77
+  97 0059 CD       		.byte	-51
+  98 005a AB       		.byte	-85
+  99 005b 54       		.byte	84
+ 100 005c 81       		.byte	-127
+ 101 005d 99       		.byte	-103
+ 102 005e C1       		.byte	-63
+ 103 005f F7       		.byte	-9
+ 104              		.align	2
+ 107              	ipAddr_motedata:
+ 108 0060 20       		.byte	32
+ 109 0061 01       		.byte	1
+ 110 0062 04       		.byte	4
+ 111 0063 70       		.byte	112
+ 112 0064 00       		.byte	0
+ 113 0065 66       		.byte	102
+ 114 0066 00       		.byte	0
+ 115 0067 17       		.byte	23
+ 116 0068 00       		.byte	0
+ 117 0069 00       		.byte	0
+ 118 006a 00       		.byte	0
+ 119 006b 00       		.byte	0
+ 120 006c 00       		.byte	0
+ 121 006d 00       		.byte	0
+ 122 006e 00       		.byte	0
+ 123 006f 02       		.byte	2
+ 124              		.text
+ 125              		.align	2
+ 126              		.global	openudp_init
+ 127              		.thumb
+ 128              		.thumb_func
+ 130              	openudp_init:
+ 131              	.LFB0:
+ 132              		.file 1 "openstack/04-TRAN/openudp.c"
+   1:openstack/04-TRAN/openudp.c **** #include "opendefs.h"
+   2:openstack/04-TRAN/openudp.c **** #include "openudp.h"
+   3:openstack/04-TRAN/openudp.c **** #include "openserial.h"
+   4:openstack/04-TRAN/openudp.c **** #include "packetfunctions.h"
+   5:openstack/04-TRAN/openudp.c **** #include "forwarding.h"
+   6:openstack/04-TRAN/openudp.c **** #include "openqueue.h"
+   7:openstack/04-TRAN/openudp.c **** // applications
+   8:openstack/04-TRAN/openudp.c **** #include "opencoap.h"
+   9:openstack/04-TRAN/openudp.c **** #include "uecho.h"
+  10:openstack/04-TRAN/openudp.c **** 
+  11:openstack/04-TRAN/openudp.c **** //=========================== variables =======================================
+  12:openstack/04-TRAN/openudp.c **** 
+  13:openstack/04-TRAN/openudp.c **** //=========================== prototypes ======================================
+  14:openstack/04-TRAN/openudp.c **** 
+  15:openstack/04-TRAN/openudp.c **** //=========================== public ==========================================
+  16:openstack/04-TRAN/openudp.c **** 
+  17:openstack/04-TRAN/openudp.c **** void openudp_init() {
+ 133              		.loc 1 17 0
+ 134              		.cfi_startproc
+ 135              		@ args = 0, pretend = 0, frame = 0
+ 136              		@ frame_needed = 1, uses_anonymous_args = 0
+ 137              		@ link register save eliminated.
+ 138 0000 80B4     		push	{r7}
+ 139              	.LCFI0:
+ 140              		.cfi_def_cfa_offset 4
+ 141              		.cfi_offset 7, -4
+ 142 0002 00AF     		add	r7, sp, #0
+ 143              	.LCFI1:
+ 144              		.cfi_def_cfa_register 7
+  18:openstack/04-TRAN/openudp.c **** }
+ 145              		.loc 1 18 0
+ 146 0004 BD46     		mov	sp, r7
+ 147 0006 80BC     		pop	{r7}
+ 148 0008 7047     		bx	lr
+ 149              		.cfi_endproc
+ 150              	.LFE0:
+ 152 000a 00BF     		.align	2
+ 153              		.global	openudp_send
+ 154              		.thumb
+ 155              		.thumb_func
+ 157              	openudp_send:
+ 158              	.LFB1:
+  19:openstack/04-TRAN/openudp.c **** 
+  20:openstack/04-TRAN/openudp.c **** owerror_t openudp_send(OpenQueueEntry_t* msg) {
+ 159              		.loc 1 20 0
+ 160              		.cfi_startproc
+ 161              		@ args = 0, pretend = 0, frame = 8
+ 162              		@ frame_needed = 1, uses_anonymous_args = 0
+ 163 000c 80B5     		push	{r7, lr}
+ 164              	.LCFI2:
+ 165              		.cfi_def_cfa_offset 8
+ 166              		.cfi_offset 7, -8
+ 167              		.cfi_offset 14, -4
+ 168 000e 82B0     		sub	sp, sp, #8
+ 169              	.LCFI3:
+ 170              		.cfi_def_cfa_offset 16
+ 171 0010 00AF     		add	r7, sp, #0
+ 172              	.LCFI4:
+ 173              		.cfi_def_cfa_register 7
+ 174 0012 7860     		str	r0, [r7, #4]
+  21:openstack/04-TRAN/openudp.c ****    msg->owner       = COMPONENT_OPENUDP;
+ 175              		.loc 1 21 0
+ 176 0014 7B68     		ldr	r3, [r7, #4]
+ 177 0016 4FF01802 		mov	r2, #24
+ 178 001a 5A70     		strb	r2, [r3, #1]
+  22:openstack/04-TRAN/openudp.c ****    msg->l4_protocol = IANA_UDP;
+ 179              		.loc 1 22 0
+ 180 001c 7B68     		ldr	r3, [r7, #4]
+ 181 001e 4FF01102 		mov	r2, #17
+ 182 0022 5A72     		strb	r2, [r3, #9]
+  23:openstack/04-TRAN/openudp.c ****    msg->l4_payload  = msg->payload;
+ 183              		.loc 1 23 0
+ 184 0024 7B68     		ldr	r3, [r7, #4]
+ 185 0026 5A68     		ldr	r2, [r3, #4]
+ 186 0028 7B68     		ldr	r3, [r7, #4]
+ 187 002a 1A61     		str	r2, [r3, #16]
+  24:openstack/04-TRAN/openudp.c ****    msg->l4_length   = msg->length;
+ 188              		.loc 1 24 0
+ 189 002c 7B68     		ldr	r3, [r7, #4]
+ 190 002e 1A7A     		ldrb	r2, [r3, #8]	@ zero_extendqisi2
+ 191 0030 7B68     		ldr	r3, [r7, #4]
+ 192 0032 1A75     		strb	r2, [r3, #20]
+  25:openstack/04-TRAN/openudp.c ****    packetfunctions_reserveHeaderSize(msg,sizeof(udp_ht));
+ 193              		.loc 1 25 0
+ 194 0034 7868     		ldr	r0, [r7, #4]
+ 195 0036 4FF00801 		mov	r1, #8
+ 196 003a FFF7FEFF 		bl	packetfunctions_reserveHeaderSize
+  26:openstack/04-TRAN/openudp.c ****    packetfunctions_htons(msg->l4_sourcePortORicmpv6Type,&(msg->payload[0]));
+ 197              		.loc 1 26 0
+ 198 003e 7B68     		ldr	r3, [r7, #4]
+ 199 0040 9A89     		ldrh	r2, [r3, #12]
+ 200 0042 7B68     		ldr	r3, [r7, #4]
+ 201 0044 5B68     		ldr	r3, [r3, #4]
+ 202 0046 1046     		mov	r0, r2
+ 203 0048 1946     		mov	r1, r3
+ 204 004a FFF7FEFF 		bl	packetfunctions_htons
+  27:openstack/04-TRAN/openudp.c ****    packetfunctions_htons(msg->l4_destination_port,&(msg->payload[2]));
+ 205              		.loc 1 27 0
+ 206 004e 7B68     		ldr	r3, [r7, #4]
+ 207 0050 DA89     		ldrh	r2, [r3, #14]
+ 208 0052 7B68     		ldr	r3, [r7, #4]
+ 209 0054 5B68     		ldr	r3, [r3, #4]
+ 210 0056 03F10203 		add	r3, r3, #2
+ 211 005a 1046     		mov	r0, r2
+ 212 005c 1946     		mov	r1, r3
+ 213 005e FFF7FEFF 		bl	packetfunctions_htons
+  28:openstack/04-TRAN/openudp.c ****    packetfunctions_htons(msg->length,&(msg->payload[4]));
+ 214              		.loc 1 28 0
+ 215 0062 7B68     		ldr	r3, [r7, #4]
+ 216 0064 1B7A     		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 217 0066 1A46     		mov	r2, r3
+ 218 0068 7B68     		ldr	r3, [r7, #4]
+ 219 006a 5B68     		ldr	r3, [r3, #4]
+ 220 006c 03F10403 		add	r3, r3, #4
+ 221 0070 1046     		mov	r0, r2
+ 222 0072 1946     		mov	r1, r3
+ 223 0074 FFF7FEFF 		bl	packetfunctions_htons
+  29:openstack/04-TRAN/openudp.c ****    packetfunctions_calculateChecksum(msg,(uint8_t*)&(((udp_ht*)msg->payload)->checksum));
+ 224              		.loc 1 29 0
+ 225 0078 7B68     		ldr	r3, [r7, #4]
+ 226 007a 5B68     		ldr	r3, [r3, #4]
+ 227 007c 03F10603 		add	r3, r3, #6
+ 228 0080 7868     		ldr	r0, [r7, #4]
+ 229 0082 1946     		mov	r1, r3
+ 230 0084 FFF7FEFF 		bl	packetfunctions_calculateChecksum
+  30:openstack/04-TRAN/openudp.c ****    return forwarding_send(msg);
+ 231              		.loc 1 30 0
+ 232 0088 7868     		ldr	r0, [r7, #4]
+ 233 008a FFF7FEFF 		bl	forwarding_send
+ 234 008e 0346     		mov	r3, r0
+  31:openstack/04-TRAN/openudp.c **** }
+ 235              		.loc 1 31 0
+ 236 0090 1846     		mov	r0, r3
+ 237 0092 07F10807 		add	r7, r7, #8
+ 238 0096 BD46     		mov	sp, r7
+ 239 0098 80BD     		pop	{r7, pc}
+ 240              		.cfi_endproc
+ 241              	.LFE1:
+ 243 009a 00BF     		.align	2
+ 244              		.global	openudp_sendDone
+ 245              		.thumb
+ 246              		.thumb_func
+ 248              	openudp_sendDone:
+ 249              	.LFB2:
+  32:openstack/04-TRAN/openudp.c **** 
+  33:openstack/04-TRAN/openudp.c **** void openudp_sendDone(OpenQueueEntry_t* msg, owerror_t error) {
+ 250              		.loc 1 33 0
+ 251              		.cfi_startproc
+ 252              		@ args = 0, pretend = 0, frame = 8
+ 253              		@ frame_needed = 1, uses_anonymous_args = 0
+ 254 009c 80B5     		push	{r7, lr}
+ 255              	.LCFI5:
+ 256              		.cfi_def_cfa_offset 8
+ 257              		.cfi_offset 7, -8
+ 258              		.cfi_offset 14, -4
+ 259 009e 82B0     		sub	sp, sp, #8
+ 260              	.LCFI6:
+ 261              		.cfi_def_cfa_offset 16
+ 262 00a0 00AF     		add	r7, sp, #0
+ 263              	.LCFI7:
+ 264              		.cfi_def_cfa_register 7
+ 265 00a2 7860     		str	r0, [r7, #4]
+ 266 00a4 0B46     		mov	r3, r1
+ 267 00a6 FB70     		strb	r3, [r7, #3]
+  34:openstack/04-TRAN/openudp.c ****    msg->owner = COMPONENT_OPENUDP;
+ 268              		.loc 1 34 0
+ 269 00a8 7B68     		ldr	r3, [r7, #4]
+ 270 00aa 4FF01802 		mov	r2, #24
+ 271 00ae 5A70     		strb	r2, [r3, #1]
+  35:openstack/04-TRAN/openudp.c ****    switch(msg->l4_sourcePortORicmpv6Type) {
+ 272              		.loc 1 35 0
+ 273 00b0 7B68     		ldr	r3, [r7, #4]
+ 274 00b2 9B89     		ldrh	r3, [r3, #12]
+ 275 00b4 072B     		cmp	r3, #7
+ 276 00b6 09D0     		beq	.L6
+ 277 00b8 41F23362 		movw	r2, #5683
+ 278 00bc 9342     		cmp	r3, r2
+ 279 00be 0BD1     		bne	.L9
+ 280              	.L7:
+  36:openstack/04-TRAN/openudp.c ****       case WKP_UDP_COAP:
+  37:openstack/04-TRAN/openudp.c ****          opencoap_sendDone(msg,error);
+ 281              		.loc 1 37 0
+ 282 00c0 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 283 00c2 7868     		ldr	r0, [r7, #4]
+ 284 00c4 1946     		mov	r1, r3
+ 285 00c6 FFF7FEFF 		bl	opencoap_sendDone
+  38:openstack/04-TRAN/openudp.c ****          break;
+ 286              		.loc 1 38 0
+ 287 00ca 13E0     		b	.L4
+ 288              	.L6:
+  39:openstack/04-TRAN/openudp.c ****       case WKP_UDP_ECHO:
+  40:openstack/04-TRAN/openudp.c ****          uecho_sendDone(msg,error);
+ 289              		.loc 1 40 0
+ 290 00cc FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
+ 291 00ce 7868     		ldr	r0, [r7, #4]
+ 292 00d0 1946     		mov	r1, r3
+ 293 00d2 FFF7FEFF 		bl	uecho_sendDone
+  41:openstack/04-TRAN/openudp.c ****          break;
+ 294              		.loc 1 41 0
+ 295 00d6 0DE0     		b	.L4
+ 296              	.L9:
+  42:openstack/04-TRAN/openudp.c ****       default:
+  43:openstack/04-TRAN/openudp.c ****          openserial_printError(COMPONENT_OPENUDP,ERR_UNSUPPORTED_PORT_NUMBER,
+  44:openstack/04-TRAN/openudp.c ****                                (errorparameter_t)msg->l4_sourcePortORicmpv6Type,
+ 297              		.loc 1 44 0
+ 298 00d8 7B68     		ldr	r3, [r7, #4]
+  43:openstack/04-TRAN/openudp.c ****          openserial_printError(COMPONENT_OPENUDP,ERR_UNSUPPORTED_PORT_NUMBER,
+ 299              		.loc 1 43 0
+ 300 00da 9B89     		ldrh	r3, [r3, #12]
+ 301 00dc 4FF01800 		mov	r0, #24
+ 302 00e0 4FF00901 		mov	r1, #9
+ 303 00e4 1A46     		mov	r2, r3
+ 304 00e6 4FF00503 		mov	r3, #5
+ 305 00ea FFF7FEFF 		bl	openserial_printError
+  45:openstack/04-TRAN/openudp.c ****                                (errorparameter_t)5);
+  46:openstack/04-TRAN/openudp.c ****          openqueue_freePacketBuffer(msg);         
+ 306              		.loc 1 46 0
+ 307 00ee 7868     		ldr	r0, [r7, #4]
+ 308 00f0 FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 309              	.L4:
+  47:openstack/04-TRAN/openudp.c ****    }
+  48:openstack/04-TRAN/openudp.c **** }
+ 310              		.loc 1 48 0
+ 311 00f4 07F10807 		add	r7, r7, #8
+ 312 00f8 BD46     		mov	sp, r7
+ 313 00fa 80BD     		pop	{r7, pc}
+ 314              		.cfi_endproc
+ 315              	.LFE2:
+ 317              		.align	2
+ 318              		.global	openudp_receive
+ 319              		.thumb
+ 320              		.thumb_func
+ 322              	openudp_receive:
+ 323              	.LFB3:
+  49:openstack/04-TRAN/openudp.c **** 
+  50:openstack/04-TRAN/openudp.c **** void openudp_receive(OpenQueueEntry_t* msg) {
+ 324              		.loc 1 50 0
+ 325              		.cfi_startproc
+ 326              		@ args = 0, pretend = 0, frame = 16
+ 327              		@ frame_needed = 1, uses_anonymous_args = 0
+ 328 00fc 80B5     		push	{r7, lr}
+ 329              	.LCFI8:
+ 330              		.cfi_def_cfa_offset 8
+ 331              		.cfi_offset 7, -8
+ 332              		.cfi_offset 14, -4
+ 333 00fe 84B0     		sub	sp, sp, #16
+ 334              	.LCFI9:
+ 335              		.cfi_def_cfa_offset 24
+ 336 0100 00AF     		add	r7, sp, #0
+ 337              	.LCFI10:
+ 338              		.cfi_def_cfa_register 7
+ 339 0102 7860     		str	r0, [r7, #4]
+  51:openstack/04-TRAN/openudp.c ****    uint8_t temp_8b;
+  52:openstack/04-TRAN/openudp.c ****       
+  53:openstack/04-TRAN/openudp.c ****    msg->owner                      = COMPONENT_OPENUDP;
+ 340              		.loc 1 53 0
+ 341 0104 7B68     		ldr	r3, [r7, #4]
+ 342 0106 4FF01802 		mov	r2, #24
+ 343 010a 5A70     		strb	r2, [r3, #1]
+  54:openstack/04-TRAN/openudp.c ****    if (msg->l4_protocol_compressed==TRUE) {
+ 344              		.loc 1 54 0
+ 345 010c 7B68     		ldr	r3, [r7, #4]
+ 346 010e 9B7A     		ldrb	r3, [r3, #10]	@ zero_extendqisi2
+ 347 0110 002B     		cmp	r3, #0
+ 348 0112 00F09880 		beq	.L11
+  55:openstack/04-TRAN/openudp.c ****       // get the UDP header encoding byte
+  56:openstack/04-TRAN/openudp.c ****       temp_8b = *((uint8_t*)(msg->payload));
+ 349              		.loc 1 56 0
+ 350 0116 7B68     		ldr	r3, [r7, #4]
+ 351 0118 5B68     		ldr	r3, [r3, #4]
+ 352 011a 1B78     		ldrb	r3, [r3, #0]
+ 353 011c FB73     		strb	r3, [r7, #15]
+  57:openstack/04-TRAN/openudp.c ****       packetfunctions_tossHeader(msg,sizeof(temp_8b));
+ 354              		.loc 1 57 0
+ 355 011e 7868     		ldr	r0, [r7, #4]
+ 356 0120 4FF00101 		mov	r1, #1
+ 357 0124 FFF7FEFF 		bl	packetfunctions_tossHeader
+  58:openstack/04-TRAN/openudp.c ****       switch (temp_8b & NHC_UDP_PORTS_MASK) {
+ 358              		.loc 1 58 0
+ 359 0128 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 360 012a 03F00303 		and	r3, r3, #3
+ 361 012e 032B     		cmp	r3, #3
+ 362 0130 00F2AE80 		bhi	.L18
+ 363 0134 01A2     		adr	r2, .L17
+ 364 0136 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 365 013a 00BF     		.align	2
+ 366              	.L17:
+ 367 013c 4D010000 		.word	.L13+1
+ 368 0140 99010000 		.word	.L14+1
+ 369 0144 D7010000 		.word	.L15+1
+ 370 0148 07020000 		.word	.L16+1
+ 371              	.L13:
+  59:openstack/04-TRAN/openudp.c ****          case NHC_UDP_PORTS_INLINE:
+  60:openstack/04-TRAN/openudp.c ****             // source port:         16 bits in-line
+  61:openstack/04-TRAN/openudp.c ****             // dest port:           16 bits in-line
+  62:openstack/04-TRAN/openudp.c ****             msg->l4_sourcePortORicmpv6Type  = msg->payload[0]*256+msg->payload[1];
+ 372              		.loc 1 62 0
+ 373 014c 7B68     		ldr	r3, [r7, #4]
+ 374 014e 5B68     		ldr	r3, [r3, #4]
+ 375 0150 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 376 0152 4FEA0323 		lsl	r3, r3, #8
+ 377 0156 9AB2     		uxth	r2, r3
+ 378 0158 7B68     		ldr	r3, [r7, #4]
+ 379 015a 5B68     		ldr	r3, [r3, #4]
+ 380 015c 03F10103 		add	r3, r3, #1
+ 381 0160 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 382 0162 D318     		adds	r3, r2, r3
+ 383 0164 9AB2     		uxth	r2, r3
+ 384 0166 7B68     		ldr	r3, [r7, #4]
+ 385 0168 9A81     		strh	r2, [r3, #12]	@ movhi
+  63:openstack/04-TRAN/openudp.c ****             msg->l4_destination_port        = msg->payload[2]*256+msg->payload[3];
+ 386              		.loc 1 63 0
+ 387 016a 7B68     		ldr	r3, [r7, #4]
+ 388 016c 5B68     		ldr	r3, [r3, #4]
+ 389 016e 03F10203 		add	r3, r3, #2
+ 390 0172 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 391 0174 4FEA0323 		lsl	r3, r3, #8
+ 392 0178 9AB2     		uxth	r2, r3
+ 393 017a 7B68     		ldr	r3, [r7, #4]
+ 394 017c 5B68     		ldr	r3, [r3, #4]
+ 395 017e 03F10303 		add	r3, r3, #3
+ 396 0182 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 397 0184 D318     		adds	r3, r2, r3
+ 398 0186 9AB2     		uxth	r2, r3
+ 399 0188 7B68     		ldr	r3, [r7, #4]
+ 400 018a DA81     		strh	r2, [r3, #14]	@ movhi
+  64:openstack/04-TRAN/openudp.c ****             packetfunctions_tossHeader(msg,2+2);
+ 401              		.loc 1 64 0
+ 402 018c 7868     		ldr	r0, [r7, #4]
+ 403 018e 4FF00401 		mov	r1, #4
+ 404 0192 FFF7FEFF 		bl	packetfunctions_tossHeader
+  65:openstack/04-TRAN/openudp.c ****             break;
+ 405              		.loc 1 65 0
+ 406 0196 7BE0     		b	.L18
+ 407              	.L14:
+  66:openstack/04-TRAN/openudp.c ****          case NHC_UDP_PORTS_16S_8D:
+  67:openstack/04-TRAN/openudp.c ****             // source port:         16 bits in-line
+  68:openstack/04-TRAN/openudp.c ****             // dest port:   0xf0  +  8 bits in-line
+  69:openstack/04-TRAN/openudp.c ****             msg->l4_sourcePortORicmpv6Type  = msg->payload[0]*256+msg->payload[1];
+ 408              		.loc 1 69 0
+ 409 0198 7B68     		ldr	r3, [r7, #4]
+ 410 019a 5B68     		ldr	r3, [r3, #4]
+ 411 019c 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 412 019e 4FEA0323 		lsl	r3, r3, #8
+ 413 01a2 9AB2     		uxth	r2, r3
+ 414 01a4 7B68     		ldr	r3, [r7, #4]
+ 415 01a6 5B68     		ldr	r3, [r3, #4]
+ 416 01a8 03F10103 		add	r3, r3, #1
+ 417 01ac 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 418 01ae D318     		adds	r3, r2, r3
+ 419 01b0 9AB2     		uxth	r2, r3
+ 420 01b2 7B68     		ldr	r3, [r7, #4]
+ 421 01b4 9A81     		strh	r2, [r3, #12]	@ movhi
+  70:openstack/04-TRAN/openudp.c ****             msg->l4_destination_port        = 0xf000 +            msg->payload[2];
+ 422              		.loc 1 70 0
+ 423 01b6 7B68     		ldr	r3, [r7, #4]
+ 424 01b8 5B68     		ldr	r3, [r3, #4]
+ 425 01ba 03F10203 		add	r3, r3, #2
+ 426 01be 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 427 01c0 A3F58053 		sub	r3, r3, #4096
+ 428 01c4 9AB2     		uxth	r2, r3
+ 429 01c6 7B68     		ldr	r3, [r7, #4]
+ 430 01c8 DA81     		strh	r2, [r3, #14]	@ movhi
+  71:openstack/04-TRAN/openudp.c ****             packetfunctions_tossHeader(msg,2+1);
+ 431              		.loc 1 71 0
+ 432 01ca 7868     		ldr	r0, [r7, #4]
+ 433 01cc 4FF00301 		mov	r1, #3
+ 434 01d0 FFF7FEFF 		bl	packetfunctions_tossHeader
+  72:openstack/04-TRAN/openudp.c ****             break;
+ 435              		.loc 1 72 0
+ 436 01d4 5CE0     		b	.L18
+ 437              	.L15:
+  73:openstack/04-TRAN/openudp.c ****          case NHC_UDP_PORTS_8S_8D:
+  74:openstack/04-TRAN/openudp.c ****             // source port: 0xf0  +  8 bits in-line
+  75:openstack/04-TRAN/openudp.c ****             // dest port:   0xf0  +  8 bits in-line
+  76:openstack/04-TRAN/openudp.c ****             msg->l4_sourcePortORicmpv6Type  = 0xf000 +            msg->payload[0];
+ 438              		.loc 1 76 0
+ 439 01d6 7B68     		ldr	r3, [r7, #4]
+ 440 01d8 5B68     		ldr	r3, [r3, #4]
+ 441 01da 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 442 01dc A3F58053 		sub	r3, r3, #4096
+ 443 01e0 9AB2     		uxth	r2, r3
+ 444 01e2 7B68     		ldr	r3, [r7, #4]
+ 445 01e4 9A81     		strh	r2, [r3, #12]	@ movhi
+  77:openstack/04-TRAN/openudp.c ****             msg->l4_destination_port        = 0xf000 +            msg->payload[1];
+ 446              		.loc 1 77 0
+ 447 01e6 7B68     		ldr	r3, [r7, #4]
+ 448 01e8 5B68     		ldr	r3, [r3, #4]
+ 449 01ea 03F10103 		add	r3, r3, #1
+ 450 01ee 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 451 01f0 A3F58053 		sub	r3, r3, #4096
+ 452 01f4 9AB2     		uxth	r2, r3
+ 453 01f6 7B68     		ldr	r3, [r7, #4]
+ 454 01f8 DA81     		strh	r2, [r3, #14]	@ movhi
+  78:openstack/04-TRAN/openudp.c ****             packetfunctions_tossHeader(msg,1+1);
+ 455              		.loc 1 78 0
+ 456 01fa 7868     		ldr	r0, [r7, #4]
+ 457 01fc 4FF00201 		mov	r1, #2
+ 458 0200 FFF7FEFF 		bl	packetfunctions_tossHeader
+  79:openstack/04-TRAN/openudp.c ****             break;
+ 459              		.loc 1 79 0
+ 460 0204 44E0     		b	.L18
+ 461              	.L16:
+  80:openstack/04-TRAN/openudp.c ****          case NHC_UDP_PORTS_4S_4D:
+  81:openstack/04-TRAN/openudp.c ****             // source port: 0xf0b +  4 bits in-line
+  82:openstack/04-TRAN/openudp.c ****             // dest port:   0xf0b +  4 bits in-line
+  83:openstack/04-TRAN/openudp.c ****             msg->l4_sourcePortORicmpv6Type  = 0xf0b0 + ((msg->payload[0] >> 4) & 0x0f);
+ 462              		.loc 1 83 0
+ 463 0206 7B68     		ldr	r3, [r7, #4]
+ 464 0208 5B68     		ldr	r3, [r3, #4]
+ 465 020a 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 466 020c 4FEA1313 		lsr	r3, r3, #4
+ 467 0210 DBB2     		uxtb	r3, r3
+ 468 0212 03F00F03 		and	r3, r3, #15
+ 469 0216 9BB2     		uxth	r3, r3
+ 470 0218 A3F57563 		sub	r3, r3, #3920
+ 471 021c 9AB2     		uxth	r2, r3
+ 472 021e 7B68     		ldr	r3, [r7, #4]
+ 473 0220 9A81     		strh	r2, [r3, #12]	@ movhi
+  84:openstack/04-TRAN/openudp.c ****             msg->l4_destination_port        = 0xf0b0 + ((msg->payload[0] >> 0) & 0x0f);
+ 474              		.loc 1 84 0
+ 475 0222 7B68     		ldr	r3, [r7, #4]
+ 476 0224 5B68     		ldr	r3, [r3, #4]
+ 477 0226 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 478 0228 03F00F03 		and	r3, r3, #15
+ 479 022c 9BB2     		uxth	r3, r3
+ 480 022e A3F57563 		sub	r3, r3, #3920
+ 481 0232 9AB2     		uxth	r2, r3
+ 482 0234 7B68     		ldr	r3, [r7, #4]
+ 483 0236 DA81     		strh	r2, [r3, #14]	@ movhi
+  85:openstack/04-TRAN/openudp.c ****             packetfunctions_tossHeader(msg,1);
+ 484              		.loc 1 85 0
+ 485 0238 7868     		ldr	r0, [r7, #4]
+ 486 023a 4FF00101 		mov	r1, #1
+ 487 023e FFF7FEFF 		bl	packetfunctions_tossHeader
+  86:openstack/04-TRAN/openudp.c ****             break;
+ 488              		.loc 1 86 0
+ 489 0242 00BF     		nop
+ 490 0244 24E0     		b	.L18
+ 491              	.L11:
+  87:openstack/04-TRAN/openudp.c ****       }
+  88:openstack/04-TRAN/openudp.c ****    } else {
+  89:openstack/04-TRAN/openudp.c ****       msg->l4_sourcePortORicmpv6Type  = msg->payload[0]*256+msg->payload[1];
+ 492              		.loc 1 89 0
+ 493 0246 7B68     		ldr	r3, [r7, #4]
+ 494 0248 5B68     		ldr	r3, [r3, #4]
+ 495 024a 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 496 024c 4FEA0323 		lsl	r3, r3, #8
+ 497 0250 9AB2     		uxth	r2, r3
+ 498 0252 7B68     		ldr	r3, [r7, #4]
+ 499 0254 5B68     		ldr	r3, [r3, #4]
+ 500 0256 03F10103 		add	r3, r3, #1
+ 501 025a 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 502 025c D318     		adds	r3, r2, r3
+ 503 025e 9AB2     		uxth	r2, r3
+ 504 0260 7B68     		ldr	r3, [r7, #4]
+ 505 0262 9A81     		strh	r2, [r3, #12]	@ movhi
+  90:openstack/04-TRAN/openudp.c ****       msg->l4_destination_port        = msg->payload[2]*256+msg->payload[3];
+ 506              		.loc 1 90 0
+ 507 0264 7B68     		ldr	r3, [r7, #4]
+ 508 0266 5B68     		ldr	r3, [r3, #4]
+ 509 0268 03F10203 		add	r3, r3, #2
+ 510 026c 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 511 026e 4FEA0323 		lsl	r3, r3, #8
+ 512 0272 9AB2     		uxth	r2, r3
+ 513 0274 7B68     		ldr	r3, [r7, #4]
+ 514 0276 5B68     		ldr	r3, [r3, #4]
+ 515 0278 03F10303 		add	r3, r3, #3
+ 516 027c 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 517 027e D318     		adds	r3, r2, r3
+ 518 0280 9AB2     		uxth	r2, r3
+ 519 0282 7B68     		ldr	r3, [r7, #4]
+ 520 0284 DA81     		strh	r2, [r3, #14]	@ movhi
+  91:openstack/04-TRAN/openudp.c ****       packetfunctions_tossHeader(msg,sizeof(udp_ht));
+ 521              		.loc 1 91 0
+ 522 0286 7868     		ldr	r0, [r7, #4]
+ 523 0288 4FF00801 		mov	r1, #8
+ 524 028c FFF7FEFF 		bl	packetfunctions_tossHeader
+ 525              	.L18:
+  92:openstack/04-TRAN/openudp.c ****    }
+  93:openstack/04-TRAN/openudp.c ****    
+  94:openstack/04-TRAN/openudp.c ****    switch(msg->l4_destination_port) {
+ 526              		.loc 1 94 0
+ 527 0290 7B68     		ldr	r3, [r7, #4]
+ 528 0292 DB89     		ldrh	r3, [r3, #14]
+ 529 0294 072B     		cmp	r3, #7
+ 530 0296 07D0     		beq	.L20
+ 531 0298 41F23362 		movw	r2, #5683
+ 532 029c 9342     		cmp	r3, r2
+ 533 029e 07D1     		bne	.L23
+ 534              	.L21:
+  95:openstack/04-TRAN/openudp.c ****       case WKP_UDP_COAP:
+  96:openstack/04-TRAN/openudp.c ****          opencoap_receive(msg);
+ 535              		.loc 1 96 0
+ 536 02a0 7868     		ldr	r0, [r7, #4]
+ 537 02a2 FFF7FEFF 		bl	opencoap_receive
+  97:openstack/04-TRAN/openudp.c ****          break;
+ 538              		.loc 1 97 0
+ 539 02a6 11E0     		b	.L10
+ 540              	.L20:
+  98:openstack/04-TRAN/openudp.c ****       case WKP_UDP_ECHO:
+  99:openstack/04-TRAN/openudp.c ****          uecho_receive(msg);
+ 541              		.loc 1 99 0
+ 542 02a8 7868     		ldr	r0, [r7, #4]
+ 543 02aa FFF7FEFF 		bl	uecho_receive
+ 100:openstack/04-TRAN/openudp.c ****          break;
+ 544              		.loc 1 100 0
+ 545 02ae 0DE0     		b	.L10
+ 546              	.L23:
+ 101:openstack/04-TRAN/openudp.c ****       default:
+ 102:openstack/04-TRAN/openudp.c ****          openserial_printError(COMPONENT_OPENUDP,ERR_UNSUPPORTED_PORT_NUMBER,
+ 103:openstack/04-TRAN/openudp.c ****                                (errorparameter_t)msg->l4_destination_port,
+ 547              		.loc 1 103 0
+ 548 02b0 7B68     		ldr	r3, [r7, #4]
+ 102:openstack/04-TRAN/openudp.c ****          openserial_printError(COMPONENT_OPENUDP,ERR_UNSUPPORTED_PORT_NUMBER,
+ 549              		.loc 1 102 0
+ 550 02b2 DB89     		ldrh	r3, [r3, #14]
+ 551 02b4 4FF01800 		mov	r0, #24
+ 552 02b8 4FF00901 		mov	r1, #9
+ 553 02bc 1A46     		mov	r2, r3
+ 554 02be 4FF00603 		mov	r3, #6
+ 555 02c2 FFF7FEFF 		bl	openserial_printError
+ 104:openstack/04-TRAN/openudp.c ****                                (errorparameter_t)6);
+ 105:openstack/04-TRAN/openudp.c ****          openqueue_freePacketBuffer(msg);         
+ 556              		.loc 1 105 0
+ 557 02c6 7868     		ldr	r0, [r7, #4]
+ 558 02c8 FFF7FEFF 		bl	openqueue_freePacketBuffer
+ 559              	.L10:
+ 106:openstack/04-TRAN/openudp.c ****    }
+ 107:openstack/04-TRAN/openudp.c **** }
+ 560              		.loc 1 107 0
+ 561 02cc 07F11007 		add	r7, r7, #16
+ 562 02d0 BD46     		mov	sp, r7
+ 563 02d2 80BD     		pop	{r7, pc}
+ 564              		.cfi_endproc
+ 565              	.LFE3:
+ 567              		.align	2
+ 568              		.global	openudp_debugPrint
+ 569              		.thumb
+ 570              		.thumb_func
+ 572              	openudp_debugPrint:
+ 573              	.LFB4:
+ 108:openstack/04-TRAN/openudp.c **** 
+ 109:openstack/04-TRAN/openudp.c **** bool openudp_debugPrint() {
+ 574              		.loc 1 109 0
+ 575              		.cfi_startproc
+ 576              		@ args = 0, pretend = 0, frame = 0
+ 577              		@ frame_needed = 1, uses_anonymous_args = 0
+ 578              		@ link register save eliminated.
+ 579 02d4 80B4     		push	{r7}
+ 580              	.LCFI11:
+ 581              		.cfi_def_cfa_offset 4
+ 582              		.cfi_offset 7, -4
+ 583 02d6 00AF     		add	r7, sp, #0
+ 584              	.LCFI12:
+ 585              		.cfi_def_cfa_register 7
+ 110:openstack/04-TRAN/openudp.c ****    return FALSE;
+ 586              		.loc 1 110 0
+ 587 02d8 4FF00003 		mov	r3, #0
+ 111:openstack/04-TRAN/openudp.c **** }
+ 588              		.loc 1 111 0
+ 589 02dc 1846     		mov	r0, r3
+ 590 02de BD46     		mov	sp, r7
+ 591 02e0 80BC     		pop	{r7}
+ 592 02e2 7047     		bx	lr
+ 593              		.cfi_endproc
+ 594              	.LFE4:
+ 596              	.Letext0:
+ 597              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+ 598              		.file 3 "inc/opendefs.h"
+ 599              		.file 4 "openstack/04-TRAN/openudp.h"
+ 600              		.file 5 "openstack/03a-IPHC/iphc.h"
+ 601              		.file 6 "bsp/boards/OpenMote-CC2538/board_info.h"
+ 602              		.file 7 "openstack/04-TRAN/opencoap.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 openudp.c
+     /tmp/cc5SvH2C.s:19     .rodata:00000000 $d
+     /tmp/cc5SvH2C.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cc5SvH2C.s:27     .rodata:00000008 infoBoardname
+     /tmp/cc5SvH2C.s:32     .rodata:00000010 infouCName
+     /tmp/cc5SvH2C.s:37     .rodata:00000018 infoRadioName
+     /tmp/cc5SvH2C.s:42     .rodata:00000024 infoStackName
+     /tmp/cc5SvH2C.s:47     .rodata:00000030 ipAddr_ipsoRD
+     /tmp/cc5SvH2C.s:67     .rodata:00000040 ipAddr_motesEecs
+     /tmp/cc5SvH2C.s:87     .rodata:00000050 ipAddr_local
+     /tmp/cc5SvH2C.s:107    .rodata:00000060 ipAddr_motedata
+     /tmp/cc5SvH2C.s:125    .text:00000000 $t
+     /tmp/cc5SvH2C.s:130    .text:00000000 openudp_init
+     /tmp/cc5SvH2C.s:157    .text:0000000c openudp_send
+     /tmp/cc5SvH2C.s:248    .text:0000009c openudp_sendDone
+     /tmp/cc5SvH2C.s:322    .text:000000fc openudp_receive
+     /tmp/cc5SvH2C.s:367    .text:0000013c $d
+     /tmp/cc5SvH2C.s:373    .text:0000014c $t
+     /tmp/cc5SvH2C.s:572    .text:000002d4 openudp_debugPrint
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.toolchain_defs.h.2.e4ebbe6e0a48032a9b79077dc42e1ffd
+                           .group:00000000 wm4._default_types.h.6.5e12cd604db8ce00b62bb2f02708eaf3
+                           .group:00000000 wm4.lock.h.2.9bc98482741e5e2a9450b12934a684ea
+                           .group:00000000 wm4.stddef.h.349.31f4c5baff3fa2689010b32028da9c47
+                           .group:00000000 wm4.reent.h.16.9e42f0e588b85e70b2bf6572af57ce64
+                           .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
+                           .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
+                           .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
+                           .group:00000000 wm4.iphc.h.2.17b9b21c04d4f545c9a7ba404755c4d8
+                           .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
+                           .group:00000000 wm4.opencoap.h.27.763f8732d8ba6438951ce1c4409e9b68
+
+UNDEFINED SYMBOLS
+packetfunctions_reserveHeaderSize
+packetfunctions_htons
+packetfunctions_calculateChecksum
+forwarding_send
+opencoap_sendDone
+uecho_sendDone
+openserial_printError
+openqueue_freePacketBuffer
+packetfunctions_tossHeader
+opencoap_receive
+uecho_receive

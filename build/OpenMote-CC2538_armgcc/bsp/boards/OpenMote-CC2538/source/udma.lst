@@ -1,0 +1,2601 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"udma.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.align	2
+  19              		.global	uDMAEnable
+  20              		.thumb
+  21              		.thumb_func
+  23              	uDMAEnable:
+  24              	.LFB0:
+  25              		.file 1 "bsp/boards/OpenMote-CC2538/source/udma.c"
+   1:bsp/boards/OpenMote-CC2538/source/udma.c **** /******************************************************************************
+   2:bsp/boards/OpenMote-CC2538/source/udma.c **** *  Filename:       udma.c
+   3:bsp/boards/OpenMote-CC2538/source/udma.c **** *  Revised:        $Date: 2013-03-20 14:47:53 +0100 (Wed, 20 Mar 2013) $
+   4:bsp/boards/OpenMote-CC2538/source/udma.c **** *  Revision:       $Revision: 9489 $
+   5:bsp/boards/OpenMote-CC2538/source/udma.c **** *
+   6:bsp/boards/OpenMote-CC2538/source/udma.c **** *  Description:    Driver for the micro-DMA controller.
+   7:bsp/boards/OpenMote-CC2538/source/udma.c **** *
+   8:bsp/boards/OpenMote-CC2538/source/udma.c **** *  Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
+   9:bsp/boards/OpenMote-CC2538/source/udma.c **** *
+  10:bsp/boards/OpenMote-CC2538/source/udma.c **** *
+  11:bsp/boards/OpenMote-CC2538/source/udma.c **** *  Redistribution and use in source and binary forms, with or without
+  12:bsp/boards/OpenMote-CC2538/source/udma.c **** *  modification, are permitted provided that the following conditions
+  13:bsp/boards/OpenMote-CC2538/source/udma.c **** *  are met:
+  14:bsp/boards/OpenMote-CC2538/source/udma.c **** *
+  15:bsp/boards/OpenMote-CC2538/source/udma.c **** *    Redistributions of source code must retain the above copyright
+  16:bsp/boards/OpenMote-CC2538/source/udma.c **** *    notice, this list of conditions and the following disclaimer.
+  17:bsp/boards/OpenMote-CC2538/source/udma.c **** *
+  18:bsp/boards/OpenMote-CC2538/source/udma.c **** *    Redistributions in binary form must reproduce the above copyright
+  19:bsp/boards/OpenMote-CC2538/source/udma.c **** *    notice, this list of conditions and the following disclaimer in the
+  20:bsp/boards/OpenMote-CC2538/source/udma.c **** *    documentation and/or other materials provided with the distribution.
+  21:bsp/boards/OpenMote-CC2538/source/udma.c **** *
+  22:bsp/boards/OpenMote-CC2538/source/udma.c **** *    Neither the name of Texas Instruments Incorporated nor the names of
+  23:bsp/boards/OpenMote-CC2538/source/udma.c **** *    its contributors may be used to endorse or promote products derived
+  24:bsp/boards/OpenMote-CC2538/source/udma.c **** *    from this software without specific prior written permission.
+  25:bsp/boards/OpenMote-CC2538/source/udma.c **** *
+  26:bsp/boards/OpenMote-CC2538/source/udma.c **** *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  27:bsp/boards/OpenMote-CC2538/source/udma.c **** *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  28:bsp/boards/OpenMote-CC2538/source/udma.c **** *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  29:bsp/boards/OpenMote-CC2538/source/udma.c **** *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  30:bsp/boards/OpenMote-CC2538/source/udma.c **** *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  31:bsp/boards/OpenMote-CC2538/source/udma.c **** *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  32:bsp/boards/OpenMote-CC2538/source/udma.c **** *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  33:bsp/boards/OpenMote-CC2538/source/udma.c **** *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  34:bsp/boards/OpenMote-CC2538/source/udma.c **** *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  35:bsp/boards/OpenMote-CC2538/source/udma.c **** *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  36:bsp/boards/OpenMote-CC2538/source/udma.c **** *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  37:bsp/boards/OpenMote-CC2538/source/udma.c **** *
+  38:bsp/boards/OpenMote-CC2538/source/udma.c **** ******************************************************************************/
+  39:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+  40:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+  41:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+  42:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \addtogroup udma_api
+  43:bsp/boards/OpenMote-CC2538/source/udma.c **** //! @{
+  44:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+  45:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+  46:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+  47:bsp/boards/OpenMote-CC2538/source/udma.c **** #include <headers/hw_sys_ctrl.h>
+  48:bsp/boards/OpenMote-CC2538/source/udma.c **** #include <headers/hw_udma.h>
+  49:bsp/boards/OpenMote-CC2538/source/udma.c **** #include <headers/hw_udmachctl.h>
+  50:bsp/boards/OpenMote-CC2538/source/udma.c **** #include "debug.h"
+  51:bsp/boards/OpenMote-CC2538/source/udma.c **** #include "interrupt.h"
+  52:bsp/boards/OpenMote-CC2538/source/udma.c **** #include "udma.h"
+  53:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+  54:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+  55:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+  56:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Enables the uDMA controller for use
+  57:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+  58:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function enables the uDMA controller.  The uDMA controller must be
+  59:bsp/boards/OpenMote-CC2538/source/udma.c **** //! enabled before it can be configured and used.
+  60:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+  61:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+  62:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+  63:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+  64:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+  65:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAEnable(void)
+  66:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+  26              		.loc 1 66 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 1, uses_anonymous_args = 0
+  30              		@ link register save eliminated.
+  31 0000 80B4     		push	{r7}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 4
+  34              		.cfi_offset 7, -4
+  35 0002 00AF     		add	r7, sp, #0
+  36              	.LCFI1:
+  37              		.cfi_def_cfa_register 7
+  67:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+  68:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Set the master enable bit in the config register.
+  69:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+  70:bsp/boards/OpenMote-CC2538/source/udma.c ****     HWREG(UDMA_CFG) = UDMA_CFG_MASTEN;
+  38              		.loc 1 70 0
+  39 0004 4FF20403 		movw	r3, #61444
+  40 0008 C4F20F03 		movt	r3, 16399
+  41 000c 4FF00102 		mov	r2, #1
+  42 0010 1A60     		str	r2, [r3, #0]
+  71:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+  43              		.loc 1 71 0
+  44 0012 BD46     		mov	sp, r7
+  45 0014 80BC     		pop	{r7}
+  46 0016 7047     		bx	lr
+  47              		.cfi_endproc
+  48              	.LFE0:
+  50              		.align	2
+  51              		.global	uDMADisable
+  52              		.thumb
+  53              		.thumb_func
+  55              	uDMADisable:
+  56              	.LFB1:
+  72:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+  73:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+  74:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+  75:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Disables the uDMA controller for use
+  76:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+  77:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function disables the uDMA controller.  Once disabled, the uDMA
+  78:bsp/boards/OpenMote-CC2538/source/udma.c **** //! controller will not operate until re-enabled with uDMAEnable().
+  79:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+  80:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+  81:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+  82:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+  83:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+  84:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMADisable(void)
+  85:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+  57              		.loc 1 85 0
+  58              		.cfi_startproc
+  59              		@ args = 0, pretend = 0, frame = 0
+  60              		@ frame_needed = 1, uses_anonymous_args = 0
+  61              		@ link register save eliminated.
+  62 0018 80B4     		push	{r7}
+  63              	.LCFI2:
+  64              		.cfi_def_cfa_offset 4
+  65              		.cfi_offset 7, -4
+  66 001a 00AF     		add	r7, sp, #0
+  67              	.LCFI3:
+  68              		.cfi_def_cfa_register 7
+  86:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+  87:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Clear the master enable bit in the config register.
+  88:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+  89:bsp/boards/OpenMote-CC2538/source/udma.c ****     HWREG(UDMA_CFG) = 0;
+  69              		.loc 1 89 0
+  70 001c 4FF20403 		movw	r3, #61444
+  71 0020 C4F20F03 		movt	r3, 16399
+  72 0024 4FF00002 		mov	r2, #0
+  73 0028 1A60     		str	r2, [r3, #0]
+  90:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+  74              		.loc 1 90 0
+  75 002a BD46     		mov	sp, r7
+  76 002c 80BC     		pop	{r7}
+  77 002e 7047     		bx	lr
+  78              		.cfi_endproc
+  79              	.LFE1:
+  81              		.align	2
+  82              		.global	uDMAErrorStatusGet
+  83              		.thumb
+  84              		.thumb_func
+  86              	uDMAErrorStatusGet:
+  87              	.LFB2:
+  91:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+  92:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+  93:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+  94:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Gets the uDMA error status
+  95:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+  96:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function returns the uDMA error status.  It should be called from
+  97:bsp/boards/OpenMote-CC2538/source/udma.c **** //! within the uDMA error interrupt handler to determine if a uDMA error
+  98:bsp/boards/OpenMote-CC2538/source/udma.c **** //! occurred.
+  99:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 100:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return Returns non-zero if a uDMA error is pending.
+ 101:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 102:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 103:bsp/boards/OpenMote-CC2538/source/udma.c **** uint32_t
+ 104:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAErrorStatusGet(void)
+ 105:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+  88              		.loc 1 105 0
+  89              		.cfi_startproc
+  90              		@ args = 0, pretend = 0, frame = 0
+  91              		@ frame_needed = 1, uses_anonymous_args = 0
+  92              		@ link register save eliminated.
+  93 0030 80B4     		push	{r7}
+  94              	.LCFI4:
+  95              		.cfi_def_cfa_offset 4
+  96              		.cfi_offset 7, -4
+  97 0032 00AF     		add	r7, sp, #0
+  98              	.LCFI5:
+  99              		.cfi_def_cfa_register 7
+ 106:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 107:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Return the uDMA error status.
+ 108:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 109:bsp/boards/OpenMote-CC2538/source/udma.c ****     return(HWREG(UDMA_ERRCLR));
+ 100              		.loc 1 109 0
+ 101 0034 4FF24C03 		movw	r3, #61516
+ 102 0038 C4F20F03 		movt	r3, 16399
+ 103 003c 1B68     		ldr	r3, [r3, #0]
+ 110:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 104              		.loc 1 110 0
+ 105 003e 1846     		mov	r0, r3
+ 106 0040 BD46     		mov	sp, r7
+ 107 0042 80BC     		pop	{r7}
+ 108 0044 7047     		bx	lr
+ 109              		.cfi_endproc
+ 110              	.LFE2:
+ 112 0046 00BF     		.align	2
+ 113              		.global	uDMAErrorStatusClear
+ 114              		.thumb
+ 115              		.thumb_func
+ 117              	uDMAErrorStatusClear:
+ 118              	.LFB3:
+ 111:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 112:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 113:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 114:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Clears the uDMA error interrupt
+ 115:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 116:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function clears a pending uDMA error interrupt.  It should be called
+ 117:bsp/boards/OpenMote-CC2538/source/udma.c **** //! from within the uDMA error interrupt handler to clear the interrupt.
+ 118:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 119:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+ 120:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 121:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 122:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+ 123:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAErrorStatusClear(void)
+ 124:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 119              		.loc 1 124 0
+ 120              		.cfi_startproc
+ 121              		@ args = 0, pretend = 0, frame = 0
+ 122              		@ frame_needed = 1, uses_anonymous_args = 0
+ 123              		@ link register save eliminated.
+ 124 0048 80B4     		push	{r7}
+ 125              	.LCFI6:
+ 126              		.cfi_def_cfa_offset 4
+ 127              		.cfi_offset 7, -4
+ 128 004a 00AF     		add	r7, sp, #0
+ 129              	.LCFI7:
+ 130              		.cfi_def_cfa_register 7
+ 125:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 126:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Clear the uDMA error interrupt.
+ 127:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 128:bsp/boards/OpenMote-CC2538/source/udma.c ****     HWREG(UDMA_ERRCLR) = 1;
+ 131              		.loc 1 128 0
+ 132 004c 4FF24C03 		movw	r3, #61516
+ 133 0050 C4F20F03 		movt	r3, 16399
+ 134 0054 4FF00102 		mov	r2, #1
+ 135 0058 1A60     		str	r2, [r3, #0]
+ 129:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 136              		.loc 1 129 0
+ 137 005a BD46     		mov	sp, r7
+ 138 005c 80BC     		pop	{r7}
+ 139 005e 7047     		bx	lr
+ 140              		.cfi_endproc
+ 141              	.LFE3:
+ 143              		.align	2
+ 144              		.global	uDMAChannelEnable
+ 145              		.thumb
+ 146              		.thumb_func
+ 148              	uDMAChannelEnable:
+ 149              	.LFB4:
+ 130:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 131:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 132:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 133:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Enables a uDMA channel for operation
+ 134:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 135:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32ChannelNum is the channel number to enable.
+ 136:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 137:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function enables a specific uDMA channel for use.  This function must
+ 138:bsp/boards/OpenMote-CC2538/source/udma.c **** //! be used to enable a channel before it can be used to perform a uDMA
+ 139:bsp/boards/OpenMote-CC2538/source/udma.c **** //! transfer.
+ 140:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 141:bsp/boards/OpenMote-CC2538/source/udma.c **** //! When a uDMA transfer is completed, the channel will be automatically
+ 142:bsp/boards/OpenMote-CC2538/source/udma.c **** //! disabled by the uDMA controller.  Therefore, this function should be called
+ 143:bsp/boards/OpenMote-CC2538/source/udma.c **** //! prior to starting up any new transfer.
+ 144:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 145:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+ 146:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 147:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 148:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+ 149:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAChannelEnable(uint32_t ui32ChannelNum)
+ 150:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 150              		.loc 1 150 0
+ 151              		.cfi_startproc
+ 152              		@ args = 0, pretend = 0, frame = 8
+ 153              		@ frame_needed = 1, uses_anonymous_args = 0
+ 154              		@ link register save eliminated.
+ 155 0060 80B4     		push	{r7}
+ 156              	.LCFI8:
+ 157              		.cfi_def_cfa_offset 4
+ 158              		.cfi_offset 7, -4
+ 159 0062 83B0     		sub	sp, sp, #12
+ 160              	.LCFI9:
+ 161              		.cfi_def_cfa_offset 16
+ 162 0064 00AF     		add	r7, sp, #0
+ 163              	.LCFI10:
+ 164              		.cfi_def_cfa_register 7
+ 165 0066 7860     		str	r0, [r7, #4]
+ 151:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 152:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check the arguments.
+ 153:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 154:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32ChannelNum & 0xffff) < 32);
+ 155:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 156:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 157:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Set the bit for this channel in the enable set register.
+ 158:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 159:bsp/boards/OpenMote-CC2538/source/udma.c ****     HWREG(UDMA_ENASET) = 1 << (ui32ChannelNum & 0x1f);
+ 166              		.loc 1 159 0
+ 167 0068 4FF22803 		movw	r3, #61480
+ 168 006c C4F20F03 		movt	r3, 16399
+ 169 0070 7A68     		ldr	r2, [r7, #4]
+ 170 0072 02F01F02 		and	r2, r2, #31
+ 171 0076 4FF00101 		mov	r1, #1
+ 172 007a 01FA02F2 		lsl	r2, r1, r2
+ 173 007e 1A60     		str	r2, [r3, #0]
+ 160:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 174              		.loc 1 160 0
+ 175 0080 07F10C07 		add	r7, r7, #12
+ 176 0084 BD46     		mov	sp, r7
+ 177 0086 80BC     		pop	{r7}
+ 178 0088 7047     		bx	lr
+ 179              		.cfi_endproc
+ 180              	.LFE4:
+ 182 008a 00BF     		.align	2
+ 183              		.global	uDMAChannelDisable
+ 184              		.thumb
+ 185              		.thumb_func
+ 187              	uDMAChannelDisable:
+ 188              	.LFB5:
+ 161:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 162:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 163:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 164:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Disables a uDMA channel for operation
+ 165:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 166:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32ChannelNum is the channel number to disable.
+ 167:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 168:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function disables a specific uDMA channel.  Once disabled, a channel
+ 169:bsp/boards/OpenMote-CC2538/source/udma.c **** //! will not respond to uDMA transfer requests until re-enabled via
+ 170:bsp/boards/OpenMote-CC2538/source/udma.c **** //! uDMAChannelEnable().
+ 171:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 172:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+ 173:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 174:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 175:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+ 176:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAChannelDisable(uint32_t ui32ChannelNum)
+ 177:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 189              		.loc 1 177 0
+ 190              		.cfi_startproc
+ 191              		@ args = 0, pretend = 0, frame = 8
+ 192              		@ frame_needed = 1, uses_anonymous_args = 0
+ 193              		@ link register save eliminated.
+ 194 008c 80B4     		push	{r7}
+ 195              	.LCFI11:
+ 196              		.cfi_def_cfa_offset 4
+ 197              		.cfi_offset 7, -4
+ 198 008e 83B0     		sub	sp, sp, #12
+ 199              	.LCFI12:
+ 200              		.cfi_def_cfa_offset 16
+ 201 0090 00AF     		add	r7, sp, #0
+ 202              	.LCFI13:
+ 203              		.cfi_def_cfa_register 7
+ 204 0092 7860     		str	r0, [r7, #4]
+ 178:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 179:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check the arguments.
+ 180:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 181:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32ChannelNum & 0xffff) < 32);
+ 182:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 183:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 184:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Set the bit for this channel in the enable clear register.
+ 185:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 186:bsp/boards/OpenMote-CC2538/source/udma.c ****     HWREG(UDMA_ENACLR) = 1 << (ui32ChannelNum & 0x1f);
+ 205              		.loc 1 186 0
+ 206 0094 4FF22C03 		movw	r3, #61484
+ 207 0098 C4F20F03 		movt	r3, 16399
+ 208 009c 7A68     		ldr	r2, [r7, #4]
+ 209 009e 02F01F02 		and	r2, r2, #31
+ 210 00a2 4FF00101 		mov	r1, #1
+ 211 00a6 01FA02F2 		lsl	r2, r1, r2
+ 212 00aa 1A60     		str	r2, [r3, #0]
+ 187:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 213              		.loc 1 187 0
+ 214 00ac 07F10C07 		add	r7, r7, #12
+ 215 00b0 BD46     		mov	sp, r7
+ 216 00b2 80BC     		pop	{r7}
+ 217 00b4 7047     		bx	lr
+ 218              		.cfi_endproc
+ 219              	.LFE5:
+ 221 00b6 00BF     		.align	2
+ 222              		.global	uDMAChannelIsEnabled
+ 223              		.thumb
+ 224              		.thumb_func
+ 226              	uDMAChannelIsEnabled:
+ 227              	.LFB6:
+ 188:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 189:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 190:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 191:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Checks if a uDMA channel is enabled for operation
+ 192:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 193:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32ChannelNum is the channel number to check.
+ 194:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 195:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function checks to see if a specific uDMA channel is enabled.  This
+ 196:bsp/boards/OpenMote-CC2538/source/udma.c **** //! can be used to check the status of a transfer, since the channel will
+ 197:bsp/boards/OpenMote-CC2538/source/udma.c **** //! be automatically disabled at the end of a transfer.
+ 198:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 199:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return Returns \b true if the channel is enabled, \b false if disabled.
+ 200:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 201:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 202:bsp/boards/OpenMote-CC2538/source/udma.c **** bool
+ 203:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAChannelIsEnabled(uint32_t ui32ChannelNum)
+ 204:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 228              		.loc 1 204 0
+ 229              		.cfi_startproc
+ 230              		@ args = 0, pretend = 0, frame = 8
+ 231              		@ frame_needed = 1, uses_anonymous_args = 0
+ 232              		@ link register save eliminated.
+ 233 00b8 80B4     		push	{r7}
+ 234              	.LCFI14:
+ 235              		.cfi_def_cfa_offset 4
+ 236              		.cfi_offset 7, -4
+ 237 00ba 83B0     		sub	sp, sp, #12
+ 238              	.LCFI15:
+ 239              		.cfi_def_cfa_offset 16
+ 240 00bc 00AF     		add	r7, sp, #0
+ 241              	.LCFI16:
+ 242              		.cfi_def_cfa_register 7
+ 243 00be 7860     		str	r0, [r7, #4]
+ 205:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 206:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check the arguments.
+ 207:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 208:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32ChannelNum & 0xffff) < 32);
+ 209:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 210:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 211:bsp/boards/OpenMote-CC2538/source/udma.c ****     // AND the specified channel bit with the enable register, and return the
+ 212:bsp/boards/OpenMote-CC2538/source/udma.c ****     // result.
+ 213:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 214:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 215:bsp/boards/OpenMote-CC2538/source/udma.c ****     return((HWREG(UDMA_ENASET) & (1 << (ui32ChannelNum & 0x1f))) ? true : false);
+ 244              		.loc 1 215 0
+ 245 00c0 4FF22803 		movw	r3, #61480
+ 246 00c4 C4F20F03 		movt	r3, 16399
+ 247 00c8 1A68     		ldr	r2, [r3, #0]
+ 248 00ca 7B68     		ldr	r3, [r7, #4]
+ 249 00cc 03F01F03 		and	r3, r3, #31
+ 250 00d0 4FF00101 		mov	r1, #1
+ 251 00d4 01FA03F3 		lsl	r3, r1, r3
+ 252 00d8 1340     		ands	r3, r3, r2
+ 253 00da 002B     		cmp	r3, #0
+ 254 00dc 0CBF     		ite	eq
+ 255 00de 0023     		moveq	r3, #0
+ 256 00e0 0123     		movne	r3, #1
+ 257 00e2 DBB2     		uxtb	r3, r3
+ 216:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 258              		.loc 1 216 0
+ 259 00e4 1846     		mov	r0, r3
+ 260 00e6 07F10C07 		add	r7, r7, #12
+ 261 00ea BD46     		mov	sp, r7
+ 262 00ec 80BC     		pop	{r7}
+ 263 00ee 7047     		bx	lr
+ 264              		.cfi_endproc
+ 265              	.LFE6:
+ 267              		.align	2
+ 268              		.global	uDMAControlBaseSet
+ 269              		.thumb
+ 270              		.thumb_func
+ 272              	uDMAControlBaseSet:
+ 273              	.LFB7:
+ 217:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 218:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 219:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 220:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Sets the base address for the channel control table
+ 221:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 222:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param pControlTable is a pointer to the 1024 byte aligned base address
+ 223:bsp/boards/OpenMote-CC2538/source/udma.c **** //! of the uDMA channel control table.
+ 224:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 225:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function sets the base address of the channel control table.  This
+ 226:bsp/boards/OpenMote-CC2538/source/udma.c **** //! table resides in system memory and holds control information for each uDMA
+ 227:bsp/boards/OpenMote-CC2538/source/udma.c **** //! channel.  The table must be aligned on a 1024 byte boundary.  The base
+ 228:bsp/boards/OpenMote-CC2538/source/udma.c **** //! address must be set before any of the channel functions can be used.
+ 229:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 230:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The size of the channel control table depends on the number of uDMA
+ 231:bsp/boards/OpenMote-CC2538/source/udma.c **** //! channels, and which transfer modes are used.  Refer to the introductory
+ 232:bsp/boards/OpenMote-CC2538/source/udma.c **** //! text and the microcontroller datasheet for more information about the
+ 233:bsp/boards/OpenMote-CC2538/source/udma.c **** //! channel control table.
+ 234:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 235:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+ 236:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 237:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 238:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+ 239:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAControlBaseSet(void *pControlTable)
+ 240:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 274              		.loc 1 240 0
+ 275              		.cfi_startproc
+ 276              		@ args = 0, pretend = 0, frame = 8
+ 277              		@ frame_needed = 1, uses_anonymous_args = 0
+ 278              		@ link register save eliminated.
+ 279 00f0 80B4     		push	{r7}
+ 280              	.LCFI17:
+ 281              		.cfi_def_cfa_offset 4
+ 282              		.cfi_offset 7, -4
+ 283 00f2 83B0     		sub	sp, sp, #12
+ 284              	.LCFI18:
+ 285              		.cfi_def_cfa_offset 16
+ 286 00f4 00AF     		add	r7, sp, #0
+ 287              	.LCFI19:
+ 288              		.cfi_def_cfa_register 7
+ 289 00f6 7860     		str	r0, [r7, #4]
+ 241:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 242:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check the arguments.
+ 243:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 244:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT(((uint32_t)pControlTable & ~0x3FF) ==
+ 245:bsp/boards/OpenMote-CC2538/source/udma.c ****            (uint32_t)pControlTable);
+ 246:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((uint32_t)pControlTable >= 0x20000000);
+ 247:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 248:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 249:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Program the base address into the register.
+ 250:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 251:bsp/boards/OpenMote-CC2538/source/udma.c ****     HWREG(UDMA_CTLBASE) = (uint32_t)pControlTable;
+ 290              		.loc 1 251 0
+ 291 00f8 4FF20803 		movw	r3, #61448
+ 292 00fc C4F20F03 		movt	r3, 16399
+ 293 0100 7A68     		ldr	r2, [r7, #4]
+ 294 0102 1A60     		str	r2, [r3, #0]
+ 252:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 295              		.loc 1 252 0
+ 296 0104 07F10C07 		add	r7, r7, #12
+ 297 0108 BD46     		mov	sp, r7
+ 298 010a 80BC     		pop	{r7}
+ 299 010c 7047     		bx	lr
+ 300              		.cfi_endproc
+ 301              	.LFE7:
+ 303 010e 00BF     		.align	2
+ 304              		.global	uDMAControlBaseGet
+ 305              		.thumb
+ 306              		.thumb_func
+ 308              	uDMAControlBaseGet:
+ 309              	.LFB8:
+ 253:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 254:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 255:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 256:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Gets the base address for the channel control table
+ 257:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 258:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function gets the base address of the channel control table.  This
+ 259:bsp/boards/OpenMote-CC2538/source/udma.c **** //! table resides in system memory and holds control information for each uDMA
+ 260:bsp/boards/OpenMote-CC2538/source/udma.c **** //! channel.
+ 261:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 262:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return Returns a pointer to the base address of the channel control table.
+ 263:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 264:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 265:bsp/boards/OpenMote-CC2538/source/udma.c **** void *
+ 266:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAControlBaseGet(void)
+ 267:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 310              		.loc 1 267 0
+ 311              		.cfi_startproc
+ 312              		@ args = 0, pretend = 0, frame = 0
+ 313              		@ frame_needed = 1, uses_anonymous_args = 0
+ 314              		@ link register save eliminated.
+ 315 0110 80B4     		push	{r7}
+ 316              	.LCFI20:
+ 317              		.cfi_def_cfa_offset 4
+ 318              		.cfi_offset 7, -4
+ 319 0112 00AF     		add	r7, sp, #0
+ 320              	.LCFI21:
+ 321              		.cfi_def_cfa_register 7
+ 268:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 269:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Read the current value of the control base register, and return it to
+ 270:bsp/boards/OpenMote-CC2538/source/udma.c ****     // the caller.
+ 271:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 272:bsp/boards/OpenMote-CC2538/source/udma.c ****     return((void *)HWREG(UDMA_CTLBASE));
+ 322              		.loc 1 272 0
+ 323 0114 4FF20803 		movw	r3, #61448
+ 324 0118 C4F20F03 		movt	r3, 16399
+ 325 011c 1B68     		ldr	r3, [r3, #0]
+ 273:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 326              		.loc 1 273 0
+ 327 011e 1846     		mov	r0, r3
+ 328 0120 BD46     		mov	sp, r7
+ 329 0122 80BC     		pop	{r7}
+ 330 0124 7047     		bx	lr
+ 331              		.cfi_endproc
+ 332              	.LFE8:
+ 334 0126 00BF     		.align	2
+ 335              		.global	uDMAControlAlternateBaseGet
+ 336              		.thumb
+ 337              		.thumb_func
+ 339              	uDMAControlAlternateBaseGet:
+ 340              	.LFB9:
+ 274:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 275:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 276:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 277:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Gets the base address for the channel control table alternate structures
+ 278:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 279:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function gets the base address of the second half of the channel
+ 280:bsp/boards/OpenMote-CC2538/source/udma.c **** //! control table that holds the alternate control structures for each channel.
+ 281:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 282:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return Returns a pointer to the base address of the second half of the
+ 283:bsp/boards/OpenMote-CC2538/source/udma.c **** //! channel control table.
+ 284:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 285:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 286:bsp/boards/OpenMote-CC2538/source/udma.c **** void *
+ 287:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAControlAlternateBaseGet(void)
+ 288:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 341              		.loc 1 288 0
+ 342              		.cfi_startproc
+ 343              		@ args = 0, pretend = 0, frame = 0
+ 344              		@ frame_needed = 1, uses_anonymous_args = 0
+ 345              		@ link register save eliminated.
+ 346 0128 80B4     		push	{r7}
+ 347              	.LCFI22:
+ 348              		.cfi_def_cfa_offset 4
+ 349              		.cfi_offset 7, -4
+ 350 012a 00AF     		add	r7, sp, #0
+ 351              	.LCFI23:
+ 352              		.cfi_def_cfa_register 7
+ 289:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 290:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Read the current value of the control base register, and return it to
+ 291:bsp/boards/OpenMote-CC2538/source/udma.c ****     // the caller.
+ 292:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 293:bsp/boards/OpenMote-CC2538/source/udma.c ****     return((void *)HWREG(UDMA_ALTBASE));
+ 353              		.loc 1 293 0
+ 354 012c 4FF20C03 		movw	r3, #61452
+ 355 0130 C4F20F03 		movt	r3, 16399
+ 356 0134 1B68     		ldr	r3, [r3, #0]
+ 294:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 357              		.loc 1 294 0
+ 358 0136 1846     		mov	r0, r3
+ 359 0138 BD46     		mov	sp, r7
+ 360 013a 80BC     		pop	{r7}
+ 361 013c 7047     		bx	lr
+ 362              		.cfi_endproc
+ 363              	.LFE9:
+ 365 013e 00BF     		.align	2
+ 366              		.global	uDMAChannelRequest
+ 367              		.thumb
+ 368              		.thumb_func
+ 370              	uDMAChannelRequest:
+ 371              	.LFB10:
+ 295:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 296:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 297:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 298:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Requests a uDMA channel to start a transfer
+ 299:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 300:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32ChannelNum is the channel number on which to request a uDMA
+ 301:bsp/boards/OpenMote-CC2538/source/udma.c **** //! transfer.
+ 302:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 303:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function allows software to request a uDMA channel to begin a
+ 304:bsp/boards/OpenMote-CC2538/source/udma.c **** //! transfer.  This could be used for performing a memory to memory transfer,
+ 305:bsp/boards/OpenMote-CC2538/source/udma.c **** //! or if for some reason a transfer needs to be initiated by software instead
+ 306:bsp/boards/OpenMote-CC2538/source/udma.c **** //! of the peripheral associated with that channel.
+ 307:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 308:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \note If the channel is \b UDMA_CH30_SW and interrupts
+ 309:bsp/boards/OpenMote-CC2538/source/udma.c **** //! are used, then the completion will be signaled on the uDMA dedicated
+ 310:bsp/boards/OpenMote-CC2538/source/udma.c **** //! interrupt.
+ 311:bsp/boards/OpenMote-CC2538/source/udma.c **** //! If a peripheral channel is used, then the completion will be signaled on the
+ 312:bsp/boards/OpenMote-CC2538/source/udma.c **** //! peripheral's interrupt.
+ 313:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 314:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+ 315:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 316:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 317:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+ 318:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAChannelRequest(uint32_t ui32ChannelNum)
+ 319:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 372              		.loc 1 319 0
+ 373              		.cfi_startproc
+ 374              		@ args = 0, pretend = 0, frame = 8
+ 375              		@ frame_needed = 1, uses_anonymous_args = 0
+ 376              		@ link register save eliminated.
+ 377 0140 80B4     		push	{r7}
+ 378              	.LCFI24:
+ 379              		.cfi_def_cfa_offset 4
+ 380              		.cfi_offset 7, -4
+ 381 0142 83B0     		sub	sp, sp, #12
+ 382              	.LCFI25:
+ 383              		.cfi_def_cfa_offset 16
+ 384 0144 00AF     		add	r7, sp, #0
+ 385              	.LCFI26:
+ 386              		.cfi_def_cfa_register 7
+ 387 0146 7860     		str	r0, [r7, #4]
+ 320:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 321:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check the arguments.
+ 322:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 323:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32ChannelNum & 0xffff) < 32);
+ 324:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 325:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 326:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Set the bit for this channel in the software uDMA request register.
+ 327:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 328:bsp/boards/OpenMote-CC2538/source/udma.c ****     HWREG(UDMA_SWREQ) = 1 << (ui32ChannelNum & 0x1f);
+ 388              		.loc 1 328 0
+ 389 0148 4FF21403 		movw	r3, #61460
+ 390 014c C4F20F03 		movt	r3, 16399
+ 391 0150 7A68     		ldr	r2, [r7, #4]
+ 392 0152 02F01F02 		and	r2, r2, #31
+ 393 0156 4FF00101 		mov	r1, #1
+ 394 015a 01FA02F2 		lsl	r2, r1, r2
+ 395 015e 1A60     		str	r2, [r3, #0]
+ 329:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 396              		.loc 1 329 0
+ 397 0160 07F10C07 		add	r7, r7, #12
+ 398 0164 BD46     		mov	sp, r7
+ 399 0166 80BC     		pop	{r7}
+ 400 0168 7047     		bx	lr
+ 401              		.cfi_endproc
+ 402              	.LFE10:
+ 404 016a 00BF     		.align	2
+ 405              		.global	uDMAChannelAttributeEnable
+ 406              		.thumb
+ 407              		.thumb_func
+ 409              	uDMAChannelAttributeEnable:
+ 410              	.LFB11:
+ 330:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 331:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 332:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 333:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Enables attributes of a uDMA channel
+ 334:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 335:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32ChannelNum is the channel to configure.
+ 336:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32Attr is a combination of attributes for the channel.
+ 337:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 338:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function is used to enable attributes of a uDMA channel.
+ 339:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 340:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The \e ui32Attr parameter is the logical OR of any of the following:
+ 341:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 342:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_ATTR_USEBURST is used to restrict transfers to use only a burst
+ 343:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   mode.
+ 344:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_ATTR_ALTSELECT is used to select the alternate control structure
+ 345:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   for this channel (it is very unlikely that this flag should be used).
+ 346:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_ATTR_HIGH_PRIORITY is used to set this channel to high priority.
+ 347:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_ATTR_REQMASK is used to mask the hardware request signal from the
+ 348:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   peripheral for this channel.
+ 349:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 350:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+ 351:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 352:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 353:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+ 354:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAChannelAttributeEnable(uint32_t ui32ChannelNum, uint32_t ui32Attr)
+ 355:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 411              		.loc 1 355 0
+ 412              		.cfi_startproc
+ 413              		@ args = 0, pretend = 0, frame = 8
+ 414              		@ frame_needed = 1, uses_anonymous_args = 0
+ 415              		@ link register save eliminated.
+ 416 016c 80B4     		push	{r7}
+ 417              	.LCFI27:
+ 418              		.cfi_def_cfa_offset 4
+ 419              		.cfi_offset 7, -4
+ 420 016e 83B0     		sub	sp, sp, #12
+ 421              	.LCFI28:
+ 422              		.cfi_def_cfa_offset 16
+ 423 0170 00AF     		add	r7, sp, #0
+ 424              	.LCFI29:
+ 425              		.cfi_def_cfa_register 7
+ 426 0172 7860     		str	r0, [r7, #4]
+ 427 0174 3960     		str	r1, [r7, #0]
+ 356:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 357:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check the arguments.
+ 358:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 359:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32ChannelNum & 0xffff) < 32);
+ 360:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32Attr & ~(UDMA_ATTR_USEBURST | UDMA_ATTR_ALTSELECT |
+ 361:bsp/boards/OpenMote-CC2538/source/udma.c ****                          UDMA_ATTR_HIGH_PRIORITY | UDMA_ATTR_REQMASK)) == 0);
+ 362:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 363:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 364:bsp/boards/OpenMote-CC2538/source/udma.c ****     // In case a channel selector macro (like UDMA_CH0_USB0EP1RX) was
+ 365:bsp/boards/OpenMote-CC2538/source/udma.c ****     // passed as the ui32ChannelNum parameter, extract just the channel number
+ 366:bsp/boards/OpenMote-CC2538/source/udma.c ****     // from this parameter.
+ 367:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 368:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32ChannelNum &= 0x1f;
+ 428              		.loc 1 368 0
+ 429 0176 7B68     		ldr	r3, [r7, #4]
+ 430 0178 03F01F03 		and	r3, r3, #31
+ 431 017c 7B60     		str	r3, [r7, #4]
+ 369:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 370:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 371:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Set the useburst bit for this channel if set in ui32Config.
+ 372:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 373:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(ui32Attr & UDMA_ATTR_USEBURST)
+ 432              		.loc 1 373 0
+ 433 017e 3B68     		ldr	r3, [r7, #0]
+ 434 0180 03F00103 		and	r3, r3, #1
+ 435 0184 002B     		cmp	r3, #0
+ 436 0186 09D0     		beq	.L17
+ 374:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 375:bsp/boards/OpenMote-CC2538/source/udma.c ****         HWREG(UDMA_USEBURSTSET) = 1 << ui32ChannelNum;
+ 437              		.loc 1 375 0
+ 438 0188 4FF21803 		movw	r3, #61464
+ 439 018c C4F20F03 		movt	r3, 16399
+ 440 0190 7A68     		ldr	r2, [r7, #4]
+ 441 0192 4FF00101 		mov	r1, #1
+ 442 0196 01FA02F2 		lsl	r2, r1, r2
+ 443 019a 1A60     		str	r2, [r3, #0]
+ 444              	.L17:
+ 376:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 377:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 378:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 379:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Set the alternate control select bit for this channel,
+ 380:bsp/boards/OpenMote-CC2538/source/udma.c ****     // if set in ui32Config.
+ 381:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 382:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(ui32Attr & UDMA_ATTR_ALTSELECT)
+ 445              		.loc 1 382 0
+ 446 019c 3B68     		ldr	r3, [r7, #0]
+ 447 019e 03F00203 		and	r3, r3, #2
+ 448 01a2 002B     		cmp	r3, #0
+ 449 01a4 09D0     		beq	.L18
+ 383:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 384:bsp/boards/OpenMote-CC2538/source/udma.c ****         HWREG(UDMA_ALTSET) = 1 << ui32ChannelNum;
+ 450              		.loc 1 384 0
+ 451 01a6 4FF23003 		movw	r3, #61488
+ 452 01aa C4F20F03 		movt	r3, 16399
+ 453 01ae 7A68     		ldr	r2, [r7, #4]
+ 454 01b0 4FF00101 		mov	r1, #1
+ 455 01b4 01FA02F2 		lsl	r2, r1, r2
+ 456 01b8 1A60     		str	r2, [r3, #0]
+ 457              	.L18:
+ 385:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 386:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 387:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 388:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Set the high priority bit for this channel, if set in ui32Config.
+ 389:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 390:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(ui32Attr & UDMA_ATTR_HIGH_PRIORITY)
+ 458              		.loc 1 390 0
+ 459 01ba 3B68     		ldr	r3, [r7, #0]
+ 460 01bc 03F00403 		and	r3, r3, #4
+ 461 01c0 002B     		cmp	r3, #0
+ 462 01c2 09D0     		beq	.L19
+ 391:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 392:bsp/boards/OpenMote-CC2538/source/udma.c ****         HWREG(UDMA_PRIOSET) = 1 << ui32ChannelNum;
+ 463              		.loc 1 392 0
+ 464 01c4 4FF23803 		movw	r3, #61496
+ 465 01c8 C4F20F03 		movt	r3, 16399
+ 466 01cc 7A68     		ldr	r2, [r7, #4]
+ 467 01ce 4FF00101 		mov	r1, #1
+ 468 01d2 01FA02F2 		lsl	r2, r1, r2
+ 469 01d6 1A60     		str	r2, [r3, #0]
+ 470              	.L19:
+ 393:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 394:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 395:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 396:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Set the request mask bit for this channel, if set in ui32Config.
+ 397:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 398:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(ui32Attr & UDMA_ATTR_REQMASK)
+ 471              		.loc 1 398 0
+ 472 01d8 3B68     		ldr	r3, [r7, #0]
+ 473 01da 03F00803 		and	r3, r3, #8
+ 474 01de 002B     		cmp	r3, #0
+ 475 01e0 09D0     		beq	.L16
+ 399:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 400:bsp/boards/OpenMote-CC2538/source/udma.c ****         HWREG(UDMA_REQMASKSET) = 1 << ui32ChannelNum;
+ 476              		.loc 1 400 0
+ 477 01e2 4FF22003 		movw	r3, #61472
+ 478 01e6 C4F20F03 		movt	r3, 16399
+ 479 01ea 7A68     		ldr	r2, [r7, #4]
+ 480 01ec 4FF00101 		mov	r1, #1
+ 481 01f0 01FA02F2 		lsl	r2, r1, r2
+ 482 01f4 1A60     		str	r2, [r3, #0]
+ 483              	.L16:
+ 401:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 402:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 484              		.loc 1 402 0
+ 485 01f6 07F10C07 		add	r7, r7, #12
+ 486 01fa BD46     		mov	sp, r7
+ 487 01fc 80BC     		pop	{r7}
+ 488 01fe 7047     		bx	lr
+ 489              		.cfi_endproc
+ 490              	.LFE11:
+ 492              		.align	2
+ 493              		.global	uDMAChannelAttributeDisable
+ 494              		.thumb
+ 495              		.thumb_func
+ 497              	uDMAChannelAttributeDisable:
+ 498              	.LFB12:
+ 403:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 404:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 405:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 406:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Disables attributes of a uDMA channel
+ 407:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 408:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32ChannelNum is the channel to configure.
+ 409:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32Attr is a combination of attributes for the channel.
+ 410:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 411:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function is used to disable attributes of a uDMA channel.
+ 412:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 413:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The \e ui32Attr parameter is the logical OR of any of the following:
+ 414:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 415:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_ATTR_USEBURST is used to restrict transfers to use only a burst
+ 416:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   mode.
+ 417:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_ATTR_ALTSELECT is used to select the alternate control structure
+ 418:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   for this channel.
+ 419:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_ATTR_HIGH_PRIORITY is used to set this channel to high priority.
+ 420:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_ATTR_REQMASK is used to mask the hardware request signal from the
+ 421:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   peripheral for this channel.
+ 422:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 423:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+ 424:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 425:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 426:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+ 427:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAChannelAttributeDisable(uint32_t ui32ChannelNum, uint32_t ui32Attr)
+ 428:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 499              		.loc 1 428 0
+ 500              		.cfi_startproc
+ 501              		@ args = 0, pretend = 0, frame = 8
+ 502              		@ frame_needed = 1, uses_anonymous_args = 0
+ 503              		@ link register save eliminated.
+ 504 0200 80B4     		push	{r7}
+ 505              	.LCFI30:
+ 506              		.cfi_def_cfa_offset 4
+ 507              		.cfi_offset 7, -4
+ 508 0202 83B0     		sub	sp, sp, #12
+ 509              	.LCFI31:
+ 510              		.cfi_def_cfa_offset 16
+ 511 0204 00AF     		add	r7, sp, #0
+ 512              	.LCFI32:
+ 513              		.cfi_def_cfa_register 7
+ 514 0206 7860     		str	r0, [r7, #4]
+ 515 0208 3960     		str	r1, [r7, #0]
+ 429:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 430:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check the arguments.
+ 431:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 432:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32ChannelNum & 0xffff) < 32);
+ 433:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32Attr & ~(UDMA_ATTR_USEBURST | UDMA_ATTR_ALTSELECT |
+ 434:bsp/boards/OpenMote-CC2538/source/udma.c ****                          UDMA_ATTR_HIGH_PRIORITY | UDMA_ATTR_REQMASK)) == 0);
+ 435:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 436:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 437:bsp/boards/OpenMote-CC2538/source/udma.c ****     // In case a channel selector macro (like UDMA_CH0_USB0EP1RX) was
+ 438:bsp/boards/OpenMote-CC2538/source/udma.c ****     // passed as the ui32ChannelNum parameter, extract just the channel number
+ 439:bsp/boards/OpenMote-CC2538/source/udma.c ****     // from this parameter.
+ 440:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 441:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32ChannelNum &= 0x1f;
+ 516              		.loc 1 441 0
+ 517 020a 7B68     		ldr	r3, [r7, #4]
+ 518 020c 03F01F03 		and	r3, r3, #31
+ 519 0210 7B60     		str	r3, [r7, #4]
+ 442:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 443:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 444:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Clear the useburst bit for this channel if set in ui32Config.
+ 445:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 446:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(ui32Attr & UDMA_ATTR_USEBURST)
+ 520              		.loc 1 446 0
+ 521 0212 3B68     		ldr	r3, [r7, #0]
+ 522 0214 03F00103 		and	r3, r3, #1
+ 523 0218 002B     		cmp	r3, #0
+ 524 021a 09D0     		beq	.L22
+ 447:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 448:bsp/boards/OpenMote-CC2538/source/udma.c ****         HWREG(UDMA_USEBURSTCLR) = 1 << ui32ChannelNum;
+ 525              		.loc 1 448 0
+ 526 021c 4FF21C03 		movw	r3, #61468
+ 527 0220 C4F20F03 		movt	r3, 16399
+ 528 0224 7A68     		ldr	r2, [r7, #4]
+ 529 0226 4FF00101 		mov	r1, #1
+ 530 022a 01FA02F2 		lsl	r2, r1, r2
+ 531 022e 1A60     		str	r2, [r3, #0]
+ 532              	.L22:
+ 449:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 450:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 451:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 452:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Clear the alternate control select bit for this channel, if set in
+ 453:bsp/boards/OpenMote-CC2538/source/udma.c ****     // ui32Config.
+ 454:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 455:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(ui32Attr & UDMA_ATTR_ALTSELECT)
+ 533              		.loc 1 455 0
+ 534 0230 3B68     		ldr	r3, [r7, #0]
+ 535 0232 03F00203 		and	r3, r3, #2
+ 536 0236 002B     		cmp	r3, #0
+ 537 0238 09D0     		beq	.L23
+ 456:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 457:bsp/boards/OpenMote-CC2538/source/udma.c ****         HWREG(UDMA_ALTCLR) = 1 << ui32ChannelNum;
+ 538              		.loc 1 457 0
+ 539 023a 4FF23403 		movw	r3, #61492
+ 540 023e C4F20F03 		movt	r3, 16399
+ 541 0242 7A68     		ldr	r2, [r7, #4]
+ 542 0244 4FF00101 		mov	r1, #1
+ 543 0248 01FA02F2 		lsl	r2, r1, r2
+ 544 024c 1A60     		str	r2, [r3, #0]
+ 545              	.L23:
+ 458:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 459:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 460:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 461:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Clear the high priority bit for this channel, if set in ui32Config.
+ 462:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 463:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(ui32Attr & UDMA_ATTR_HIGH_PRIORITY)
+ 546              		.loc 1 463 0
+ 547 024e 3B68     		ldr	r3, [r7, #0]
+ 548 0250 03F00403 		and	r3, r3, #4
+ 549 0254 002B     		cmp	r3, #0
+ 550 0256 09D0     		beq	.L24
+ 464:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 465:bsp/boards/OpenMote-CC2538/source/udma.c ****         HWREG(UDMA_PRIOCLR) = 1 << ui32ChannelNum;
+ 551              		.loc 1 465 0
+ 552 0258 4FF23C03 		movw	r3, #61500
+ 553 025c C4F20F03 		movt	r3, 16399
+ 554 0260 7A68     		ldr	r2, [r7, #4]
+ 555 0262 4FF00101 		mov	r1, #1
+ 556 0266 01FA02F2 		lsl	r2, r1, r2
+ 557 026a 1A60     		str	r2, [r3, #0]
+ 558              	.L24:
+ 466:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 467:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 468:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 469:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Clear the request mask bit for this channel, if set in ui32Config.
+ 470:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 471:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(ui32Attr & UDMA_ATTR_REQMASK)
+ 559              		.loc 1 471 0
+ 560 026c 3B68     		ldr	r3, [r7, #0]
+ 561 026e 03F00803 		and	r3, r3, #8
+ 562 0272 002B     		cmp	r3, #0
+ 563 0274 09D0     		beq	.L21
+ 472:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 473:bsp/boards/OpenMote-CC2538/source/udma.c ****         HWREG(UDMA_REQMASKCLR) = 1 << ui32ChannelNum;
+ 564              		.loc 1 473 0
+ 565 0276 4FF22403 		movw	r3, #61476
+ 566 027a C4F20F03 		movt	r3, 16399
+ 567 027e 7A68     		ldr	r2, [r7, #4]
+ 568 0280 4FF00101 		mov	r1, #1
+ 569 0284 01FA02F2 		lsl	r2, r1, r2
+ 570 0288 1A60     		str	r2, [r3, #0]
+ 571              	.L21:
+ 474:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 475:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 572              		.loc 1 475 0
+ 573 028a 07F10C07 		add	r7, r7, #12
+ 574 028e BD46     		mov	sp, r7
+ 575 0290 80BC     		pop	{r7}
+ 576 0292 7047     		bx	lr
+ 577              		.cfi_endproc
+ 578              	.LFE12:
+ 580              		.align	2
+ 581              		.global	uDMAChannelAttributeGet
+ 582              		.thumb
+ 583              		.thumb_func
+ 585              	uDMAChannelAttributeGet:
+ 586              	.LFB13:
+ 476:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 477:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 478:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 479:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Gets the enabled attributes of a uDMA channel
+ 480:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 481:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32ChannelNum is the channel to configure.
+ 482:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 483:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function returns a combination of flags representing the attributes of
+ 484:bsp/boards/OpenMote-CC2538/source/udma.c **** //! the uDMA channel.
+ 485:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 486:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return Returns the logical OR of the attributes of the uDMA channel, which
+ 487:bsp/boards/OpenMote-CC2538/source/udma.c **** //! can be any of the following:
+ 488:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_ATTR_USEBURST is used to restrict transfers to use only a burst
+ 489:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   mode.
+ 490:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_ATTR_ALTSELECT is used to select the alternate control structure
+ 491:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   for this channel.
+ 492:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_ATTR_HIGH_PRIORITY is used to set this channel to high priority.
+ 493:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_ATTR_REQMASK is used to mask the hardware request signal from the
+ 494:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   peripheral for this channel.
+ 495:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 496:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 497:bsp/boards/OpenMote-CC2538/source/udma.c **** uint32_t
+ 498:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAChannelAttributeGet(uint32_t ui32ChannelNum)
+ 499:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 587              		.loc 1 499 0
+ 588              		.cfi_startproc
+ 589              		@ args = 0, pretend = 0, frame = 16
+ 590              		@ frame_needed = 1, uses_anonymous_args = 0
+ 591              		@ link register save eliminated.
+ 592 0294 80B4     		push	{r7}
+ 593              	.LCFI33:
+ 594              		.cfi_def_cfa_offset 4
+ 595              		.cfi_offset 7, -4
+ 596 0296 85B0     		sub	sp, sp, #20
+ 597              	.LCFI34:
+ 598              		.cfi_def_cfa_offset 24
+ 599 0298 00AF     		add	r7, sp, #0
+ 600              	.LCFI35:
+ 601              		.cfi_def_cfa_register 7
+ 602 029a 7860     		str	r0, [r7, #4]
+ 500:bsp/boards/OpenMote-CC2538/source/udma.c ****     uint32_t ui32Attr = 0;
+ 603              		.loc 1 500 0
+ 604 029c 4FF00003 		mov	r3, #0
+ 605 02a0 FB60     		str	r3, [r7, #12]
+ 501:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 502:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 503:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check the arguments.
+ 504:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 505:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32ChannelNum & 0xffff) < 32);
+ 506:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 507:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 508:bsp/boards/OpenMote-CC2538/source/udma.c ****     // In case a channel selector macro (like UDMA_CH0_USB0EP1RX) was
+ 509:bsp/boards/OpenMote-CC2538/source/udma.c ****     // passed as the ui32ChannelNum parameter, extract just the channel number
+ 510:bsp/boards/OpenMote-CC2538/source/udma.c ****     // from this parameter.
+ 511:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 512:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32ChannelNum &= 0x1f;
+ 606              		.loc 1 512 0
+ 607 02a2 7B68     		ldr	r3, [r7, #4]
+ 608 02a4 03F01F03 		and	r3, r3, #31
+ 609 02a8 7B60     		str	r3, [r7, #4]
+ 513:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 514:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 515:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check to see if useburst bit is set for this channel.
+ 516:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 517:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(HWREG(UDMA_USEBURSTSET) & (1 << ui32ChannelNum))
+ 610              		.loc 1 517 0
+ 611 02aa 4FF21803 		movw	r3, #61464
+ 612 02ae C4F20F03 		movt	r3, 16399
+ 613 02b2 1A68     		ldr	r2, [r3, #0]
+ 614 02b4 7B68     		ldr	r3, [r7, #4]
+ 615 02b6 4FF00101 		mov	r1, #1
+ 616 02ba 01FA03F3 		lsl	r3, r1, r3
+ 617 02be 1340     		ands	r3, r3, r2
+ 618 02c0 002B     		cmp	r3, #0
+ 619 02c2 03D0     		beq	.L27
+ 518:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 519:bsp/boards/OpenMote-CC2538/source/udma.c ****         ui32Attr |= UDMA_ATTR_USEBURST;
+ 620              		.loc 1 519 0
+ 621 02c4 FB68     		ldr	r3, [r7, #12]
+ 622 02c6 43F00103 		orr	r3, r3, #1
+ 623 02ca FB60     		str	r3, [r7, #12]
+ 624              	.L27:
+ 520:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 521:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 522:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 523:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check to see if the alternate control bit is set for this channel.
+ 524:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 525:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(HWREG(UDMA_ALTSET) & (1 << ui32ChannelNum))
+ 625              		.loc 1 525 0
+ 626 02cc 4FF23003 		movw	r3, #61488
+ 627 02d0 C4F20F03 		movt	r3, 16399
+ 628 02d4 1A68     		ldr	r2, [r3, #0]
+ 629 02d6 7B68     		ldr	r3, [r7, #4]
+ 630 02d8 4FF00101 		mov	r1, #1
+ 631 02dc 01FA03F3 		lsl	r3, r1, r3
+ 632 02e0 1340     		ands	r3, r3, r2
+ 633 02e2 002B     		cmp	r3, #0
+ 634 02e4 03D0     		beq	.L28
+ 526:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 527:bsp/boards/OpenMote-CC2538/source/udma.c ****         ui32Attr |= UDMA_ATTR_ALTSELECT;
+ 635              		.loc 1 527 0
+ 636 02e6 FB68     		ldr	r3, [r7, #12]
+ 637 02e8 43F00203 		orr	r3, r3, #2
+ 638 02ec FB60     		str	r3, [r7, #12]
+ 639              	.L28:
+ 528:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 529:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 530:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 531:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check to see if the high priority bit is set for this channel.
+ 532:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 533:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(HWREG(UDMA_PRIOSET) & (1 << ui32ChannelNum))
+ 640              		.loc 1 533 0
+ 641 02ee 4FF23803 		movw	r3, #61496
+ 642 02f2 C4F20F03 		movt	r3, 16399
+ 643 02f6 1A68     		ldr	r2, [r3, #0]
+ 644 02f8 7B68     		ldr	r3, [r7, #4]
+ 645 02fa 4FF00101 		mov	r1, #1
+ 646 02fe 01FA03F3 		lsl	r3, r1, r3
+ 647 0302 1340     		ands	r3, r3, r2
+ 648 0304 002B     		cmp	r3, #0
+ 649 0306 03D0     		beq	.L29
+ 534:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 535:bsp/boards/OpenMote-CC2538/source/udma.c ****         ui32Attr |= UDMA_ATTR_HIGH_PRIORITY;
+ 650              		.loc 1 535 0
+ 651 0308 FB68     		ldr	r3, [r7, #12]
+ 652 030a 43F00403 		orr	r3, r3, #4
+ 653 030e FB60     		str	r3, [r7, #12]
+ 654              	.L29:
+ 536:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 537:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 538:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 539:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check to see if the request mask bit is set for this channel.
+ 540:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 541:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(HWREG(UDMA_REQMASKSET) & (1 << ui32ChannelNum))
+ 655              		.loc 1 541 0
+ 656 0310 4FF22003 		movw	r3, #61472
+ 657 0314 C4F20F03 		movt	r3, 16399
+ 658 0318 1A68     		ldr	r2, [r3, #0]
+ 659 031a 7B68     		ldr	r3, [r7, #4]
+ 660 031c 4FF00101 		mov	r1, #1
+ 661 0320 01FA03F3 		lsl	r3, r1, r3
+ 662 0324 1340     		ands	r3, r3, r2
+ 663 0326 002B     		cmp	r3, #0
+ 664 0328 03D0     		beq	.L30
+ 542:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 543:bsp/boards/OpenMote-CC2538/source/udma.c ****         ui32Attr |= UDMA_ATTR_REQMASK;
+ 665              		.loc 1 543 0
+ 666 032a FB68     		ldr	r3, [r7, #12]
+ 667 032c 43F00803 		orr	r3, r3, #8
+ 668 0330 FB60     		str	r3, [r7, #12]
+ 669              	.L30:
+ 544:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 545:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 546:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 547:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Return the configuration flags.
+ 548:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 549:bsp/boards/OpenMote-CC2538/source/udma.c ****     return(ui32Attr);
+ 670              		.loc 1 549 0
+ 671 0332 FB68     		ldr	r3, [r7, #12]
+ 550:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 672              		.loc 1 550 0
+ 673 0334 1846     		mov	r0, r3
+ 674 0336 07F11407 		add	r7, r7, #20
+ 675 033a BD46     		mov	sp, r7
+ 676 033c 80BC     		pop	{r7}
+ 677 033e 7047     		bx	lr
+ 678              		.cfi_endproc
+ 679              	.LFE13:
+ 681              		.align	2
+ 682              		.global	uDMAChannelControlSet
+ 683              		.thumb
+ 684              		.thumb_func
+ 686              	uDMAChannelControlSet:
+ 687              	.LFB14:
+ 551:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 552:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 553:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 554:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Sets the control parameters for a uDMA channel control structure
+ 555:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 556:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32ChannelStructIndex is the logical OR of the uDMA channel number
+ 557:bsp/boards/OpenMote-CC2538/source/udma.c **** //! with \b UDMA_PRI_SELECT or \b UDMA_ALT_SELECT.
+ 558:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32Control is logical OR of several control values to set the control
+ 559:bsp/boards/OpenMote-CC2538/source/udma.c **** //! parameters for the channel.
+ 560:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 561:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function is used to set control parameters for a uDMA transfer.  These
+ 562:bsp/boards/OpenMote-CC2538/source/udma.c **** //! are typically parameters that are not changed often.
+ 563:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 564:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The \e ui32ChannelStructIndex parameter should be the logical OR of the
+ 565:bsp/boards/OpenMote-CC2538/source/udma.c **** //! channel number with one of \b UDMA_PRI_SELECT or \b UDMA_ALT_SELECT to
+ 566:bsp/boards/OpenMote-CC2538/source/udma.c **** //! choose whether the primary or alternate data structure is used.
+ 567:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 568:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The \e ui32Control parameter is the logical OR of five values: the data size,
+ 569:bsp/boards/OpenMote-CC2538/source/udma.c **** //! the source address increment, the destination address increment, the
+ 570:bsp/boards/OpenMote-CC2538/source/udma.c **** //! arbitration size, and the use burst flag.  The choices available for each
+ 571:bsp/boards/OpenMote-CC2538/source/udma.c **** //! of these values is described below.
+ 572:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 573:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Choose the data size from one of \b UDMA_SIZE_8, \b UDMA_SIZE_16, or
+ 574:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \b UDMA_SIZE_32 to select a data size of 8, 16, or 32 bits.
+ 575:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 576:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Choose the source address increment from one of \b UDMA_SRC_INC_8,
+ 577:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \b UDMA_SRC_INC_16, \b UDMA_SRC_INC_32, or \b UDMA_SRC_INC_NONE to select
+ 578:bsp/boards/OpenMote-CC2538/source/udma.c **** //! an address increment of 8-bit bytes, 16-bit halfwords, 32-bit words, or
+ 579:bsp/boards/OpenMote-CC2538/source/udma.c **** //! to select non-incrementing.
+ 580:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 581:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Choose the destination address increment from one of \b UDMA_DST_INC_8,
+ 582:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \b UDMA_DST_INC_16, \b UDMA_DST_INC_32, or \b UDMA_DST_INC_NONE to select
+ 583:bsp/boards/OpenMote-CC2538/source/udma.c **** //! an address increment of 8-bit bytes, 16-bit halfwords, 32-bit words, or
+ 584:bsp/boards/OpenMote-CC2538/source/udma.c **** //! to select non-incrementing.
+ 585:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 586:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The arbitration size determines how many items are transferred before
+ 587:bsp/boards/OpenMote-CC2538/source/udma.c **** //! the uDMA controller re-arbitrates for the bus.  Choose the arbitration size
+ 588:bsp/boards/OpenMote-CC2538/source/udma.c **** //! from one of \b UDMA_ARB_1, \b UDMA_ARB_2, \b UDMA_ARB_4, \b UDMA_ARB_8,
+ 589:bsp/boards/OpenMote-CC2538/source/udma.c **** //! through \b UDMA_ARB_1024 to select the arbitration size from 1 to 1024
+ 590:bsp/boards/OpenMote-CC2538/source/udma.c **** //! items, in powers of 2.
+ 591:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 592:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The value \b UDMA_NEXT_USEBURST is used to force the channel to only
+ 593:bsp/boards/OpenMote-CC2538/source/udma.c **** //! respond to burst requests at the tail end of a scatter-gather transfer.
+ 594:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 595:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \note The address increment cannot be smaller than the data size.
+ 596:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 597:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+ 598:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 599:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 600:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+ 601:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAChannelControlSet(uint32_t ui32ChannelStructIndex,
+ 602:bsp/boards/OpenMote-CC2538/source/udma.c ****                       uint32_t ui32Control)
+ 603:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 688              		.loc 1 603 0
+ 689              		.cfi_startproc
+ 690              		@ args = 0, pretend = 0, frame = 16
+ 691              		@ frame_needed = 1, uses_anonymous_args = 0
+ 692              		@ link register save eliminated.
+ 693 0340 80B4     		push	{r7}
+ 694              	.LCFI36:
+ 695              		.cfi_def_cfa_offset 4
+ 696              		.cfi_offset 7, -4
+ 697 0342 85B0     		sub	sp, sp, #20
+ 698              	.LCFI37:
+ 699              		.cfi_def_cfa_offset 24
+ 700 0344 00AF     		add	r7, sp, #0
+ 701              	.LCFI38:
+ 702              		.cfi_def_cfa_register 7
+ 703 0346 7860     		str	r0, [r7, #4]
+ 704 0348 3960     		str	r1, [r7, #0]
+ 604:bsp/boards/OpenMote-CC2538/source/udma.c ****     tDMAControlTable *pCtl;
+ 605:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 606:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 607:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check the arguments.
+ 608:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 609:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32ChannelStructIndex & 0xffff) < 64);
+ 610:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT(HWREG(UDMA_CTLBASE) != 0);
+ 611:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 612:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 613:bsp/boards/OpenMote-CC2538/source/udma.c ****     // In case a channel selector macro (like UDMA_CH0_USB0EP1RX) was
+ 614:bsp/boards/OpenMote-CC2538/source/udma.c ****     // passed as the ui32ChannelStructIndex parameter, extract just the channel
+ 615:bsp/boards/OpenMote-CC2538/source/udma.c ****     // index from this parameter.
+ 616:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 617:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32ChannelStructIndex &= 0x3f;
+ 705              		.loc 1 617 0
+ 706 034a 7B68     		ldr	r3, [r7, #4]
+ 707 034c 03F03F03 		and	r3, r3, #63
+ 708 0350 7B60     		str	r3, [r7, #4]
+ 618:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 619:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 620:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Get the base address of the control table.
+ 621:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 622:bsp/boards/OpenMote-CC2538/source/udma.c ****     pCtl = (tDMAControlTable *)HWREG(UDMA_CTLBASE);
+ 709              		.loc 1 622 0
+ 710 0352 4FF20803 		movw	r3, #61448
+ 711 0356 C4F20F03 		movt	r3, 16399
+ 712 035a 1B68     		ldr	r3, [r3, #0]
+ 713 035c FB60     		str	r3, [r7, #12]
+ 623:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 624:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 625:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Get the current control word value and mask off the fields to be
+ 626:bsp/boards/OpenMote-CC2538/source/udma.c ****     // changed, then OR in the new settings.
+ 627:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 628:bsp/boards/OpenMote-CC2538/source/udma.c ****     pCtl[ui32ChannelStructIndex].ui32Control =
+ 714              		.loc 1 628 0
+ 715 035e 7B68     		ldr	r3, [r7, #4]
+ 716 0360 4FEA0313 		lsl	r3, r3, #4
+ 717 0364 FA68     		ldr	r2, [r7, #12]
+ 718 0366 D218     		adds	r2, r2, r3
+ 629:bsp/boards/OpenMote-CC2538/source/udma.c ****         ((pCtl[ui32ChannelStructIndex].ui32Control &
+ 719              		.loc 1 629 0
+ 720 0368 7B68     		ldr	r3, [r7, #4]
+ 721 036a 4FEA0313 		lsl	r3, r3, #4
+ 722 036e F968     		ldr	r1, [r7, #12]
+ 723 0370 CB18     		adds	r3, r1, r3
+ 724 0372 9968     		ldr	r1, [r3, #8]
+ 725 0374 43F6F773 		movw	r3, #16375
+ 726 0378 C0F2FC03 		movt	r3, 252
+ 727 037c 0B40     		ands	r3, r3, r1
+ 630:bsp/boards/OpenMote-CC2538/source/udma.c ****           ~(UDMACHCTL_CHCTL_DSTINC_M |
+ 631:bsp/boards/OpenMote-CC2538/source/udma.c ****             UDMACHCTL_CHCTL_DSTSIZE_M |
+ 632:bsp/boards/OpenMote-CC2538/source/udma.c ****             UDMACHCTL_CHCTL_SRCINC_M |
+ 633:bsp/boards/OpenMote-CC2538/source/udma.c ****             UDMACHCTL_CHCTL_SRCSIZE_M |
+ 634:bsp/boards/OpenMote-CC2538/source/udma.c ****             UDMACHCTL_CHCTL_ARBSIZE_M |
+ 635:bsp/boards/OpenMote-CC2538/source/udma.c ****             UDMACHCTL_CHCTL_NXTUSEBURST)) |
+ 728              		.loc 1 635 0
+ 729 037e 3968     		ldr	r1, [r7, #0]
+ 730 0380 0B43     		orrs	r3, r3, r1
+ 628:bsp/boards/OpenMote-CC2538/source/udma.c ****     pCtl[ui32ChannelStructIndex].ui32Control =
+ 731              		.loc 1 628 0
+ 732 0382 9360     		str	r3, [r2, #8]
+ 636:bsp/boards/OpenMote-CC2538/source/udma.c ****          ui32Control);
+ 637:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 733              		.loc 1 637 0
+ 734 0384 07F11407 		add	r7, r7, #20
+ 735 0388 BD46     		mov	sp, r7
+ 736 038a 80BC     		pop	{r7}
+ 737 038c 7047     		bx	lr
+ 738              		.cfi_endproc
+ 739              	.LFE14:
+ 741 038e 00BF     		.align	2
+ 742              		.global	uDMAChannelTransferSet
+ 743              		.thumb
+ 744              		.thumb_func
+ 746              	uDMAChannelTransferSet:
+ 747              	.LFB15:
+ 638:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 639:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 640:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 641:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Sets the transfer parameters for a uDMA channel control structure
+ 642:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 643:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32ChannelStructIndex is the logical OR of the uDMA channel number
+ 644:bsp/boards/OpenMote-CC2538/source/udma.c **** //! with either \b UDMA_PRI_SELECT or \b UDMA_ALT_SELECT.
+ 645:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32Mode is the type of uDMA transfer.
+ 646:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param pvSrcAddr is the source address for the transfer.
+ 647:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param pvDstAddr is the destination address for the transfer.
+ 648:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32TransferSize is the number of data items to transfer.
+ 649:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 650:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function is used to set the parameters for a uDMA transfer.  These are
+ 651:bsp/boards/OpenMote-CC2538/source/udma.c **** //! typically parameters that are changed often.  The function
+ 652:bsp/boards/OpenMote-CC2538/source/udma.c **** //! uDMAChannelControlSet() MUST be called at least once for this channel prior
+ 653:bsp/boards/OpenMote-CC2538/source/udma.c **** //! to calling this function.
+ 654:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 655:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The \e ui32ChannelStructIndex parameter should be the logical OR of the
+ 656:bsp/boards/OpenMote-CC2538/source/udma.c **** //! channel number with one of \b UDMA_PRI_SELECT or \b UDMA_ALT_SELECT to
+ 657:bsp/boards/OpenMote-CC2538/source/udma.c **** //! choose whether the primary or alternate data structure is used.
+ 658:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 659:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The \e ui32Mode parameter should be one of the following values:
+ 660:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 661:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_MODE_STOP stops the uDMA transfer.  The controller sets the mode
+ 662:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   to this value at the end of a transfer.
+ 663:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_MODE_BASIC to perform a basic transfer based on request.
+ 664:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_MODE_AUTO to perform a transfer that will always complete once
+ 665:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   started even if request is removed.
+ 666:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_MODE_PINGPONG to set up a transfer that switches between the
+ 667:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   primary and alternate control structures for the channel.  This allows
+ 668:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   use of ping-pong buffering for uDMA transfers.
+ 669:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_MODE_MEM_SCATTER_GATHER to set up a memory scatter-gather
+ 670:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   transfer.
+ 671:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_MODE_PER_SCATTER_GATHER to set up a peripheral scatter-gather
+ 672:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   transfer.
+ 673:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 674:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The \e pvSrcAddr and \e pvDstAddr parameters are pointers to the first
+ 675:bsp/boards/OpenMote-CC2538/source/udma.c **** //! location of the data to be transferred.  These addresses should be aligned
+ 676:bsp/boards/OpenMote-CC2538/source/udma.c **** //! according to the item size.  The compiler will take care of this if the
+ 677:bsp/boards/OpenMote-CC2538/source/udma.c **** //! pointers are pointing to storage of the appropriate data type.
+ 678:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 679:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The \e ui32TransferSize parameter is the number of data items, not the number
+ 680:bsp/boards/OpenMote-CC2538/source/udma.c **** //! of bytes.
+ 681:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 682:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The two scatter/gather modes, memory and peripheral, are actually different
+ 683:bsp/boards/OpenMote-CC2538/source/udma.c **** //! depending on whether the primary or alternate control structure is
+ 684:bsp/boards/OpenMote-CC2538/source/udma.c **** //! selected.  This function will look for the \b UDMA_PRI_SELECT and
+ 685:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \b UDMA_ALT_SELECT flag along with the channel number and will set the
+ 686:bsp/boards/OpenMote-CC2538/source/udma.c **** //! scatter/gather mode as appropriate for the primary or alternate control
+ 687:bsp/boards/OpenMote-CC2538/source/udma.c **** //! structure.
+ 688:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 689:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The channel must also be enabled using uDMAChannelEnable() after calling
+ 690:bsp/boards/OpenMote-CC2538/source/udma.c **** //! this function.  The transfer will not begin until the channel has been set
+ 691:bsp/boards/OpenMote-CC2538/source/udma.c **** //! up and enabled.  Note that the channel is automatically disabled after the
+ 692:bsp/boards/OpenMote-CC2538/source/udma.c **** //! transfer is completed, meaning that uDMAChannelEnable() must be called
+ 693:bsp/boards/OpenMote-CC2538/source/udma.c **** //! again after setting up the next transfer.
+ 694:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 695:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \note Great care must be taken to not modify a channel control structure
+ 696:bsp/boards/OpenMote-CC2538/source/udma.c **** //! that is in use or else the results will be unpredictable, including the
+ 697:bsp/boards/OpenMote-CC2538/source/udma.c **** //! possibility of undesired data transfers to or from memory or peripherals.
+ 698:bsp/boards/OpenMote-CC2538/source/udma.c **** //! For BASIC and AUTO modes, it is safe to make changes when the channel is
+ 699:bsp/boards/OpenMote-CC2538/source/udma.c **** //! disabled, or the uDMAChannelModeGet() returns \b UDMA_MODE_STOP.  For
+ 700:bsp/boards/OpenMote-CC2538/source/udma.c **** //! PINGPONG or one of the SCATTER_GATHER modes, it is safe to modify the
+ 701:bsp/boards/OpenMote-CC2538/source/udma.c **** //! primary or alternate control structure only when the other is being used.
+ 702:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The uDMAChannelModeGet() function will return \b UDMA_MODE_STOP when a
+ 703:bsp/boards/OpenMote-CC2538/source/udma.c **** //! channel control structure is inactive and safe to modify.
+ 704:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 705:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+ 706:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 707:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 708:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+ 709:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAChannelTransferSet(uint32_t ui32ChannelStructIndex,
+ 710:bsp/boards/OpenMote-CC2538/source/udma.c ****                        uint32_t ui32Mode, void *pvSrcAddr, void *pvDstAddr,
+ 711:bsp/boards/OpenMote-CC2538/source/udma.c ****                        uint32_t ui32TransferSize)
+ 712:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 748              		.loc 1 712 0
+ 749              		.cfi_startproc
+ 750              		@ args = 4, pretend = 0, frame = 32
+ 751              		@ frame_needed = 1, uses_anonymous_args = 0
+ 752              		@ link register save eliminated.
+ 753 0390 80B4     		push	{r7}
+ 754              	.LCFI39:
+ 755              		.cfi_def_cfa_offset 4
+ 756              		.cfi_offset 7, -4
+ 757 0392 89B0     		sub	sp, sp, #36
+ 758              	.LCFI40:
+ 759              		.cfi_def_cfa_offset 40
+ 760 0394 00AF     		add	r7, sp, #0
+ 761              	.LCFI41:
+ 762              		.cfi_def_cfa_register 7
+ 763 0396 F860     		str	r0, [r7, #12]
+ 764 0398 B960     		str	r1, [r7, #8]
+ 765 039a 7A60     		str	r2, [r7, #4]
+ 766 039c 3B60     		str	r3, [r7, #0]
+ 713:bsp/boards/OpenMote-CC2538/source/udma.c ****     tDMAControlTable *pControlTable;
+ 714:bsp/boards/OpenMote-CC2538/source/udma.c ****     uint32_t ui32Control;
+ 715:bsp/boards/OpenMote-CC2538/source/udma.c ****     uint32_t ui32Inc;
+ 716:bsp/boards/OpenMote-CC2538/source/udma.c ****     uint32_t ui32BufferBytes;
+ 717:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 718:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 719:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check the arguments.
+ 720:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 721:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32ChannelStructIndex & 0xffff) < 64);
+ 722:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT(HWREG(UDMA_CTLBASE) != 0);
+ 723:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT(ui32Mode <= UDMA_MODE_PER_SCATTER_GATHER);
+ 724:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((uint32_t)pvSrcAddr >= 0x20000000);
+ 725:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((uint32_t)pvDstAddr >= 0x20000000);
+ 726:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32TransferSize != 0) && (ui32TransferSize <= 1024));
+ 727:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 728:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 729:bsp/boards/OpenMote-CC2538/source/udma.c ****     // In case a channel selector macro (like UDMA_CH0_USB0EP1RX) was
+ 730:bsp/boards/OpenMote-CC2538/source/udma.c ****     // passed as the ui32ChannelStructIndex parameter, extract just the channel
+ 731:bsp/boards/OpenMote-CC2538/source/udma.c ****     // index from this parameter.
+ 732:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 733:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32ChannelStructIndex &= 0x3f;
+ 767              		.loc 1 733 0
+ 768 039e FB68     		ldr	r3, [r7, #12]
+ 769 03a0 03F03F03 		and	r3, r3, #63
+ 770 03a4 FB60     		str	r3, [r7, #12]
+ 734:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 735:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 736:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Get the base address of the control table.
+ 737:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 738:bsp/boards/OpenMote-CC2538/source/udma.c ****     pControlTable = (tDMAControlTable *)HWREG(UDMA_CTLBASE);
+ 771              		.loc 1 738 0
+ 772 03a6 4FF20803 		movw	r3, #61448
+ 773 03aa C4F20F03 		movt	r3, 16399
+ 774 03ae 1B68     		ldr	r3, [r3, #0]
+ 775 03b0 FB61     		str	r3, [r7, #28]
+ 739:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 740:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 741:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Get the current control word value and mask off the mode and size
+ 742:bsp/boards/OpenMote-CC2538/source/udma.c ****     // fields.
+ 743:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 744:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32Control = (pControlTable[ui32ChannelStructIndex].ui32Control &
+ 776              		.loc 1 744 0
+ 777 03b2 FB68     		ldr	r3, [r7, #12]
+ 778 03b4 4FEA0313 		lsl	r3, r3, #4
+ 779 03b8 FA69     		ldr	r2, [r7, #28]
+ 780 03ba D318     		adds	r3, r2, r3
+ 781 03bc 9B68     		ldr	r3, [r3, #8]
+ 782 03be 23F47F53 		bic	r3, r3, #16320
+ 783 03c2 23F03703 		bic	r3, r3, #55
+ 784 03c6 BB61     		str	r3, [r7, #24]
+ 745:bsp/boards/OpenMote-CC2538/source/udma.c ****                    ~(UDMACHCTL_CHCTL_XFERSIZE_M | UDMACHCTL_CHCTL_XFERMODE_M));
+ 746:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 747:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 748:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Adjust the mode if the alt control structure is selected.
+ 749:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 750:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(ui32ChannelStructIndex & UDMA_ALT_SELECT)
+ 785              		.loc 1 750 0
+ 786 03c8 FB68     		ldr	r3, [r7, #12]
+ 787 03ca 03F02003 		and	r3, r3, #32
+ 788 03ce 002B     		cmp	r3, #0
+ 789 03d0 09D0     		beq	.L34
+ 751:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 752:bsp/boards/OpenMote-CC2538/source/udma.c ****         if((ui32Mode == UDMA_MODE_MEM_SCATTER_GATHER) ||
+ 790              		.loc 1 752 0
+ 791 03d2 BB68     		ldr	r3, [r7, #8]
+ 792 03d4 042B     		cmp	r3, #4
+ 793 03d6 02D0     		beq	.L35
+ 794              		.loc 1 752 0 is_stmt 0 discriminator 1
+ 795 03d8 BB68     		ldr	r3, [r7, #8]
+ 796 03da 062B     		cmp	r3, #6
+ 797 03dc 03D1     		bne	.L34
+ 798              	.L35:
+ 753:bsp/boards/OpenMote-CC2538/source/udma.c ****                 (ui32Mode == UDMA_MODE_PER_SCATTER_GATHER))
+ 754:bsp/boards/OpenMote-CC2538/source/udma.c ****         {
+ 755:bsp/boards/OpenMote-CC2538/source/udma.c ****             ui32Mode |= UDMA_MODE_ALT_SELECT;
+ 799              		.loc 1 755 0 is_stmt 1
+ 800 03de BB68     		ldr	r3, [r7, #8]
+ 801 03e0 43F00103 		orr	r3, r3, #1
+ 802 03e4 BB60     		str	r3, [r7, #8]
+ 803              	.L34:
+ 756:bsp/boards/OpenMote-CC2538/source/udma.c ****         }
+ 757:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 758:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 759:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 760:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Set the transfer size and mode in the control word (but don't write the
+ 761:bsp/boards/OpenMote-CC2538/source/udma.c ****     // control word yet as it could kick off a transfer).
+ 762:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 763:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32Control |= ui32Mode | ((ui32TransferSize - 1) << 4);
+ 804              		.loc 1 763 0
+ 805 03e6 BB6A     		ldr	r3, [r7, #40]
+ 806 03e8 03F1FF33 		add	r3, r3, #-1
+ 807 03ec 4FEA0312 		lsl	r2, r3, #4
+ 808 03f0 BB68     		ldr	r3, [r7, #8]
+ 809 03f2 1343     		orrs	r3, r3, r2
+ 810 03f4 BA69     		ldr	r2, [r7, #24]
+ 811 03f6 1343     		orrs	r3, r3, r2
+ 812 03f8 BB61     		str	r3, [r7, #24]
+ 764:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 765:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 766:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Get the address increment value for the source, from the control word.
+ 767:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 768:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32Inc = (ui32Control & UDMACHCTL_CHCTL_SRCINC_M);
+ 813              		.loc 1 768 0
+ 814 03fa BB69     		ldr	r3, [r7, #24]
+ 815 03fc 03F04063 		and	r3, r3, #201326592
+ 816 0400 7B61     		str	r3, [r7, #20]
+ 769:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 770:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 771:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Compute the ending source address of the transfer.  If the source
+ 772:bsp/boards/OpenMote-CC2538/source/udma.c ****     // increment is set to none, then the ending address is the same as the
+ 773:bsp/boards/OpenMote-CC2538/source/udma.c ****     // beginning.
+ 774:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 775:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(ui32Inc != UDMA_SRC_INC_NONE)
+ 817              		.loc 1 775 0
+ 818 0402 7B69     		ldr	r3, [r7, #20]
+ 819 0404 B3F1406F 		cmp	r3, #201326592
+ 820 0408 0ED0     		beq	.L36
+ 776:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 777:bsp/boards/OpenMote-CC2538/source/udma.c ****         ui32Inc = ui32Inc >> 26;
+ 821              		.loc 1 777 0
+ 822 040a 7B69     		ldr	r3, [r7, #20]
+ 823 040c 4FEA9363 		lsr	r3, r3, #26
+ 824 0410 7B61     		str	r3, [r7, #20]
+ 778:bsp/boards/OpenMote-CC2538/source/udma.c ****         ui32BufferBytes = ui32TransferSize << ui32Inc;
+ 825              		.loc 1 778 0
+ 826 0412 7B69     		ldr	r3, [r7, #20]
+ 827 0414 BA6A     		ldr	r2, [r7, #40]
+ 828 0416 02FA03F3 		lsl	r3, r2, r3
+ 829 041a 3B61     		str	r3, [r7, #16]
+ 779:bsp/boards/OpenMote-CC2538/source/udma.c ****         pvSrcAddr = (void *)((uint32_t)pvSrcAddr + ui32BufferBytes - 1);
+ 830              		.loc 1 779 0
+ 831 041c 7A68     		ldr	r2, [r7, #4]
+ 832 041e 3B69     		ldr	r3, [r7, #16]
+ 833 0420 D318     		adds	r3, r2, r3
+ 834 0422 03F1FF33 		add	r3, r3, #-1
+ 835 0426 7B60     		str	r3, [r7, #4]
+ 836              	.L36:
+ 780:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 781:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 782:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 783:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Load the source ending address into the control block.
+ 784:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 785:bsp/boards/OpenMote-CC2538/source/udma.c ****     pControlTable[ui32ChannelStructIndex].pvSrcEndAddr = pvSrcAddr;
+ 837              		.loc 1 785 0
+ 838 0428 FB68     		ldr	r3, [r7, #12]
+ 839 042a 4FEA0313 		lsl	r3, r3, #4
+ 840 042e FA69     		ldr	r2, [r7, #28]
+ 841 0430 D318     		adds	r3, r2, r3
+ 842 0432 7A68     		ldr	r2, [r7, #4]
+ 843 0434 1A60     		str	r2, [r3, #0]
+ 786:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 787:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 788:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Get the address increment value for the destination, from the control
+ 789:bsp/boards/OpenMote-CC2538/source/udma.c ****     // word.
+ 790:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 791:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32Inc = ui32Control & UDMACHCTL_CHCTL_DSTINC_M;
+ 844              		.loc 1 791 0
+ 845 0436 BB69     		ldr	r3, [r7, #24]
+ 846 0438 03F04043 		and	r3, r3, #-1073741824
+ 847 043c 7B61     		str	r3, [r7, #20]
+ 792:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 793:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 794:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Compute the ending destination address of the transfer.  If the
+ 795:bsp/boards/OpenMote-CC2538/source/udma.c ****     // destination increment is set to none, then the ending address is the
+ 796:bsp/boards/OpenMote-CC2538/source/udma.c ****     // same as the beginning.
+ 797:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 798:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(ui32Inc != UDMA_DST_INC_NONE)
+ 848              		.loc 1 798 0
+ 849 043e 7B69     		ldr	r3, [r7, #20]
+ 850 0440 B3F1404F 		cmp	r3, #-1073741824
+ 851 0444 1FD0     		beq	.L37
+ 799:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 800:bsp/boards/OpenMote-CC2538/source/udma.c ****         //
+ 801:bsp/boards/OpenMote-CC2538/source/udma.c ****         // There is a special case if this is setting up a scatter-gather
+ 802:bsp/boards/OpenMote-CC2538/source/udma.c ****         // transfer.  The destination pointer needs to point to the end of
+ 803:bsp/boards/OpenMote-CC2538/source/udma.c ****         // the alternate structure for this channel instead of calculating
+ 804:bsp/boards/OpenMote-CC2538/source/udma.c ****         // the end of the buffer in the normal way.
+ 805:bsp/boards/OpenMote-CC2538/source/udma.c ****         //
+ 806:bsp/boards/OpenMote-CC2538/source/udma.c ****         if((ui32Mode == UDMA_MODE_MEM_SCATTER_GATHER) ||
+ 852              		.loc 1 806 0
+ 853 0446 BB68     		ldr	r3, [r7, #8]
+ 854 0448 042B     		cmp	r3, #4
+ 855 044a 02D0     		beq	.L38
+ 856              		.loc 1 806 0 is_stmt 0 discriminator 1
+ 857 044c BB68     		ldr	r3, [r7, #8]
+ 858 044e 062B     		cmp	r3, #6
+ 859 0450 0AD1     		bne	.L39
+ 860              	.L38:
+ 807:bsp/boards/OpenMote-CC2538/source/udma.c ****                 (ui32Mode == UDMA_MODE_PER_SCATTER_GATHER))
+ 808:bsp/boards/OpenMote-CC2538/source/udma.c ****         {
+ 809:bsp/boards/OpenMote-CC2538/source/udma.c ****             pvDstAddr =
+ 810:bsp/boards/OpenMote-CC2538/source/udma.c ****                 (void *)&pControlTable[ui32ChannelStructIndex |
+ 861              		.loc 1 810 0 is_stmt 1
+ 862 0452 FB68     		ldr	r3, [r7, #12]
+ 863 0454 43F02003 		orr	r3, r3, #32
+ 864 0458 4FEA0313 		lsl	r3, r3, #4
+ 865 045c FA69     		ldr	r2, [r7, #28]
+ 866 045e D318     		adds	r3, r2, r3
+ 809:bsp/boards/OpenMote-CC2538/source/udma.c ****             pvDstAddr =
+ 867              		.loc 1 809 0
+ 868 0460 03F10C03 		add	r3, r3, #12
+ 869 0464 3B60     		str	r3, [r7, #0]
+ 870 0466 0EE0     		b	.L37
+ 871              	.L39:
+ 811:bsp/boards/OpenMote-CC2538/source/udma.c ****                                        UDMA_ALT_SELECT].ui32Spare;
+ 812:bsp/boards/OpenMote-CC2538/source/udma.c ****         }
+ 813:bsp/boards/OpenMote-CC2538/source/udma.c ****         //
+ 814:bsp/boards/OpenMote-CC2538/source/udma.c ****         // Not a scatter-gather transfer, calculate end pointer normally.
+ 815:bsp/boards/OpenMote-CC2538/source/udma.c ****         //
+ 816:bsp/boards/OpenMote-CC2538/source/udma.c ****         else
+ 817:bsp/boards/OpenMote-CC2538/source/udma.c ****         {
+ 818:bsp/boards/OpenMote-CC2538/source/udma.c ****             ui32Inc = ui32Inc >> 30;
+ 872              		.loc 1 818 0
+ 873 0468 7B69     		ldr	r3, [r7, #20]
+ 874 046a 4FEA9373 		lsr	r3, r3, #30
+ 875 046e 7B61     		str	r3, [r7, #20]
+ 819:bsp/boards/OpenMote-CC2538/source/udma.c ****             ui32BufferBytes = ui32TransferSize << ui32Inc;
+ 876              		.loc 1 819 0
+ 877 0470 7B69     		ldr	r3, [r7, #20]
+ 878 0472 BA6A     		ldr	r2, [r7, #40]
+ 879 0474 02FA03F3 		lsl	r3, r2, r3
+ 880 0478 3B61     		str	r3, [r7, #16]
+ 820:bsp/boards/OpenMote-CC2538/source/udma.c ****             pvDstAddr = (void *)((uint32_t)pvDstAddr + ui32BufferBytes - 1);
+ 881              		.loc 1 820 0
+ 882 047a 3A68     		ldr	r2, [r7, #0]
+ 883 047c 3B69     		ldr	r3, [r7, #16]
+ 884 047e D318     		adds	r3, r2, r3
+ 885 0480 03F1FF33 		add	r3, r3, #-1
+ 886 0484 3B60     		str	r3, [r7, #0]
+ 887              	.L37:
+ 821:bsp/boards/OpenMote-CC2538/source/udma.c ****         }
+ 822:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 823:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 824:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 825:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Load the destination ending address into the control block.
+ 826:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 827:bsp/boards/OpenMote-CC2538/source/udma.c ****     pControlTable[ui32ChannelStructIndex].pvDstEndAddr = pvDstAddr;
+ 888              		.loc 1 827 0
+ 889 0486 FB68     		ldr	r3, [r7, #12]
+ 890 0488 4FEA0313 		lsl	r3, r3, #4
+ 891 048c FA69     		ldr	r2, [r7, #28]
+ 892 048e D318     		adds	r3, r2, r3
+ 893 0490 3A68     		ldr	r2, [r7, #0]
+ 894 0492 5A60     		str	r2, [r3, #4]
+ 828:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 829:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 830:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Write the new control word value.
+ 831:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 832:bsp/boards/OpenMote-CC2538/source/udma.c ****     pControlTable[ui32ChannelStructIndex].ui32Control = ui32Control;
+ 895              		.loc 1 832 0
+ 896 0494 FB68     		ldr	r3, [r7, #12]
+ 897 0496 4FEA0313 		lsl	r3, r3, #4
+ 898 049a FA69     		ldr	r2, [r7, #28]
+ 899 049c D318     		adds	r3, r2, r3
+ 900 049e BA69     		ldr	r2, [r7, #24]
+ 901 04a0 9A60     		str	r2, [r3, #8]
+ 833:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 902              		.loc 1 833 0
+ 903 04a2 07F12407 		add	r7, r7, #36
+ 904 04a6 BD46     		mov	sp, r7
+ 905 04a8 80BC     		pop	{r7}
+ 906 04aa 7047     		bx	lr
+ 907              		.cfi_endproc
+ 908              	.LFE15:
+ 910              		.align	2
+ 911              		.global	uDMAChannelScatterGatherSet
+ 912              		.thumb
+ 913              		.thumb_func
+ 915              	uDMAChannelScatterGatherSet:
+ 916              	.LFB16:
+ 834:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 835:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 836:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 837:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Configures a uDMA channel for scatter-gather mode
+ 838:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 839:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32ChannelNum is the uDMA channel number.
+ 840:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32TaskCount is the number of scatter-gather tasks to execute.
+ 841:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param pvTaskList is a pointer to the beginning of the scatter-gather
+ 842:bsp/boards/OpenMote-CC2538/source/udma.c **** //! task list.
+ 843:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32IsPeriphSG is a flag to indicate it is a peripheral scatter-gather
+ 844:bsp/boards/OpenMote-CC2538/source/udma.c **** //! transfer (else it will be memory scatter-gather transfer)
+ 845:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 846:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function is used to configure a channel for scatter-gather mode.
+ 847:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The caller must have already set up a task list, and pass a pointer to
+ 848:bsp/boards/OpenMote-CC2538/source/udma.c **** //! the start of the task list as the \e pvTaskList parameter.  The
+ 849:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \e ui32TaskCount parameter is the count of tasks in the task list, not the
+ 850:bsp/boards/OpenMote-CC2538/source/udma.c **** //! size of the task list.  The flag \e bIsPeriphSG should be used to indicate
+ 851:bsp/boards/OpenMote-CC2538/source/udma.c **** //! if the scatter-gather should be configured for a peripheral or memory
+ 852:bsp/boards/OpenMote-CC2538/source/udma.c **** //! scatter-gather operation.
+ 853:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 854:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \sa uDMATaskStructEntry
+ 855:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 856:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+ 857:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 858:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 859:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+ 860:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAChannelScatterGatherSet(uint32_t ui32ChannelNum,
+ 861:bsp/boards/OpenMote-CC2538/source/udma.c ****                             uint32_t ui32TaskCount, void *pvTaskList,
+ 862:bsp/boards/OpenMote-CC2538/source/udma.c ****                             uint32_t ui32IsPeriphSG)
+ 863:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 917              		.loc 1 863 0
+ 918              		.cfi_startproc
+ 919              		@ args = 0, pretend = 0, frame = 24
+ 920              		@ frame_needed = 1, uses_anonymous_args = 0
+ 921              		@ link register save eliminated.
+ 922 04ac 80B4     		push	{r7}
+ 923              	.LCFI42:
+ 924              		.cfi_def_cfa_offset 4
+ 925              		.cfi_offset 7, -4
+ 926 04ae 87B0     		sub	sp, sp, #28
+ 927              	.LCFI43:
+ 928              		.cfi_def_cfa_offset 32
+ 929 04b0 00AF     		add	r7, sp, #0
+ 930              	.LCFI44:
+ 931              		.cfi_def_cfa_register 7
+ 932 04b2 F860     		str	r0, [r7, #12]
+ 933 04b4 B960     		str	r1, [r7, #8]
+ 934 04b6 7A60     		str	r2, [r7, #4]
+ 935 04b8 3B60     		str	r3, [r7, #0]
+ 864:bsp/boards/OpenMote-CC2538/source/udma.c ****     tDMAControlTable *pControlTable;
+ 865:bsp/boards/OpenMote-CC2538/source/udma.c ****     tDMAControlTable *pTaskTable;
+ 866:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 867:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 868:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check the parameters
+ 869:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 870:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32ChannelNum & 0xffff) < 32);
+ 871:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT(HWREG(UDMA_CTLBASE) != 0);
+ 872:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT(pvTaskList != 0);
+ 873:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT(ui32TaskCount <= 1024);
+ 874:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT(ui32TaskCount != 0);
+ 875:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 876:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 877:bsp/boards/OpenMote-CC2538/source/udma.c ****     // In case a channel selector macro (like UDMA_CH0_USB0EP1RX) was
+ 878:bsp/boards/OpenMote-CC2538/source/udma.c ****     // passed as the ui32ChannelNum parameter, extract just the channel number
+ 879:bsp/boards/OpenMote-CC2538/source/udma.c ****     // from this parameter.
+ 880:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 881:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32ChannelNum &= 0x1f;
+ 936              		.loc 1 881 0
+ 937 04ba FB68     		ldr	r3, [r7, #12]
+ 938 04bc 03F01F03 		and	r3, r3, #31
+ 939 04c0 FB60     		str	r3, [r7, #12]
+ 882:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 883:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 884:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Get the base address of the control table.
+ 885:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 886:bsp/boards/OpenMote-CC2538/source/udma.c ****     pControlTable = (tDMAControlTable *)HWREG(UDMA_CTLBASE);
+ 940              		.loc 1 886 0
+ 941 04c2 4FF20803 		movw	r3, #61448
+ 942 04c6 C4F20F03 		movt	r3, 16399
+ 943 04ca 1B68     		ldr	r3, [r3, #0]
+ 944 04cc 7B61     		str	r3, [r7, #20]
+ 887:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 888:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 889:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Get a handy pointer to the task list
+ 890:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 891:bsp/boards/OpenMote-CC2538/source/udma.c ****     pTaskTable = (tDMAControlTable *)pvTaskList;
+ 945              		.loc 1 891 0
+ 946 04ce 7B68     		ldr	r3, [r7, #4]
+ 947 04d0 3B61     		str	r3, [r7, #16]
+ 892:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 893:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 894:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Compute the ending address for the source pointer.  This will be the
+ 895:bsp/boards/OpenMote-CC2538/source/udma.c ****     // last element of the last task in the task table
+ 896:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 897:bsp/boards/OpenMote-CC2538/source/udma.c ****     pControlTable[ui32ChannelNum].pvSrcEndAddr =
+ 948              		.loc 1 897 0
+ 949 04d2 FB68     		ldr	r3, [r7, #12]
+ 950 04d4 4FEA0313 		lsl	r3, r3, #4
+ 951 04d8 7A69     		ldr	r2, [r7, #20]
+ 952 04da D318     		adds	r3, r2, r3
+ 898:bsp/boards/OpenMote-CC2538/source/udma.c ****         &pTaskTable[ui32TaskCount - 1].ui32Spare;
+ 953              		.loc 1 898 0
+ 954 04dc BA68     		ldr	r2, [r7, #8]
+ 955 04de 02F1FF32 		add	r2, r2, #-1
+ 956 04e2 4FEA0212 		lsl	r2, r2, #4
+ 957 04e6 3969     		ldr	r1, [r7, #16]
+ 958 04e8 8A18     		adds	r2, r1, r2
+ 959 04ea 02F10C02 		add	r2, r2, #12
+ 897:bsp/boards/OpenMote-CC2538/source/udma.c ****     pControlTable[ui32ChannelNum].pvSrcEndAddr =
+ 960              		.loc 1 897 0
+ 961 04ee 1A60     		str	r2, [r3, #0]
+ 899:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 900:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 901:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Compute the ending address for the destination pointer.  This will be
+ 902:bsp/boards/OpenMote-CC2538/source/udma.c ****     // the end of the alternate structure for this channel.
+ 903:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 904:bsp/boards/OpenMote-CC2538/source/udma.c ****     pControlTable[ui32ChannelNum].pvDstEndAddr =
+ 962              		.loc 1 904 0
+ 963 04f0 FB68     		ldr	r3, [r7, #12]
+ 964 04f2 4FEA0313 		lsl	r3, r3, #4
+ 965 04f6 7A69     		ldr	r2, [r7, #20]
+ 966 04f8 D318     		adds	r3, r2, r3
+ 905:bsp/boards/OpenMote-CC2538/source/udma.c ****         &pControlTable[ui32ChannelNum | UDMA_ALT_SELECT].ui32Spare;
+ 967              		.loc 1 905 0
+ 968 04fa FA68     		ldr	r2, [r7, #12]
+ 969 04fc 42F02002 		orr	r2, r2, #32
+ 970 0500 4FEA0212 		lsl	r2, r2, #4
+ 971 0504 7969     		ldr	r1, [r7, #20]
+ 972 0506 8A18     		adds	r2, r1, r2
+ 973 0508 02F10C02 		add	r2, r2, #12
+ 904:bsp/boards/OpenMote-CC2538/source/udma.c ****     pControlTable[ui32ChannelNum].pvDstEndAddr =
+ 974              		.loc 1 904 0
+ 975 050c 5A60     		str	r2, [r3, #4]
+ 906:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 907:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 908:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Compute the control word.  Most configurable items are fixed for
+ 909:bsp/boards/OpenMote-CC2538/source/udma.c ****     // scatter-gather.  Item and increment sizes are all 32-bit and arb
+ 910:bsp/boards/OpenMote-CC2538/source/udma.c ****     // size must be 4.  The count is the number of items in the task list
+ 911:bsp/boards/OpenMote-CC2538/source/udma.c ****     // times 4 (4 words per task).
+ 912:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 913:bsp/boards/OpenMote-CC2538/source/udma.c ****     pControlTable[ui32ChannelNum].ui32Control =
+ 976              		.loc 1 913 0
+ 977 050e FB68     		ldr	r3, [r7, #12]
+ 978 0510 4FEA0313 		lsl	r3, r3, #4
+ 979 0514 7A69     		ldr	r2, [r7, #20]
+ 980 0516 D218     		adds	r2, r2, r3
+ 914:bsp/boards/OpenMote-CC2538/source/udma.c ****         (UDMA_CHCTL_DSTINC_32 | UDMA_CHCTL_DSTSIZE_32 |
+ 915:bsp/boards/OpenMote-CC2538/source/udma.c ****          UDMA_CHCTL_SRCINC_32 | UDMA_CHCTL_SRCSIZE_32 |
+ 916:bsp/boards/OpenMote-CC2538/source/udma.c ****          UDMA_CHCTL_ARBSIZE_4 |
+ 917:bsp/boards/OpenMote-CC2538/source/udma.c ****          (((ui32TaskCount * 4) - 1) << UDMACHCTL_CHCTL_XFERSIZE_S) |
+ 981              		.loc 1 917 0
+ 982 0518 BB68     		ldr	r3, [r7, #8]
+ 983 051a 4FEA8303 		lsl	r3, r3, #2
+ 984 051e 03F1FF33 		add	r3, r3, #-1
+ 985 0522 4FEA0311 		lsl	r1, r3, #4
+ 986 0526 3B68     		ldr	r3, [r7, #0]
+ 987 0528 002B     		cmp	r3, #0
+ 988 052a 02D0     		beq	.L41
+ 989              		.loc 1 917 0 is_stmt 0 discriminator 1
+ 990 052c 4FF00603 		mov	r3, #6
+ 991 0530 01E0     		b	.L42
+ 992              	.L41:
+ 993              		.loc 1 917 0 discriminator 2
+ 994 0532 4FF00403 		mov	r3, #4
+ 995              	.L42:
+ 996              		.loc 1 917 0 discriminator 3
+ 997 0536 0B43     		orrs	r3, r3, r1
+ 998 0538 43F02A43 		orr	r3, r3, #-1442840576
+ 999 053c 43F40043 		orr	r3, r3, #32768
+ 913:bsp/boards/OpenMote-CC2538/source/udma.c ****     pControlTable[ui32ChannelNum].ui32Control =
+ 1000              		.loc 1 913 0 is_stmt 1 discriminator 3
+ 1001 0540 9360     		str	r3, [r2, #8]
+ 918:bsp/boards/OpenMote-CC2538/source/udma.c ****          (ui32IsPeriphSG ? UDMA_CHCTL_XFERMODE_PER_SG :
+ 919:bsp/boards/OpenMote-CC2538/source/udma.c ****           UDMA_CHCTL_XFERMODE_MEM_SG));
+ 920:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 1002              		.loc 1 920 0 discriminator 3
+ 1003 0542 07F11C07 		add	r7, r7, #28
+ 1004 0546 BD46     		mov	sp, r7
+ 1005 0548 80BC     		pop	{r7}
+ 1006 054a 7047     		bx	lr
+ 1007              		.cfi_endproc
+ 1008              	.LFE16:
+ 1010              		.align	2
+ 1011              		.global	uDMAChannelSizeGet
+ 1012              		.thumb
+ 1013              		.thumb_func
+ 1015              	uDMAChannelSizeGet:
+ 1016              	.LFB17:
+ 921:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 922:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 923:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 924:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Gets the current transfer size for a uDMA channel control structure
+ 925:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 926:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32ChannelStructIndex is the logical OR of the uDMA channel number
+ 927:bsp/boards/OpenMote-CC2538/source/udma.c **** //! with either \b UDMA_PRI_SELECT or \b UDMA_ALT_SELECT.
+ 928:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 929:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function is used to get the uDMA transfer size for a channel.  The
+ 930:bsp/boards/OpenMote-CC2538/source/udma.c **** //! transfer size is the number of items to transfer, where the size of an item
+ 931:bsp/boards/OpenMote-CC2538/source/udma.c **** //! might be 8, 16, or 32 bits.  If a partial transfer has already occurred,
+ 932:bsp/boards/OpenMote-CC2538/source/udma.c **** //! then the number of remaining items will be returned.  If the transfer is
+ 933:bsp/boards/OpenMote-CC2538/source/udma.c **** //! complete, then 0 will be returned.
+ 934:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 935:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return Returns the number of items remaining to transfer.
+ 936:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 937:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 938:bsp/boards/OpenMote-CC2538/source/udma.c **** uint32_t
+ 939:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAChannelSizeGet(uint32_t ui32ChannelStructIndex)
+ 940:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 1017              		.loc 1 940 0
+ 1018              		.cfi_startproc
+ 1019              		@ args = 0, pretend = 0, frame = 16
+ 1020              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1021              		@ link register save eliminated.
+ 1022 054c 80B4     		push	{r7}
+ 1023              	.LCFI45:
+ 1024              		.cfi_def_cfa_offset 4
+ 1025              		.cfi_offset 7, -4
+ 1026 054e 85B0     		sub	sp, sp, #20
+ 1027              	.LCFI46:
+ 1028              		.cfi_def_cfa_offset 24
+ 1029 0550 00AF     		add	r7, sp, #0
+ 1030              	.LCFI47:
+ 1031              		.cfi_def_cfa_register 7
+ 1032 0552 7860     		str	r0, [r7, #4]
+ 941:bsp/boards/OpenMote-CC2538/source/udma.c ****     tDMAControlTable *pControlTable;
+ 942:bsp/boards/OpenMote-CC2538/source/udma.c ****     uint32_t ui32Control;
+ 943:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 944:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 945:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check the arguments.
+ 946:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 947:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32ChannelStructIndex & 0xffff) < 64);
+ 948:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT(HWREG(UDMA_CTLBASE) != 0);
+ 949:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 950:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 951:bsp/boards/OpenMote-CC2538/source/udma.c ****     // In case a channel selector macro (like UDMA_CH0_USB0EP1RX) was
+ 952:bsp/boards/OpenMote-CC2538/source/udma.c ****     // passed as the ui32ChannelStructIndex parameter, extract just the channel
+ 953:bsp/boards/OpenMote-CC2538/source/udma.c ****     // index from this parameter.
+ 954:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 955:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32ChannelStructIndex &= 0x3f;
+ 1033              		.loc 1 955 0
+ 1034 0554 7B68     		ldr	r3, [r7, #4]
+ 1035 0556 03F03F03 		and	r3, r3, #63
+ 1036 055a 7B60     		str	r3, [r7, #4]
+ 956:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 957:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 958:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Get the base address of the control table.
+ 959:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 960:bsp/boards/OpenMote-CC2538/source/udma.c ****     pControlTable = (tDMAControlTable *)HWREG(UDMA_CTLBASE);
+ 1037              		.loc 1 960 0
+ 1038 055c 4FF20803 		movw	r3, #61448
+ 1039 0560 C4F20F03 		movt	r3, 16399
+ 1040 0564 1B68     		ldr	r3, [r3, #0]
+ 1041 0566 FB60     		str	r3, [r7, #12]
+ 961:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 962:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 963:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Get the current control word value and mask off all but the size field
+ 964:bsp/boards/OpenMote-CC2538/source/udma.c ****     // and the mode field.
+ 965:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 966:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32Control = (pControlTable[ui32ChannelStructIndex].ui32Control &
+ 1042              		.loc 1 966 0
+ 1043 0568 7B68     		ldr	r3, [r7, #4]
+ 1044 056a 4FEA0313 		lsl	r3, r3, #4
+ 1045 056e FA68     		ldr	r2, [r7, #12]
+ 1046 0570 D318     		adds	r3, r2, r3
+ 1047 0572 9A68     		ldr	r2, [r3, #8]
+ 1048 0574 43F6F773 		movw	r3, #16375
+ 1049 0578 1340     		ands	r3, r3, r2
+ 1050 057a BB60     		str	r3, [r7, #8]
+ 967:bsp/boards/OpenMote-CC2538/source/udma.c ****                    (UDMACHCTL_CHCTL_XFERSIZE_M | UDMACHCTL_CHCTL_XFERMODE_M));
+ 968:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 969:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 970:bsp/boards/OpenMote-CC2538/source/udma.c ****     // If the size field and mode field are 0 then the transfer is finished
+ 971:bsp/boards/OpenMote-CC2538/source/udma.c ****     // and there are no more items to transfer
+ 972:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 973:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(ui32Control == 0)
+ 1051              		.loc 1 973 0
+ 1052 057c BB68     		ldr	r3, [r7, #8]
+ 1053 057e 002B     		cmp	r3, #0
+ 1054 0580 02D1     		bne	.L44
+ 974:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 975:bsp/boards/OpenMote-CC2538/source/udma.c ****         return(0);
+ 1055              		.loc 1 975 0
+ 1056 0582 4FF00003 		mov	r3, #0
+ 1057 0586 04E0     		b	.L45
+ 1058              	.L44:
+ 976:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 977:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 978:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 979:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Otherwise, if either the size field or more field is non-zero, then
+ 980:bsp/boards/OpenMote-CC2538/source/udma.c ****     // not all the items have been transferred.
+ 981:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+ 982:bsp/boards/OpenMote-CC2538/source/udma.c ****     else
+ 983:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+ 984:bsp/boards/OpenMote-CC2538/source/udma.c ****         //
+ 985:bsp/boards/OpenMote-CC2538/source/udma.c ****         // Shift the size field and add one, then return to user.
+ 986:bsp/boards/OpenMote-CC2538/source/udma.c ****         //
+ 987:bsp/boards/OpenMote-CC2538/source/udma.c ****         return((ui32Control >> 4) + 1);
+ 1059              		.loc 1 987 0
+ 1060 0588 BB68     		ldr	r3, [r7, #8]
+ 1061 058a 4FEA1313 		lsr	r3, r3, #4
+ 1062 058e 03F10103 		add	r3, r3, #1
+ 1063              	.L45:
+ 988:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+ 989:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 1064              		.loc 1 989 0
+ 1065 0592 1846     		mov	r0, r3
+ 1066 0594 07F11407 		add	r7, r7, #20
+ 1067 0598 BD46     		mov	sp, r7
+ 1068 059a 80BC     		pop	{r7}
+ 1069 059c 7047     		bx	lr
+ 1070              		.cfi_endproc
+ 1071              	.LFE17:
+ 1073 059e 00BF     		.align	2
+ 1074              		.global	uDMAChannelModeGet
+ 1075              		.thumb
+ 1076              		.thumb_func
+ 1078              	uDMAChannelModeGet:
+ 1079              	.LFB18:
+ 990:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+ 991:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+ 992:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+ 993:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Gets the transfer mode for a uDMA channel control structure
+ 994:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 995:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32ChannelStructIndex is the logical OR of the uDMA channel number
+ 996:bsp/boards/OpenMote-CC2538/source/udma.c **** //! with either \b UDMA_PRI_SELECT or \b UDMA_ALT_SELECT.
+ 997:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+ 998:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function is used to get the transfer mode for the uDMA channel.  It
+ 999:bsp/boards/OpenMote-CC2538/source/udma.c **** //! can be used to query the status of a transfer on a channel.  When the
+1000:bsp/boards/OpenMote-CC2538/source/udma.c **** //! transfer is complete the mode will be \b UDMA_MODE_STOP.
+1001:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1002:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return Returns the transfer mode of the specified channel and control
+1003:bsp/boards/OpenMote-CC2538/source/udma.c **** //! structure, which will be one of the following values: \b UDMA_MODE_STOP,
+1004:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \b UDMA_MODE_BASIC, \b UDMA_MODE_AUTO, \b UDMA_MODE_PINGPONG,
+1005:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \b UDMA_MODE_MEM_SCATTER_GATHER, or \b UDMA_MODE_PER_SCATTER_GATHER.
+1006:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+1007:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+1008:bsp/boards/OpenMote-CC2538/source/udma.c **** uint32_t
+1009:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAChannelModeGet(uint32_t ui32ChannelStructIndex)
+1010:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 1080              		.loc 1 1010 0
+ 1081              		.cfi_startproc
+ 1082              		@ args = 0, pretend = 0, frame = 16
+ 1083              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1084              		@ link register save eliminated.
+ 1085 05a0 80B4     		push	{r7}
+ 1086              	.LCFI48:
+ 1087              		.cfi_def_cfa_offset 4
+ 1088              		.cfi_offset 7, -4
+ 1089 05a2 85B0     		sub	sp, sp, #20
+ 1090              	.LCFI49:
+ 1091              		.cfi_def_cfa_offset 24
+ 1092 05a4 00AF     		add	r7, sp, #0
+ 1093              	.LCFI50:
+ 1094              		.cfi_def_cfa_register 7
+ 1095 05a6 7860     		str	r0, [r7, #4]
+1011:bsp/boards/OpenMote-CC2538/source/udma.c ****     tDMAControlTable *pControlTable;
+1012:bsp/boards/OpenMote-CC2538/source/udma.c ****     uint32_t ui32Control;
+1013:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1014:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1015:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check the arguments.
+1016:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1017:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32ChannelStructIndex & 0xffff) < 64);
+1018:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT(HWREG(UDMA_CTLBASE) != 0);
+1019:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1020:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1021:bsp/boards/OpenMote-CC2538/source/udma.c ****     // In case a channel selector macro (like UDMA_CH0_USB0EP1RX) was
+1022:bsp/boards/OpenMote-CC2538/source/udma.c ****     // passed as the ui32ChannelStructIndex parameter, extract just the channel
+1023:bsp/boards/OpenMote-CC2538/source/udma.c ****     // index from this parameter.
+1024:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1025:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32ChannelStructIndex &= 0x3f;
+ 1096              		.loc 1 1025 0
+ 1097 05a8 7B68     		ldr	r3, [r7, #4]
+ 1098 05aa 03F03F03 		and	r3, r3, #63
+ 1099 05ae 7B60     		str	r3, [r7, #4]
+1026:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1027:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1028:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Get the base address of the control table.
+1029:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1030:bsp/boards/OpenMote-CC2538/source/udma.c ****     pControlTable = (tDMAControlTable *)HWREG(UDMA_CTLBASE);
+ 1100              		.loc 1 1030 0
+ 1101 05b0 4FF20803 		movw	r3, #61448
+ 1102 05b4 C4F20F03 		movt	r3, 16399
+ 1103 05b8 1B68     		ldr	r3, [r3, #0]
+ 1104 05ba BB60     		str	r3, [r7, #8]
+1031:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1032:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1033:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Get the current control word value and mask off all but the mode field.
+1034:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1035:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32Control = (pControlTable[ui32ChannelStructIndex].ui32Control &
+ 1105              		.loc 1 1035 0
+ 1106 05bc 7B68     		ldr	r3, [r7, #4]
+ 1107 05be 4FEA0313 		lsl	r3, r3, #4
+ 1108 05c2 BA68     		ldr	r2, [r7, #8]
+ 1109 05c4 D318     		adds	r3, r2, r3
+ 1110 05c6 9B68     		ldr	r3, [r3, #8]
+ 1111 05c8 03F00703 		and	r3, r3, #7
+ 1112 05cc FB60     		str	r3, [r7, #12]
+1036:bsp/boards/OpenMote-CC2538/source/udma.c ****                    UDMACHCTL_CHCTL_XFERMODE_M);
+1037:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1038:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1039:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check if scatter/gather mode, and if so, mask off the alt bit.
+1040:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1041:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(((ui32Control & ~UDMA_MODE_ALT_SELECT) == UDMA_MODE_MEM_SCATTER_GATHER) ||
+ 1113              		.loc 1 1041 0
+ 1114 05ce FB68     		ldr	r3, [r7, #12]
+ 1115 05d0 23F00103 		bic	r3, r3, #1
+ 1116 05d4 042B     		cmp	r3, #4
+ 1117 05d6 04D0     		beq	.L47
+1042:bsp/boards/OpenMote-CC2538/source/udma.c ****             ((ui32Control & ~UDMA_MODE_ALT_SELECT) == UDMA_MODE_PER_SCATTER_GATHER))
+ 1118              		.loc 1 1042 0 discriminator 1
+ 1119 05d8 FB68     		ldr	r3, [r7, #12]
+ 1120 05da 23F00103 		bic	r3, r3, #1
+1041:bsp/boards/OpenMote-CC2538/source/udma.c ****     if(((ui32Control & ~UDMA_MODE_ALT_SELECT) == UDMA_MODE_MEM_SCATTER_GATHER) ||
+ 1121              		.loc 1 1041 0 discriminator 1
+ 1122 05de 062B     		cmp	r3, #6
+ 1123 05e0 03D1     		bne	.L48
+ 1124              	.L47:
+1043:bsp/boards/OpenMote-CC2538/source/udma.c ****     {
+1044:bsp/boards/OpenMote-CC2538/source/udma.c ****         ui32Control &= ~UDMA_MODE_ALT_SELECT;
+ 1125              		.loc 1 1044 0
+ 1126 05e2 FB68     		ldr	r3, [r7, #12]
+ 1127 05e4 23F00103 		bic	r3, r3, #1
+ 1128 05e8 FB60     		str	r3, [r7, #12]
+ 1129              	.L48:
+1045:bsp/boards/OpenMote-CC2538/source/udma.c ****     }
+1046:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1047:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1048:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Return the mode to the caller.
+1049:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1050:bsp/boards/OpenMote-CC2538/source/udma.c ****     return(ui32Control);
+ 1130              		.loc 1 1050 0
+ 1131 05ea FB68     		ldr	r3, [r7, #12]
+1051:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 1132              		.loc 1 1051 0
+ 1133 05ec 1846     		mov	r0, r3
+ 1134 05ee 07F11407 		add	r7, r7, #20
+ 1135 05f2 BD46     		mov	sp, r7
+ 1136 05f4 80BC     		pop	{r7}
+ 1137 05f6 7047     		bx	lr
+ 1138              		.cfi_endproc
+ 1139              	.LFE18:
+ 1141              		.align	2
+ 1142              		.global	uDMAIntRegister
+ 1143              		.thumb
+ 1144              		.thumb_func
+ 1146              	uDMAIntRegister:
+ 1147              	.LFB19:
+1052:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1053:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1054:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+1055:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+1056:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Registers an interrupt handler for the uDMA controller
+1057:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1058:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32IntChannel identifies which uDMA interrupt is to be registered.
+1059:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param pfnHandler is a pointer to the function to be called when the
+1060:bsp/boards/OpenMote-CC2538/source/udma.c **** //! interrupt is activated.
+1061:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1062:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This sets and enables the handler to be called when the uDMA controller
+1063:bsp/boards/OpenMote-CC2538/source/udma.c **** //! generates an interrupt.  The \e ui32IntChannel parameter should be one of the
+1064:bsp/boards/OpenMote-CC2538/source/udma.c **** //! following:
+1065:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1066:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_INT_SW to register an interrupt handler to process interrupts
+1067:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   from the uDMA software channel (UDMA_CH30_SW)
+1068:bsp/boards/OpenMote-CC2538/source/udma.c **** //! - \b UDMA_INT_ERR to register an interrupt handler to process uDMA error
+1069:bsp/boards/OpenMote-CC2538/source/udma.c **** //!   interrupts
+1070:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1071:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \sa IntRegister() for important information about registering interrupt
+1072:bsp/boards/OpenMote-CC2538/source/udma.c **** //! handlers.
+1073:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1074:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \note The interrupt handler for uDMA is for transfer completion when the
+1075:bsp/boards/OpenMote-CC2538/source/udma.c **** //! channel UDMA_CH30W is used, and for error interrupts.  The
+1076:bsp/boards/OpenMote-CC2538/source/udma.c **** //! interrupts for each peripheral channel are handled through the individual
+1077:bsp/boards/OpenMote-CC2538/source/udma.c **** //! peripheral interrupt handlers.
+1078:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1079:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+1080:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+1081:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+1082:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+1083:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAIntRegister(uint32_t ui32IntChannel, void (*pfnHandler)(void))
+1084:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 1148              		.loc 1 1084 0
+ 1149              		.cfi_startproc
+ 1150              		@ args = 0, pretend = 0, frame = 8
+ 1151              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1152 05f8 80B5     		push	{r7, lr}
+ 1153              	.LCFI51:
+ 1154              		.cfi_def_cfa_offset 8
+ 1155              		.cfi_offset 7, -8
+ 1156              		.cfi_offset 14, -4
+ 1157 05fa 82B0     		sub	sp, sp, #8
+ 1158              	.LCFI52:
+ 1159              		.cfi_def_cfa_offset 16
+ 1160 05fc 00AF     		add	r7, sp, #0
+ 1161              	.LCFI53:
+ 1162              		.cfi_def_cfa_register 7
+ 1163 05fe 7860     		str	r0, [r7, #4]
+ 1164 0600 3960     		str	r1, [r7, #0]
+1085:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1086:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check the arguments.
+1087:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1088:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT(pfnHandler);
+1089:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32IntChannel == UDMA_INT_SW) || (ui32IntChannel == UDMA_INT_ERR));
+1090:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1091:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1092:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Register the interrupt handler.
+1093:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1094:bsp/boards/OpenMote-CC2538/source/udma.c ****     IntRegister(ui32IntChannel, pfnHandler);
+ 1165              		.loc 1 1094 0
+ 1166 0602 7868     		ldr	r0, [r7, #4]
+ 1167 0604 3968     		ldr	r1, [r7, #0]
+ 1168 0606 FFF7FEFF 		bl	IntRegister
+1095:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1096:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1097:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Enable the memory management fault.
+1098:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1099:bsp/boards/OpenMote-CC2538/source/udma.c ****     IntEnable(ui32IntChannel);
+ 1169              		.loc 1 1099 0
+ 1170 060a 7868     		ldr	r0, [r7, #4]
+ 1171 060c FFF7FEFF 		bl	IntEnable
+1100:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 1172              		.loc 1 1100 0
+ 1173 0610 07F10807 		add	r7, r7, #8
+ 1174 0614 BD46     		mov	sp, r7
+ 1175 0616 80BD     		pop	{r7, pc}
+ 1176              		.cfi_endproc
+ 1177              	.LFE19:
+ 1179              		.align	2
+ 1180              		.global	uDMAIntUnregister
+ 1181              		.thumb
+ 1182              		.thumb_func
+ 1184              	uDMAIntUnregister:
+ 1185              	.LFB20:
+1101:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1102:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+1103:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+1104:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Unregisters an interrupt handler for the uDMA controller
+1105:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1106:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32IntChannel identifies which uDMA interrupt to unregister.
+1107:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1108:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function will disable and clear the handler to be called for the
+1109:bsp/boards/OpenMote-CC2538/source/udma.c **** //! specified uDMA interrupt.  The \e ui32IntChannel parameter should be one of
+1110:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \b UDMA_INT_SW or \b UDMA_INT_ERR as documented for the function
+1111:bsp/boards/OpenMote-CC2538/source/udma.c **** //! uDMAIntRegister().
+1112:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1113:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \sa IntRegister() for important information about registering interrupt
+1114:bsp/boards/OpenMote-CC2538/source/udma.c **** //! handlers.
+1115:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1116:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+1117:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+1118:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+1119:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+1120:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAIntUnregister(uint32_t ui32IntChannel)
+1121:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 1186              		.loc 1 1121 0
+ 1187              		.cfi_startproc
+ 1188              		@ args = 0, pretend = 0, frame = 8
+ 1189              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1190 0618 80B5     		push	{r7, lr}
+ 1191              	.LCFI54:
+ 1192              		.cfi_def_cfa_offset 8
+ 1193              		.cfi_offset 7, -8
+ 1194              		.cfi_offset 14, -4
+ 1195 061a 82B0     		sub	sp, sp, #8
+ 1196              	.LCFI55:
+ 1197              		.cfi_def_cfa_offset 16
+ 1198 061c 00AF     		add	r7, sp, #0
+ 1199              	.LCFI56:
+ 1200              		.cfi_def_cfa_register 7
+ 1201 061e 7860     		str	r0, [r7, #4]
+1122:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1123:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Disable the interrupt.
+1124:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1125:bsp/boards/OpenMote-CC2538/source/udma.c ****     IntDisable(ui32IntChannel);
+ 1202              		.loc 1 1125 0
+ 1203 0620 7868     		ldr	r0, [r7, #4]
+ 1204 0622 FFF7FEFF 		bl	IntDisable
+1126:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1127:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1128:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Unregister the interrupt handler.
+1129:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1130:bsp/boards/OpenMote-CC2538/source/udma.c ****     IntUnregister(ui32IntChannel);
+ 1205              		.loc 1 1130 0
+ 1206 0626 7868     		ldr	r0, [r7, #4]
+ 1207 0628 FFF7FEFF 		bl	IntUnregister
+1131:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 1208              		.loc 1 1131 0
+ 1209 062c 07F10807 		add	r7, r7, #8
+ 1210 0630 BD46     		mov	sp, r7
+ 1211 0632 80BD     		pop	{r7, pc}
+ 1212              		.cfi_endproc
+ 1213              	.LFE20:
+ 1215              		.align	2
+ 1216              		.global	uDMAIntStatus
+ 1217              		.thumb
+ 1218              		.thumb_func
+ 1220              	uDMAIntStatus:
+ 1221              	.LFB21:
+1132:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1133:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+1134:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+1135:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Gets the uDMA controller channel interrupt status
+1136:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1137:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function is used to get the interrupt status of the uDMA controller.
+1138:bsp/boards/OpenMote-CC2538/source/udma.c **** //! The returned value is a 32-bit bit mask that indicates which channels are
+1139:bsp/boards/OpenMote-CC2538/source/udma.c **** //! requesting an interrupt.  This function can be used from within an
+1140:bsp/boards/OpenMote-CC2538/source/udma.c **** //! interrupt handler to determine or confirm which uDMA channel has requested
+1141:bsp/boards/OpenMote-CC2538/source/udma.c **** //! an interrupt.
+1142:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1143:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \note This function is only available on devices that have the DMA Channel
+1144:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Interrupt Status Register (DMACHIS).  Please consult the data sheet for
+1145:bsp/boards/OpenMote-CC2538/source/udma.c **** //! your part.
+1146:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1147:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return Returns a 32-bit mask which indicates requesting uDMA channels.
+1148:bsp/boards/OpenMote-CC2538/source/udma.c **** //! There is a bit for each channel, and a 1 in a bit indicates that channel
+1149:bsp/boards/OpenMote-CC2538/source/udma.c **** //! is requesting an interrupt.  Multiple bits can be set.
+1150:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+1151:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+1152:bsp/boards/OpenMote-CC2538/source/udma.c **** uint32_t
+1153:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAIntStatus(void)
+1154:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 1222              		.loc 1 1154 0
+ 1223              		.cfi_startproc
+ 1224              		@ args = 0, pretend = 0, frame = 0
+ 1225              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1226              		@ link register save eliminated.
+ 1227 0634 80B4     		push	{r7}
+ 1228              	.LCFI57:
+ 1229              		.cfi_def_cfa_offset 4
+ 1230              		.cfi_offset 7, -4
+ 1231 0636 00AF     		add	r7, sp, #0
+ 1232              	.LCFI58:
+ 1233              		.cfi_def_cfa_register 7
+1155:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1156:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Return the value of the uDMA interrupt status register
+1157:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1158:bsp/boards/OpenMote-CC2538/source/udma.c ****     return(HWREG(UDMA_CHIS));
+ 1234              		.loc 1 1158 0
+ 1235 0638 4FF20453 		movw	r3, #62724
+ 1236 063c C4F20F03 		movt	r3, 16399
+ 1237 0640 1B68     		ldr	r3, [r3, #0]
+1159:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 1238              		.loc 1 1159 0
+ 1239 0642 1846     		mov	r0, r3
+ 1240 0644 BD46     		mov	sp, r7
+ 1241 0646 80BC     		pop	{r7}
+ 1242 0648 7047     		bx	lr
+ 1243              		.cfi_endproc
+ 1244              	.LFE21:
+ 1246 064a 00BF     		.align	2
+ 1247              		.global	uDMAIntClear
+ 1248              		.thumb
+ 1249              		.thumb_func
+ 1251              	uDMAIntClear:
+ 1252              	.LFB22:
+1160:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1161:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+1162:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+1163:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Clears uDMA interrupt status
+1164:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1165:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32ChanMask is a 32-bit mask with one bit for each uDMA channel.
+1166:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1167:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Clears bits in the uDMA interrupt status register according to which bits
+1168:bsp/boards/OpenMote-CC2538/source/udma.c **** //! are set in \e ui32ChanMask. There is one bit for each channel. If a a bit
+1169:bsp/boards/OpenMote-CC2538/source/udma.c **** //! is set in \e ui32ChanMask, then that corresponding channel's interrupt
+1170:bsp/boards/OpenMote-CC2538/source/udma.c **** //! status will be cleared (if it was set).
+1171:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1172:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \note This function is only available on devices that have the DMA Channel
+1173:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Interrupt Status Register (DMACHIS).  Please consult the data sheet for
+1174:bsp/boards/OpenMote-CC2538/source/udma.c **** //! your part.
+1175:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1176:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+1177:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+1178:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+1179:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+1180:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAIntClear(uint32_t ui32ChanMask)
+1181:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 1253              		.loc 1 1181 0
+ 1254              		.cfi_startproc
+ 1255              		@ args = 0, pretend = 0, frame = 8
+ 1256              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1257              		@ link register save eliminated.
+ 1258 064c 80B4     		push	{r7}
+ 1259              	.LCFI59:
+ 1260              		.cfi_def_cfa_offset 4
+ 1261              		.cfi_offset 7, -4
+ 1262 064e 83B0     		sub	sp, sp, #12
+ 1263              	.LCFI60:
+ 1264              		.cfi_def_cfa_offset 16
+ 1265 0650 00AF     		add	r7, sp, #0
+ 1266              	.LCFI61:
+ 1267              		.cfi_def_cfa_register 7
+ 1268 0652 7860     		str	r0, [r7, #4]
+1182:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1183:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Clear the requested bits in the uDMA interrupt status register
+1184:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1185:bsp/boards/OpenMote-CC2538/source/udma.c ****     HWREG(UDMA_CHIS) = ui32ChanMask;
+ 1269              		.loc 1 1185 0
+ 1270 0654 4FF20453 		movw	r3, #62724
+ 1271 0658 C4F20F03 		movt	r3, 16399
+ 1272 065c 7A68     		ldr	r2, [r7, #4]
+ 1273 065e 1A60     		str	r2, [r3, #0]
+1186:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 1274              		.loc 1 1186 0
+ 1275 0660 07F10C07 		add	r7, r7, #12
+ 1276 0664 BD46     		mov	sp, r7
+ 1277 0666 80BC     		pop	{r7}
+ 1278 0668 7047     		bx	lr
+ 1279              		.cfi_endproc
+ 1280              	.LFE22:
+ 1282 066a 00BF     		.align	2
+ 1283              		.global	uDMAChannelAssign
+ 1284              		.thumb
+ 1285              		.thumb_func
+ 1287              	uDMAChannelAssign:
+ 1288              	.LFB23:
+1187:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1188:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+1189:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+1190:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Assigns a peripheral mapping for a uDMA channel
+1191:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1192:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \param ui32Mapping is a macro specifying the peripheral assignment for
+1193:bsp/boards/OpenMote-CC2538/source/udma.c **** //! a channel
+1194:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1195:bsp/boards/OpenMote-CC2538/source/udma.c **** //! This function assigns a peripheral mapping to a uDMA channel.  It is
+1196:bsp/boards/OpenMote-CC2538/source/udma.c **** //! used to select which peripheral is used for a uDMA channel.  The parameter
+1197:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \e ui32Mapping should be one of the macros named \b UDMA_CHn_tttt from the
+1198:bsp/boards/OpenMote-CC2538/source/udma.c **** //! header file \e udma.h.  For example, to assign uDMA channel 8 to the
+1199:bsp/boards/OpenMote-CC2538/source/udma.c **** //! UART0RX channel, the parameter should be the macro \b UDMA_CH8_UART0RX.
+1200:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1201:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Please consult the cc2538 data sheet for a table showing all the
+1202:bsp/boards/OpenMote-CC2538/source/udma.c **** //! possible peripheral assignments for the uDMA channels for a particular
+1203:bsp/boards/OpenMote-CC2538/source/udma.c **** //! device.
+1204:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1205:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \note This function is only available on devices that have the DMA Channel
+1206:bsp/boards/OpenMote-CC2538/source/udma.c **** //! Map Select registers (DMACHMAP0-3).  Please consult the data sheet for
+1207:bsp/boards/OpenMote-CC2538/source/udma.c **** //! your part.
+1208:bsp/boards/OpenMote-CC2538/source/udma.c **** //!
+1209:bsp/boards/OpenMote-CC2538/source/udma.c **** //! \return None
+1210:bsp/boards/OpenMote-CC2538/source/udma.c **** //
+1211:bsp/boards/OpenMote-CC2538/source/udma.c **** //*****************************************************************************
+1212:bsp/boards/OpenMote-CC2538/source/udma.c **** void
+1213:bsp/boards/OpenMote-CC2538/source/udma.c **** uDMAChannelAssign(uint32_t ui32Mapping)
+1214:bsp/boards/OpenMote-CC2538/source/udma.c **** {
+ 1289              		.loc 1 1214 0
+ 1290              		.cfi_startproc
+ 1291              		@ args = 0, pretend = 0, frame = 24
+ 1292              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1293              		@ link register save eliminated.
+ 1294 066c 80B4     		push	{r7}
+ 1295              	.LCFI62:
+ 1296              		.cfi_def_cfa_offset 4
+ 1297              		.cfi_offset 7, -4
+ 1298 066e 87B0     		sub	sp, sp, #28
+ 1299              	.LCFI63:
+ 1300              		.cfi_def_cfa_offset 32
+ 1301 0670 00AF     		add	r7, sp, #0
+ 1302              	.LCFI64:
+ 1303              		.cfi_def_cfa_register 7
+ 1304 0672 7860     		str	r0, [r7, #4]
+1215:bsp/boards/OpenMote-CC2538/source/udma.c ****     uint32_t ui32MapReg;
+1216:bsp/boards/OpenMote-CC2538/source/udma.c ****     uint32_t ui32MapShift;
+1217:bsp/boards/OpenMote-CC2538/source/udma.c ****     uint32_t ui32ChannelNum;
+1218:bsp/boards/OpenMote-CC2538/source/udma.c ****     uint32_t ui32Encoding;
+1219:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1220:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1221:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Check the parameters
+1222:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1223:bsp/boards/OpenMote-CC2538/source/udma.c ****     ASSERT((ui32Mapping & 0xffffff00) < 0x00050000);
+1224:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1225:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1226:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Extract the channel number and map encoding value from the parameter.
+1227:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1228:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32ChannelNum = ui32Mapping & 0xff;
+ 1305              		.loc 1 1228 0
+ 1306 0674 7B68     		ldr	r3, [r7, #4]
+ 1307 0676 DBB2     		uxtb	r3, r3
+ 1308 0678 7B61     		str	r3, [r7, #20]
+1229:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32Encoding   = ui32Mapping >> 16;
+ 1309              		.loc 1 1229 0
+ 1310 067a 7B68     		ldr	r3, [r7, #4]
+ 1311 067c 4FEA1343 		lsr	r3, r3, #16
+ 1312 0680 3B61     		str	r3, [r7, #16]
+1230:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1231:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1232:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Find the uDMA channel mapping register and shift value to use for this
+1233:bsp/boards/OpenMote-CC2538/source/udma.c ****     // channel
+1234:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1235:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32MapReg = UDMA_CHMAP0 + ((ui32ChannelNum / 8) * 4);
+ 1313              		.loc 1 1235 0
+ 1314 0682 7B69     		ldr	r3, [r7, #20]
+ 1315 0684 4FEAD302 		lsr	r2, r3, #3
+ 1316 0688 4FF64453 		movw	r3, #64836
+ 1317 068c C1F20303 		movt	r3, 4099
+ 1318 0690 D318     		adds	r3, r2, r3
+ 1319 0692 4FEA8303 		lsl	r3, r3, #2
+ 1320 0696 FB60     		str	r3, [r7, #12]
+1236:bsp/boards/OpenMote-CC2538/source/udma.c ****     ui32MapShift = (ui32ChannelNum % 8) * 4;
+ 1321              		.loc 1 1236 0
+ 1322 0698 7B69     		ldr	r3, [r7, #20]
+ 1323 069a 03F00703 		and	r3, r3, #7
+ 1324 069e 4FEA8303 		lsl	r3, r3, #2
+ 1325 06a2 BB60     		str	r3, [r7, #8]
+1237:bsp/boards/OpenMote-CC2538/source/udma.c **** 
+1238:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1239:bsp/boards/OpenMote-CC2538/source/udma.c ****     // Set the channel map encoding for this channel
+1240:bsp/boards/OpenMote-CC2538/source/udma.c ****     //
+1241:bsp/boards/OpenMote-CC2538/source/udma.c ****     HWREG(ui32MapReg) = (HWREG(ui32MapReg) & ~(0xf << ui32MapShift)) |
+ 1326              		.loc 1 1241 0
+ 1327 06a4 FB68     		ldr	r3, [r7, #12]
+ 1328 06a6 FA68     		ldr	r2, [r7, #12]
+ 1329 06a8 1168     		ldr	r1, [r2, #0]
+ 1330 06aa BA68     		ldr	r2, [r7, #8]
+ 1331 06ac 4FF00F00 		mov	r0, #15
+ 1332 06b0 00FA02F2 		lsl	r2, r0, r2
+ 1333 06b4 6FEA0202 		mvn	r2, r2
+ 1334 06b8 1140     		ands	r1, r1, r2
+1242:bsp/boards/OpenMote-CC2538/source/udma.c ****                         ui32Encoding << ui32MapShift;
+ 1335              		.loc 1 1242 0
+ 1336 06ba BA68     		ldr	r2, [r7, #8]
+ 1337 06bc 3869     		ldr	r0, [r7, #16]
+ 1338 06be 00FA02F2 		lsl	r2, r0, r2
+1241:bsp/boards/OpenMote-CC2538/source/udma.c ****     HWREG(ui32MapReg) = (HWREG(ui32MapReg) & ~(0xf << ui32MapShift)) |
+ 1339              		.loc 1 1241 0
+ 1340 06c2 0A43     		orrs	r2, r2, r1
+ 1341 06c4 1A60     		str	r2, [r3, #0]
+1243:bsp/boards/OpenMote-CC2538/source/udma.c **** }
+ 1342              		.loc 1 1243 0
+ 1343 06c6 07F11C07 		add	r7, r7, #28
+ 1344 06ca BD46     		mov	sp, r7
+ 1345 06cc 80BC     		pop	{r7}
+ 1346 06ce 7047     		bx	lr
+ 1347              		.cfi_endproc
+ 1348              	.LFE23:
+ 1350              	.Letext0:
+ 1351              		.file 2 "bsp/boards/OpenMote-CC2538/source/udma.h"
+ 1352              		.file 3 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+DEFINED SYMBOLS
+                            *ABS*:00000000 udma.c
+     /tmp/cc1Oe3mL.s:18     .text:00000000 $t
+     /tmp/cc1Oe3mL.s:23     .text:00000000 uDMAEnable
+     /tmp/cc1Oe3mL.s:55     .text:00000018 uDMADisable
+     /tmp/cc1Oe3mL.s:86     .text:00000030 uDMAErrorStatusGet
+     /tmp/cc1Oe3mL.s:117    .text:00000048 uDMAErrorStatusClear
+     /tmp/cc1Oe3mL.s:148    .text:00000060 uDMAChannelEnable
+     /tmp/cc1Oe3mL.s:187    .text:0000008c uDMAChannelDisable
+     /tmp/cc1Oe3mL.s:226    .text:000000b8 uDMAChannelIsEnabled
+     /tmp/cc1Oe3mL.s:272    .text:000000f0 uDMAControlBaseSet
+     /tmp/cc1Oe3mL.s:308    .text:00000110 uDMAControlBaseGet
+     /tmp/cc1Oe3mL.s:339    .text:00000128 uDMAControlAlternateBaseGet
+     /tmp/cc1Oe3mL.s:370    .text:00000140 uDMAChannelRequest
+     /tmp/cc1Oe3mL.s:409    .text:0000016c uDMAChannelAttributeEnable
+     /tmp/cc1Oe3mL.s:497    .text:00000200 uDMAChannelAttributeDisable
+     /tmp/cc1Oe3mL.s:585    .text:00000294 uDMAChannelAttributeGet
+     /tmp/cc1Oe3mL.s:686    .text:00000340 uDMAChannelControlSet
+     /tmp/cc1Oe3mL.s:746    .text:00000390 uDMAChannelTransferSet
+     /tmp/cc1Oe3mL.s:915    .text:000004ac uDMAChannelScatterGatherSet
+     /tmp/cc1Oe3mL.s:1015   .text:0000054c uDMAChannelSizeGet
+     /tmp/cc1Oe3mL.s:1078   .text:000005a0 uDMAChannelModeGet
+     /tmp/cc1Oe3mL.s:1146   .text:000005f8 uDMAIntRegister
+     /tmp/cc1Oe3mL.s:1184   .text:00000618 uDMAIntUnregister
+     /tmp/cc1Oe3mL.s:1220   .text:00000634 uDMAIntStatus
+     /tmp/cc1Oe3mL.s:1251   .text:0000064c uDMAIntClear
+     /tmp/cc1Oe3mL.s:1287   .text:0000066c uDMAChannelAssign
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.hw_sys_ctrl.h.39.50b4d7775c38e82076d0eb3bdc2daf82
+                           .group:00000000 wm4.hw_udma.h.39.264bcf912c9ca2a6a4c20ac52cfd6e50
+                           .group:00000000 wm4.hw_udmachctl.h.39.691b4def60389db06f6fa18129325381
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
+                           .group:00000000 wm4.udma.h.41.9638b4921f2086b7874ec413c0bf6e00
+
+UNDEFINED SYMBOLS
+IntRegister
+IntEnable
+IntDisable
+IntUnregister

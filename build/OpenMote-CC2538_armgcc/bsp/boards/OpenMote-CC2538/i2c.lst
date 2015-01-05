@@ -1,0 +1,566 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.file	"i2c.c"
+  15              		.text
+  16              	.Ltext0:
+  17              		.cfi_sections	.debug_frame
+  18              		.align	2
+  19              		.global	i2c_init
+  20              		.thumb
+  21              		.thumb_func
+  23              	i2c_init:
+  24              	.LFB0:
+  25              		.file 1 "bsp/boards/OpenMote-CC2538/i2c.c"
+   1:bsp/boards/OpenMote-CC2538/i2c.c **** /**
+   2:bsp/boards/OpenMote-CC2538/i2c.c ****  * Author: Xavier Vilajosana (xvilajosana@eecs.berkeley.edu)
+   3:bsp/boards/OpenMote-CC2538/i2c.c ****  *         Pere Tuset (peretuset@openmote.com)
+   4:bsp/boards/OpenMote-CC2538/i2c.c ****  * Date:   July 2013
+   5:bsp/boards/OpenMote-CC2538/i2c.c ****  * Description:CC2538-specific definition of the "i2c" bsp module.
+   6:bsp/boards/OpenMote-CC2538/i2c.c ****  */
+   7:bsp/boards/OpenMote-CC2538/i2c.c **** 
+   8:bsp/boards/OpenMote-CC2538/i2c.c **** #include "gpio.h"
+   9:bsp/boards/OpenMote-CC2538/i2c.c **** #include "source/i2c.h"
+  10:bsp/boards/OpenMote-CC2538/i2c.c **** #include "ioc.h"
+  11:bsp/boards/OpenMote-CC2538/i2c.c **** #include "sys_ctrl.h"
+  12:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  13:bsp/boards/OpenMote-CC2538/i2c.c **** #include "headers/hw_gpio.h"
+  14:bsp/boards/OpenMote-CC2538/i2c.c **** #include "headers/hw_i2cm.h"
+  15:bsp/boards/OpenMote-CC2538/i2c.c **** #include "headers/hw_ioc.h"
+  16:bsp/boards/OpenMote-CC2538/i2c.c **** #include "headers/hw_memmap.h"
+  17:bsp/boards/OpenMote-CC2538/i2c.c **** #include "headers/hw_sys_ctrl.h"
+  18:bsp/boards/OpenMote-CC2538/i2c.c **** #include "headers/hw_types.h"
+  19:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  20:bsp/boards/OpenMote-CC2538/i2c.c **** //=========================== define ==========================================
+  21:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  22:bsp/boards/OpenMote-CC2538/i2c.c **** #define I2C_PERIPHERAL          ( SYS_CTRL_PERIPH_I2C )
+  23:bsp/boards/OpenMote-CC2538/i2c.c **** #define I2C_BASE                ( GPIO_B_BASE )
+  24:bsp/boards/OpenMote-CC2538/i2c.c **** #define I2C_SCL                 ( GPIO_PIN_3 )
+  25:bsp/boards/OpenMote-CC2538/i2c.c **** #define I2C_SDA                 ( GPIO_PIN_4 )
+  26:bsp/boards/OpenMote-CC2538/i2c.c **** #define I2C_BAUDRATE            ( 100000 )
+  27:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  28:bsp/boards/OpenMote-CC2538/i2c.c **** //=========================== variables =======================================
+  29:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  30:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  31:bsp/boards/OpenMote-CC2538/i2c.c **** //=========================== prototypes ======================================
+  32:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  33:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  34:bsp/boards/OpenMote-CC2538/i2c.c **** //=========================== public ==========================================
+  35:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  36:bsp/boards/OpenMote-CC2538/i2c.c **** void i2c_init(void)
+  37:bsp/boards/OpenMote-CC2538/i2c.c **** {
+  26              		.loc 1 37 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 8
+  29              		@ frame_needed = 1, uses_anonymous_args = 0
+  30 0000 80B5     		push	{r7, lr}
+  31              	.LCFI0:
+  32              		.cfi_def_cfa_offset 8
+  33              		.cfi_offset 7, -8
+  34              		.cfi_offset 14, -4
+  35 0002 82B0     		sub	sp, sp, #8
+  36              	.LCFI1:
+  37              		.cfi_def_cfa_offset 16
+  38 0004 00AF     		add	r7, sp, #0
+  39              	.LCFI2:
+  40              		.cfi_def_cfa_register 7
+  38:bsp/boards/OpenMote-CC2538/i2c.c ****     uint8_t status;
+  39:bsp/boards/OpenMote-CC2538/i2c.c ****     
+  40:bsp/boards/OpenMote-CC2538/i2c.c ****     // Reset peripheral previous to configuring it
+  41:bsp/boards/OpenMote-CC2538/i2c.c ****     SysCtrlPeripheralReset(I2C_PERIPHERAL);
+  41              		.loc 1 41 0
+  42 0006 4FF44070 		mov	r0, #768
+  43 000a FFF7FEFF 		bl	SysCtrlPeripheralReset
+  42:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  43:bsp/boards/OpenMote-CC2538/i2c.c ****     // Configure the SCL pin
+  44:bsp/boards/OpenMote-CC2538/i2c.c ****     GPIOPinTypeI2C(I2C_BASE, I2C_SCL);
+  44              		.loc 1 44 0
+  45 000e 4FF42040 		mov	r0, #40960
+  46 0012 C4F20D00 		movt	r0, 16397
+  47 0016 4FF00801 		mov	r1, #8
+  48 001a FFF7FEFF 		bl	GPIOPinTypeI2C
+  45:bsp/boards/OpenMote-CC2538/i2c.c ****     IOCPinConfigPeriphInput(I2C_BASE, I2C_SCL, IOC_I2CMSSCL);
+  49              		.loc 1 45 0
+  50 001e 4FF42040 		mov	r0, #40960
+  51 0022 C4F20D00 		movt	r0, 16397
+  52 0026 4FF00801 		mov	r1, #8
+  53 002a 44F23012 		movw	r2, #16688
+  54 002e C4F20D02 		movt	r2, 16397
+  55 0032 FFF7FEFF 		bl	IOCPinConfigPeriphInput
+  46:bsp/boards/OpenMote-CC2538/i2c.c ****     IOCPinConfigPeriphOutput(I2C_BASE, I2C_SCL, IOC_MUX_OUT_SEL_I2C_CMSSCL);
+  56              		.loc 1 46 0
+  57 0036 4FF42040 		mov	r0, #40960
+  58 003a C4F20D00 		movt	r0, 16397
+  59 003e 4FF00801 		mov	r1, #8
+  60 0042 4FF00C02 		mov	r2, #12
+  61 0046 FFF7FEFF 		bl	IOCPinConfigPeriphOutput
+  47:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  48:bsp/boards/OpenMote-CC2538/i2c.c ****     // Configure the SDA pin
+  49:bsp/boards/OpenMote-CC2538/i2c.c ****     GPIOPinTypeI2C(I2C_BASE, I2C_SDA);
+  62              		.loc 1 49 0
+  63 004a 4FF42040 		mov	r0, #40960
+  64 004e C4F20D00 		movt	r0, 16397
+  65 0052 4FF01001 		mov	r1, #16
+  66 0056 FFF7FEFF 		bl	GPIOPinTypeI2C
+  50:bsp/boards/OpenMote-CC2538/i2c.c ****     IOCPinConfigPeriphInput(I2C_BASE, I2C_SDA, IOC_I2CMSSDA);
+  67              		.loc 1 50 0
+  68 005a 4FF42040 		mov	r0, #40960
+  69 005e C4F20D00 		movt	r0, 16397
+  70 0062 4FF01001 		mov	r1, #16
+  71 0066 44F22C12 		movw	r2, #16684
+  72 006a C4F20D02 		movt	r2, 16397
+  73 006e FFF7FEFF 		bl	IOCPinConfigPeriphInput
+  51:bsp/boards/OpenMote-CC2538/i2c.c ****     IOCPinConfigPeriphOutput(I2C_BASE, I2C_SDA, IOC_MUX_OUT_SEL_I2C_CMSSDA);
+  74              		.loc 1 51 0
+  75 0072 4FF42040 		mov	r0, #40960
+  76 0076 C4F20D00 		movt	r0, 16397
+  77 007a 4FF01001 		mov	r1, #16
+  78 007e 4FF00B02 		mov	r2, #11
+  79 0082 FFF7FEFF 		bl	IOCPinConfigPeriphOutput
+  52:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  53:bsp/boards/OpenMote-CC2538/i2c.c ****     // Configure the I2C clock
+  54:bsp/boards/OpenMote-CC2538/i2c.c ****     status = (I2C_BAUDRATE == 400000 ? true : false);
+  80              		.loc 1 54 0
+  81 0086 4FF00003 		mov	r3, #0
+  82 008a FB71     		strb	r3, [r7, #7]
+  55:bsp/boards/OpenMote-CC2538/i2c.c ****     I2CMasterInitExpClk(SysCtrlClockGet(), status);
+  83              		.loc 1 55 0
+  84 008c FFF7FEFF 		bl	SysCtrlClockGet
+  85 0090 0246     		mov	r2, r0
+  86 0092 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+  87 0094 002B     		cmp	r3, #0
+  88 0096 0CBF     		ite	eq
+  89 0098 0023     		moveq	r3, #0
+  90 009a 0123     		movne	r3, #1
+  91 009c DBB2     		uxtb	r3, r3
+  92 009e 1046     		mov	r0, r2
+  93 00a0 1946     		mov	r1, r3
+  94 00a2 FFF7FEFF 		bl	I2CMasterInitExpClk
+  56:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  57:bsp/boards/OpenMote-CC2538/i2c.c ****     // Enable the I2C module as master
+  58:bsp/boards/OpenMote-CC2538/i2c.c ****     I2CMasterEnable();
+  95              		.loc 1 58 0
+  96 00a6 FFF7FEFF 		bl	I2CMasterEnable
+  59:bsp/boards/OpenMote-CC2538/i2c.c **** }
+  97              		.loc 1 59 0
+  98 00aa 07F10807 		add	r7, r7, #8
+  99 00ae BD46     		mov	sp, r7
+ 100 00b0 80BD     		pop	{r7, pc}
+ 101              		.cfi_endproc
+ 102              	.LFE0:
+ 104 00b2 00BF     		.align	2
+ 105              		.global	i2c_read_byte
+ 106              		.thumb
+ 107              		.thumb_func
+ 109              	i2c_read_byte:
+ 110              	.LFB1:
+  60:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  61:bsp/boards/OpenMote-CC2538/i2c.c **** void i2c_read_byte(uint8_t address, uint8_t* byte)
+  62:bsp/boards/OpenMote-CC2538/i2c.c **** {
+ 111              		.loc 1 62 0
+ 112              		.cfi_startproc
+ 113              		@ args = 0, pretend = 0, frame = 8
+ 114              		@ frame_needed = 1, uses_anonymous_args = 0
+ 115 00b4 80B5     		push	{r7, lr}
+ 116              	.LCFI3:
+ 117              		.cfi_def_cfa_offset 8
+ 118              		.cfi_offset 7, -8
+ 119              		.cfi_offset 14, -4
+ 120 00b6 82B0     		sub	sp, sp, #8
+ 121              	.LCFI4:
+ 122              		.cfi_def_cfa_offset 16
+ 123 00b8 00AF     		add	r7, sp, #0
+ 124              	.LCFI5:
+ 125              		.cfi_def_cfa_register 7
+ 126 00ba 0346     		mov	r3, r0
+ 127 00bc 3960     		str	r1, [r7, #0]
+ 128 00be FB71     		strb	r3, [r7, #7]
+  63:bsp/boards/OpenMote-CC2538/i2c.c ****     I2CMasterSlaveAddrSet(address, true); // read
+ 129              		.loc 1 63 0
+ 130 00c0 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 131 00c2 1846     		mov	r0, r3
+ 132 00c4 4FF00101 		mov	r1, #1
+ 133 00c8 FFF7FEFF 		bl	I2CMasterSlaveAddrSet
+  64:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  65:bsp/boards/OpenMote-CC2538/i2c.c ****     I2CMasterControl(I2C_MASTER_CMD_SINGLE_RECEIVE);
+ 134              		.loc 1 65 0
+ 135 00cc 4FF00700 		mov	r0, #7
+ 136 00d0 FFF7FEFF 		bl	I2CMasterControl
+  66:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  67:bsp/boards/OpenMote-CC2538/i2c.c ****     while (I2CMasterBusy())
+ 137              		.loc 1 67 0
+ 138 00d4 00BF     		nop
+ 139              	.L3:
+ 140              		.loc 1 67 0 is_stmt 0 discriminator 1
+ 141 00d6 FFF7FEFF 		bl	I2CMasterBusy
+ 142 00da 0346     		mov	r3, r0
+ 143 00dc 002B     		cmp	r3, #0
+ 144 00de FAD1     		bne	.L3
+  68:bsp/boards/OpenMote-CC2538/i2c.c ****         ;
+  69:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  70:bsp/boards/OpenMote-CC2538/i2c.c ****     *byte = I2CMasterDataGet();
+ 145              		.loc 1 70 0 is_stmt 1
+ 146 00e0 FFF7FEFF 		bl	I2CMasterDataGet
+ 147 00e4 0346     		mov	r3, r0
+ 148 00e6 DAB2     		uxtb	r2, r3
+ 149 00e8 3B68     		ldr	r3, [r7, #0]
+ 150 00ea 1A70     		strb	r2, [r3, #0]
+  71:bsp/boards/OpenMote-CC2538/i2c.c **** }
+ 151              		.loc 1 71 0
+ 152 00ec 07F10807 		add	r7, r7, #8
+ 153 00f0 BD46     		mov	sp, r7
+ 154 00f2 80BD     		pop	{r7, pc}
+ 155              		.cfi_endproc
+ 156              	.LFE1:
+ 158              		.align	2
+ 159              		.global	i2c_read_bytes
+ 160              		.thumb
+ 161              		.thumb_func
+ 163              	i2c_read_bytes:
+ 164              	.LFB2:
+  72:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  73:bsp/boards/OpenMote-CC2538/i2c.c **** void i2c_read_bytes(uint8_t address, uint8_t* buffer, uint32_t length)
+  74:bsp/boards/OpenMote-CC2538/i2c.c **** {
+ 165              		.loc 1 74 0
+ 166              		.cfi_startproc
+ 167              		@ args = 0, pretend = 0, frame = 16
+ 168              		@ frame_needed = 1, uses_anonymous_args = 0
+ 169 00f4 80B5     		push	{r7, lr}
+ 170              	.LCFI6:
+ 171              		.cfi_def_cfa_offset 8
+ 172              		.cfi_offset 7, -8
+ 173              		.cfi_offset 14, -4
+ 174 00f6 84B0     		sub	sp, sp, #16
+ 175              	.LCFI7:
+ 176              		.cfi_def_cfa_offset 24
+ 177 00f8 00AF     		add	r7, sp, #0
+ 178              	.LCFI8:
+ 179              		.cfi_def_cfa_register 7
+ 180 00fa 0346     		mov	r3, r0
+ 181 00fc B960     		str	r1, [r7, #8]
+ 182 00fe 7A60     		str	r2, [r7, #4]
+ 183 0100 FB73     		strb	r3, [r7, #15]
+  75:bsp/boards/OpenMote-CC2538/i2c.c ****     I2CMasterSlaveAddrSet(address, true); // read
+ 184              		.loc 1 75 0
+ 185 0102 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 186 0104 1846     		mov	r0, r3
+ 187 0106 4FF00101 		mov	r1, #1
+ 188 010a FFF7FEFF 		bl	I2CMasterSlaveAddrSet
+  76:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  77:bsp/boards/OpenMote-CC2538/i2c.c ****     I2CMasterControl(I2C_MASTER_CMD_BURST_RECEIVE_START);
+ 189              		.loc 1 77 0
+ 190 010e 4FF00B00 		mov	r0, #11
+ 191 0112 FFF7FEFF 		bl	I2CMasterControl
+  78:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  79:bsp/boards/OpenMote-CC2538/i2c.c ****     while (length) {
+ 192              		.loc 1 79 0
+ 193 0116 1FE0     		b	.L5
+ 194              	.L9:
+  80:bsp/boards/OpenMote-CC2538/i2c.c ****         while (I2CMasterBusy())
+ 195              		.loc 1 80 0
+ 196 0118 00BF     		nop
+ 197              	.L6:
+ 198              		.loc 1 80 0 is_stmt 0 discriminator 1
+ 199 011a FFF7FEFF 		bl	I2CMasterBusy
+ 200 011e 0346     		mov	r3, r0
+ 201 0120 002B     		cmp	r3, #0
+ 202 0122 FAD1     		bne	.L6
+  81:bsp/boards/OpenMote-CC2538/i2c.c ****             ;
+  82:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  83:bsp/boards/OpenMote-CC2538/i2c.c ****         *buffer++ = I2CMasterDataGet();
+ 203              		.loc 1 83 0 is_stmt 1
+ 204 0124 FFF7FEFF 		bl	I2CMasterDataGet
+ 205 0128 0346     		mov	r3, r0
+ 206 012a DAB2     		uxtb	r2, r3
+ 207 012c BB68     		ldr	r3, [r7, #8]
+ 208 012e 1A70     		strb	r2, [r3, #0]
+ 209 0130 BB68     		ldr	r3, [r7, #8]
+ 210 0132 03F10103 		add	r3, r3, #1
+ 211 0136 BB60     		str	r3, [r7, #8]
+  84:bsp/boards/OpenMote-CC2538/i2c.c ****         length--;
+ 212              		.loc 1 84 0
+ 213 0138 7B68     		ldr	r3, [r7, #4]
+ 214 013a 03F1FF33 		add	r3, r3, #-1
+ 215 013e 7B60     		str	r3, [r7, #4]
+  85:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  86:bsp/boards/OpenMote-CC2538/i2c.c ****         if (length == 1)
+ 216              		.loc 1 86 0
+ 217 0140 7B68     		ldr	r3, [r7, #4]
+ 218 0142 012B     		cmp	r3, #1
+ 219 0144 04D1     		bne	.L7
+  87:bsp/boards/OpenMote-CC2538/i2c.c ****         {
+  88:bsp/boards/OpenMote-CC2538/i2c.c ****             I2CMasterControl(I2C_MASTER_CMD_BURST_RECEIVE_FINISH);
+ 220              		.loc 1 88 0
+ 221 0146 4FF00500 		mov	r0, #5
+ 222 014a FFF7FEFF 		bl	I2CMasterControl
+ 223 014e 03E0     		b	.L5
+ 224              	.L7:
+  89:bsp/boards/OpenMote-CC2538/i2c.c ****         } else
+  90:bsp/boards/OpenMote-CC2538/i2c.c ****         {
+  91:bsp/boards/OpenMote-CC2538/i2c.c ****             I2CMasterControl(I2C_MASTER_CMD_BURST_RECEIVE_CONT);
+ 225              		.loc 1 91 0
+ 226 0150 4FF00900 		mov	r0, #9
+ 227 0154 FFF7FEFF 		bl	I2CMasterControl
+ 228              	.L5:
+  79:bsp/boards/OpenMote-CC2538/i2c.c ****     while (length) {
+ 229              		.loc 1 79 0 discriminator 1
+ 230 0158 7B68     		ldr	r3, [r7, #4]
+ 231 015a 002B     		cmp	r3, #0
+ 232 015c DCD1     		bne	.L9
+  92:bsp/boards/OpenMote-CC2538/i2c.c ****         }
+  93:bsp/boards/OpenMote-CC2538/i2c.c ****     }
+  94:bsp/boards/OpenMote-CC2538/i2c.c **** }
+ 233              		.loc 1 94 0
+ 234 015e 07F11007 		add	r7, r7, #16
+ 235 0162 BD46     		mov	sp, r7
+ 236 0164 80BD     		pop	{r7, pc}
+ 237              		.cfi_endproc
+ 238              	.LFE2:
+ 240 0166 00BF     		.align	2
+ 241              		.global	i2c_write_byte
+ 242              		.thumb
+ 243              		.thumb_func
+ 245              	i2c_write_byte:
+ 246              	.LFB3:
+  95:bsp/boards/OpenMote-CC2538/i2c.c **** 
+  96:bsp/boards/OpenMote-CC2538/i2c.c **** void i2c_write_byte(uint8_t address, uint8_t byte)
+  97:bsp/boards/OpenMote-CC2538/i2c.c **** {
+ 247              		.loc 1 97 0
+ 248              		.cfi_startproc
+ 249              		@ args = 0, pretend = 0, frame = 8
+ 250              		@ frame_needed = 1, uses_anonymous_args = 0
+ 251 0168 80B5     		push	{r7, lr}
+ 252              	.LCFI9:
+ 253              		.cfi_def_cfa_offset 8
+ 254              		.cfi_offset 7, -8
+ 255              		.cfi_offset 14, -4
+ 256 016a 82B0     		sub	sp, sp, #8
+ 257              	.LCFI10:
+ 258              		.cfi_def_cfa_offset 16
+ 259 016c 00AF     		add	r7, sp, #0
+ 260              	.LCFI11:
+ 261              		.cfi_def_cfa_register 7
+ 262 016e 0246     		mov	r2, r0
+ 263 0170 0B46     		mov	r3, r1
+ 264 0172 FA71     		strb	r2, [r7, #7]
+ 265 0174 BB71     		strb	r3, [r7, #6]
+  98:bsp/boards/OpenMote-CC2538/i2c.c ****     I2CMasterSlaveAddrSet(address, false); // write
+ 266              		.loc 1 98 0
+ 267 0176 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 268 0178 1846     		mov	r0, r3
+ 269 017a 4FF00001 		mov	r1, #0
+ 270 017e FFF7FEFF 		bl	I2CMasterSlaveAddrSet
+  99:bsp/boards/OpenMote-CC2538/i2c.c **** 
+ 100:bsp/boards/OpenMote-CC2538/i2c.c ****     I2CMasterDataPut(byte);
+ 271              		.loc 1 100 0
+ 272 0182 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 273 0184 1846     		mov	r0, r3
+ 274 0186 FFF7FEFF 		bl	I2CMasterDataPut
+ 101:bsp/boards/OpenMote-CC2538/i2c.c **** 
+ 102:bsp/boards/OpenMote-CC2538/i2c.c ****     I2CMasterControl(I2C_MASTER_CMD_SINGLE_SEND);
+ 275              		.loc 1 102 0
+ 276 018a 4FF00700 		mov	r0, #7
+ 277 018e FFF7FEFF 		bl	I2CMasterControl
+ 103:bsp/boards/OpenMote-CC2538/i2c.c **** 
+ 104:bsp/boards/OpenMote-CC2538/i2c.c ****     while (I2CMasterBusy())
+ 278              		.loc 1 104 0
+ 279 0192 00BF     		nop
+ 280              	.L11:
+ 281              		.loc 1 104 0 is_stmt 0 discriminator 1
+ 282 0194 FFF7FEFF 		bl	I2CMasterBusy
+ 283 0198 0346     		mov	r3, r0
+ 284 019a 002B     		cmp	r3, #0
+ 285 019c FAD1     		bne	.L11
+ 105:bsp/boards/OpenMote-CC2538/i2c.c ****         ;
+ 106:bsp/boards/OpenMote-CC2538/i2c.c **** }
+ 286              		.loc 1 106 0 is_stmt 1
+ 287 019e 07F10807 		add	r7, r7, #8
+ 288 01a2 BD46     		mov	sp, r7
+ 289 01a4 80BD     		pop	{r7, pc}
+ 290              		.cfi_endproc
+ 291              	.LFE3:
+ 293 01a6 00BF     		.align	2
+ 294              		.global	i2c_write_bytes
+ 295              		.thumb
+ 296              		.thumb_func
+ 298              	i2c_write_bytes:
+ 299              	.LFB4:
+ 107:bsp/boards/OpenMote-CC2538/i2c.c **** 
+ 108:bsp/boards/OpenMote-CC2538/i2c.c **** void i2c_write_bytes(uint8_t address, uint8_t* buffer, uint32_t length)
+ 109:bsp/boards/OpenMote-CC2538/i2c.c **** {
+ 300              		.loc 1 109 0
+ 301              		.cfi_startproc
+ 302              		@ args = 0, pretend = 0, frame = 16
+ 303              		@ frame_needed = 1, uses_anonymous_args = 0
+ 304 01a8 80B5     		push	{r7, lr}
+ 305              	.LCFI12:
+ 306              		.cfi_def_cfa_offset 8
+ 307              		.cfi_offset 7, -8
+ 308              		.cfi_offset 14, -4
+ 309 01aa 84B0     		sub	sp, sp, #16
+ 310              	.LCFI13:
+ 311              		.cfi_def_cfa_offset 24
+ 312 01ac 00AF     		add	r7, sp, #0
+ 313              	.LCFI14:
+ 314              		.cfi_def_cfa_register 7
+ 315 01ae 0346     		mov	r3, r0
+ 316 01b0 B960     		str	r1, [r7, #8]
+ 317 01b2 7A60     		str	r2, [r7, #4]
+ 318 01b4 FB73     		strb	r3, [r7, #15]
+ 110:bsp/boards/OpenMote-CC2538/i2c.c ****     I2CMasterSlaveAddrSet(address, false); // write
+ 319              		.loc 1 110 0
+ 320 01b6 FB7B     		ldrb	r3, [r7, #15]	@ zero_extendqisi2
+ 321 01b8 1846     		mov	r0, r3
+ 322 01ba 4FF00001 		mov	r1, #0
+ 323 01be FFF7FEFF 		bl	I2CMasterSlaveAddrSet
+ 111:bsp/boards/OpenMote-CC2538/i2c.c **** 
+ 112:bsp/boards/OpenMote-CC2538/i2c.c ****     I2CMasterDataPut(*buffer++);
+ 324              		.loc 1 112 0
+ 325 01c2 BB68     		ldr	r3, [r7, #8]
+ 326 01c4 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 327 01c6 BA68     		ldr	r2, [r7, #8]
+ 328 01c8 02F10102 		add	r2, r2, #1
+ 329 01cc BA60     		str	r2, [r7, #8]
+ 330 01ce 1846     		mov	r0, r3
+ 331 01d0 FFF7FEFF 		bl	I2CMasterDataPut
+ 113:bsp/boards/OpenMote-CC2538/i2c.c ****     length--;
+ 332              		.loc 1 113 0
+ 333 01d4 7B68     		ldr	r3, [r7, #4]
+ 334 01d6 03F1FF33 		add	r3, r3, #-1
+ 335 01da 7B60     		str	r3, [r7, #4]
+ 114:bsp/boards/OpenMote-CC2538/i2c.c **** 
+ 115:bsp/boards/OpenMote-CC2538/i2c.c ****     I2CMasterControl(I2C_MASTER_CMD_BURST_SEND_START);
+ 336              		.loc 1 115 0
+ 337 01dc 4FF00300 		mov	r0, #3
+ 338 01e0 FFF7FEFF 		bl	I2CMasterControl
+ 116:bsp/boards/OpenMote-CC2538/i2c.c **** 
+ 117:bsp/boards/OpenMote-CC2538/i2c.c ****     while (I2CMasterBusy())
+ 339              		.loc 1 117 0
+ 340 01e4 00BF     		nop
+ 341              	.L13:
+ 342              		.loc 1 117 0 is_stmt 0 discriminator 1
+ 343 01e6 FFF7FEFF 		bl	I2CMasterBusy
+ 344 01ea 0346     		mov	r3, r0
+ 345 01ec 002B     		cmp	r3, #0
+ 346 01ee FAD1     		bne	.L13
+ 118:bsp/boards/OpenMote-CC2538/i2c.c ****         ;
+ 119:bsp/boards/OpenMote-CC2538/i2c.c **** 
+ 120:bsp/boards/OpenMote-CC2538/i2c.c ****     while (length) {
+ 347              		.loc 1 120 0 is_stmt 1
+ 348 01f0 1EE0     		b	.L14
+ 349              	.L18:
+ 121:bsp/boards/OpenMote-CC2538/i2c.c ****         I2CMasterDataPut(*buffer++);
+ 350              		.loc 1 121 0
+ 351 01f2 BB68     		ldr	r3, [r7, #8]
+ 352 01f4 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 353 01f6 BA68     		ldr	r2, [r7, #8]
+ 354 01f8 02F10102 		add	r2, r2, #1
+ 355 01fc BA60     		str	r2, [r7, #8]
+ 356 01fe 1846     		mov	r0, r3
+ 357 0200 FFF7FEFF 		bl	I2CMasterDataPut
+ 122:bsp/boards/OpenMote-CC2538/i2c.c ****         length--;
+ 358              		.loc 1 122 0
+ 359 0204 7B68     		ldr	r3, [r7, #4]
+ 360 0206 03F1FF33 		add	r3, r3, #-1
+ 361 020a 7B60     		str	r3, [r7, #4]
+ 123:bsp/boards/OpenMote-CC2538/i2c.c **** 
+ 124:bsp/boards/OpenMote-CC2538/i2c.c ****         if (length == 0)
+ 362              		.loc 1 124 0
+ 363 020c 7B68     		ldr	r3, [r7, #4]
+ 364 020e 002B     		cmp	r3, #0
+ 365 0210 04D1     		bne	.L15
+ 125:bsp/boards/OpenMote-CC2538/i2c.c ****         {
+ 126:bsp/boards/OpenMote-CC2538/i2c.c ****             I2CMasterControl(I2C_MASTER_CMD_BURST_SEND_FINISH);
+ 366              		.loc 1 126 0
+ 367 0212 4FF00500 		mov	r0, #5
+ 368 0216 FFF7FEFF 		bl	I2CMasterControl
+ 127:bsp/boards/OpenMote-CC2538/i2c.c ****         }
+ 128:bsp/boards/OpenMote-CC2538/i2c.c ****         else
+ 129:bsp/boards/OpenMote-CC2538/i2c.c ****         {
+ 130:bsp/boards/OpenMote-CC2538/i2c.c ****             I2CMasterControl(I2C_MASTER_CMD_BURST_SEND_CONT);
+ 131:bsp/boards/OpenMote-CC2538/i2c.c ****         }
+ 132:bsp/boards/OpenMote-CC2538/i2c.c **** 
+ 133:bsp/boards/OpenMote-CC2538/i2c.c ****         while (I2CMasterBusy())
+ 369              		.loc 1 133 0
+ 370 021a 03E0     		b	.L19
+ 371              	.L15:
+ 130:bsp/boards/OpenMote-CC2538/i2c.c ****             I2CMasterControl(I2C_MASTER_CMD_BURST_SEND_CONT);
+ 372              		.loc 1 130 0
+ 373 021c 4FF00100 		mov	r0, #1
+ 374 0220 FFF7FEFF 		bl	I2CMasterControl
+ 375              	.L19:
+ 376              		.loc 1 133 0
+ 377 0224 00BF     		nop
+ 378              	.L17:
+ 379              		.loc 1 133 0 is_stmt 0 discriminator 1
+ 380 0226 FFF7FEFF 		bl	I2CMasterBusy
+ 381 022a 0346     		mov	r3, r0
+ 382 022c 002B     		cmp	r3, #0
+ 383 022e FAD1     		bne	.L17
+ 384              	.L14:
+ 120:bsp/boards/OpenMote-CC2538/i2c.c ****     while (length) {
+ 385              		.loc 1 120 0 is_stmt 1 discriminator 1
+ 386 0230 7B68     		ldr	r3, [r7, #4]
+ 387 0232 002B     		cmp	r3, #0
+ 388 0234 DDD1     		bne	.L18
+ 134:bsp/boards/OpenMote-CC2538/i2c.c ****             ;
+ 135:bsp/boards/OpenMote-CC2538/i2c.c ****     }
+ 136:bsp/boards/OpenMote-CC2538/i2c.c **** }
+ 389              		.loc 1 136 0
+ 390 0236 07F11007 		add	r7, r7, #16
+ 391 023a BD46     		mov	sp, r7
+ 392 023c 80BD     		pop	{r7, pc}
+ 393              		.cfi_endproc
+ 394              	.LFE4:
+ 396              	.Letext0:
+ 397              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
+DEFINED SYMBOLS
+                            *ABS*:00000000 i2c.c
+     /tmp/ccNKXW0m.s:18     .text:00000000 $t
+     /tmp/ccNKXW0m.s:23     .text:00000000 i2c_init
+     /tmp/ccNKXW0m.s:109    .text:000000b4 i2c_read_byte
+     /tmp/ccNKXW0m.s:163    .text:000000f4 i2c_read_bytes
+     /tmp/ccNKXW0m.s:245    .text:00000168 i2c_write_byte
+     /tmp/ccNKXW0m.s:298    .text:000001a8 i2c_write_bytes
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.b5bb84d7ba97d82b5b1dc1826a7ae811
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
+                           .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
+                           .group:00000000 wm4.gpio.h.62.9d56422551a9e9d5b3a7f09fd40d1695
+                           .group:00000000 wm4.i2c.h.42.5fd828f6712e1f3a1c5cb3c7bbae1df4
+                           .group:00000000 wm4.ioc.h.41.7444fe7016a1d045dd9fea497d615b28
+                           .group:00000000 wm4.sys_ctrl.h.41.c6bbd4dace326d685c1afa45bc1ba1e2
+                           .group:00000000 wm4.hw_gpio.h.39.abbe53cff9a4c1fb5f1c34960fe1e7aa
+                           .group:00000000 wm4.hw_i2cm.h.39.4b5af155c75f23d9eeb001d8feb957ac
+                           .group:00000000 wm4.hw_ioc.h.39.7722cce4a3cc0e3380c3cd135aee3b21
+                           .group:00000000 wm4.hw_memmap.h.39.19283c377d449c9bca5fdd8ccb62628c
+                           .group:00000000 wm4.hw_sys_ctrl.h.39.50b4d7775c38e82076d0eb3bdc2daf82
+
+UNDEFINED SYMBOLS
+SysCtrlPeripheralReset
+GPIOPinTypeI2C
+IOCPinConfigPeriphInput
+IOCPinConfigPeriphOutput
+SysCtrlClockGet
+I2CMasterInitExpClk
+I2CMasterEnable
+I2CMasterSlaveAddrSet
+I2CMasterControl
+I2CMasterBusy
+I2CMasterDataGet
+I2CMasterDataPut
