@@ -3436,33 +3436,33 @@
  2729              		.file 7 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 opentcp.c
-     /tmp/ccU2aOBz.s:19     .rodata:00000000 $d
-     /tmp/ccU2aOBz.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccU2aOBz.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccU2aOBz.s:32     .rodata:00000010 infouCName
-     /tmp/ccU2aOBz.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccU2aOBz.s:42     .rodata:00000024 infoStackName
+     /tmp/ccvw3uJR.s:19     .rodata:00000000 $d
+     /tmp/ccvw3uJR.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccvw3uJR.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccvw3uJR.s:32     .rodata:00000010 infouCName
+     /tmp/ccvw3uJR.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccvw3uJR.s:42     .rodata:00000024 infoStackName
                             *COM*:00000030 tcp_vars
-     /tmp/ccU2aOBz.s:46     .text:00000000 $t
-     /tmp/ccU2aOBz.s:51     .text:00000000 opentcp_init
-     /tmp/ccU2aOBz.s:2557   .text:00001450 opentcp_reset
-     /tmp/ccU2aOBz.s:84     .text:00000020 opentcp_connect
-     /tmp/ccU2aOBz.s:2181   .text:000011cc prependTCPHeader
-     /tmp/ccU2aOBz.s:2617   .text:000014bc tcp_change_state
-     /tmp/ccU2aOBz.s:231    .text:00000140 opentcp_send
-     /tmp/ccU2aOBz.s:387    .text:0000027c opentcp_sendDone
-     /tmp/ccU2aOBz.s:424    .text:000002ac $d
-     /tmp/ccU2aOBz.s:445    .text:000002f8 $t
-     /tmp/ccU2aOBz.s:679    .text:000004d4 opentcp_receive
-     /tmp/ccU2aOBz.s:2371   .text:0000132c containsControlBits
-     /tmp/ccU2aOBz.s:807    .text:000005b8 $d
-     /tmp/ccU2aOBz.s:830    .text:0000060c $t
-     /tmp/ccU2aOBz.s:1086   .text:00000868 $d
-     /tmp/ccU2aOBz.s:1089   .text:0000086c $t
-     /tmp/ccU2aOBz.s:1987   .text:000010ac opentcp_close
-     /tmp/ccU2aOBz.s:2126   .text:000011b0 tcp_debugPrint
-     /tmp/ccU2aOBz.s:2155   .text:000011c0 timers_tcp_fired
-     /tmp/ccU2aOBz.s:2699   .text:0000155c opentcp_timer_cb
+     /tmp/ccvw3uJR.s:46     .text:00000000 $t
+     /tmp/ccvw3uJR.s:51     .text:00000000 opentcp_init
+     /tmp/ccvw3uJR.s:2557   .text:00001450 opentcp_reset
+     /tmp/ccvw3uJR.s:84     .text:00000020 opentcp_connect
+     /tmp/ccvw3uJR.s:2181   .text:000011cc prependTCPHeader
+     /tmp/ccvw3uJR.s:2617   .text:000014bc tcp_change_state
+     /tmp/ccvw3uJR.s:231    .text:00000140 opentcp_send
+     /tmp/ccvw3uJR.s:387    .text:0000027c opentcp_sendDone
+     /tmp/ccvw3uJR.s:424    .text:000002ac $d
+     /tmp/ccvw3uJR.s:445    .text:000002f8 $t
+     /tmp/ccvw3uJR.s:679    .text:000004d4 opentcp_receive
+     /tmp/ccvw3uJR.s:2371   .text:0000132c containsControlBits
+     /tmp/ccvw3uJR.s:807    .text:000005b8 $d
+     /tmp/ccvw3uJR.s:830    .text:0000060c $t
+     /tmp/ccvw3uJR.s:1086   .text:00000868 $d
+     /tmp/ccvw3uJR.s:1089   .text:0000086c $t
+     /tmp/ccvw3uJR.s:1987   .text:000010ac opentcp_close
+     /tmp/ccvw3uJR.s:2126   .text:000011b0 tcp_debugPrint
+     /tmp/ccvw3uJR.s:2155   .text:000011c0 timers_tcp_fired
+     /tmp/ccvw3uJR.s:2699   .text:0000155c opentcp_timer_cb
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

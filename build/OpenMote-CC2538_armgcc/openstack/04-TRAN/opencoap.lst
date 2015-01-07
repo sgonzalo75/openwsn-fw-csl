@@ -1701,24 +1701,24 @@
  1244              		.file 5 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 opencoap.c
-     /tmp/ccyPCBGq.s:19     .rodata:00000000 $d
-     /tmp/ccyPCBGq.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccyPCBGq.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccyPCBGq.s:32     .rodata:00000010 infouCName
-     /tmp/ccyPCBGq.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccyPCBGq.s:42     .rodata:00000024 infoStackName
-     /tmp/ccyPCBGq.s:47     .rodata:00000030 ipAddr_ipsoRD
-     /tmp/ccyPCBGq.s:67     .rodata:00000040 ipAddr_motesEecs
-     /tmp/ccyPCBGq.s:87     .rodata:00000050 ipAddr_local
-     /tmp/ccyPCBGq.s:107    .rodata:00000060 ipAddr_motedata
+     /tmp/ccdvopbL.s:19     .rodata:00000000 $d
+     /tmp/ccdvopbL.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccdvopbL.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccdvopbL.s:32     .rodata:00000010 infouCName
+     /tmp/ccdvopbL.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccdvopbL.s:42     .rodata:00000024 infoStackName
+     /tmp/ccdvopbL.s:47     .rodata:00000030 ipAddr_ipsoRD
+     /tmp/ccdvopbL.s:67     .rodata:00000040 ipAddr_motesEecs
+     /tmp/ccdvopbL.s:87     .rodata:00000050 ipAddr_local
+     /tmp/ccdvopbL.s:107    .rodata:00000060 ipAddr_motedata
                             *COM*:00000008 opencoap_vars
-     /tmp/ccyPCBGq.s:126    .text:00000000 $t
-     /tmp/ccyPCBGq.s:131    .text:00000000 opencoap_init
-     /tmp/ccyPCBGq.s:168    .text:00000028 opencoap_receive
-     /tmp/ccyPCBGq.s:826    .text:00000558 opencoap_sendDone
-     /tmp/ccyPCBGq.s:924    .text:000005dc opencoap_writeLinks
-     /tmp/ccyPCBGq.s:1059   .text:000006b8 opencoap_register
-     /tmp/ccyPCBGq.s:1131   .text:00000710 opencoap_send
+     /tmp/ccdvopbL.s:126    .text:00000000 $t
+     /tmp/ccdvopbL.s:131    .text:00000000 opencoap_init
+     /tmp/ccdvopbL.s:168    .text:00000028 opencoap_receive
+     /tmp/ccdvopbL.s:826    .text:00000558 opencoap_sendDone
+     /tmp/ccdvopbL.s:924    .text:000005dc opencoap_writeLinks
+     /tmp/ccdvopbL.s:1059   .text:000006b8 opencoap_register
+     /tmp/ccdvopbL.s:1131   .text:00000710 opencoap_send
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

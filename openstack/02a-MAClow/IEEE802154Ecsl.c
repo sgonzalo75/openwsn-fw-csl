@@ -40,6 +40,7 @@ void    activity_csl_wakeup_ti4(PORT_RADIOTIMER_WIDTH capturedTime);
 void    activity_csl_wakeup_tie3(void);
 void    activity_csl_wakeup_ti5(PORT_RADIOTIMER_WIDTH capturedTime);
 
+void    activity_csl_data_ti1(void);
 void    activity_csl_data_ti2(void);
 void    activity_csl_data_tie1(void);
 void    activity_csl_data_ti3(void);
@@ -164,10 +165,10 @@ void ieee154e_init() {
    radio_setEndFrameCb(ieee154ecsl_endOfFrame);
 
    // set timer for checking frames on local queue to transmit.
-   ieee154e_vars.txTimer = opentimers_start(macCSLTxChkFreq, TIMER_PERIODIC, TIME_TICS, isr_ieee154ecsl_txtimer_cb);
+   //ieee154e_vars.txTimer = opentimers_start(macCSLTxChkFreq, TIMER_PERIODIC, TIME_TICS, isr_ieee154ecsl_txtimer_cb);
 
    // set timer for callback to add packet to queue for testing CSL TX (every 5 seconds)
-   ieee154e_vars.cslTxTestTimer = opentimers_start(2000, TIMER_PERIODIC, TIME_MS, isr_ieee154ecsl_addPacketToQueueForTestingCslTx_cb);
+   //ieee154e_vars.cslTxTestTimer = opentimers_start(2000, TIMER_PERIODIC, TIME_MS, isr_ieee154ecsl_addPacketToQueueForTestingCslTx_cb);
 
    // have the radio start its timer for channel sampling (macCSLPeriod)
    radio_startTimer(macCSLPeriod);
@@ -246,6 +247,7 @@ void isr_ieee154ecsl_timer() {
 	      case S_CSLTXWAKEUPDELAY:	     activity_csl_wakeup_tie2(); break;
 	      case S_CSLTXWAKEUP: 	         activity_csl_wakeup_tie3(); break;
 
+	      case S_CSLTXDATAPREOFFSET:	 activity_csl_data_ti1();	 break;
 	      case S_CSLTXDATAOFFSET:        activity_csl_data_ti2();    break;
 	      case S_CSLTXDATAPREPARE:	     activity_csl_data_tie1(); 	 break;
 	      case S_CSLTXDATAREADY:	     activity_csl_data_ti3(); 	 break;
@@ -290,7 +292,7 @@ void ieee154ecsl_startOfFrame(PORT_RADIOTIMER_WIDTH capturedTime) {
 			//openserial_printError(COMPONENT_IEEE802154E,ERR_WRONG_STATE_IN_CSL_SAMPLE,
 			//					  (errorparameter_t)ieee154e_vars.state, (errorparameter_t)ieee154e_dbg.num_cslSamples);
 			// abort
-			//endOps();
+			endOps();
 			break;
 		}
 	} else if (ieee154e_vars.cslMode == CSL_TX_MODE)  { // Current CSL operation mode is frame TX.
@@ -411,7 +413,7 @@ void isr_ieee154ecsl_addPacketToQueueForTestingCslTx_cb () {
 	  // Frame type (data frame).
 	  pkt->l2_frameType=IEEE154_TYPE_DATA;
 
-	  // Flag created only to discriminate and toggle led indicator.
+	  // Flag created only to discriminate and toggle led indicator (only for TESTING)
 	  pkt->cslFlag=123;
 
 	  // Neighbor address.
@@ -508,10 +510,7 @@ port_INLINE void activity_csl_wakeup_ti1() {
 	   if((ieee154e_vars.dataToSend!=NULL) && (cellType == CELLTYPE_TX)) {   // If I have a packet to send and slot is TX, then we start FSM TX mode.
 	       // change state to start sending CSL preamble before send the data packet.
 	       changeState(S_CSLTXWAKEUPOFFSET);
-	       // Establecemos el tiempo de rendezvous que será necesario esperar. Como se trata de una TX
-	       // no sincronizada, deberá ser un tiempo igual a macCSLMaxPeriod (por eso cuando venza
-	       // el timing DURATION_tt1, solo nos quedará el tiempo macCSLMaxPeriod.
-	       ieee154e_vars.rzTime = DURATION_tt1 + macCSLMaxPeriod;
+
 	       // change owner
 	       //ieee154e_vars.dataToSend->owner = COMPONENT_IEEE802154E;
 	       // record that I will attempt to transmit this packet
@@ -535,88 +534,104 @@ port_INLINE void activity_csl_wakeup_ti2() {
 
    open_addr_t neighbor;
 
-   // change state
-   changeState(S_CSLTXWAKEUPPREPARE);
+   // El tiempo de rendezvous que será necesario esperar será macCSLMaxPeriod al tratarse de
+   // una comunicación en modo TX no sincronizado.
 
    // Calculamos el valor del rz-time en cada trama wake-up de la secuencia dado que debe ir reduciéndose para notificar
    // al extemo remoto el tiempo restante hasta el envío de la trama de datos.
 
    // El tiempo lastCapturedTime se ve incrementado tras el envio de cada trama wake-up por lo que cada vez tendrá un
-   // valor más proximo al rztime inicial (macCSLMaxPeriod).
+   // valor más proximo al macCSLMaxPeriod.
 
-   ieee154e_vars.remainingRzTime = ieee154e_vars.rzTime - ieee154e_vars.lastCapturedTime;
+   ieee154e_vars.remainingRzTime = macCSLMaxPeriod - ieee154e_vars.lastCapturedTime;
 
-   //
-   // Construimos el paquete Wake-Up con su valor RZTime asociado en caso de no existir ya.
-   //
+   if(DURATION_txcsl < ieee154e_vars.remainingRzTime) { // Si da tiempo a enviar una nueva trama de wake-up antes de la finalización del ciclo...
 
-   if (ieee154e_vars.wakeupToSend == NULL) { // first time
+	   // change state
+	   changeState(S_CSLTXWAKEUPPREPARE);
 
-	   // obtenemos un buffer en el cual poder guardar los datos recibidos.
-	   ieee154e_vars.wakeupToSend = openqueue_getFreePacketBuffer(COMPONENT_IEEE802154E);
-	   if (ieee154e_vars.wakeupToSend==NULL) {
-		  // registro del error & fin de operaciones.
-		  openserial_printError(COMPONENT_IEEE802154E,ERR_NO_FREE_PACKET_BUFFER, (errorparameter_t)0, (errorparameter_t)0);
-		  endOps();
-		  return;
+	   //
+	   // Construimos el paquete Wake-Up con su valor RZTime asociado en caso de no existir ya.
+	   //
+
+	   if (ieee154e_vars.wakeupToSend == NULL) { // first time
+
+		   // obtenemos un buffer en el cual poder guardar los datos recibidos.
+		   ieee154e_vars.wakeupToSend = openqueue_getFreePacketBuffer(COMPONENT_IEEE802154E);
+		   if (ieee154e_vars.wakeupToSend == NULL) {
+			  // registro del error & fin de operaciones.
+			  openserial_printError(COMPONENT_IEEE802154E,ERR_NO_FREE_PACKET_BUFFER, (errorparameter_t)0, (errorparameter_t)0);
+			  endOps();
+			  return;
+		   }
+
+		   // Declaración de propiedad sobre el paquete.
+		   ieee154e_vars.wakeupToSend->creator = COMPONENT_IEEE802154E;
+		   ieee154e_vars.wakeupToSend->owner   = COMPONENT_IEEE802154E;
+
+		   // El tipo de trama es Multipurpose.
+		   ieee154e_vars.wakeupToSend->l2_frameType = IEEE154_TYPE_MULTIPURPOSE;
+
+		   // El dsn del paquete lo obtenemos a partir del actual DSN incrementado en cada paquete de la secuencia wake-up.
+		   ieee154e_vars.wakeupToSend->l2_dsn = ieee154e_vars.cslDSN++;
+
+		   // El destinatario es el mismo que el destinatario del mensaje de datos indicado en el schedule.
+		   schedule_getNeighbor(&neighbor);
+
+		   // Verificamos que se trata de una dirección corta (short address). En caso contrario generamos un mensaje de advertencia.
+		   if(neighbor.type != ADDR_16B) {
+			   // CSL: This is an invalid address because address in wake-up frame must be short address.
+			   // We do not finish operations but we will use later short address getting it from long address.
+			   openserial_printInfo(COMPONENT_IEEE802154,ERR_IEEE154_UNSUPPORTED, (errorparameter_t)1, (errorparameter_t)(neighbor.type));
+		   }
+
+		   // create frame header.
+		   ieee802154_createWakeUpFrame(ieee154e_vars.wakeupToSend,
+										ieee154e_vars.wakeupToSend->l2_dsn,
+										&neighbor,
+										ieee154e_vars.remainingRzTime);
+
+		   // space for 2-byte CRC
+		   packetfunctions_reserveFooterSize(ieee154e_vars.wakeupToSend,2);
+	   }
+	   else {
+		   // update rztime in header.
+		   // Se posiciona 8 posiciones antes dado que estamos escribiendo el paquete de atras hacia delante y antes tenemos:
+		   // - 1 byte FCF
+		   // - 1 byte SEQ
+		   // - 2 bytes PANID
+		   // - 2 bytes DEST ADDR
+		   // - 2 bytes RZTIME IE HEADER
+		   // - 2 bytes RZTIME (el cual se sobrescribirá con el nuevo valor).
+		   *((uint16_t*)(ieee154e_vars.wakeupToSend->payload+8)) = ieee154e_vars.remainingRzTime;
 	   }
 
-	   // Declaración de propiedad sobre el paquete.
-	   ieee154e_vars.wakeupToSend->creator = COMPONENT_IEEE802154E;
-	   ieee154e_vars.wakeupToSend->owner   = COMPONENT_IEEE802154E;
 
-	   // El tipo de trama es Multipurpose.
-	   ieee154e_vars.wakeupToSend->l2_frameType = IEEE154_TYPE_MULTIPURPOSE;
+	   // load the packet in the radio's Tx buffer
+	   radio_loadPacket(ieee154e_vars.wakeupToSend->payload, ieee154e_vars.wakeupToSend->length);
 
-	   // El dsn del paquete lo obtenemos a partir del actual DSN incrementado en cada paquete de la secuencia wake-up.
-	   ieee154e_vars.wakeupToSend->l2_dsn = ieee154e_vars.cslDSN++;
+	   // enable the radio in Tx mode. This does not send the packet.
+	   radio_txEnable();
+	   ieee154e_vars.radioOnInit=radio_getTimerValue();
+	   ieee154e_vars.radioOnThisSlot=TRUE;
 
-	   // El destinatario es el mismo que el destinatario del mensaje de datos indicado en el schedule.
-	   schedule_getNeighbor(&neighbor);
+	   // arm tt2
+       radiotimer_schedule(DURATION_tt2);
 
-	   // Verificamos que se trata de una dirección corta (short address). En caso contrario generamos un mensaje de advertencia.
-	   if(neighbor.type != ADDR_16B) {
-		   // CSL: This is an invalid address because address in wake-up frame must be short address.
-		   // We do not finish operations but we will use later short address getting it from long address.
-		   openserial_printInfo(COMPONENT_IEEE802154,ERR_IEEE154_UNSUPPORTED, (errorparameter_t)1, (errorparameter_t)(neighbor.type));
-	   }
-
-	   // create frame header.
-	   ieee802154_createWakeUpFrame(ieee154e_vars.wakeupToSend,
-									ieee154e_vars.wakeupToSend->l2_dsn,
-									&neighbor,
-									ieee154e_vars.remainingRzTime);
-
-
-	   // space for 2-byte CRC
-	   //packetfunctions_reserveFooterSize(ieee154e_vars.wakeupToSend,2);
+	   // change state
+	   changeState(S_CSLTXWAKEUPREADY);
    }
    else {
-	   // update rztime in header.
-	   // Se posiciona 8 posiciones antes dado que estamos escribiendo el paquete de atras hacia delante y antes tenemos:
-	   // - 1 byte FCF
-	   // - 1 byte SEQ
-	   // - 2 bytes PANID
-	   // - 2 bytes DEST ADDR
-	   // - 2 bytes RZTIME IE HEADER
-	   // - 2 bytes RZTIME (el cual se sobrescribirá con el nuevo valor).
-	    *((uint16_t*)(ieee154e_vars.wakeupToSend->payload+8)) = ieee154e_vars.remainingRzTime;
+	   // Si no da tiempo a enviar una nueva trama, simplemente esperamos un tiempo igual a remainingRzTime que será
+	   // el tiempo que queda pendiente hasta el envío de la trama de datos y actualizamos directamente el estado para
+	   // pasar a la transmisión de los datos.
+
+	   // change state
+	   changeState(S_CSLTXDATAPREOFFSET);
+
+	   // arm tt1 + remaining rendezvous time.
+	   radiotimer_schedule(ieee154e_vars.remainingRzTime);
    }
-
-
-   // load the packet in the radio's Tx buffer
-   radio_loadPacket(ieee154e_vars.wakeupToSend->payload, ieee154e_vars.wakeupToSend->length);
-
-   // enable the radio in Tx mode. This does not send the packet.
-   radio_txEnable();
-   ieee154e_vars.radioOnInit=radio_getTimerValue();
-   ieee154e_vars.radioOnThisSlot=TRUE;
-
-   // arm tt2
-   radiotimer_schedule(DURATION_tt2);
-
-   // change state
-   changeState(S_CSLTXWAKEUPREADY);
 }
 
 /**
@@ -631,7 +646,7 @@ port_INLINE void activity_csl_wakeup_tie1() {
                          (errorparameter_t)ieee154e_vars.state, (errorparameter_t)ieee154e_vars.slotOffset);
 
    // abort
-   //endOps();
+   endOps();
 }
 
 /**
@@ -662,7 +677,7 @@ port_INLINE void activity_csl_wakeup_tie2() {
    openserial_printError(COMPONENT_IEEE802154E,ERR_WDRADIO_OVERFLOWS,
                          (errorparameter_t)ieee154e_vars.state, (errorparameter_t)ieee154e_vars.slotOffset);
    // abort
-   //endOps();
+   endOps();
 }
 
 /**
@@ -697,7 +712,7 @@ port_INLINE void activity_csl_wakeup_tie3() {
    openserial_printError(COMPONENT_IEEE802154E,ERR_WDDATADURATION_OVERFLOWS,
                          (errorparameter_t)ieee154e_vars.state, (errorparameter_t)ieee154e_vars.slotOffset);
    // abort
-   //endOps();
+   endOps();
 }
 
 
@@ -716,16 +731,35 @@ port_INLINE void activity_csl_wakeup_ti5(PORT_RADIOTIMER_WIDTH capturedTime) {
 	// sea inferior al tiempo de la duración del rztime inicial, debemos seguir enviando tramas wake-up.
 	// En caso contrario, enviamos la trama de datos.
 
-	if((ieee154e_vars.rzTime - ieee154e_vars.lastCapturedTime) < ieee154e_vars.remainingRzTime) {
-	   changeState(S_CSLTXWAKEUPOFFSET);
-	}
-	else {
-       changeState(S_CSLTXDATAOFFSET);
-    }
+	//if((macCSLMaxPeriod - ieee154e_vars.lastCapturedTime) < ieee154e_vars.remainingRzTime) {
+	//	changeState(S_CSLTXWAKEUPOFFSET);
+	//}
+	//else {
+    //   changeState(S_CSLTXDATAOFFSET);
+    //}
 
-   // arm tt1 (enviemos de nuevo una trama de wake-up o de datos, el tiempo será tt1).
-   radiotimer_schedule(DURATION_tt1);
+	changeState(S_CSLTXWAKEUPOFFSET);
+
+    // arm tt1 (enviemos de nuevo una trama de wake-up o de datos, el tiempo será tt1).
+    radiotimer_schedule(DURATION_tt1);
 }
+
+/**
+ \brief Activity for CSL TX stage [data ti1].
+
+  This method is invoked from ISR-mode "isr_ieee154ecsl_timer" function when FSM timer fires after expire remainingRzTime while state = S_CSLTXWAKEUPVALIDATE.
+  The functionality is to prepare the data to be sent.
+*/
+
+port_INLINE void activity_csl_data_ti1() {
+
+	// change state
+	changeState(S_CSLTXDATAOFFSET);
+
+    // arm tt1 (enviemos de nuevo una trama de wake-up o de datos, el tiempo será tt1).
+    radiotimer_schedule(DURATION_tt1);
+}
+
 
 
 /**
@@ -818,7 +852,7 @@ port_INLINE void activity_csl_data_ti4(PORT_RADIOTIMER_WIDTH capturedTime) {
    radiotimer_cancel();
 
    // record the captured time
-   ieee154e_vars.lastCapturedTime = capturedTime;
+   //ieee154e_vars.lastCapturedTime = capturedTime;
 
    // arm tt4
    radiotimer_schedule(DURATION_tt4);
@@ -859,7 +893,7 @@ port_INLINE void activity_csl_data_ti5(PORT_RADIOTIMER_WIDTH capturedTime) {
    ieee154e_vars.radioOnTics+=(radio_getTimerValue()-ieee154e_vars.radioOnInit);
 
    // record the captured time
-   ieee154e_vars.lastCapturedTime = capturedTime;
+   //ieee154e_vars.lastCapturedTime = capturedTime;
 
    // decides whether to listen for an ACK
    if (packetfunctions_isBroadcastMulticast(&ieee154e_vars.dataToSend->l2_nextORpreviousHop)==TRUE) {
@@ -873,7 +907,6 @@ port_INLINE void activity_csl_data_ti5(PORT_RADIOTIMER_WIDTH capturedTime) {
    if((ieee154e_vars.dataToSend->l2_frameType == IEEE154_TYPE_DATA) &&
 	  (ieee154e_vars.dataToSend->owner == COMPONENT_SIXTOP_TO_IEEE802154E) &&
 	  (ieee154e_vars.dataToSend->cslFlag == 123)) {
-	 //leds_sync_toggle();
 	 leds_sync_blink();
 	 listenForAck = FALSE;
    }
@@ -985,7 +1018,7 @@ port_INLINE void activity_csl_data_tie5() {
 }
 
 /**
- \brief Activity for CSL TX stage [data ri8].
+ \brief Activity for CSL TX stage [data ti8].
 
   This method is invoked from ISR-mode "ieee154ecsl_startOfFrame" function when a start of frame event fires while state = S_CSLRXACKLISTEN.
   The functionality is to change the state, cancel #tt7 and arm #tt8 (max time to receive the ack packet).
@@ -998,7 +1031,7 @@ port_INLINE void activity_csl_data_ti8(PORT_RADIOTIMER_WIDTH capturedTime) {
    radiotimer_cancel();
 
    // record the captured time
-   ieee154e_vars.lastCapturedTime = capturedTime;
+   //ieee154e_vars.lastCapturedTime = capturedTime;
 
    // arm tt8
    radiotimer_schedule(DURATION_tt8);
@@ -1038,7 +1071,7 @@ port_INLINE void activity_csl_data_ti9(PORT_RADIOTIMER_WIDTH capturedTime) {
    ieee154e_vars.radioOnTics+=(radio_getTimerValue()-ieee154e_vars.radioOnInit);
 
    // record the captured time
-   ieee154e_vars.lastCapturedTime = capturedTime;
+   //ieee154e_vars.lastCapturedTime = capturedTime;
 
    // get a buffer to put the (received) ACK in
    ieee154e_vars.ackReceived = openqueue_getFreePacketBuffer(COMPONENT_IEEE802154E);
@@ -1339,7 +1372,7 @@ port_INLINE void activity_csl_wakeup_rie4() {
 port_INLINE void activity_csl_wakeup_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
 
 	// Only for CSL Testing due to we are hard-coding destination (neighbor) address on schedule, packet sent and receiver activity (this activity).
-	open_addr_t myID;
+	open_addr_t myID, myID16b;
     myID.addr_64b[0]=0x00;
 	myID.addr_64b[1]=0x11;
 	myID.addr_64b[2]=0x22;
@@ -1422,11 +1455,25 @@ port_INLINE void activity_csl_wakeup_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
       // En el caso de que no sea una cabecera IEEE802.15.4 válida, finalizamos el proceso.
       if (ieee802514_header.valid==FALSE) { break; }
 
+      // CSL TEST CODE : Verify RZ Time
+      //if (rztime <= 0x07D0) { // 2000
+      //	  break;
+      // } else {
+	  //    changeState(S_CSLRXWAKEUPOFFSET);
+	  //	  radiotimer_schedule(DURATION_rt1);
+      //	  break;
+      // }
+      // END CSL TEST CODE
+
       // Verificamos que se trata de una trama WAKE-UP, perteneciente a la misma PAN ID, y dirigida a mi.
       if(ieee802514_header.frameType==IEEE154_TYPE_MULTIPURPOSE) {
-     	  //if(packetfunctions_sameAddress(&ieee802514_header.dest,idmanager_getMyID(ADDR_16B)) && --> Comentado para CSL Testing dado que tenemos hard-coded la direccion.
-    	  if(packetfunctions_sameAddress(&ieee802514_header.dest, &myID) &&
-   		    packetfunctions_sameAddress(&ieee802514_header.panid,idmanager_getMyID(ADDR_PANID))) {
+    	  // Comentado y sustituido para CSL TESTING ya que está hard-codeada la direccion.
+     	  //if(packetfunctions_sameAddress(&ieee802514_header.dest,idmanager_getMyID(ADDR_16B)) &&
+    	  // CSL TEST
+    	  packetfunctions_mac64bToMac16b(&myID,&myID16b);
+    	  if(packetfunctions_sameAddress(&ieee802514_header.dest, &myID16b) &&
+   		  // END CSL TEST
+    	     packetfunctions_sameAddress(&ieee802514_header.panid,idmanager_getMyID(ADDR_PANID))) {
 
     	   // En este caso, debemos dormir el tiempo indicado por RZ Time, estableciendo el estado a S_CSLRXDATAOFFSET
  	       changeState(S_CSLRXDATAOFFSET);
@@ -1443,19 +1490,38 @@ port_INLINE void activity_csl_wakeup_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
     	   // registro del tiempo de captura
            ieee154e_vars.lastCapturedTime = capturedTime;
 
-           // si hemos llegado aquí, retornamos para no ejecutar el codigo inferior.
+           // Descartamos el paquete una vez recibido y tratado.
+
+           openqueue_freePacketBuffer(ieee154e_vars.wakeupReceived);
+
+           // clear local variable
+           ieee154e_vars.wakeupReceived = NULL;
+
+           // retornamos para no ejecutar el codigo inferior y finalizar el proceso.
            return;
     	 }
     	 // En el caso que sea una trama dentro de mi PANID pero no dirigida a mi, entonces dormimos un tiempo igual a:
     	 //   - RZ time + Maximum length payload frame + secure ack frame (consideraremos un tiempo igual a RZ time + TsSlotDuration)
-    	 // dado que TsSlotDuration es el tiempo utilizado en OpenWSN-TSCH para enviar y recibir una trama de datos + ack.
+    	 // dado que TsSlotDuration es el tiempo utilizado en OpenWSN-TSCH para enviar y recibir una trama de datos + ack. Se requiere
+    	 // en cualquier caso revisar estos timings mediante medidas y mecanismos más precisos (osciloscopio).
     	 else if( ! packetfunctions_sameAddress(&ieee802514_header.dest,idmanager_getMyID(ADDR_16B)) &&
     	   		    packetfunctions_sameAddress(&ieee802514_header.panid,idmanager_getMyID(ADDR_PANID))) {
 
     	     // La limpieza del paquete y los datos recibidos será realizada en el metodo activity_csl_wakeup_rie4
     		 radiotimer_schedule(rztime + TsSlotDuration);
-    		 return;
+
+    	     // Descartamos el paquete una vez recibido y tratado.
+
+    	     openqueue_freePacketBuffer(ieee154e_vars.wakeupReceived);
+
+    	     // clear local variable
+    	     ieee154e_vars.wakeupReceived = NULL;
+
+    	     return;
     	 }
+      }
+      else {
+    	  break; // cualquier otro tipo de trama recibida en este punto de la FSM es descartada.
       }
 
    } while(0);
@@ -1972,9 +2038,15 @@ void ieee802154_createWakeUpFrame(OpenQueueEntry_t*		msg,
 
 	// Empezamos a escribir el payload de la trama wake-up empezando del final hacia adelante.
 
-	// IE LIST TERMINATOR
-	packetfunctions_reserveHeaderSize(msg,sizeof(uint8_t));
- 	*((uint8_t*)(msg->payload)) = 0x7e;
+	// IE LIST TERMINATOR, formado por 2 bytes con la siguiente estructura (0x3F80 o 0x3F00)
+    //  - b0-b6 (Length) = 0
+    //  - b7-b14 (Element ID) = 0x7e o 0x7f
+    //  - b15 (Type) = 0
+    //
+    //  b15 | b14 | b13 | b12 | b11 | b10 | b9 | b8 | b7 | b6 | b5 | b4 | b3 | b2 | b1 | b0 |
+    //   0  |  0  |  1  |  1  |  1  |  1  | 1  | 1  |  0 |  0 |  0 |  0 |  0 |  0 |  0 |  0 |
+	packetfunctions_reserveHeaderSize(msg,sizeof(uint16_t));
+	*((uint16_t*)(msg->payload)) = 0x3F00;  // Element ID = 0x7e
 
 	// RZ TIME IE, formado por 4 bytes con la siguiente estructura (0x0E82)
     //  - b0-b6 (Length) = 2
@@ -2000,6 +2072,7 @@ void ieee802154_createWakeUpFrame(OpenQueueEntry_t*		msg,
 	   packetfunctions_mac64bToMac16b(nextHop, &nextHop16b);
 	   packetfunctions_writeAddress(msg,&nextHop16b,OW_LITTLE_ENDIAN);
 	}
+
 	// PAN ID
 	packetfunctions_writeAddress(msg,idmanager_getMyID(ADDR_PANID),OW_LITTLE_ENDIAN);
 
@@ -2034,7 +2107,7 @@ Note We are writing the fields from the beginning of the header to the end.
 void ieee802154_retrieveWakeUpFrame(OpenQueueEntry_t*      msg,
                                     ieee802154_header_iht* ieee802514_header,
 									uint16_t* rztime) {
-   uint8_t temp_8b;
+   uint8_t temp_8b, temp_8b1, temp_8b2;
    uint8_t src_addr_mode, dst_addr_mode;
    uint16_t temp_16b;
 
@@ -2121,7 +2194,7 @@ void ieee802154_retrieveWakeUpFrame(OpenQueueEntry_t*      msg,
    ieee802514_header->headerLength += 1;
 
    // Posicionamos dentro del paquete para leer el resto de elementos.
-   temp_8b = *((uint8_t*)(msg->payload)+ieee802514_header->headerLength);
+   //temp_8b = *((uint8_t*)(msg->payload)+ieee802514_header->headerLength);
 
    // 1.- SequenceNumber
    if (ieee802514_header->headerLength > msg->length) { return; } // no more to read!
@@ -2152,40 +2225,56 @@ void ieee802154_retrieveWakeUpFrame(OpenQueueEntry_t*      msg,
 
    if (ieee802514_header->headerLength > msg->length) {  return; } // no more to read!
 
-   // Verificamos longitud a valor 2 y el elementID a valor 0x1D. Lo hacemos leyendo los primeros 2 bytes del RZ Time IE.
-   temp_16b = *((uint16_t*)(msg->payload)+ieee802514_header->headerLength);
+   // Verificamos longitud a valor 2 y el elementID a valor 0x1D. Lo hacemos leyendo los primeros 2 bytes del RZ Time IE, uno a uno.
+   temp_8b1 = *((uint8_t*)(msg->payload)+ieee802514_header->headerLength);
+   ieee802514_header->headerLength += 1;
+
+   temp_8b2 = *((uint8_t*)(msg->payload)+ieee802514_header->headerLength);
+   ieee802514_header->headerLength += 1;
+
+   temp_16b = (temp_8b2 << 8) | temp_8b1;
 
    // Comprobación de longitud a valor 2.
 
-   if ((temp_16b & 0x007f)  == 2) { return; }
+   if ((temp_16b & 0x007f) != 2) { return; }
 
    // Comprobación de element ID = 0x1D.
 
-   if (((temp_16b >> 7) & 0x001d) == 0) { return; }
+   if ((temp_16b >> 7) != 0x001d) { return; }
 
    // Comprobación del type = 0.
 
    if ((temp_16b >> 15) & 0x0001) { return; }
 
    // Obtención del IE Content (rztime).
-   ieee802514_header->headerLength += 2;
    if (ieee802514_header->headerLength > msg->length) { return; } // no more to read!
 
-   (*rztime) = *((uint16_t*)(msg->payload)+ieee802514_header->headerLength);
+   temp_8b1 = *((uint8_t*)(msg->payload)+ieee802514_header->headerLength);
+   ieee802514_header->headerLength += 1;
 
-   // 5.- IE List Terminator, formado por 2 bytes con la siguiente estructura:
+   temp_8b2 = *((uint8_t*)(msg->payload)+ieee802514_header->headerLength);
+   ieee802514_header->headerLength += 1;
+
+   (*rztime) = (temp_8b2 << 8) | temp_8b1;
+
+   // 5.- IE List Terminator, formado por 2 bytes con la siguiente estructura (0x3F80 o 0x3F00)
    //  - b0-b6 (Length) = 0
    //  - b7-b14 (Element ID) = 0x7e o 0x7f
    //  - b15 (Type) = 0
    //
    //  b15 | b14 | b13 | b12 | b11 | b10 | b9 | b8 | b7 | b6 | b5 | b4 | b3 | b2 | b1 | b0 |
-   //   0  |  1  |  1  |  1 |  1  |  1  |  1 |  1 |  1 |  0 |  0 |  0 |  0 |  0 |  0 |  0 |
+   //   0  |  0  |  1  |  1  |  1  |  1  | 1  | 1  |  0 |  0 |  0 |  0 |  0 |  0 |  0 |  0 |
 
-   ieee802514_header->headerLength += 2;
    if (ieee802514_header->headerLength > msg->length) { return; } // no more to read!
 
    // Verificamos longitud a valor 0 y el elementID a valor 0x7E o 0x7F. Lo hacemos leyendo los 2 bytes IE.
-   temp_16b = *((uint16_t*)(msg->payload)+ieee802514_header->headerLength);
+   temp_8b1 = *((uint8_t*)(msg->payload)+ieee802514_header->headerLength);
+   ieee802514_header->headerLength += 1;
+
+   temp_8b2 = *((uint8_t*)(msg->payload)+ieee802514_header->headerLength);
+   ieee802514_header->headerLength += 1;
+
+   temp_16b = (temp_8b2 << 8) | temp_8b1;
 
    // Comprobación de longitud a valor 0.
 
@@ -2193,9 +2282,7 @@ void ieee802154_retrieveWakeUpFrame(OpenQueueEntry_t*      msg,
 
    // Comprobación de element ID = 0x7E o 0x7F.
 
-   if ((((temp_16b >> 7) & 0x007e) != 0x7e) &&
-       (((temp_16b >> 7) & 0x007f) != 0x7f)
-	  ){ return; }
+   if (((temp_16b >> 7) != 0x7e) && ((temp_16b >> 7) != 0x7f)) { return; }
 
    // Comprobación del type = 0.
 
@@ -2445,6 +2532,7 @@ void changeState(ieee154e_state_t newstate) {
    // wiggle the FSM debug pin
    switch (ieee154e_vars.state) {
       case S_CSLTXWAKEUPOFFSET:
+      case S_CSLTXDATAPREOFFSET:
       case S_CSLTXDATAOFFSET:
          debugpins_fsm_set();
          break;

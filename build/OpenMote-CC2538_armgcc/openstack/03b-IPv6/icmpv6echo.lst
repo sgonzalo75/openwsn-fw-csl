@@ -653,20 +653,20 @@
  516              		.file 6 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 icmpv6echo.c
-     /tmp/ccIOFdVe.s:19     .rodata:00000000 $d
-     /tmp/ccIOFdVe.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccIOFdVe.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccIOFdVe.s:32     .rodata:00000010 infouCName
-     /tmp/ccIOFdVe.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccIOFdVe.s:42     .rodata:00000024 infoStackName
+     /tmp/cclr43Hz.s:19     .rodata:00000000 $d
+     /tmp/cclr43Hz.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cclr43Hz.s:27     .rodata:00000008 infoBoardname
+     /tmp/cclr43Hz.s:32     .rodata:00000010 infouCName
+     /tmp/cclr43Hz.s:37     .rodata:00000018 infoRadioName
+     /tmp/cclr43Hz.s:42     .rodata:00000024 infoStackName
                             *COM*:00000014 icmpv6echo_vars
-     /tmp/ccIOFdVe.s:46     .text:00000000 $t
-     /tmp/ccIOFdVe.s:51     .text:00000000 icmpv6echo_init
-     /tmp/ccIOFdVe.s:88     .text:00000028 icmpv6echo_trigger
-     /tmp/ccIOFdVe.s:267    .text:00000198 $d
-     /tmp/ccIOFdVe.s:271    .text:0000019c $t
-     /tmp/ccIOFdVe.s:276    .text:0000019c icmpv6echo_sendDone
-     /tmp/ccIOFdVe.s:332    .text:000001e8 icmpv6echo_receive
+     /tmp/cclr43Hz.s:46     .text:00000000 $t
+     /tmp/cclr43Hz.s:51     .text:00000000 icmpv6echo_init
+     /tmp/cclr43Hz.s:88     .text:00000028 icmpv6echo_trigger
+     /tmp/cclr43Hz.s:267    .text:00000198 $d
+     /tmp/cclr43Hz.s:271    .text:0000019c $t
+     /tmp/cclr43Hz.s:276    .text:0000019c icmpv6echo_sendDone
+     /tmp/cclr43Hz.s:332    .text:000001e8 icmpv6echo_receive
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

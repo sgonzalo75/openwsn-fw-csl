@@ -103,14 +103,14 @@
   84              		.file 4 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
 DEFINED SYMBOLS
                             *ABS*:00000000 03oos_openwsn.c
-     /tmp/cccBAWOD.s:19     .rodata:00000000 $d
-     /tmp/cccBAWOD.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/cccBAWOD.s:27     .rodata:00000008 infoBoardname
-     /tmp/cccBAWOD.s:32     .rodata:00000010 infouCName
-     /tmp/cccBAWOD.s:37     .rodata:00000018 infoRadioName
-     /tmp/cccBAWOD.s:42     .rodata:00000024 infoStackName
-     /tmp/cccBAWOD.s:45     .text:00000000 $t
-     /tmp/cccBAWOD.s:50     .text:00000000 mote_main
+     /tmp/ccAdW4lO.s:19     .rodata:00000000 $d
+     /tmp/ccAdW4lO.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccAdW4lO.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccAdW4lO.s:32     .rodata:00000010 infouCName
+     /tmp/ccAdW4lO.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccAdW4lO.s:42     .rodata:00000024 infoStackName
+     /tmp/ccAdW4lO.s:45     .text:00000000 $t
+     /tmp/ccAdW4lO.s:50     .text:00000000 mote_main
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

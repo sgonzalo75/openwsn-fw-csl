@@ -292,19 +292,19 @@
  221              		.file 6 "openstack/04-TRAN/opencoap.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 openstack.c
-     /tmp/cck5oO8I.s:19     .rodata:00000000 $d
-     /tmp/cck5oO8I.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/cck5oO8I.s:27     .rodata:00000008 infoBoardname
-     /tmp/cck5oO8I.s:32     .rodata:00000010 infouCName
-     /tmp/cck5oO8I.s:37     .rodata:00000018 infoRadioName
-     /tmp/cck5oO8I.s:42     .rodata:00000024 infoStackName
-     /tmp/cck5oO8I.s:47     .rodata:00000030 all_routers_multicast
-     /tmp/cck5oO8I.s:67     .rodata:00000040 ipAddr_ipsoRD
-     /tmp/cck5oO8I.s:87     .rodata:00000050 ipAddr_motesEecs
-     /tmp/cck5oO8I.s:107    .rodata:00000060 ipAddr_local
-     /tmp/cck5oO8I.s:127    .rodata:00000070 ipAddr_motedata
-     /tmp/cck5oO8I.s:145    .text:00000000 $t
-     /tmp/cck5oO8I.s:150    .text:00000000 openstack_init
+     /tmp/cck7eWJs.s:19     .rodata:00000000 $d
+     /tmp/cck7eWJs.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cck7eWJs.s:27     .rodata:00000008 infoBoardname
+     /tmp/cck7eWJs.s:32     .rodata:00000010 infouCName
+     /tmp/cck7eWJs.s:37     .rodata:00000018 infoRadioName
+     /tmp/cck7eWJs.s:42     .rodata:00000024 infoStackName
+     /tmp/cck7eWJs.s:47     .rodata:00000030 all_routers_multicast
+     /tmp/cck7eWJs.s:67     .rodata:00000040 ipAddr_ipsoRD
+     /tmp/cck7eWJs.s:87     .rodata:00000050 ipAddr_motesEecs
+     /tmp/cck7eWJs.s:107    .rodata:00000060 ipAddr_local
+     /tmp/cck7eWJs.s:127    .rodata:00000070 ipAddr_motedata
+     /tmp/cck7eWJs.s:145    .text:00000000 $t
+     /tmp/cck7eWJs.s:150    .text:00000000 openstack_init
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
@@ -328,7 +328,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.schedule.h.2.74f699399ee9cbf3b59178f1204d8511
                            .group:00000000 wm4.processIE.h.2.1848f1e3c653035e9779472584ce0441
                            .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
-                           .group:00000000 wm4.IEEE802154Ecsl.h.21.a46c6cdefbea13cd7501756681c86a21
+                           .group:00000000 wm4.IEEE802154Ecsl.h.21.9b3cd0c823c4cebe26b24d119729e7b5
                            .group:00000000 wm4.idmanager.h.2.8c0e2159b32ef3125cbb1e984805cbfe
                            .group:00000000 wm4.sixtop.h.2.0b8613e8e48e9109b53e6143f3ed1895
                            .group:00000000 wm4.icmpv6rpl.h.2.0ce84dbe8c203c7079b39e7e96c7c01e

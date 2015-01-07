@@ -516,13 +516,13 @@
  334              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
 DEFINED SYMBOLS
                             *ABS*:00000000 adxl346.c
-     /tmp/cc2vvAZs.s:18     .text:00000000 $t
-     /tmp/cc2vvAZs.s:23     .text:00000000 adx346_init
-     /tmp/cc2vvAZs.s:89     .text:00000068 adx346_reset
-     /tmp/cc2vvAZs.s:115    .text:00000074 adx346_is_present
-     /tmp/cc2vvAZs.s:161    .text:000000ac adx346_read_x
-     /tmp/cc2vvAZs.s:220    .text:00000108 adx346_read_y
-     /tmp/cc2vvAZs.s:279    .text:00000164 adx346_read_z
+     /tmp/ccgZ9WFn.s:18     .text:00000000 $t
+     /tmp/ccgZ9WFn.s:23     .text:00000000 adx346_init
+     /tmp/ccgZ9WFn.s:89     .text:00000068 adx346_reset
+     /tmp/ccgZ9WFn.s:115    .text:00000074 adx346_is_present
+     /tmp/ccgZ9WFn.s:161    .text:000000ac adx346_read_x
+     /tmp/ccgZ9WFn.s:220    .text:00000108 adx346_read_y
+     /tmp/ccgZ9WFn.s:279    .text:00000164 adx346_read_z
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

@@ -3534,35 +3534,35 @@
  2837              		.file 6 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 neighbors.c
-     /tmp/ccfOeL7i.s:19     .rodata:00000000 $d
-     /tmp/ccfOeL7i.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccfOeL7i.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccfOeL7i.s:32     .rodata:00000010 infouCName
-     /tmp/ccfOeL7i.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccfOeL7i.s:42     .rodata:00000024 infoStackName
-     /tmp/ccfOeL7i.s:47     .rodata:00000030 all_routers_multicast
+     /tmp/ccgf36b0.s:19     .rodata:00000000 $d
+     /tmp/ccgf36b0.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccgf36b0.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccgf36b0.s:32     .rodata:00000010 infouCName
+     /tmp/ccgf36b0.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccgf36b0.s:42     .rodata:00000024 infoStackName
+     /tmp/ccgf36b0.s:47     .rodata:00000030 all_routers_multicast
                             *COM*:0000015c neighbors_vars
-     /tmp/ccfOeL7i.s:66     .text:00000000 $t
-     /tmp/ccfOeL7i.s:71     .text:00000000 neighbors_init
-     /tmp/ccfOeL7i.s:120    .text:00000048 neighbors_getMyDAGrank
-     /tmp/ccfOeL7i.s:151    .text:00000060 neighbors_getNumNeighbors
-     /tmp/ccfOeL7i.s:218    .text:000000b8 neighbors_getPreferredParentEui64
-     /tmp/ccfOeL7i.s:448    .text:00000288 neighbors_getKANeighbor
-     /tmp/ccfOeL7i.s:575    .text:00000364 neighbors_isStableNeighbor
-     /tmp/ccfOeL7i.s:2745   .text:000014d0 isThisRowMatching
-     /tmp/ccfOeL7i.s:682    .text:00000418 neighbors_isPreferredParent
-     /tmp/ccfOeL7i.s:763    .text:00000488 neighbors_isNeighborWithLowerDAGrank
-     /tmp/ccfOeL7i.s:836    .text:000004f8 neighbors_isNeighborWithHigherDAGrank
-     /tmp/ccfOeL7i.s:909    .text:00000568 neighbors_indicateRx
-     /tmp/ccfOeL7i.s:2165   .text:00000fec registerNewNeighbor
-     /tmp/ccfOeL7i.s:1256   .text:00000888 neighbors_indicateTx
-     /tmp/ccfOeL7i.s:1488   .text:00000a90 neighbors_indicateRxDIO
-     /tmp/ccfOeL7i.s:2493   .text:000012bc isNeighbor
-     /tmp/ccfOeL7i.s:1755   .text:00000ca0 neighbors_updateMyDAGrankAndNeighborPreference
-     /tmp/ccfOeL7i.s:1676   .text:00000c34 neighbors_getNeighbor
-     /tmp/ccfOeL7i.s:1988   .text:00000ea0 neighbors_removeOld
-     /tmp/ccfOeL7i.s:2556   .text:00001304 removeNeighbor
-     /tmp/ccfOeL7i.s:2068   .text:00000f20 debugPrint_neighbors
+     /tmp/ccgf36b0.s:66     .text:00000000 $t
+     /tmp/ccgf36b0.s:71     .text:00000000 neighbors_init
+     /tmp/ccgf36b0.s:120    .text:00000048 neighbors_getMyDAGrank
+     /tmp/ccgf36b0.s:151    .text:00000060 neighbors_getNumNeighbors
+     /tmp/ccgf36b0.s:218    .text:000000b8 neighbors_getPreferredParentEui64
+     /tmp/ccgf36b0.s:448    .text:00000288 neighbors_getKANeighbor
+     /tmp/ccgf36b0.s:575    .text:00000364 neighbors_isStableNeighbor
+     /tmp/ccgf36b0.s:2745   .text:000014d0 isThisRowMatching
+     /tmp/ccgf36b0.s:682    .text:00000418 neighbors_isPreferredParent
+     /tmp/ccgf36b0.s:763    .text:00000488 neighbors_isNeighborWithLowerDAGrank
+     /tmp/ccgf36b0.s:836    .text:000004f8 neighbors_isNeighborWithHigherDAGrank
+     /tmp/ccgf36b0.s:909    .text:00000568 neighbors_indicateRx
+     /tmp/ccgf36b0.s:2165   .text:00000fec registerNewNeighbor
+     /tmp/ccgf36b0.s:1256   .text:00000888 neighbors_indicateTx
+     /tmp/ccgf36b0.s:1488   .text:00000a90 neighbors_indicateRxDIO
+     /tmp/ccgf36b0.s:2493   .text:000012bc isNeighbor
+     /tmp/ccgf36b0.s:1755   .text:00000ca0 neighbors_updateMyDAGrankAndNeighborPreference
+     /tmp/ccgf36b0.s:1676   .text:00000c34 neighbors_getNeighbor
+     /tmp/ccgf36b0.s:1988   .text:00000ea0 neighbors_removeOld
+     /tmp/ccgf36b0.s:2556   .text:00001304 removeNeighbor
+     /tmp/ccgf36b0.s:2068   .text:00000f20 debugPrint_neighbors
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
@@ -3587,7 +3587,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.neighbors.h.15.9f35f180a0332d1bc442efb0ec51905c
                            .group:00000000 wm4.schedule.h.2.74f699399ee9cbf3b59178f1204d8511
                            .group:00000000 wm4.processIE.h.2.1848f1e3c653035e9779472584ce0441
-                           .group:00000000 wm4.IEEE802154Ecsl.h.21.a46c6cdefbea13cd7501756681c86a21
+                           .group:00000000 wm4.IEEE802154Ecsl.h.21.9b3cd0c823c4cebe26b24d119729e7b5
                            .group:00000000 wm4.idmanager.h.2.8c0e2159b32ef3125cbb1e984805cbfe
                            .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
 

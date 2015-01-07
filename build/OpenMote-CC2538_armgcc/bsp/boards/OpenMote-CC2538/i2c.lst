@@ -526,12 +526,12 @@
  397              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
 DEFINED SYMBOLS
                             *ABS*:00000000 i2c.c
-     /tmp/cceu1Op6.s:18     .text:00000000 $t
-     /tmp/cceu1Op6.s:23     .text:00000000 i2c_init
-     /tmp/cceu1Op6.s:109    .text:000000b4 i2c_read_byte
-     /tmp/cceu1Op6.s:163    .text:000000f4 i2c_read_bytes
-     /tmp/cceu1Op6.s:245    .text:00000168 i2c_write_byte
-     /tmp/cceu1Op6.s:298    .text:000001a8 i2c_write_bytes
+     /tmp/ccMxNOZ0.s:18     .text:00000000 $t
+     /tmp/ccMxNOZ0.s:23     .text:00000000 i2c_init
+     /tmp/ccMxNOZ0.s:109    .text:000000b4 i2c_read_byte
+     /tmp/ccMxNOZ0.s:163    .text:000000f4 i2c_read_bytes
+     /tmp/ccMxNOZ0.s:245    .text:00000168 i2c_write_byte
+     /tmp/ccMxNOZ0.s:298    .text:000001a8 i2c_write_bytes
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

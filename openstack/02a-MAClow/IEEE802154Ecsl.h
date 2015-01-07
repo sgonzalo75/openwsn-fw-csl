@@ -100,6 +100,7 @@ typedef enum {
    S_CSLTXWAKEUPDELAY        = 0x1d,   // 'go' signal given, waiting for SFD Tx Wake-up
    S_CSLTXWAKEUP             = 0x1e,   // Tx data SFD received, sending bytes
 
+   S_CSLTXDATAPREOFFSET		 = 0x3b,   // starting data process.
    S_CSLTXDATAOFFSET         = 0x1f,   // waiting to prepare for Tx data
    S_CSLTXDATAPREPARE        = 0x20,   // preparing for Tx data
    S_CSLTXDATAREADY          = 0x21,   // ready to Tx data, waiting for 'go'
@@ -186,10 +187,16 @@ enum ieee154e_linkOption_enum {
 #define DURATION_tt6 ieee154e_vars.lastCapturedTime+TsTxAckDelay-TsShortGT-delayRx
 #define DURATION_tt7 ieee154e_vars.lastCapturedTime+TsTxAckDelay+TsShortGT
 #define DURATION_tt8 ieee154e_vars.lastCapturedTime+wdAckDuration
+
+// tiempo limite de transmisión de una trama wake-up CSL
+#define DURATION_txcsl TsTxOffset-delayTx+wdRadioTx+wdDataDuration
+
 // RX
 #define DURATION_rt1 ieee154e_vars.lastCapturedTime+TsTxOffset-TsLongGT-delayRx-maxRxDataPrepare
 #define DURATION_rt2 ieee154e_vars.lastCapturedTime+TsTxOffset-TsLongGT-delayRx
-#define DURATION_rt3 ieee154e_vars.lastCapturedTime+TsTxOffset+TsLongGT
+//#define DURATION_rt3 ieee154e_vars.lastCapturedTime+TsTxOffset+TsLongGT
+#define DURATION_rt3 ieee154e_vars.lastCapturedTime+DURATION_txcsl
+
 #define DURATION_rt4 ieee154e_vars.lastCapturedTime+wdDataDuration
 #define DURATION_rt5 ieee154e_vars.lastCapturedTime+TsTxAckDelay-delayTx-maxTxAckPrepare
 #define DURATION_rt6 ieee154e_vars.lastCapturedTime+TsTxAckDelay-delayTx
@@ -248,7 +255,7 @@ typedef struct {
    ieee154ecsl_mode_t		 cslMode;				  // CSL mode (sleep, transmission o reception).
    opentimer_id_t			 txTimer;				  // Timer for checking frames on local queue to transmit.
    opentimer_id_t			 cslTxTestTimer;          // Timer for periodic add packet to queue for testing CSL TX.
-   uint16_t					 rzTime;				  // Time until data sending.
+   //uint16_t					 rzTime;				  // Time until data sending.
    uint16_t					 remainingRzTime;		  // Used for checking if we should stop to sending wake-up and start to sending data.
 
 } ieee154e_vars_t;
