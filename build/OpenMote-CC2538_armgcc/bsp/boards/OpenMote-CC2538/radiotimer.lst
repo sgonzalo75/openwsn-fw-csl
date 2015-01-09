@@ -1140,28 +1140,28 @@
  909              		.file 5 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 radiotimer.c
-     /tmp/ccAZHIMg.s:19     .rodata:00000000 $d
-     /tmp/ccAZHIMg.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccAZHIMg.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccAZHIMg.s:32     .rodata:00000010 infouCName
-     /tmp/ccAZHIMg.s:37     .rodata:00000018 infoRadioName
+     /tmp/cceLJk9R.s:19     .rodata:00000000 $d
+     /tmp/cceLJk9R.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cceLJk9R.s:27     .rodata:00000008 infoBoardname
+     /tmp/cceLJk9R.s:32     .rodata:00000010 infouCName
+     /tmp/cceLJk9R.s:37     .rodata:00000018 infoRadioName
                             *COM*:00000008 radiotimer_vars
-     /tmp/ccAZHIMg.s:41     .text:00000000 $t
-     /tmp/ccAZHIMg.s:46     .text:00000000 radiotimer_init
-     /tmp/ccAZHIMg.s:77     .text:0000001c radiotimer_setOverflowCb
-     /tmp/ccAZHIMg.s:113    .text:0000003c radiotimer_setCompareCb
-     /tmp/ccAZHIMg.s:149    .text:0000005c radiotimer_setStartFrameCb
-     /tmp/ccAZHIMg.s:178    .text:00000068 radiotimer_setEndFrameCb
-     /tmp/ccAZHIMg.s:207    .text:00000074 radiotimer_start
-     /tmp/ccAZHIMg.s:776    .text:00000450 radiotimer_isr_private
-     /tmp/ccAZHIMg.s:348    .text:000001b0 radiotimer_getValue
-     /tmp/ccAZHIMg.s:410    .text:0000020c radiotimer_setPeriod
-     /tmp/ccAZHIMg.s:468    .text:00000264 radiotimer_getPeriod
-     /tmp/ccAZHIMg.s:530    .text:000002c0 radiotimer_schedule
-     /tmp/ccAZHIMg.s:601    .text:00000340 radiotimer_cancel
-     /tmp/ccAZHIMg.s:660    .text:000003a8 radiotimer_getCapturedTime
-     /tmp/ccAZHIMg.s:722    .text:00000404 get_real_counter
-     /tmp/ccAZHIMg.s:806    .text:00000464 radiotimer_isr
+     /tmp/cceLJk9R.s:41     .text:00000000 $t
+     /tmp/cceLJk9R.s:46     .text:00000000 radiotimer_init
+     /tmp/cceLJk9R.s:77     .text:0000001c radiotimer_setOverflowCb
+     /tmp/cceLJk9R.s:113    .text:0000003c radiotimer_setCompareCb
+     /tmp/cceLJk9R.s:149    .text:0000005c radiotimer_setStartFrameCb
+     /tmp/cceLJk9R.s:178    .text:00000068 radiotimer_setEndFrameCb
+     /tmp/cceLJk9R.s:207    .text:00000074 radiotimer_start
+     /tmp/cceLJk9R.s:776    .text:00000450 radiotimer_isr_private
+     /tmp/cceLJk9R.s:348    .text:000001b0 radiotimer_getValue
+     /tmp/cceLJk9R.s:410    .text:0000020c radiotimer_setPeriod
+     /tmp/cceLJk9R.s:468    .text:00000264 radiotimer_getPeriod
+     /tmp/cceLJk9R.s:530    .text:000002c0 radiotimer_schedule
+     /tmp/cceLJk9R.s:601    .text:00000340 radiotimer_cancel
+     /tmp/cceLJk9R.s:660    .text:000003a8 radiotimer_getCapturedTime
+     /tmp/cceLJk9R.s:722    .text:00000404 get_real_counter
+     /tmp/cceLJk9R.s:806    .text:00000464 radiotimer_isr
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.hw_ints.h.42.85b9479f2be35b086f1bb7cbb15bc097
@@ -1190,7 +1190,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stddef.h.161.e50ff8a9d5d1abbc15641da28ac571bf
                            .group:00000000 wm4.string.h.86.d5c872ff52e2712c985b588a0ef39f3c
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.toolchain_defs.h.2.59a5259f74cb714abc17e042354ff20f
                            .group:00000000 wm4.sys_ctrl.h.41.c6bbd4dace326d685c1afa45bc1ba1e2
 

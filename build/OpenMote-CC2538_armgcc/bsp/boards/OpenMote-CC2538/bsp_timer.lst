@@ -525,21 +525,21 @@
  383              		.file 5 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 bsp_timer.c
-     /tmp/cc0CfobN.s:19     .rodata:00000000 $d
-     /tmp/cc0CfobN.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/cc0CfobN.s:27     .rodata:00000008 infoBoardname
-     /tmp/cc0CfobN.s:32     .rodata:00000010 infouCName
-     /tmp/cc0CfobN.s:37     .rodata:00000018 infoRadioName
+     /tmp/cchHsazk.s:19     .rodata:00000000 $d
+     /tmp/cchHsazk.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cchHsazk.s:27     .rodata:00000008 infoBoardname
+     /tmp/cchHsazk.s:32     .rodata:00000010 infouCName
+     /tmp/cchHsazk.s:37     .rodata:00000018 infoRadioName
                             *COM*:00000014 bsp_timer_vars
-     /tmp/cc0CfobN.s:41     .text:00000000 $t
-     /tmp/cc0CfobN.s:46     .text:00000000 bsp_timer_init
-     /tmp/cc0CfobN.s:319    .text:00000160 bsp_timer_isr_private
-     /tmp/cc0CfobN.s:82     .text:0000002c bsp_timer_set_callback
-     /tmp/cc0CfobN.s:118    .text:0000004c bsp_timer_reset
-     /tmp/cc0CfobN.s:154    .text:00000074 bsp_timer_scheduleIn
-     /tmp/cc0CfobN.s:264    .text:00000140 bsp_timer_cancel_schedule
-     /tmp/cc0CfobN.s:291    .text:00000150 bsp_timer_get_currentValue
-     /tmp/cc0CfobN.s:352    .text:0000017c bsp_timer_isr
+     /tmp/cchHsazk.s:41     .text:00000000 $t
+     /tmp/cchHsazk.s:46     .text:00000000 bsp_timer_init
+     /tmp/cchHsazk.s:319    .text:00000160 bsp_timer_isr_private
+     /tmp/cchHsazk.s:82     .text:0000002c bsp_timer_set_callback
+     /tmp/cchHsazk.s:118    .text:0000004c bsp_timer_reset
+     /tmp/cchHsazk.s:154    .text:00000074 bsp_timer_scheduleIn
+     /tmp/cchHsazk.s:264    .text:00000140 bsp_timer_cancel_schedule
+     /tmp/cchHsazk.s:291    .text:00000150 bsp_timer_get_currentValue
+     /tmp/cchHsazk.s:352    .text:0000017c bsp_timer_isr
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.hw_ints.h.42.85b9479f2be35b086f1bb7cbb15bc097
@@ -559,7 +559,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
                            .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.toolchain_defs.h.2.59a5259f74cb714abc17e042354ff20f
                            .group:00000000 wm4.debug.h.41.b891e613993738d067c45a5ff528d11a
                            .group:00000000 wm4.sleepmode.h.41.8aaaa1e0c85692d50a0ac7b45436b69e

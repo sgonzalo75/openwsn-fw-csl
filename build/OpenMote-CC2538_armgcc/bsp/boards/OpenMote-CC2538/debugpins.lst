@@ -760,32 +760,32 @@
  675              		.file 3 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 debugpins.c
-     /tmp/cckNa4cO.s:19     .rodata:00000000 $d
-     /tmp/cckNa4cO.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/cckNa4cO.s:27     .rodata:00000008 infoBoardname
-     /tmp/cckNa4cO.s:32     .rodata:00000010 infouCName
-     /tmp/cckNa4cO.s:37     .rodata:00000018 infoRadioName
-     /tmp/cckNa4cO.s:40     .text:00000000 $t
-     /tmp/cckNa4cO.s:45     .text:00000000 debugpins_init
-     /tmp/cckNa4cO.s:92     .text:00000050 debugpins_frame_toggle
-     /tmp/cckNa4cO.s:626    .text:00000230 bspDBpinToggle
-     /tmp/cckNa4cO.s:121    .text:00000068 debugpins_frame_clr
-     /tmp/cckNa4cO.s:151    .text:00000084 debugpins_frame_set
-     /tmp/cckNa4cO.s:181    .text:000000a0 debugpins_slot_toggle
-     /tmp/cckNa4cO.s:210    .text:000000b8 debugpins_slot_clr
-     /tmp/cckNa4cO.s:240    .text:000000d4 debugpins_slot_set
-     /tmp/cckNa4cO.s:270    .text:000000f0 debugpins_fsm_toggle
-     /tmp/cckNa4cO.s:299    .text:00000108 debugpins_fsm_clr
-     /tmp/cckNa4cO.s:329    .text:00000124 debugpins_fsm_set
-     /tmp/cckNa4cO.s:359    .text:00000140 debugpins_task_toggle
-     /tmp/cckNa4cO.s:388    .text:00000158 debugpins_task_clr
-     /tmp/cckNa4cO.s:418    .text:00000174 debugpins_task_set
-     /tmp/cckNa4cO.s:448    .text:00000190 debugpins_isr_toggle
-     /tmp/cckNa4cO.s:477    .text:000001a8 debugpins_isr_clr
-     /tmp/cckNa4cO.s:507    .text:000001c4 debugpins_isr_set
-     /tmp/cckNa4cO.s:537    .text:000001e0 debugpins_radio_toggle
-     /tmp/cckNa4cO.s:566    .text:000001f8 debugpins_radio_clr
-     /tmp/cckNa4cO.s:596    .text:00000214 debugpins_radio_set
+     /tmp/ccomL7Uo.s:19     .rodata:00000000 $d
+     /tmp/ccomL7Uo.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccomL7Uo.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccomL7Uo.s:32     .rodata:00000010 infouCName
+     /tmp/ccomL7Uo.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccomL7Uo.s:40     .text:00000000 $t
+     /tmp/ccomL7Uo.s:45     .text:00000000 debugpins_init
+     /tmp/ccomL7Uo.s:92     .text:00000050 debugpins_frame_toggle
+     /tmp/ccomL7Uo.s:626    .text:00000230 bspDBpinToggle
+     /tmp/ccomL7Uo.s:121    .text:00000068 debugpins_frame_clr
+     /tmp/ccomL7Uo.s:151    .text:00000084 debugpins_frame_set
+     /tmp/ccomL7Uo.s:181    .text:000000a0 debugpins_slot_toggle
+     /tmp/ccomL7Uo.s:210    .text:000000b8 debugpins_slot_clr
+     /tmp/ccomL7Uo.s:240    .text:000000d4 debugpins_slot_set
+     /tmp/ccomL7Uo.s:270    .text:000000f0 debugpins_fsm_toggle
+     /tmp/ccomL7Uo.s:299    .text:00000108 debugpins_fsm_clr
+     /tmp/ccomL7Uo.s:329    .text:00000124 debugpins_fsm_set
+     /tmp/ccomL7Uo.s:359    .text:00000140 debugpins_task_toggle
+     /tmp/ccomL7Uo.s:388    .text:00000158 debugpins_task_clr
+     /tmp/ccomL7Uo.s:418    .text:00000174 debugpins_task_set
+     /tmp/ccomL7Uo.s:448    .text:00000190 debugpins_isr_toggle
+     /tmp/ccomL7Uo.s:477    .text:000001a8 debugpins_isr_clr
+     /tmp/ccomL7Uo.s:507    .text:000001c4 debugpins_isr_set
+     /tmp/ccomL7Uo.s:537    .text:000001e0 debugpins_radio_toggle
+     /tmp/ccomL7Uo.s:566    .text:000001f8 debugpins_radio_clr
+     /tmp/ccomL7Uo.s:596    .text:00000214 debugpins_radio_set
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.hw_memmap.h.39.19283c377d449c9bca5fdd8ccb62628c
@@ -804,7 +804,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
                            .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.toolchain_defs.h.2.59a5259f74cb714abc17e042354ff20f
 
 UNDEFINED SYMBOLS

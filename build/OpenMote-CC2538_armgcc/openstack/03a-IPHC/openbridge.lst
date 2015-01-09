@@ -425,17 +425,17 @@
  338              		.file 4 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 openbridge.c
-     /tmp/ccV9qNsg.s:19     .rodata:00000000 $d
-     /tmp/ccV9qNsg.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccV9qNsg.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccV9qNsg.s:32     .rodata:00000010 infouCName
-     /tmp/ccV9qNsg.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccV9qNsg.s:42     .rodata:00000024 infoStackName
-     /tmp/ccV9qNsg.s:45     .text:00000000 $t
-     /tmp/ccV9qNsg.s:50     .text:00000000 openbridge_init
-     /tmp/ccV9qNsg.s:77     .text:0000000c openbridge_triggerData
-     /tmp/ccV9qNsg.s:219    .text:00000134 openbridge_sendDone
-     /tmp/ccV9qNsg.s:270    .text:00000174 openbridge_receive
+     /tmp/ccloGUYk.s:19     .rodata:00000000 $d
+     /tmp/ccloGUYk.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccloGUYk.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccloGUYk.s:32     .rodata:00000010 infouCName
+     /tmp/ccloGUYk.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccloGUYk.s:42     .rodata:00000024 infoStackName
+     /tmp/ccloGUYk.s:45     .text:00000000 $t
+     /tmp/ccloGUYk.s:50     .text:00000000 openbridge_init
+     /tmp/ccloGUYk.s:77     .text:0000000c openbridge_triggerData
+     /tmp/ccloGUYk.s:219    .text:00000134 openbridge_sendDone
+     /tmp/ccloGUYk.s:270    .text:00000174 openbridge_receive
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
@@ -453,7 +453,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
                            .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
                            .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
                            .group:00000000 wm4.iphc.h.2.17b9b21c04d4f545c9a7ba404755c4d8

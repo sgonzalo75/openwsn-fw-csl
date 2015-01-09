@@ -3436,33 +3436,33 @@
  2729              		.file 7 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 opentcp.c
-     /tmp/ccvw3uJR.s:19     .rodata:00000000 $d
-     /tmp/ccvw3uJR.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccvw3uJR.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccvw3uJR.s:32     .rodata:00000010 infouCName
-     /tmp/ccvw3uJR.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccvw3uJR.s:42     .rodata:00000024 infoStackName
+     /tmp/ccTJCYRW.s:19     .rodata:00000000 $d
+     /tmp/ccTJCYRW.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccTJCYRW.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccTJCYRW.s:32     .rodata:00000010 infouCName
+     /tmp/ccTJCYRW.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccTJCYRW.s:42     .rodata:00000024 infoStackName
                             *COM*:00000030 tcp_vars
-     /tmp/ccvw3uJR.s:46     .text:00000000 $t
-     /tmp/ccvw3uJR.s:51     .text:00000000 opentcp_init
-     /tmp/ccvw3uJR.s:2557   .text:00001450 opentcp_reset
-     /tmp/ccvw3uJR.s:84     .text:00000020 opentcp_connect
-     /tmp/ccvw3uJR.s:2181   .text:000011cc prependTCPHeader
-     /tmp/ccvw3uJR.s:2617   .text:000014bc tcp_change_state
-     /tmp/ccvw3uJR.s:231    .text:00000140 opentcp_send
-     /tmp/ccvw3uJR.s:387    .text:0000027c opentcp_sendDone
-     /tmp/ccvw3uJR.s:424    .text:000002ac $d
-     /tmp/ccvw3uJR.s:445    .text:000002f8 $t
-     /tmp/ccvw3uJR.s:679    .text:000004d4 opentcp_receive
-     /tmp/ccvw3uJR.s:2371   .text:0000132c containsControlBits
-     /tmp/ccvw3uJR.s:807    .text:000005b8 $d
-     /tmp/ccvw3uJR.s:830    .text:0000060c $t
-     /tmp/ccvw3uJR.s:1086   .text:00000868 $d
-     /tmp/ccvw3uJR.s:1089   .text:0000086c $t
-     /tmp/ccvw3uJR.s:1987   .text:000010ac opentcp_close
-     /tmp/ccvw3uJR.s:2126   .text:000011b0 tcp_debugPrint
-     /tmp/ccvw3uJR.s:2155   .text:000011c0 timers_tcp_fired
-     /tmp/ccvw3uJR.s:2699   .text:0000155c opentcp_timer_cb
+     /tmp/ccTJCYRW.s:46     .text:00000000 $t
+     /tmp/ccTJCYRW.s:51     .text:00000000 opentcp_init
+     /tmp/ccTJCYRW.s:2557   .text:00001450 opentcp_reset
+     /tmp/ccTJCYRW.s:84     .text:00000020 opentcp_connect
+     /tmp/ccTJCYRW.s:2181   .text:000011cc prependTCPHeader
+     /tmp/ccTJCYRW.s:2617   .text:000014bc tcp_change_state
+     /tmp/ccTJCYRW.s:231    .text:00000140 opentcp_send
+     /tmp/ccTJCYRW.s:387    .text:0000027c opentcp_sendDone
+     /tmp/ccTJCYRW.s:424    .text:000002ac $d
+     /tmp/ccTJCYRW.s:445    .text:000002f8 $t
+     /tmp/ccTJCYRW.s:679    .text:000004d4 opentcp_receive
+     /tmp/ccTJCYRW.s:2371   .text:0000132c containsControlBits
+     /tmp/ccTJCYRW.s:807    .text:000005b8 $d
+     /tmp/ccTJCYRW.s:830    .text:0000060c $t
+     /tmp/ccTJCYRW.s:1086   .text:00000868 $d
+     /tmp/ccTJCYRW.s:1089   .text:0000086c $t
+     /tmp/ccTJCYRW.s:1987   .text:000010ac opentcp_close
+     /tmp/ccTJCYRW.s:2126   .text:000011b0 tcp_debugPrint
+     /tmp/ccTJCYRW.s:2155   .text:000011c0 timers_tcp_fired
+     /tmp/ccTJCYRW.s:2699   .text:0000155c opentcp_timer_cb
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
@@ -3480,7 +3480,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
                            .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
                            .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
                            .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7

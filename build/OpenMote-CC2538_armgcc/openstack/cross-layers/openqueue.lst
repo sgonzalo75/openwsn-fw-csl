@@ -1563,25 +1563,25 @@
  1254              		.file 6 "openstack/02a-MAClow/IEEE802154.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 openqueue.c
-     /tmp/cc78XI9t.s:19     .rodata:00000000 $d
-     /tmp/cc78XI9t.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/cc78XI9t.s:27     .rodata:00000008 infoBoardname
-     /tmp/cc78XI9t.s:32     .rodata:00000010 infouCName
-     /tmp/cc78XI9t.s:37     .rodata:00000018 infoRadioName
-     /tmp/cc78XI9t.s:42     .rodata:00000024 infoStackName
+     /tmp/ccbLPkli.s:19     .rodata:00000000 $d
+     /tmp/ccbLPkli.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccbLPkli.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccbLPkli.s:32     .rodata:00000010 infouCName
+     /tmp/ccbLPkli.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccbLPkli.s:42     .rodata:00000024 infoStackName
                             *COM*:00000960 openqueue_vars
-     /tmp/cc78XI9t.s:46     .text:00000000 $t
-     /tmp/cc78XI9t.s:51     .text:00000000 openqueue_init
-     /tmp/cc78XI9t.s:1034   .text:00000674 openqueue_reset_entry
-     /tmp/cc78XI9t.s:106    .text:00000044 debugPrint_queue
-     /tmp/cc78XI9t.s:188    .text:000000d4 openqueue_getFreePacketBuffer
-     /tmp/cc78XI9t.s:305    .text:000001a0 openqueue_freePacketBuffer
-     /tmp/cc78XI9t.s:411    .text:00000260 openqueue_removeAllCreatedBy
-     /tmp/cc78XI9t.s:485    .text:000002d0 openqueue_removeAllOwnedBy
-     /tmp/cc78XI9t.s:559    .text:00000340 openqueue_sixtopGetSentPacket
-     /tmp/cc78XI9t.s:648    .text:000003cc openqueue_sixtopGetReceivedPacket
-     /tmp/cc78XI9t.s:737    .text:00000458 openqueue_macGetDataPacket
-     /tmp/cc78XI9t.s:929    .text:000005c0 openqueue_macGetAdvPacket
+     /tmp/ccbLPkli.s:46     .text:00000000 $t
+     /tmp/ccbLPkli.s:51     .text:00000000 openqueue_init
+     /tmp/ccbLPkli.s:1034   .text:00000674 openqueue_reset_entry
+     /tmp/ccbLPkli.s:106    .text:00000044 debugPrint_queue
+     /tmp/ccbLPkli.s:188    .text:000000d4 openqueue_getFreePacketBuffer
+     /tmp/ccbLPkli.s:305    .text:000001a0 openqueue_freePacketBuffer
+     /tmp/ccbLPkli.s:411    .text:00000260 openqueue_removeAllCreatedBy
+     /tmp/ccbLPkli.s:485    .text:000002d0 openqueue_removeAllOwnedBy
+     /tmp/ccbLPkli.s:559    .text:00000340 openqueue_sixtopGetSentPacket
+     /tmp/ccbLPkli.s:648    .text:000003cc openqueue_sixtopGetReceivedPacket
+     /tmp/ccbLPkli.s:737    .text:00000458 openqueue_macGetDataPacket
+     /tmp/ccbLPkli.s:929    .text:000005c0 openqueue_macGetAdvPacket
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
@@ -1599,12 +1599,12 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
                            .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
                            .group:00000000 wm4.schedule.h.2.74f699399ee9cbf3b59178f1204d8511
                            .group:00000000 wm4.processIE.h.2.1848f1e3c653035e9779472584ce0441
                            .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
-                           .group:00000000 wm4.IEEE802154Ecsl.h.21.9b3cd0c823c4cebe26b24d119729e7b5
+                           .group:00000000 wm4.IEEE802154Ecsl.h.21.4a27f1f1ecd53a3f77f305e2d49a8f4a
                            .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
 
 UNDEFINED SYMBOLS

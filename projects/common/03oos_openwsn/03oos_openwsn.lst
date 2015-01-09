@@ -103,14 +103,14 @@
   84              		.file 4 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
 DEFINED SYMBOLS
                             *ABS*:00000000 03oos_openwsn.c
-     /tmp/ccAdW4lO.s:19     .rodata:00000000 $d
-     /tmp/ccAdW4lO.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccAdW4lO.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccAdW4lO.s:32     .rodata:00000010 infouCName
-     /tmp/ccAdW4lO.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccAdW4lO.s:42     .rodata:00000024 infoStackName
-     /tmp/ccAdW4lO.s:45     .text:00000000 $t
-     /tmp/ccAdW4lO.s:50     .text:00000000 mote_main
+     /tmp/cc7j58q4.s:19     .rodata:00000000 $d
+     /tmp/cc7j58q4.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cc7j58q4.s:27     .rodata:00000008 infoBoardname
+     /tmp/cc7j58q4.s:32     .rodata:00000010 infouCName
+     /tmp/cc7j58q4.s:37     .rodata:00000018 infoRadioName
+     /tmp/cc7j58q4.s:42     .rodata:00000024 infoStackName
+     /tmp/cc7j58q4.s:45     .text:00000000 $t
+     /tmp/cc7j58q4.s:50     .text:00000000 mote_main
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
@@ -127,7 +127,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
                            .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.toolchain_defs.h.2.59a5259f74cb714abc17e042354ff20f
                            .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
 

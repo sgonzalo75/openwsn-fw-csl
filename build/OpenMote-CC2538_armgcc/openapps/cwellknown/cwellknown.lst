@@ -421,23 +421,23 @@
  350              		.file 6 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 cwellknown.c
-     /tmp/cceOrglJ.s:19     .rodata:00000000 $d
-     /tmp/cceOrglJ.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/cceOrglJ.s:27     .rodata:00000008 infoBoardname
-     /tmp/cceOrglJ.s:32     .rodata:00000010 infouCName
-     /tmp/cceOrglJ.s:37     .rodata:00000018 infoRadioName
-     /tmp/cceOrglJ.s:42     .rodata:00000024 infoStackName
-     /tmp/cceOrglJ.s:47     .rodata:00000030 ipAddr_ipsoRD
-     /tmp/cceOrglJ.s:67     .rodata:00000040 ipAddr_motesEecs
-     /tmp/cceOrglJ.s:87     .rodata:00000050 ipAddr_local
-     /tmp/cceOrglJ.s:107    .rodata:00000060 ipAddr_motedata
+     /tmp/ccYvHPlP.s:19     .rodata:00000000 $d
+     /tmp/ccYvHPlP.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccYvHPlP.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccYvHPlP.s:32     .rodata:00000010 infouCName
+     /tmp/ccYvHPlP.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccYvHPlP.s:42     .rodata:00000024 infoStackName
+     /tmp/ccYvHPlP.s:47     .rodata:00000030 ipAddr_ipsoRD
+     /tmp/ccYvHPlP.s:67     .rodata:00000040 ipAddr_motesEecs
+     /tmp/ccYvHPlP.s:87     .rodata:00000050 ipAddr_local
+     /tmp/ccYvHPlP.s:107    .rodata:00000060 ipAddr_motedata
                             *COM*:00000024 cwellknown_vars
-     /tmp/cceOrglJ.s:129    .rodata:00000070 cwellknown_path0
-     /tmp/cceOrglJ.s:135    .rodata:0000007c cwellknown_path1
-     /tmp/cceOrglJ.s:138    .text:00000000 $t
-     /tmp/cceOrglJ.s:143    .text:00000000 cwellknown_init
-     /tmp/cceOrglJ.s:222    .text:00000094 cwellknown_receive
-     /tmp/cceOrglJ.s:315    .text:0000011c cwellknown_sendDone
+     /tmp/ccYvHPlP.s:129    .rodata:00000070 cwellknown_path0
+     /tmp/ccYvHPlP.s:135    .rodata:0000007c cwellknown_path1
+     /tmp/ccYvHPlP.s:138    .text:00000000 $t
+     /tmp/ccYvHPlP.s:143    .text:00000000 cwellknown_init
+     /tmp/ccYvHPlP.s:222    .text:00000094 cwellknown_receive
+     /tmp/ccYvHPlP.s:315    .text:0000011c cwellknown_sendDone
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
@@ -455,7 +455,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
                            .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
                            .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
                            .group:00000000 wm4.opencoap.h.27.763f8732d8ba6438951ce1c4409e9b68

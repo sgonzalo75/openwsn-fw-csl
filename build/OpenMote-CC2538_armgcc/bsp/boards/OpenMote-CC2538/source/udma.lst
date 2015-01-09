@@ -2554,31 +2554,31 @@
  1352              		.file 3 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
 DEFINED SYMBOLS
                             *ABS*:00000000 udma.c
-     /tmp/ccqJqVLG.s:18     .text:00000000 $t
-     /tmp/ccqJqVLG.s:23     .text:00000000 uDMAEnable
-     /tmp/ccqJqVLG.s:55     .text:00000018 uDMADisable
-     /tmp/ccqJqVLG.s:86     .text:00000030 uDMAErrorStatusGet
-     /tmp/ccqJqVLG.s:117    .text:00000048 uDMAErrorStatusClear
-     /tmp/ccqJqVLG.s:148    .text:00000060 uDMAChannelEnable
-     /tmp/ccqJqVLG.s:187    .text:0000008c uDMAChannelDisable
-     /tmp/ccqJqVLG.s:226    .text:000000b8 uDMAChannelIsEnabled
-     /tmp/ccqJqVLG.s:272    .text:000000f0 uDMAControlBaseSet
-     /tmp/ccqJqVLG.s:308    .text:00000110 uDMAControlBaseGet
-     /tmp/ccqJqVLG.s:339    .text:00000128 uDMAControlAlternateBaseGet
-     /tmp/ccqJqVLG.s:370    .text:00000140 uDMAChannelRequest
-     /tmp/ccqJqVLG.s:409    .text:0000016c uDMAChannelAttributeEnable
-     /tmp/ccqJqVLG.s:497    .text:00000200 uDMAChannelAttributeDisable
-     /tmp/ccqJqVLG.s:585    .text:00000294 uDMAChannelAttributeGet
-     /tmp/ccqJqVLG.s:686    .text:00000340 uDMAChannelControlSet
-     /tmp/ccqJqVLG.s:746    .text:00000390 uDMAChannelTransferSet
-     /tmp/ccqJqVLG.s:915    .text:000004ac uDMAChannelScatterGatherSet
-     /tmp/ccqJqVLG.s:1015   .text:0000054c uDMAChannelSizeGet
-     /tmp/ccqJqVLG.s:1078   .text:000005a0 uDMAChannelModeGet
-     /tmp/ccqJqVLG.s:1146   .text:000005f8 uDMAIntRegister
-     /tmp/ccqJqVLG.s:1184   .text:00000618 uDMAIntUnregister
-     /tmp/ccqJqVLG.s:1220   .text:00000634 uDMAIntStatus
-     /tmp/ccqJqVLG.s:1251   .text:0000064c uDMAIntClear
-     /tmp/ccqJqVLG.s:1287   .text:0000066c uDMAChannelAssign
+     /tmp/cc02jWEC.s:18     .text:00000000 $t
+     /tmp/cc02jWEC.s:23     .text:00000000 uDMAEnable
+     /tmp/cc02jWEC.s:55     .text:00000018 uDMADisable
+     /tmp/cc02jWEC.s:86     .text:00000030 uDMAErrorStatusGet
+     /tmp/cc02jWEC.s:117    .text:00000048 uDMAErrorStatusClear
+     /tmp/cc02jWEC.s:148    .text:00000060 uDMAChannelEnable
+     /tmp/cc02jWEC.s:187    .text:0000008c uDMAChannelDisable
+     /tmp/cc02jWEC.s:226    .text:000000b8 uDMAChannelIsEnabled
+     /tmp/cc02jWEC.s:272    .text:000000f0 uDMAControlBaseSet
+     /tmp/cc02jWEC.s:308    .text:00000110 uDMAControlBaseGet
+     /tmp/cc02jWEC.s:339    .text:00000128 uDMAControlAlternateBaseGet
+     /tmp/cc02jWEC.s:370    .text:00000140 uDMAChannelRequest
+     /tmp/cc02jWEC.s:409    .text:0000016c uDMAChannelAttributeEnable
+     /tmp/cc02jWEC.s:497    .text:00000200 uDMAChannelAttributeDisable
+     /tmp/cc02jWEC.s:585    .text:00000294 uDMAChannelAttributeGet
+     /tmp/cc02jWEC.s:686    .text:00000340 uDMAChannelControlSet
+     /tmp/cc02jWEC.s:746    .text:00000390 uDMAChannelTransferSet
+     /tmp/cc02jWEC.s:915    .text:000004ac uDMAChannelScatterGatherSet
+     /tmp/cc02jWEC.s:1015   .text:0000054c uDMAChannelSizeGet
+     /tmp/cc02jWEC.s:1078   .text:000005a0 uDMAChannelModeGet
+     /tmp/cc02jWEC.s:1146   .text:000005f8 uDMAIntRegister
+     /tmp/cc02jWEC.s:1184   .text:00000618 uDMAIntUnregister
+     /tmp/cc02jWEC.s:1220   .text:00000634 uDMAIntStatus
+     /tmp/cc02jWEC.s:1251   .text:0000064c uDMAIntClear
+     /tmp/cc02jWEC.s:1287   .text:0000066c uDMAChannelAssign
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.hw_sys_ctrl.h.39.50b4d7775c38e82076d0eb3bdc2daf82

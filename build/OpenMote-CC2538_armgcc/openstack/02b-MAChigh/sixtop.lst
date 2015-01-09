@@ -4551,45 +4551,45 @@
  3236              		.file 11 "openstack/03b-IPv6/icmpv6rpl.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 sixtop.c
-     /tmp/ccIvaXRg.s:19     .rodata:00000000 $d
-     /tmp/ccIvaXRg.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccIvaXRg.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccIvaXRg.s:32     .rodata:00000010 infouCName
-     /tmp/ccIvaXRg.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccIvaXRg.s:42     .rodata:00000024 infoStackName
-     /tmp/ccIvaXRg.s:47     .rodata:00000030 all_routers_multicast
+     /tmp/ccWfI3Ua.s:19     .rodata:00000000 $d
+     /tmp/ccWfI3Ua.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccWfI3Ua.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccWfI3Ua.s:32     .rodata:00000010 infouCName
+     /tmp/ccWfI3Ua.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccWfI3Ua.s:42     .rodata:00000024 infoStackName
+     /tmp/ccWfI3Ua.s:47     .rodata:00000030 all_routers_multicast
                             *COM*:0000000c sixtop_vars
-     /tmp/ccIvaXRg.s:66     .text:00000000 $t
-     /tmp/ccIvaXRg.s:71     .text:00000000 sixtop_init
-     /tmp/ccIvaXRg.s:1111   .text:00000730 sixtop_maintenance_timer_cb
-     /tmp/ccIvaXRg.s:1140   .text:00000748 sixtop_timeout_timer_cb
-     /tmp/ccIvaXRg.s:159    .text:000000bc sixtop_setKaPeriod
-     /tmp/ccIvaXRg.s:208    .text:000000f4 sixtop_addCells
-     /tmp/ccIvaXRg.s:2595   .text:00001100 sixtop_candidateAddCellList
-     /tmp/ccIvaXRg.s:541    .text:0000039c sixtop_send
-     /tmp/ccIvaXRg.s:382    .text:00000258 sixtop_removeCell
-     /tmp/ccIvaXRg.s:2721   .text:000011c0 sixtop_candidateRemoveCellList
-     /tmp/ccIvaXRg.s:1001   .text:00000674 sixtop_send_internal
-     /tmp/ccIvaXRg.s:602    .text:000003f4 task_sixtopNotifSendDone
-     /tmp/ccIvaXRg.s:1518   .text:000009a4 sixtop_six2six_sendDone
-     /tmp/ccIvaXRg.s:759    .text:0000050c task_sixtopNotifReceive
-     /tmp/ccIvaXRg.s:1756   .text:00000b78 sixtop_processIEs
-     /tmp/ccIvaXRg.s:912    .text:0000060c debugPrint_myDAGrank
-     /tmp/ccIvaXRg.s:957    .text:00000640 debugPrint_kaPeriod
-     /tmp/ccIvaXRg.s:1169   .text:00000760 timer_sixtop_management_fired
-     /tmp/ccIvaXRg.s:1487   .text:0000098c timer_sixtop_six2six_timeout_fired
-     /tmp/ccIvaXRg.s:1239   .text:000007cc sixtop_sendEB
-     /tmp/ccIvaXRg.s:1366   .text:000008b8 sixtop_sendKA
-     /tmp/ccIvaXRg.s:3014   .text:000013a4 sixtop_removeCellsByState
-     /tmp/ccIvaXRg.s:1941   .text:00000cfc $d
-     /tmp/ccIvaXRg.s:1947   .text:00000d0c $t
-     /tmp/ccIvaXRg.s:2046   .text:00000db8 sixtop_notifyReceiveCommand
-     /tmp/ccIvaXRg.s:2160   .text:00000e64 sixtop_notifyReceiveLinkRequest
-     /tmp/ccIvaXRg.s:2422   .text:0000100c sixtop_notifyReceiveLinkResponse
-     /tmp/ccIvaXRg.s:2533   .text:000010b0 sixtop_notifyReceiveRemoveLinkRequest
-     /tmp/ccIvaXRg.s:3088   .text:00001404 sixtop_areAvailableCellsToBeScheduled
-     /tmp/ccIvaXRg.s:2843   .text:00001278 sixtop_addCellsByState
-     /tmp/ccIvaXRg.s:2266   .text:00000efc sixtop_linkResponse
+     /tmp/ccWfI3Ua.s:66     .text:00000000 $t
+     /tmp/ccWfI3Ua.s:71     .text:00000000 sixtop_init
+     /tmp/ccWfI3Ua.s:1111   .text:00000730 sixtop_maintenance_timer_cb
+     /tmp/ccWfI3Ua.s:1140   .text:00000748 sixtop_timeout_timer_cb
+     /tmp/ccWfI3Ua.s:159    .text:000000bc sixtop_setKaPeriod
+     /tmp/ccWfI3Ua.s:208    .text:000000f4 sixtop_addCells
+     /tmp/ccWfI3Ua.s:2595   .text:00001100 sixtop_candidateAddCellList
+     /tmp/ccWfI3Ua.s:541    .text:0000039c sixtop_send
+     /tmp/ccWfI3Ua.s:382    .text:00000258 sixtop_removeCell
+     /tmp/ccWfI3Ua.s:2721   .text:000011c0 sixtop_candidateRemoveCellList
+     /tmp/ccWfI3Ua.s:1001   .text:00000674 sixtop_send_internal
+     /tmp/ccWfI3Ua.s:602    .text:000003f4 task_sixtopNotifSendDone
+     /tmp/ccWfI3Ua.s:1518   .text:000009a4 sixtop_six2six_sendDone
+     /tmp/ccWfI3Ua.s:759    .text:0000050c task_sixtopNotifReceive
+     /tmp/ccWfI3Ua.s:1756   .text:00000b78 sixtop_processIEs
+     /tmp/ccWfI3Ua.s:912    .text:0000060c debugPrint_myDAGrank
+     /tmp/ccWfI3Ua.s:957    .text:00000640 debugPrint_kaPeriod
+     /tmp/ccWfI3Ua.s:1169   .text:00000760 timer_sixtop_management_fired
+     /tmp/ccWfI3Ua.s:1487   .text:0000098c timer_sixtop_six2six_timeout_fired
+     /tmp/ccWfI3Ua.s:1239   .text:000007cc sixtop_sendEB
+     /tmp/ccWfI3Ua.s:1366   .text:000008b8 sixtop_sendKA
+     /tmp/ccWfI3Ua.s:3014   .text:000013a4 sixtop_removeCellsByState
+     /tmp/ccWfI3Ua.s:1941   .text:00000cfc $d
+     /tmp/ccWfI3Ua.s:1947   .text:00000d0c $t
+     /tmp/ccWfI3Ua.s:2046   .text:00000db8 sixtop_notifyReceiveCommand
+     /tmp/ccWfI3Ua.s:2160   .text:00000e64 sixtop_notifyReceiveLinkRequest
+     /tmp/ccWfI3Ua.s:2422   .text:0000100c sixtop_notifyReceiveLinkResponse
+     /tmp/ccWfI3Ua.s:2533   .text:000010b0 sixtop_notifyReceiveRemoveLinkRequest
+     /tmp/ccWfI3Ua.s:3088   .text:00001404 sixtop_areAvailableCellsToBeScheduled
+     /tmp/ccWfI3Ua.s:2843   .text:00001278 sixtop_addCellsByState
+     /tmp/ccWfI3Ua.s:2266   .text:00000efc sixtop_linkResponse
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
@@ -4607,12 +4607,12 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
                            .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
                            .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
                            .group:00000000 wm4.schedule.h.2.74f699399ee9cbf3b59178f1204d8511
                            .group:00000000 wm4.processIE.h.2.1848f1e3c653035e9779472584ce0441
-                           .group:00000000 wm4.IEEE802154Ecsl.h.21.9b3cd0c823c4cebe26b24d119729e7b5
+                           .group:00000000 wm4.IEEE802154Ecsl.h.21.4a27f1f1ecd53a3f77f305e2d49a8f4a
                            .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
                            .group:00000000 wm4.icmpv6rpl.h.2.0ce84dbe8c203c7079b39e7e96c7c01e
                            .group:00000000 wm4.neighbors.h.15.9f35f180a0332d1bc442efb0ec51905c

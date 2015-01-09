@@ -656,24 +656,24 @@
  522              		.file 5 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 uart.c
-     /tmp/ccd9yDTj.s:19     .rodata:00000000 $d
-     /tmp/ccd9yDTj.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccd9yDTj.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccd9yDTj.s:32     .rodata:00000010 infouCName
-     /tmp/ccd9yDTj.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccWfaNj4.s:19     .rodata:00000000 $d
+     /tmp/ccWfaNj4.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccWfaNj4.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccWfaNj4.s:32     .rodata:00000010 infouCName
+     /tmp/ccWfaNj4.s:37     .rodata:00000018 infoRadioName
                             *COM*:00000008 uart_vars
-     /tmp/ccd9yDTj.s:41     .text:00000000 $t
-     /tmp/ccd9yDTj.s:46     .text:00000000 uart_init
-     /tmp/ccd9yDTj.s:377    .text:000001c8 uart_isr_private
-     /tmp/ccd9yDTj.s:145    .text:000000f4 uart_setCallbacks
-     /tmp/ccd9yDTj.s:187    .text:00000120 uart_enableInterrupts
-     /tmp/ccd9yDTj.s:216    .text:00000138 uart_disableInterrupts
-     /tmp/ccd9yDTj.s:245    .text:00000150 uart_clearRxInterrupts
-     /tmp/ccd9yDTj.s:274    .text:00000168 uart_clearTxInterrupts
-     /tmp/ccd9yDTj.s:303    .text:00000180 uart_writeByte
-     /tmp/ccd9yDTj.s:340    .text:000001a4 uart_readByte
-     /tmp/ccd9yDTj.s:441    .text:00000220 uart_tx_isr
-     /tmp/ccd9yDTj.s:482    .text:0000024c uart_rx_isr
+     /tmp/ccWfaNj4.s:41     .text:00000000 $t
+     /tmp/ccWfaNj4.s:46     .text:00000000 uart_init
+     /tmp/ccWfaNj4.s:377    .text:000001c8 uart_isr_private
+     /tmp/ccWfaNj4.s:145    .text:000000f4 uart_setCallbacks
+     /tmp/ccWfaNj4.s:187    .text:00000120 uart_enableInterrupts
+     /tmp/ccWfaNj4.s:216    .text:00000138 uart_disableInterrupts
+     /tmp/ccWfaNj4.s:245    .text:00000150 uart_clearRxInterrupts
+     /tmp/ccWfaNj4.s:274    .text:00000168 uart_clearTxInterrupts
+     /tmp/ccWfaNj4.s:303    .text:00000180 uart_writeByte
+     /tmp/ccWfaNj4.s:340    .text:000001a4 uart_readByte
+     /tmp/ccWfaNj4.s:441    .text:00000220 uart_tx_isr
+     /tmp/ccWfaNj4.s:482    .text:0000024c uart_rx_isr
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.hw_ints.h.42.85b9479f2be35b086f1bb7cbb15bc097
@@ -703,7 +703,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stddef.h.161.e50ff8a9d5d1abbc15641da28ac571bf
                            .group:00000000 wm4.string.h.86.d5c872ff52e2712c985b588a0ef39f3c
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.toolchain_defs.h.2.59a5259f74cb714abc17e042354ff20f
                            .group:00000000 wm4.uarthal.h.41.25db9539abdf5c44b7896bf33c1e7f12
                            .group:00000000 wm4.sys_ctrl.h.41.c6bbd4dace326d685c1afa45bc1ba1e2

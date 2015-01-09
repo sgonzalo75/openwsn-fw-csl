@@ -1701,24 +1701,24 @@
  1244              		.file 5 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 opencoap.c
-     /tmp/ccdvopbL.s:19     .rodata:00000000 $d
-     /tmp/ccdvopbL.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccdvopbL.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccdvopbL.s:32     .rodata:00000010 infouCName
-     /tmp/ccdvopbL.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccdvopbL.s:42     .rodata:00000024 infoStackName
-     /tmp/ccdvopbL.s:47     .rodata:00000030 ipAddr_ipsoRD
-     /tmp/ccdvopbL.s:67     .rodata:00000040 ipAddr_motesEecs
-     /tmp/ccdvopbL.s:87     .rodata:00000050 ipAddr_local
-     /tmp/ccdvopbL.s:107    .rodata:00000060 ipAddr_motedata
+     /tmp/ccZWqlPP.s:19     .rodata:00000000 $d
+     /tmp/ccZWqlPP.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccZWqlPP.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccZWqlPP.s:32     .rodata:00000010 infouCName
+     /tmp/ccZWqlPP.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccZWqlPP.s:42     .rodata:00000024 infoStackName
+     /tmp/ccZWqlPP.s:47     .rodata:00000030 ipAddr_ipsoRD
+     /tmp/ccZWqlPP.s:67     .rodata:00000040 ipAddr_motesEecs
+     /tmp/ccZWqlPP.s:87     .rodata:00000050 ipAddr_local
+     /tmp/ccZWqlPP.s:107    .rodata:00000060 ipAddr_motedata
                             *COM*:00000008 opencoap_vars
-     /tmp/ccdvopbL.s:126    .text:00000000 $t
-     /tmp/ccdvopbL.s:131    .text:00000000 opencoap_init
-     /tmp/ccdvopbL.s:168    .text:00000028 opencoap_receive
-     /tmp/ccdvopbL.s:826    .text:00000558 opencoap_sendDone
-     /tmp/ccdvopbL.s:924    .text:000005dc opencoap_writeLinks
-     /tmp/ccdvopbL.s:1059   .text:000006b8 opencoap_register
-     /tmp/ccdvopbL.s:1131   .text:00000710 opencoap_send
+     /tmp/ccZWqlPP.s:126    .text:00000000 $t
+     /tmp/ccZWqlPP.s:131    .text:00000000 opencoap_init
+     /tmp/ccZWqlPP.s:168    .text:00000028 opencoap_receive
+     /tmp/ccZWqlPP.s:826    .text:00000558 opencoap_sendDone
+     /tmp/ccZWqlPP.s:924    .text:000005dc opencoap_writeLinks
+     /tmp/ccZWqlPP.s:1059   .text:000006b8 opencoap_register
+     /tmp/ccZWqlPP.s:1131   .text:00000710 opencoap_send
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
@@ -1736,7 +1736,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
                            .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
                            .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
                            .group:00000000 wm4.opencoap.h.27.763f8732d8ba6438951ce1c4409e9b68

@@ -192,7 +192,9 @@ enum {
    ERR_NO_SENT_PACKET                  = 0x15, // there is no sent packet in queue
    ERR_NO_RECEIVED_PACKET              = 0x16, // there is no received packet in queue
    ERR_SCHEDULE_OVERFLOWN              = 0x17, // schedule overflown
-   // l2a
+
+   // [CSL]: l2a - Modificaciones (cambio de "slotOffset" por "CSL sample")
+
    ERR_WRONG_CELLTYPE                  = 0x18, // wrong celltype {0} at CSL sample {1}
    ERR_IEEE154_UNSUPPORTED             = 0x19, // unsupported IEEE802.15.4 parameter {1} at location {0}
    ERR_DESYNCHRONIZED                  = 0x1a, // got desynchronized at CSL sample {0}
@@ -229,14 +231,14 @@ enum {
    ERR_BUSY_RECEIVING                  = 0x38, // busy receiving when stop of serial activity, buffer input length {1} (code location {0})
    ERR_WRONG_CRC_INPUT                 = 0x39, // wrong CRC in input Buffer (input length {0})
 
-   // l2a csl errors
+   // [CSL]: l2a csl errors
+
    ERR_WRONG_STATE_IN_START_CSL_SAMPLING = 0x3a, // wrong state {0} in start CSL channel sampling, at CSL sample {1}
    ERR_WRONG_STATE_IN_CSL_TIMERFIRES     = 0x3b, // wrong state {0} in timer fires, at CSL sample {1}
    ERR_MAXRXWAKEUPPREPARE_OVERFLOWS      = 0x3c, // maxRxDataPrepare overflows while at state {0} in CSL sample {1}
    ERR_WDWAKEUPDURATION_OVERFLOWS        = 0x3d, // wdDataDuration overflows while at state {0} in CSL sample {1}
    ERR_WRONG_STATE_IN_CSL_SAMPLE	     = 0x3e, // wrong state {0} in start of frame while CSL sampling, at CSL sample {1}
    ERR_WRONG_STATE_IN_CSL_ENDOFFRAME     = 0x3f, // wrong state {0} in end of frame, at CSL sample {1} {0}
-
    ERR_MAC_OPERATION_IN_PROGRESS		 = 0x40, // MAC Operation {0} still in progress in CSL sample {1}. Abort actions and wait to finish.
 };
 

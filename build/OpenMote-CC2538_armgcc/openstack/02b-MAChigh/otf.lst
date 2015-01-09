@@ -293,19 +293,19 @@
  248              		.file 6 "kernel/scheduler.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 otf.c
-     /tmp/ccPMDu1F.s:19     .rodata:00000000 $d
-     /tmp/ccPMDu1F.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccPMDu1F.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccPMDu1F.s:32     .rodata:00000010 infouCName
-     /tmp/ccPMDu1F.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccPMDu1F.s:42     .rodata:00000024 infoStackName
-     /tmp/ccPMDu1F.s:47     .rodata:00000030 all_routers_multicast
-     /tmp/ccPMDu1F.s:65     .text:00000000 $t
-     /tmp/ccPMDu1F.s:70     .text:00000000 otf_init
-     /tmp/ccPMDu1F.s:97     .text:0000000c otf_notif_addedCell
-     /tmp/ccPMDu1F.s:155    .text:0000003c otf_addCell_task
-     /tmp/ccPMDu1F.s:126    .text:00000024 otf_notif_removedCell
-     /tmp/ccPMDu1F.s:202    .text:00000074 otf_removeCell_task
+     /tmp/ccyt2PGO.s:19     .rodata:00000000 $d
+     /tmp/ccyt2PGO.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccyt2PGO.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccyt2PGO.s:32     .rodata:00000010 infouCName
+     /tmp/ccyt2PGO.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccyt2PGO.s:42     .rodata:00000024 infoStackName
+     /tmp/ccyt2PGO.s:47     .rodata:00000030 all_routers_multicast
+     /tmp/ccyt2PGO.s:65     .text:00000000 $t
+     /tmp/ccyt2PGO.s:70     .text:00000000 otf_init
+     /tmp/ccyt2PGO.s:97     .text:0000000c otf_notif_addedCell
+     /tmp/ccyt2PGO.s:155    .text:0000003c otf_addCell_task
+     /tmp/ccyt2PGO.s:126    .text:00000024 otf_notif_removedCell
+     /tmp/ccyt2PGO.s:202    .text:00000074 otf_removeCell_task
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
@@ -323,7 +323,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
                            .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
                            .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
                            .group:00000000 wm4.icmpv6rpl.h.15.89c5061c19a4811537f699fd2b74755c

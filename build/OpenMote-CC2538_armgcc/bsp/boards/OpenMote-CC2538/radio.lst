@@ -2065,39 +2065,39 @@
  1561              		.file 6 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 radio.c
-     /tmp/ccwlx098.s:19     .rodata:00000000 $d
-     /tmp/ccwlx098.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccwlx098.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccwlx098.s:32     .rodata:00000010 infouCName
-     /tmp/ccwlx098.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccYwrBHJ.s:19     .rodata:00000000 $d
+     /tmp/ccYwrBHJ.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccYwrBHJ.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccYwrBHJ.s:32     .rodata:00000010 infouCName
+     /tmp/ccYwrBHJ.s:37     .rodata:00000018 infoRadioName
                             *COM*:0000000c radio_vars
-     /tmp/ccwlx098.s:41     .text:00000000 $t
-     /tmp/ccwlx098.s:46     .text:00000000 radio_init
-     /tmp/ccwlx098.s:1254   .text:00000700 radio_off
-     /tmp/ccwlx098.s:1187   .text:000006c0 disable_radio_interrupts
-     /tmp/ccwlx098.s:1336   .text:00000758 radio_isr_internal
-     /tmp/ccwlx098.s:1511   .text:00000894 radio_error_isr
-     /tmp/ccwlx098.s:240    .text:000001ec radio_setOverflowCb
-     /tmp/ccwlx098.s:273    .text:00000204 radio_setCompareCb
-     /tmp/ccwlx098.s:306    .text:0000021c radio_setStartFrameCb
-     /tmp/ccwlx098.s:342    .text:0000023c radio_setEndFrameCb
-     /tmp/ccwlx098.s:378    .text:0000025c radio_reset
-     /tmp/ccwlx098.s:444    .text:000002d0 radio_startTimer
-     /tmp/ccwlx098.s:477    .text:000002e8 radio_getTimerValue
-     /tmp/ccwlx098.s:505    .text:000002f8 radio_setTimerPeriod
-     /tmp/ccwlx098.s:538    .text:00000310 radio_getTimerPeriod
-     /tmp/ccwlx098.s:566    .text:00000320 radio_setFrequency
-     /tmp/ccwlx098.s:632    .text:00000378 radio_rfOn
-     /tmp/ccwlx098.s:658    .text:00000384 radio_rfOff
-     /tmp/ccwlx098.s:700    .text:000003b8 radio_loadPacket
-     /tmp/ccwlx098.s:793    .text:00000458 radio_txEnable
-     /tmp/ccwlx098.s:831    .text:00000484 radio_txNow
-     /tmp/ccwlx098.s:1145   .text:00000684 enable_radio_interrupts
-     /tmp/ccwlx098.s:900    .text:000004e8 radio_rxEnable
-     /tmp/ccwlx098.s:938    .text:00000514 radio_rxNow
-     /tmp/ccwlx098.s:988    .text:0000055c radio_getReceivedFrame
-     /tmp/ccwlx098.s:1223   .text:000006e8 radio_on
-     /tmp/ccwlx098.s:1307   .text:00000748 radio_isr
+     /tmp/ccYwrBHJ.s:41     .text:00000000 $t
+     /tmp/ccYwrBHJ.s:46     .text:00000000 radio_init
+     /tmp/ccYwrBHJ.s:1254   .text:00000700 radio_off
+     /tmp/ccYwrBHJ.s:1187   .text:000006c0 disable_radio_interrupts
+     /tmp/ccYwrBHJ.s:1336   .text:00000758 radio_isr_internal
+     /tmp/ccYwrBHJ.s:1511   .text:00000894 radio_error_isr
+     /tmp/ccYwrBHJ.s:240    .text:000001ec radio_setOverflowCb
+     /tmp/ccYwrBHJ.s:273    .text:00000204 radio_setCompareCb
+     /tmp/ccYwrBHJ.s:306    .text:0000021c radio_setStartFrameCb
+     /tmp/ccYwrBHJ.s:342    .text:0000023c radio_setEndFrameCb
+     /tmp/ccYwrBHJ.s:378    .text:0000025c radio_reset
+     /tmp/ccYwrBHJ.s:444    .text:000002d0 radio_startTimer
+     /tmp/ccYwrBHJ.s:477    .text:000002e8 radio_getTimerValue
+     /tmp/ccYwrBHJ.s:505    .text:000002f8 radio_setTimerPeriod
+     /tmp/ccYwrBHJ.s:538    .text:00000310 radio_getTimerPeriod
+     /tmp/ccYwrBHJ.s:566    .text:00000320 radio_setFrequency
+     /tmp/ccYwrBHJ.s:632    .text:00000378 radio_rfOn
+     /tmp/ccYwrBHJ.s:658    .text:00000384 radio_rfOff
+     /tmp/ccYwrBHJ.s:700    .text:000003b8 radio_loadPacket
+     /tmp/ccYwrBHJ.s:793    .text:00000458 radio_txEnable
+     /tmp/ccYwrBHJ.s:831    .text:00000484 radio_txNow
+     /tmp/ccYwrBHJ.s:1145   .text:00000684 enable_radio_interrupts
+     /tmp/ccYwrBHJ.s:900    .text:000004e8 radio_rxEnable
+     /tmp/ccYwrBHJ.s:938    .text:00000514 radio_rxNow
+     /tmp/ccYwrBHJ.s:988    .text:0000055c radio_getReceivedFrame
+     /tmp/ccYwrBHJ.s:1223   .text:000006e8 radio_on
+     /tmp/ccYwrBHJ.s:1307   .text:00000748 radio_isr
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.hw_ana_regs.h.39.b3fa3d347eb2140d9de10a0f7cf25603
@@ -2118,7 +2118,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
                            .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.toolchain_defs.h.2.59a5259f74cb714abc17e042354ff20f
                            .group:00000000 wm4.leds.h.2.746f2c4bd224f28046dfa242de7e3f3d
                            .group:00000000 wm4.stdio.h.27.f2ac352bab34f31f9f478442827b2ba6

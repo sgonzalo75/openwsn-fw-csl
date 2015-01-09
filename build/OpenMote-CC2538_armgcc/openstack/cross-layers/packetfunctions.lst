@@ -2537,39 +2537,39 @@
  2075              		.file 4 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 packetfunctions.c
-     /tmp/cciqunpd.s:19     .rodata:00000000 $d
-     /tmp/cciqunpd.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/cciqunpd.s:27     .rodata:00000008 infoBoardname
-     /tmp/cciqunpd.s:32     .rodata:00000010 infouCName
-     /tmp/cciqunpd.s:37     .rodata:00000018 infoRadioName
-     /tmp/cciqunpd.s:42     .rodata:00000024 infoStackName
-     /tmp/cciqunpd.s:45     .text:00000000 $t
-     /tmp/cciqunpd.s:50     .text:00000000 packetfunctions_ip128bToMac64b
-     /tmp/cciqunpd.s:131    .text:0000007c packetfunctions_mac64bToIp128b
-     /tmp/cciqunpd.s:213    .text:000000f8 packetfunctions_mac64bToMac16b
-     /tmp/cciqunpd.s:280    .text:0000014c packetfunctions_mac16bToMac64b
-     /tmp/cciqunpd.s:371    .text:000001d0 packetfunctions_isBroadcastMulticast
-     /tmp/cciqunpd.s:483    .text:00000268 packetfunctions_isAllRoutersMulticast
-     /tmp/cciqunpd.s:624    .text:00000310 packetfunctions_isAllHostsMulticast
-     /tmp/cciqunpd.s:765    .text:000003b8 packetfunctions_sameAddress
-     /tmp/cciqunpd.s:876    .text:00000464 packetfunctions_readAddress
-     /tmp/cciqunpd.s:911    .text:0000048c $d
-     /tmp/cciqunpd.s:918    .text:000004a0 $t
-     /tmp/cciqunpd.s:1002   .text:00000520 packetfunctions_writeAddress
-     /tmp/cciqunpd.s:1033   .text:00000540 $d
-     /tmp/cciqunpd.s:1040   .text:00000554 $t
-     /tmp/cciqunpd.s:1136   .text:000005ec packetfunctions_reserveHeaderSize
-     /tmp/cciqunpd.s:1200   .text:00000640 packetfunctions_tossHeader
-     /tmp/cciqunpd.s:1263   .text:00000690 packetfunctions_reserveFooterSize
-     /tmp/cciqunpd.s:1319   .text:000006d4 packetfunctions_tossFooter
-     /tmp/cciqunpd.s:1373   .text:00000714 packetfunctions_calculateCRC
-     /tmp/cciqunpd.s:1490   .text:000007c8 packetfunctions_checkCRC
-     /tmp/cciqunpd.s:1622   .text:00000894 packetfunctions_calculateChecksum
-     /tmp/cciqunpd.s:1753   .text:00000994 onesComplementSum
-     /tmp/cciqunpd.s:1870   .text:00000a50 packetfunctions_htons
-     /tmp/cciqunpd.s:1916   .text:00000a80 packetfunctions_ntohs
-     /tmp/cciqunpd.s:1961   .text:00000aac packetfunctions_htonl
-     /tmp/cciqunpd.s:2021   .text:00000b00 packetfunctions_ntohl
+     /tmp/cc40F0Kh.s:19     .rodata:00000000 $d
+     /tmp/cc40F0Kh.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cc40F0Kh.s:27     .rodata:00000008 infoBoardname
+     /tmp/cc40F0Kh.s:32     .rodata:00000010 infouCName
+     /tmp/cc40F0Kh.s:37     .rodata:00000018 infoRadioName
+     /tmp/cc40F0Kh.s:42     .rodata:00000024 infoStackName
+     /tmp/cc40F0Kh.s:45     .text:00000000 $t
+     /tmp/cc40F0Kh.s:50     .text:00000000 packetfunctions_ip128bToMac64b
+     /tmp/cc40F0Kh.s:131    .text:0000007c packetfunctions_mac64bToIp128b
+     /tmp/cc40F0Kh.s:213    .text:000000f8 packetfunctions_mac64bToMac16b
+     /tmp/cc40F0Kh.s:280    .text:0000014c packetfunctions_mac16bToMac64b
+     /tmp/cc40F0Kh.s:371    .text:000001d0 packetfunctions_isBroadcastMulticast
+     /tmp/cc40F0Kh.s:483    .text:00000268 packetfunctions_isAllRoutersMulticast
+     /tmp/cc40F0Kh.s:624    .text:00000310 packetfunctions_isAllHostsMulticast
+     /tmp/cc40F0Kh.s:765    .text:000003b8 packetfunctions_sameAddress
+     /tmp/cc40F0Kh.s:876    .text:00000464 packetfunctions_readAddress
+     /tmp/cc40F0Kh.s:911    .text:0000048c $d
+     /tmp/cc40F0Kh.s:918    .text:000004a0 $t
+     /tmp/cc40F0Kh.s:1002   .text:00000520 packetfunctions_writeAddress
+     /tmp/cc40F0Kh.s:1033   .text:00000540 $d
+     /tmp/cc40F0Kh.s:1040   .text:00000554 $t
+     /tmp/cc40F0Kh.s:1136   .text:000005ec packetfunctions_reserveHeaderSize
+     /tmp/cc40F0Kh.s:1200   .text:00000640 packetfunctions_tossHeader
+     /tmp/cc40F0Kh.s:1263   .text:00000690 packetfunctions_reserveFooterSize
+     /tmp/cc40F0Kh.s:1319   .text:000006d4 packetfunctions_tossFooter
+     /tmp/cc40F0Kh.s:1373   .text:00000714 packetfunctions_calculateCRC
+     /tmp/cc40F0Kh.s:1490   .text:000007c8 packetfunctions_checkCRC
+     /tmp/cc40F0Kh.s:1622   .text:00000894 packetfunctions_calculateChecksum
+     /tmp/cc40F0Kh.s:1753   .text:00000994 onesComplementSum
+     /tmp/cc40F0Kh.s:1870   .text:00000a50 packetfunctions_htons
+     /tmp/cc40F0Kh.s:1916   .text:00000a80 packetfunctions_ntohs
+     /tmp/cc40F0Kh.s:1961   .text:00000aac packetfunctions_htonl
+     /tmp/cc40F0Kh.s:2021   .text:00000b00 packetfunctions_ntohl
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
@@ -2587,7 +2587,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
                            .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
                            .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
                            .group:00000000 wm4.idmanager.h.2.8c0e2159b32ef3125cbb1e984805cbfe

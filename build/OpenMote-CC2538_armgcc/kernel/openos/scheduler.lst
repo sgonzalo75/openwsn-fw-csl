@@ -414,19 +414,19 @@
  313              		.file 5 "inc/opendefs.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 scheduler.c
-     /tmp/ccdwD805.s:19     .rodata:00000000 $d
-     /tmp/ccdwD805.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccdwD805.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccdwD805.s:32     .rodata:00000010 infouCName
-     /tmp/ccdwD805.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccdwD805.s:42     .rodata:00000024 infoStackName
+     /tmp/ccO2qJm6.s:19     .rodata:00000000 $d
+     /tmp/ccO2qJm6.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccO2qJm6.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccO2qJm6.s:32     .rodata:00000010 infouCName
+     /tmp/ccO2qJm6.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccO2qJm6.s:42     .rodata:00000024 infoStackName
                             *COM*:00000080 scheduler_vars
                             *COM*:00000002 scheduler_dbg
-     /tmp/ccdwD805.s:47     .text:00000000 $t
-     /tmp/ccdwD805.s:52     .text:00000000 scheduler_init
-     /tmp/ccdwD805.s:89     .text:00000030 scheduler_start
-     /tmp/ccdwD805.s:170    .text:000000a8 scheduler_push_task
-     /tmp/ccdwD805.s:304    .text:00000180 $d
+     /tmp/ccO2qJm6.s:47     .text:00000000 $t
+     /tmp/ccO2qJm6.s:52     .text:00000000 scheduler_init
+     /tmp/ccO2qJm6.s:89     .text:00000030 scheduler_start
+     /tmp/ccO2qJm6.s:170    .text:000000a8 scheduler_push_task
+     /tmp/ccO2qJm6.s:304    .text:00000180 $d
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
@@ -444,7 +444,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
                            .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
                            .group:00000000 wm4.scheduler.h.2.ca320b72942c5204a6e225e3c9c0814e
 

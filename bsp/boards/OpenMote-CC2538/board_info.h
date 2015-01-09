@@ -70,11 +70,10 @@
 #define PORT_delayRx                        0     //    0us (can not measure)
 // radio watchdog
 
-//===== IEEE802154E CSL timing
-#define PORT_macCSLPeriod					6554  				// 200000us (200ms) (csl idle listening)
-#define PORT_macCSLMaxPeriod				PORT_macCSLPeriod	// by default, equal to macCSLPeriod.
-
-#define PORT_macCSLTxChkFreq				1966					// 60000us (60ms) (check for new frames on queue to tx).
+//===== [CSL]: IEEE802154E CSL timing
+#define PORT_macCSLPeriod					6554  				// CSL - 200000us (200ms) (csl idle listening)
+#define PORT_macCSLMaxPeriod				PORT_macCSLPeriod	// CSL - by default, equal to macCSLPeriod.
+#define PORT_macCSLTxChkFreq				1966				// CSL - 60000us (60ms) (check for new frames on queue to tx).
 
 //===== adaptive_sync accuracy
 

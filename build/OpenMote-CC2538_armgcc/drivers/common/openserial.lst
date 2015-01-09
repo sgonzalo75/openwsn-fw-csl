@@ -2879,44 +2879,44 @@
  2269              		.file 8 "drivers/common/openhdlc.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 openserial.c
-     /tmp/cc7a5g1I.s:19     .rodata:00000000 $d
-     /tmp/cc7a5g1I.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/cc7a5g1I.s:27     .rodata:00000008 infoBoardname
-     /tmp/cc7a5g1I.s:32     .rodata:00000010 infouCName
-     /tmp/cc7a5g1I.s:37     .rodata:00000018 infoRadioName
-     /tmp/cc7a5g1I.s:42     .rodata:00000024 infoStackName
-     /tmp/cc7a5g1I.s:47     .rodata:00000030 all_routers_multicast
-     /tmp/cc7a5g1I.s:67     .rodata:00000040 fcstab
+     /tmp/cc8aBXfg.s:19     .rodata:00000000 $d
+     /tmp/cc8aBXfg.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cc8aBXfg.s:27     .rodata:00000008 infoBoardname
+     /tmp/cc8aBXfg.s:32     .rodata:00000010 infouCName
+     /tmp/cc8aBXfg.s:37     .rodata:00000018 infoRadioName
+     /tmp/cc8aBXfg.s:42     .rodata:00000024 infoStackName
+     /tmp/cc8aBXfg.s:47     .rodata:00000030 all_routers_multicast
+     /tmp/cc8aBXfg.s:67     .rodata:00000040 fcstab
                             *COM*:000001dc openserial_vars
-     /tmp/cc7a5g1I.s:326    .text:00000000 $t
-     /tmp/cc7a5g1I.s:331    .text:00000000 openserial_init
-     /tmp/cc7a5g1I.s:1940   .text:00000ab4 isr_openserial_tx
-     /tmp/cc7a5g1I.s:2054   .text:00000b94 isr_openserial_rx
-     /tmp/cc7a5g1I.s:469    .text:0000013c openserial_printStatus
-     /tmp/cc7a5g1I.s:1567   .text:00000838 outputHdlcOpen
-     /tmp/cc7a5g1I.s:1613   .text:00000884 outputHdlcWrite
-     /tmp/cc7a5g1I.s:1701   .text:00000934 outputHdlcClose
-     /tmp/cc7a5g1I.s:562    .text:000001d4 openserial_printInfoErrorCritical
-     /tmp/cc7a5g1I.s:661    .text:00000280 openserial_printData
-     /tmp/cc7a5g1I.s:772    .text:00000340 openserial_printInfo
-     /tmp/cc7a5g1I.s:815    .text:0000036c openserial_printError
-     /tmp/cc7a5g1I.s:860    .text:0000039c openserial_printCritical
-     /tmp/cc7a5g1I.s:912    .text:000003e4 openserial_getNumDataBytes
-     /tmp/cc7a5g1I.s:955    .text:00000410 openserial_getInputBuffer
-     /tmp/cc7a5g1I.s:1026   .text:00000480 $d
-     /tmp/cc7a5g1I.s:1030   .text:00000484 $t
-     /tmp/cc7a5g1I.s:1035   .text:00000484 openserial_startInput
-     /tmp/cc7a5g1I.s:1121   .text:00000528 openserial_startOutput
-     /tmp/cc7a5g1I.s:1176   .text:00000590 $d
-     /tmp/cc7a5g1I.s:1189   .text:000005bc $t
-     /tmp/cc7a5g1I.s:1515   .text:000007ec debugPrint_outBufferIndexes
-     /tmp/cc7a5g1I.s:1362   .text:000006e0 openserial_stop
-     /tmp/cc7a5g1I.s:2221   .text:00000ccc openserial_echo
-     /tmp/cc7a5g1I.s:1506   .text:000007e8 $d
-     /tmp/cc7a5g1I.s:1510   .text:000007ec $t
-     /tmp/cc7a5g1I.s:1763   .text:000009a0 inputHdlcOpen
-     /tmp/cc7a5g1I.s:1799   .text:000009c8 inputHdlcWrite
-     /tmp/cc7a5g1I.s:1890   .text:00000a6c inputHdlcClose
+     /tmp/cc8aBXfg.s:326    .text:00000000 $t
+     /tmp/cc8aBXfg.s:331    .text:00000000 openserial_init
+     /tmp/cc8aBXfg.s:1940   .text:00000ab4 isr_openserial_tx
+     /tmp/cc8aBXfg.s:2054   .text:00000b94 isr_openserial_rx
+     /tmp/cc8aBXfg.s:469    .text:0000013c openserial_printStatus
+     /tmp/cc8aBXfg.s:1567   .text:00000838 outputHdlcOpen
+     /tmp/cc8aBXfg.s:1613   .text:00000884 outputHdlcWrite
+     /tmp/cc8aBXfg.s:1701   .text:00000934 outputHdlcClose
+     /tmp/cc8aBXfg.s:562    .text:000001d4 openserial_printInfoErrorCritical
+     /tmp/cc8aBXfg.s:661    .text:00000280 openserial_printData
+     /tmp/cc8aBXfg.s:772    .text:00000340 openserial_printInfo
+     /tmp/cc8aBXfg.s:815    .text:0000036c openserial_printError
+     /tmp/cc8aBXfg.s:860    .text:0000039c openserial_printCritical
+     /tmp/cc8aBXfg.s:912    .text:000003e4 openserial_getNumDataBytes
+     /tmp/cc8aBXfg.s:955    .text:00000410 openserial_getInputBuffer
+     /tmp/cc8aBXfg.s:1026   .text:00000480 $d
+     /tmp/cc8aBXfg.s:1030   .text:00000484 $t
+     /tmp/cc8aBXfg.s:1035   .text:00000484 openserial_startInput
+     /tmp/cc8aBXfg.s:1121   .text:00000528 openserial_startOutput
+     /tmp/cc8aBXfg.s:1176   .text:00000590 $d
+     /tmp/cc8aBXfg.s:1189   .text:000005bc $t
+     /tmp/cc8aBXfg.s:1515   .text:000007ec debugPrint_outBufferIndexes
+     /tmp/cc8aBXfg.s:1362   .text:000006e0 openserial_stop
+     /tmp/cc8aBXfg.s:2221   .text:00000ccc openserial_echo
+     /tmp/cc8aBXfg.s:1506   .text:000007e8 $d
+     /tmp/cc8aBXfg.s:1510   .text:000007ec $t
+     /tmp/cc8aBXfg.s:1763   .text:000009a0 inputHdlcOpen
+     /tmp/cc8aBXfg.s:1799   .text:000009c8 inputHdlcWrite
+     /tmp/cc8aBXfg.s:1890   .text:00000a6c inputHdlcClose
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
@@ -2934,13 +2934,13 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
                            .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
                            .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
                            .group:00000000 wm4.schedule.h.2.74f699399ee9cbf3b59178f1204d8511
                            .group:00000000 wm4.processIE.h.2.1848f1e3c653035e9779472584ce0441
                            .group:00000000 wm4.opentimers.h.8.044f2d040a134cdb0ddb58adfc2508be
-                           .group:00000000 wm4.IEEE802154Ecsl.h.21.9b3cd0c823c4cebe26b24d119729e7b5
+                           .group:00000000 wm4.IEEE802154Ecsl.h.21.4a27f1f1ecd53a3f77f305e2d49a8f4a
                            .group:00000000 wm4.icmpv6rpl.h.2.0ce84dbe8c203c7079b39e7e96c7c01e
                            .group:00000000 wm4.neighbors.h.15.9f35f180a0332d1bc442efb0ec51905c
                            .group:00000000 wm4.sixtop.h.2.0b8613e8e48e9109b53e6143f3ed1895

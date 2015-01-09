@@ -1128,39 +1128,39 @@
  995              		.file 3 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 leds.c
-     /tmp/ccoXL8g6.s:19     .rodata:00000000 $d
-     /tmp/ccoXL8g6.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccoXL8g6.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccoXL8g6.s:32     .rodata:00000010 infouCName
-     /tmp/ccoXL8g6.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccoXL8g6.s:40     .text:00000000 $t
-     /tmp/ccoXL8g6.s:45     .text:00000000 leds_init
-     /tmp/ccoXL8g6.s:81     .text:0000002c leds_error_on
-     /tmp/ccoXL8g6.s:868    .text:000002c0 bspLedSet
-     /tmp/ccoXL8g6.s:108    .text:0000003c leds_error_off
-     /tmp/ccoXL8g6.s:907    .text:000002e8 bspLedClear
-     /tmp/ccoXL8g6.s:135    .text:0000004c leds_error_toggle
-     /tmp/ccoXL8g6.s:945    .text:00000310 bspLedToggle
-     /tmp/ccoXL8g6.s:162    .text:0000005c leds_error_isOn
-     /tmp/ccoXL8g6.s:203    .text:00000088 leds_sync_on
-     /tmp/ccoXL8g6.s:230    .text:00000098 leds_sync_off
-     /tmp/ccoXL8g6.s:257    .text:000000a8 leds_sync_toggle
-     /tmp/ccoXL8g6.s:284    .text:000000b8 leds_sync_isOn
-     /tmp/ccoXL8g6.s:326    .text:000000e8 leds_sync_blink
-     /tmp/ccoXL8g6.s:406    .text:0000014c leds_radio_on
-     /tmp/ccoXL8g6.s:433    .text:0000015c leds_radio_off
-     /tmp/ccoXL8g6.s:460    .text:0000016c leds_radio_toggle
-     /tmp/ccoXL8g6.s:487    .text:0000017c leds_radio_isOn
-     /tmp/ccoXL8g6.s:529    .text:000001ac leds_debug_on
-     /tmp/ccoXL8g6.s:556    .text:000001bc leds_debug_off
-     /tmp/ccoXL8g6.s:583    .text:000001cc leds_debug_toggle
-     /tmp/ccoXL8g6.s:610    .text:000001dc leds_debug_isOn
-     /tmp/ccoXL8g6.s:652    .text:0000020c leds_all_on
-     /tmp/ccoXL8g6.s:679    .text:0000021c leds_all_off
-     /tmp/ccoXL8g6.s:706    .text:0000022c leds_all_toggle
-     /tmp/ccoXL8g6.s:733    .text:0000023c leds_error_blink
-     /tmp/ccoXL8g6.s:816    .text:000002a8 leds_circular_shift
-     /tmp/ccoXL8g6.s:842    .text:000002b4 leds_increment
+     /tmp/ccqhfv2F.s:19     .rodata:00000000 $d
+     /tmp/ccqhfv2F.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccqhfv2F.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccqhfv2F.s:32     .rodata:00000010 infouCName
+     /tmp/ccqhfv2F.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccqhfv2F.s:40     .text:00000000 $t
+     /tmp/ccqhfv2F.s:45     .text:00000000 leds_init
+     /tmp/ccqhfv2F.s:81     .text:0000002c leds_error_on
+     /tmp/ccqhfv2F.s:868    .text:000002c0 bspLedSet
+     /tmp/ccqhfv2F.s:108    .text:0000003c leds_error_off
+     /tmp/ccqhfv2F.s:907    .text:000002e8 bspLedClear
+     /tmp/ccqhfv2F.s:135    .text:0000004c leds_error_toggle
+     /tmp/ccqhfv2F.s:945    .text:00000310 bspLedToggle
+     /tmp/ccqhfv2F.s:162    .text:0000005c leds_error_isOn
+     /tmp/ccqhfv2F.s:203    .text:00000088 leds_sync_on
+     /tmp/ccqhfv2F.s:230    .text:00000098 leds_sync_off
+     /tmp/ccqhfv2F.s:257    .text:000000a8 leds_sync_toggle
+     /tmp/ccqhfv2F.s:284    .text:000000b8 leds_sync_isOn
+     /tmp/ccqhfv2F.s:326    .text:000000e8 leds_sync_blink
+     /tmp/ccqhfv2F.s:406    .text:0000014c leds_radio_on
+     /tmp/ccqhfv2F.s:433    .text:0000015c leds_radio_off
+     /tmp/ccqhfv2F.s:460    .text:0000016c leds_radio_toggle
+     /tmp/ccqhfv2F.s:487    .text:0000017c leds_radio_isOn
+     /tmp/ccqhfv2F.s:529    .text:000001ac leds_debug_on
+     /tmp/ccqhfv2F.s:556    .text:000001bc leds_debug_off
+     /tmp/ccqhfv2F.s:583    .text:000001cc leds_debug_toggle
+     /tmp/ccqhfv2F.s:610    .text:000001dc leds_debug_isOn
+     /tmp/ccqhfv2F.s:652    .text:0000020c leds_all_on
+     /tmp/ccqhfv2F.s:679    .text:0000021c leds_all_off
+     /tmp/ccqhfv2F.s:706    .text:0000022c leds_all_toggle
+     /tmp/ccqhfv2F.s:733    .text:0000023c leds_error_blink
+     /tmp/ccqhfv2F.s:816    .text:000002a8 leds_circular_shift
+     /tmp/ccqhfv2F.s:842    .text:000002b4 leds_increment
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.hw_memmap.h.39.19283c377d449c9bca5fdd8ccb62628c
@@ -1180,7 +1180,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stddef.h.187.9e651b6b8b16e149c1353259404973ea
                            .group:00000000 wm4.string.h.17.f8d12df81104836a3f2a5d589ae830d8
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.toolchain_defs.h.2.59a5259f74cb714abc17e042354ff20f
 
 UNDEFINED SYMBOLS

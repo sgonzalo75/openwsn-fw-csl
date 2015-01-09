@@ -1056,15 +1056,15 @@
  804              		.file 5 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 IEEE802154.c
-     /tmp/cc6dHva5.s:19     .rodata:00000000 $d
-     /tmp/cc6dHva5.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/cc6dHva5.s:27     .rodata:00000008 infoBoardname
-     /tmp/cc6dHva5.s:32     .rodata:00000010 infouCName
-     /tmp/cc6dHva5.s:37     .rodata:00000018 infoRadioName
-     /tmp/cc6dHva5.s:42     .rodata:00000024 infoStackName
-     /tmp/cc6dHva5.s:45     .text:00000000 $t
-     /tmp/cc6dHva5.s:50     .text:00000000 ieee802154_prependHeader
-     /tmp/cc6dHva5.s:271    .text:00000180 ieee802154_retrieveHeader
+     /tmp/ccQmg3Ib.s:19     .rodata:00000000 $d
+     /tmp/ccQmg3Ib.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccQmg3Ib.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccQmg3Ib.s:32     .rodata:00000010 infouCName
+     /tmp/ccQmg3Ib.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccQmg3Ib.s:42     .rodata:00000024 infoStackName
+     /tmp/ccQmg3Ib.s:45     .text:00000000 $t
+     /tmp/ccQmg3Ib.s:50     .text:00000000 ieee802154_prependHeader
+     /tmp/ccQmg3Ib.s:271    .text:00000180 ieee802154_retrieveHeader
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
@@ -1082,7 +1082,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
                            .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
                            .group:00000000 wm4.idmanager.h.2.8c0e2159b32ef3125cbb1e984805cbfe
                            .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7

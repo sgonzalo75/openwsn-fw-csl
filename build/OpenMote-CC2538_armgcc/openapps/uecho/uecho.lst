@@ -303,17 +303,17 @@
  254              		.file 4 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 uecho.c
-     /tmp/cclwjcJT.s:19     .rodata:00000000 $d
-     /tmp/cclwjcJT.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/cclwjcJT.s:27     .rodata:00000008 infoBoardname
-     /tmp/cclwjcJT.s:32     .rodata:00000010 infouCName
-     /tmp/cclwjcJT.s:37     .rodata:00000018 infoRadioName
-     /tmp/cclwjcJT.s:42     .rodata:00000024 infoStackName
-     /tmp/cclwjcJT.s:45     .text:00000000 $t
-     /tmp/cclwjcJT.s:50     .text:00000000 uecho_init
-     /tmp/cclwjcJT.s:77     .text:0000000c uecho_receive
-     /tmp/cclwjcJT.s:192    .text:000000c8 uecho_sendDone
-     /tmp/cclwjcJT.s:227    .text:000000e4 uecho_debugPrint
+     /tmp/ccGyrLIY.s:19     .rodata:00000000 $d
+     /tmp/ccGyrLIY.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccGyrLIY.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccGyrLIY.s:32     .rodata:00000010 infouCName
+     /tmp/ccGyrLIY.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccGyrLIY.s:42     .rodata:00000024 infoStackName
+     /tmp/ccGyrLIY.s:45     .text:00000000 $t
+     /tmp/ccGyrLIY.s:50     .text:00000000 uecho_init
+     /tmp/ccGyrLIY.s:77     .text:0000000c uecho_receive
+     /tmp/ccGyrLIY.s:192    .text:000000c8 uecho_sendDone
+     /tmp/ccGyrLIY.s:227    .text:000000e4 uecho_debugPrint
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
@@ -331,7 +331,7 @@ DEFINED SYMBOLS
                            .group:00000000 wm4.stdbool.h.29.1c9ee6859ce8145f7838a4f2549ccec2
                            .group:00000000 wm4.hw_types.h.67.b10589a0806dcc2d274d6fab6b736519
                            .group:00000000 wm4.interrupt.h.41.272fc4ec0e276feb439e7974d0f77eaf
-                           .group:00000000 wm4.board_info.h.21.2f0cbb5ab4c556c54c487f727dca8532
+                           .group:00000000 wm4.board_info.h.21.847e72606a2fc49b1c228f268b8a62aa
                            .group:00000000 wm4.opendefs.h.19.05852eb648ac65e48c7817e5cbf03346
                            .group:00000000 wm4.openserial.h.8.8c63e3800d2936b44b5370ce1aae62b7
 
