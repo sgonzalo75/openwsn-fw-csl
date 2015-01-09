@@ -93,48 +93,48 @@ bit after the start of the packet.
 typedef enum {
    S_SLEEP                   = 0x00,   // ready for next slot
 
-   // CSL TX MODE States.
+   // [CSL]: TX MODE States.
    S_CSLTXWAKEUPOFFSET       = 0x1a,   // waiting to prepare for CSL Tx wake-up
    S_CSLTXWAKEUPPREPARE		 = 0x1b,   // preparing for Tx wake-up
    S_CSLTXWAKEUPREADY	     = 0x1c,   // ready to Rx wake-up, waiting for 'go'
    S_CSLTXWAKEUPDELAY        = 0x1d,   // 'go' signal given, waiting for SFD Tx Wake-up
    S_CSLTXWAKEUP             = 0x1e,   // Tx data SFD received, sending bytes
 
-   S_CSLTXDATAPREOFFSET		 = 0x3b,   // starting data process.
-   S_CSLTXDATAOFFSET         = 0x1f,   // waiting to prepare for Tx data
-   S_CSLTXDATAPREPARE        = 0x20,   // preparing for Tx data
-   S_CSLTXDATAREADY          = 0x21,   // ready to Tx data, waiting for 'go'
-   S_CSLTXDATADELAY          = 0x22,   // 'go' signal given, waiting for SFD Tx data
-   S_CSLTXDATA               = 0x23,   // Tx data SFD received, sending bytes
+   S_CSLTXDATAPREOFFSET		 = 0x1f,   // waiting remainingRzTime and starting data frame Tx process
+   S_CSLTXDATAOFFSET         = 0x20,   // waiting to prepare for Tx data
+   S_CSLTXDATAPREPARE        = 0x21,   // preparing for Tx data
+   S_CSLTXDATAREADY          = 0x22,   // ready to Tx data, waiting for 'go'
+   S_CSLTXDATADELAY          = 0x23,   // 'go' signal given, waiting for SFD Tx data
+   S_CSLTXDATA               = 0x24,   // Tx data SFD received, sending bytes
 
-   S_CSLRXACKOFFSET          = 0x24,   // Tx data done, waiting to prepare for Rx ACK
-   S_CSLRXACKPREPARE         = 0x25,   // preparing for Rx ACK
-   S_CSLRXACKREADY           = 0x26,   // ready to Rx ACK, waiting for 'go'
-   S_CSLRXACKLISTEN          = 0x27,   // idle listening for ACK
-   S_CSLRXACK                = 0x28,   // Rx ACK SFD received, receiving bytes
-   S_CSLTXPROC               = 0x29,   // processing sent data
+   S_CSLRXACKOFFSET          = 0x25,   // Tx data done, waiting to prepare for Rx ACK
+   S_CSLRXACKPREPARE         = 0x26,   // preparing for Rx ACK
+   S_CSLRXACKREADY           = 0x27,   // ready to Rx ACK, waiting for 'go'
+   S_CSLRXACKLISTEN          = 0x28,   // idle listening for ACK
+   S_CSLRXACK                = 0x29,   // Rx ACK SFD received, receiving bytes
+   S_CSLTXPROC               = 0x2a,   // processing sent data
 
 
-   // CSL RX MODE - IDLE LISTENING States.
-   S_CSLRXWAKEUPOFFSET       = 0x2a,   // waiting to prepare for CSL Rx wake-up
-   S_CSLRXWAKEUPPREPARE      = 0x2b,   // preparing for Rx wake-up
-   S_CSLRXWAKEUPREADY        = 0x2c,   // ready to Rx wake-up, waiting for 'go'
-   S_CSLRXWAKEUPLISTEN       = 0x2d,   // idle listening for wake-up
-   S_CSLRXWAKEUP	         = 0x2e,   // idle listening for wake-up
-   S_CSLRXWAKEUPVALIDATE     = 0x2f,   // validate received wake-up frame.
+   // [CSL]: RX MODE - IDLE LISTENING States.
+   S_CSLRXWAKEUPOFFSET       = 0x2b,   // waiting to prepare for CSL Rx wake-up
+   S_CSLRXWAKEUPPREPARE      = 0x2c,   // preparing for Rx wake-up
+   S_CSLRXWAKEUPREADY        = 0x2d,   // ready to Rx wake-up, waiting for 'go'
+   S_CSLRXWAKEUPLISTEN       = 0x2e,   // idle listening for wake-up
+   S_CSLRXWAKEUP	         = 0x2f,   // idle listening for wake-up
+   S_CSLRXWAKEUPVALIDATE     = 0x30,   // validate received wake-up frame.
 
-   S_CSLRXDATAOFFSET         = 0x30,   // waiting to prepare for CSL Rx data.
-   S_CSLRXDATAPREPARE        = 0x31,   // preparing for Rx data
-   S_CSLRXDATAREADY          = 0x32,   // ready to Rx data, waiting for 'go'
-   S_CSLRXDATALISTEN         = 0x33,   // idle listening for data
-   S_CSLRXDATA   	         = 0x34,   // idle listening for data
+   S_CSLRXDATAOFFSET         = 0x31,   // waiting to prepare for CSL Rx data.
+   S_CSLRXDATAPREPARE        = 0x32,   // preparing for Rx data
+   S_CSLRXDATAREADY          = 0x33,   // ready to Rx data, waiting for 'go'
+   S_CSLRXDATALISTEN         = 0x34,   // idle listening for data
+   S_CSLRXDATA   	         = 0x35,   // idle listening for data
 
-   S_CSLTXACKOFFSET          = 0x35,   // waiting to prepare for Tx ACK
-   S_CSLTXACKPREPARE         = 0x36,   // preparing for Tx ACK
-   S_CSLTXACKREADY           = 0x37,   // Tx ACK ready, waiting for 'go'
-   S_CSLTXACKDELAY           = 0x38,   // 'go' signal given, waiting for SFD Tx ACK
-   S_CSLTXACK                = 0x39,   // Tx ACK SFD received, sending bytes
-   S_CSLRXPROC               = 0x3a,   // processing received data
+   S_CSLTXACKOFFSET          = 0x36,   // waiting to prepare for Tx ACK
+   S_CSLTXACKPREPARE         = 0x37,   // preparing for Tx ACK
+   S_CSLTXACKREADY           = 0x38,   // Tx ACK ready, waiting for 'go'
+   S_CSLTXACKDELAY           = 0x39,   // 'go' signal given, waiting for SFD Tx ACK
+   S_CSLTXACK                = 0x3a,   // Tx ACK SFD received, sending bytes
+   S_CSLRXPROC               = 0x3b,   // processing received data
 
 } ieee154e_state_t;
 
@@ -144,10 +144,10 @@ typedef enum {
 //    - duration_in_seconds = ticks / 32768
 enum ieee154e_atomicdurations_enum {
 
-   // CSL timing related
-   macCSLPeriod 			 = PORT_macCSLPeriod,	  // 100000us (100ms) by default.
-   macCSLMaxPeriod			 = PORT_macCSLMaxPeriod,  // By default equal to macCSLPeriod.
-   macCSLTxChkFreq			 = PORT_macCSLTxChkFreq,  // 30000us (30ms) by default. How often do we check if it is something pending on queue to transmit?.
+   // [CSL]: timing related
+   macCSLPeriod 			 = PORT_macCSLPeriod,	  // CSL - 200000us (200ms) by default.
+   macCSLMaxPeriod			 = PORT_macCSLMaxPeriod,  // CSL - By default equal to macCSLPeriod.
+   macCSLTxChkFreq			 = PORT_macCSLTxChkFreq,  // CSL - 60000us (60ms) by default. How often should we check if it is something pending on queue to transmit?.
 
    // time-slot related
    TsTxOffset                =  131,                  //  4000us
@@ -188,14 +188,17 @@ enum ieee154e_linkOption_enum {
 #define DURATION_tt7 ieee154e_vars.lastCapturedTime+TsTxAckDelay+TsShortGT
 #define DURATION_tt8 ieee154e_vars.lastCapturedTime+wdAckDuration
 
-// tiempo limite de transmisión de una trama wake-up CSL
-#define DURATION_txcsl TsTxOffset-delayTx+wdRadioTx+wdDataDuration
+// [CSL]: tiempo limite de transmisión de una trama wake-up CSL
+#define MaxWakeUpTxTime TsTxOffset-delayTx+wdRadioTx+wdDataDuration
 
 // RX
 #define DURATION_rt1 ieee154e_vars.lastCapturedTime+TsTxOffset-TsLongGT-delayRx-maxRxDataPrepare
 #define DURATION_rt2 ieee154e_vars.lastCapturedTime+TsTxOffset-TsLongGT-delayRx
+
+// [CSL]: El tiempo de duración de la operación LISTEN debe ser igual al tiempo
+// máximo de TX de una trama para asegurar su recepción.
 //#define DURATION_rt3 ieee154e_vars.lastCapturedTime+TsTxOffset+TsLongGT
-#define DURATION_rt3 ieee154e_vars.lastCapturedTime+DURATION_txcsl
+#define DURATION_rt3 MaxWakeUpTxTime
 
 #define DURATION_rt4 ieee154e_vars.lastCapturedTime+wdDataDuration
 #define DURATION_rt5 ieee154e_vars.lastCapturedTime+TsTxAckDelay-delayTx-maxTxAckPrepare
@@ -205,11 +208,11 @@ enum ieee154e_linkOption_enum {
 
 //=========================== typedef =========================================
 
-// CSL Working Mode (CWM)
+// [CSL]: CSL Working Mode (CWM)
 typedef enum {
-   CSL_SLEEP_MODE,               // State where mote is sleeping or idle and it is not involved in a current RX o TX.
-   CSL_RX_MODE,                  // State where mote is performing a channel sampling and a (possible) frame RX.
-   CSL_TX_MODE                  // State where mote is performing a frame TX.
+   CSL_SLEEP_MODE,               // CSL - State where mote is sleeping or idle and it is not involved in a current RX o TX.
+   CSL_RX_MODE,                  // CSL - State where mote is performing a channel sampling and a (possible) frame RX.
+   CSL_TX_MODE,                  // CSL - State where mote is performing a frame TX.
 } ieee154ecsl_mode_t;
 
 // IEEE802.15.4E acknowledgement (ACK)
@@ -248,15 +251,14 @@ typedef struct {
    PORT_RADIOTIMER_WIDTH     radioOnTics;             // how many tics within the sample the radio is on
    bool                      radioOnThisSlot;         // to control if the radio has been turned on in a schedule slot.
 
-   OpenQueueEntry_t*	     wakeupToSend;			  // pointer to the wakeup to send.
-   OpenQueueEntry_t*	     wakeupReceived;		  // pointer to the wakeup received.
-
-   uint8_t					 cslDSN;				  // DSN for wake-up sequence frames.
-   ieee154ecsl_mode_t		 cslMode;				  // CSL mode (sleep, transmission o reception).
-   opentimer_id_t			 txTimer;				  // Timer for checking frames on local queue to transmit.
-   opentimer_id_t			 cslTxTestTimer;          // Timer for periodic add packet to queue for testing CSL TX.
-   //uint16_t					 rzTime;				  // Time until data sending.
-   uint16_t					 remainingRzTime;		  // Used for checking if we should stop to sending wake-up and start to sending data.
+   // [CSL]: Variables CSL
+   OpenQueueEntry_t*	     wakeupToSend;			  // CSL - Pointer to the wakeup to send.
+   OpenQueueEntry_t*	     wakeupReceived;		  // CSL - Pointer to the wakeup received.
+   uint8_t					 cslDSN;				  // CSL - DSN for wake-up sequence frames.
+   ieee154ecsl_mode_t		 cslMode;				  // CSL - Csl mode (sleep, transmission o reception).
+   opentimer_id_t			 txTimer;				  // CSL - Timer for checking frames on local queue to transmit.
+   opentimer_id_t			 cslTxTestTimer;          // [CSL-TEST] - Timer for periodic add packet to queue for testing CSL TX.
+   uint16_t					 remainingRzTime;		  // CSL - Used for checking if we should stop to sending wake-up and start to sending data.
 
 } ieee154e_vars_t;
 
@@ -272,13 +274,13 @@ typedef struct {
 } ieee154e_stats_t;
 END_PACK
 
+// [CSL]: debugging info
 typedef struct {
-   //PORT_RADIOTIMER_WIDTH     num_newSlot;
-   PORT_RADIOTIMER_WIDTH     num_newSample;            // SERGIO - commented and renamed slot reference.
+   PORT_RADIOTIMER_WIDTH     num_newSample;            // CSL - commented and renamed slot reference.
    PORT_RADIOTIMER_WIDTH     num_timer;
    PORT_RADIOTIMER_WIDTH     num_startOfFrame;
    PORT_RADIOTIMER_WIDTH     num_endOfFrame;
-   PORT_RADIOTIMER_WIDTH     num_cslSamples;  		   // SERGIO - counter of CSL Samples
+   PORT_RADIOTIMER_WIDTH     num_cslSamples;  		   // CSL - counter of CSL Samples
 } ieee154e_dbg_t;
 
 //=========================== prototypes ======================================

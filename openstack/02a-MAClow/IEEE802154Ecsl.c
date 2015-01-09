@@ -21,7 +21,7 @@
 //=========================== VARIABLES ================================
 //======================================================================
 
-ieee154e_vars_t    ieee154e_vars;
+ieee154e_vars_t	   ieee154e_vars;
 ieee154e_stats_t   ieee154e_stats;
 ieee154e_dbg_t     ieee154e_dbg;
 
@@ -29,6 +29,7 @@ ieee154e_dbg_t     ieee154e_dbg;
 //========================== PROTOTYPES ================================
 //======================================================================
 
+// [CSL]: FSM activities prototypes.
 
 // TX-MODE: CSL Frame sending activities prototypes
 void    activity_csl_wakeup_ti1(void);
@@ -114,16 +115,15 @@ bool     debugPrint_isSync(void);
 void     isr_ieee154ecsl_newChannelSample(void);
 void     isr_ieee154ecsl_timer(void);
 
-// CSL queue checking for local transmissions
+// [CSL]: queue checking for local transmissions
 void 	 isr_ieee154ecsl_txtimer_cb(void);
 
-// Testing callback to put a packet on queue for testing CSL Tx mode.
+// [CSL-TEST]: Testing callback to put a packet on queue for testing CSL Tx mode.
 void     isr_ieee154ecsl_addPacketToQueueForTestingCslTx_cb (void);
 
-// CSL Wake-up frames (create and retrieve methods).
+// [CSL]: Wake-up frames prototypes (create and retrieve methods).
 void 	ieee802154_retrieveWakeUpFrame(OpenQueueEntry_t* msg, ieee802154_header_iht* ieee802514_header, uint16_t* rztime);
 void    ieee802154_createWakeUpFrame(OpenQueueEntry_t* msg, uint8_t sequenceNumber, open_addr_t* nextHop, uint16_t rztime);
-
 
 
 //======================================================================
@@ -135,6 +135,7 @@ void    ieee802154_createWakeUpFrame(OpenQueueEntry_t* msg, uint8_t sequenceNumb
 
   Call this function once before any other function in this module, possibly during boot-up.
 */
+// [CSL]: Modificaciones sobre método inicial referidas a los temporizadores y al estado inicial.
 void ieee154e_init() {
    
    // initialize variables
@@ -150,27 +151,27 @@ void ieee154e_init() {
    resetStats();
    ieee154e_stats.numDeSync                 = 0;
    
-   // update CSL Mode to SLEEP in order to allow RX o TX.
+   // [CSL]: update CSL Mode to SLEEP in order to allow RX o TX.
    ieee154e_vars.cslMode = CSL_SLEEP_MODE;
-   // Set initial DSN counter for wake-up sequence frames.
+   // [CSL]: Set initial DSN counter for wake-up sequence frames.
    ieee154e_vars.cslDSN	 = 0;
 
    // switch radio on - Does this function really do anything?. Its contents are commented...
    radio_rfOn();
    
    // set callback functions for the radio
-   radio_setOverflowCb(isr_ieee154ecsl_newChannelSample); // Fires every macCSLPeriod for CSL channel sampling
-   radio_setCompareCb(isr_ieee154ecsl_timer);             // Fires for FSM state changing
-   radio_setStartFrameCb(ieee154ecsl_startOfFrame);
-   radio_setEndFrameCb(ieee154ecsl_endOfFrame);
+   radio_setOverflowCb(isr_ieee154ecsl_newChannelSample); // CSL - Fires every macCSLPeriod for sampling.
+   radio_setCompareCb(isr_ieee154ecsl_timer);             // CSL - Fires for FSM state changing.
+   radio_setStartFrameCb(ieee154ecsl_startOfFrame);       // CSL – Fires on start of frame detected on radio
+   radio_setEndFrameCb(ieee154ecsl_endOfFrame);           // CSL – Fires on end of frame detected on radio
 
-   // set timer for checking frames on local queue to transmit.
-   //ieee154e_vars.txTimer = opentimers_start(macCSLTxChkFreq, TIMER_PERIODIC, TIME_TICS, isr_ieee154ecsl_txtimer_cb);
+   // [CSL]: set timer for checking frames on local queue to transmit.
+   ieee154e_vars.txTimer = opentimers_start(macCSLTxChkFreq, TIMER_PERIODIC, TIME_TICS, isr_ieee154ecsl_txtimer_cb);
 
-   // set timer for callback to add packet to queue for testing CSL TX (every 5 seconds)
-   //ieee154e_vars.cslTxTestTimer = opentimers_start(2000, TIMER_PERIODIC, TIME_MS, isr_ieee154ecsl_addPacketToQueueForTestingCslTx_cb);
+   // [CSL-TEST]: set timer for callback to add packet to queue for testing CSL TX (every 5 seconds)
+   ieee154e_vars.cslTxTestTimer = opentimers_start(2000, TIMER_PERIODIC, TIME_MS, isr_ieee154ecsl_addPacketToQueueForTestingCslTx_cb);
 
-   // have the radio start its timer for channel sampling (macCSLPeriod)
+   // [CSL]: have the radio start its timer for channel sampling (macCSLPeriod)
    radio_startTimer(macCSLPeriod);
 }
 
@@ -185,6 +186,7 @@ void ieee154e_init() {
 
 This function executes in ISR mode, when the new CSÑ Channel Sample timer fires.
 */
+// [CSL]: Callback indicating the start of a new CSL channel sample.
 void isr_ieee154ecsl_newChannelSample() {
    // Establish the new timer for the next channel sample
    radio_setTimerPeriod(macCSLPeriod);
@@ -208,6 +210,7 @@ void isr_ieee154ecsl_newChannelSample() {
 
 This function executes in ISR mode, when the FSM timer fires.
 */
+// [CSL]: Callback to select the next FSM action.
 void isr_ieee154ecsl_timer() {
    if (ieee154e_vars.cslMode == CSL_RX_MODE)  { // Current CSL operation mode is channel sampling and possible frame RX.
 	   switch (ieee154e_vars.state) {
@@ -272,6 +275,7 @@ void isr_ieee154ecsl_timer() {
    ieee154e_dbg.num_timer++;
 }
 
+// [CSL] – Callback fired after receive a start of frame on radio.
 void ieee154ecsl_startOfFrame(PORT_RADIOTIMER_WIDTH capturedTime) {
 	if(ieee154e_vars.cslMode == CSL_RX_MODE)  { // Current CSL operation mode is channel sampling and possible frame RX.
 	   switch (ieee154e_vars.state) {
@@ -321,7 +325,7 @@ void ieee154ecsl_startOfFrame(PORT_RADIOTIMER_WIDTH capturedTime) {
   ieee154e_dbg.num_startOfFrame++;
 }
 
-
+// [CSL] – Callback fired after receive a end of frame on radio.
 void ieee154ecsl_endOfFrame(PORT_RADIOTIMER_WIDTH capturedTime) {
 	if(ieee154e_vars.cslMode == CSL_RX_MODE)  { // Current CSL operation mode is channel sampling and possible frame RX.
 	   switch (ieee154e_vars.state) {
@@ -357,6 +361,7 @@ void ieee154ecsl_endOfFrame(PORT_RADIOTIMER_WIDTH capturedTime) {
 
 // tx timer interrupt callbacks
 
+// [CSL]: Callback to check pending data to be sent.
 void isr_ieee154ecsl_txtimer_cb() {
 
 	// Verificamos que no estamos ya en un proceso de TX o RX previo.
@@ -511,10 +516,9 @@ port_INLINE void activity_csl_wakeup_ti1() {
 	       // change state to start sending CSL preamble before send the data packet.
 	       changeState(S_CSLTXWAKEUPOFFSET);
 
-	       // change owner
-	       //ieee154e_vars.dataToSend->owner = COMPONENT_IEEE802154E;
-	       // record that I will attempt to transmit this packet
+           // record that I will attempt to transmit this packet
 	       ieee154e_vars.dataToSend->l2_numTxAttempts++;
+
 	       // arm tt1
 	       radiotimer_schedule(DURATION_tt1);
 	   } else {
@@ -523,13 +527,13 @@ port_INLINE void activity_csl_wakeup_ti1() {
 	   }
 }
 
+
 /**
  \brief Activity for CSL TX stage [wake-up ti2].
 
   This method is invoked from ISR-mode "isr_ieee154ecsl_timer" function when FSM timer fires (expiring "duration_tt1") while state = S_CSLTXWAKEUPOFFSET.
   The functionality is to prepare the radio for sending packets.
 */
-
 port_INLINE void activity_csl_wakeup_ti2() {
 
    open_addr_t neighbor;
@@ -545,7 +549,7 @@ port_INLINE void activity_csl_wakeup_ti2() {
 
    ieee154e_vars.remainingRzTime = macCSLMaxPeriod - ieee154e_vars.lastCapturedTime;
 
-   if(DURATION_txcsl < ieee154e_vars.remainingRzTime) { // Si da tiempo a enviar una nueva trama de wake-up antes de la finalización del ciclo...
+   if (MaxWakeUpTxTime < ieee154e_vars.remainingRzTime) { // Si da tiempo a enviar una nueva trama de wake-up antes de la finalización del ciclo...
 
 	   // change state
 	   changeState(S_CSLTXWAKEUPPREPARE);
@@ -606,7 +610,6 @@ port_INLINE void activity_csl_wakeup_ti2() {
 		   *((uint16_t*)(ieee154e_vars.wakeupToSend->payload+8)) = ieee154e_vars.remainingRzTime;
 	   }
 
-
 	   // load the packet in the radio's Tx buffer
 	   radio_loadPacket(ieee154e_vars.wakeupToSend->payload, ieee154e_vars.wakeupToSend->length);
 
@@ -624,12 +627,12 @@ port_INLINE void activity_csl_wakeup_ti2() {
    else {
 	   // Si no da tiempo a enviar una nueva trama, simplemente esperamos un tiempo igual a remainingRzTime que será
 	   // el tiempo que queda pendiente hasta el envío de la trama de datos y actualizamos directamente el estado para
-	   // pasar a la transmisión de los datos.
+	   // pasar a la transmisión de los datos, a través del estado CSLTXDATAPREOFFSET.
 
 	   // change state
 	   changeState(S_CSLTXDATAPREOFFSET);
 
-	   // arm tt1 + remaining rendezvous time.
+	   // arm remaining rendezvous time.
 	   radiotimer_schedule(ieee154e_vars.remainingRzTime);
    }
 }
@@ -852,7 +855,7 @@ port_INLINE void activity_csl_data_ti4(PORT_RADIOTIMER_WIDTH capturedTime) {
    radiotimer_cancel();
 
    // record the captured time
-   //ieee154e_vars.lastCapturedTime = capturedTime;
+   ieee154e_vars.lastCapturedTime = capturedTime;
 
    // arm tt4
    radiotimer_schedule(DURATION_tt4);
@@ -1224,7 +1227,6 @@ port_INLINE void activity_csl_wakeup_ri1() { // Activity for stage [ri1] on CSL 
 
 	   // arm rt1
 	   radiotimer_schedule(DURATION_rt1);
-
 }
 
 
@@ -1266,7 +1268,6 @@ port_INLINE void activity_csl_wakeup_rie1() {  // Activity for error event [rie1
    openserial_printError(COMPONENT_IEEE802154E,ERR_MAXRXWAKEUPPREPARE_OVERFLOWS,
                          (errorparameter_t)ieee154e_vars.state,
                          (errorparameter_t)ieee154e_dbg.num_cslSamples);
-
    // abort
    endOps();
 }
@@ -1298,6 +1299,12 @@ port_INLINE void activity_csl_wakeup_ri3() { // Activity for stage [ri3] on CSL 
   duration (#TsLongGT).
 */
 port_INLINE void activity_csl_wakeup_rie2() { // Activity for error event [rie2] on CSL RX Sampling.
+   // change state --> Next State will be S_CSLRXWAKEUPOFFSET in order to prepare for CSL Rx wake-up.
+   changeState(S_CSLRXWAKEUPOFFSET);
+
+   // arm rt1
+   radiotimer_schedule(DURATION_rt1);
+
    // abort
    endOps();
 }
@@ -1339,25 +1346,6 @@ port_INLINE void activity_csl_wakeup_rie3() {
    openserial_printError(COMPONENT_IEEE802154E,ERR_WDWAKEUPDURATION_OVERFLOWS,
                          (errorparameter_t)ieee154e_vars.state,
                          (errorparameter_t)ieee154e_dbg.num_cslSamples);
-
-   // abort
-   endOps();
-}
-
-/**
- \brief Activity for CSL RX Sampling error [wake-up rie4].
-
-  This is triggered by rztime+TsSlotDuration expiring, i.e. timer fires while state = S_CSLRXWAKEUPVALIDATE because the wake-up frame is not for me.
-  The behaviour is to free mem used and restart CSL sampling.
-*/
-port_INLINE void activity_csl_wakeup_rie4() {
-
-   // free memory
-   openqueue_freePacketBuffer(ieee154e_vars.dataReceived);
-
-   // clear local variable
-   ieee154e_vars.dataReceived = NULL;
-
    // abort
    endOps();
 }
@@ -1371,8 +1359,13 @@ port_INLINE void activity_csl_wakeup_rie4() {
 */
 port_INLINE void activity_csl_wakeup_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
 
-	// Only for CSL Testing due to we are hard-coding destination (neighbor) address on schedule, packet sent and receiver activity (this activity).
+	ieee802154_header_iht ieee802514_header;
 	open_addr_t myID, myID16b;
+	uint16_t rztime = 0;
+
+	// CSL TEST CODE
+	// Only for Testing due to we are hard-coding destination (neighbor) address on schedule, sent packet and receiver activity (this activity).
+
     myID.addr_64b[0]=0x00;
 	myID.addr_64b[1]=0x11;
 	myID.addr_64b[2]=0x22;
@@ -1384,6 +1377,8 @@ port_INLINE void activity_csl_wakeup_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
 
 	myID.type=ADDR_64B;
 
+	// END CSL TEST
+
 	// En este punto ya hemos recibido la trama por lo que hay que hacer las siguientes validaciones:
 	//   1.- Cambiar el estado a S_CSLRXWAKEUPVALIDATE y cancelar el temporizador rt4.
 	//   2.- Apagar la radio.
@@ -1393,9 +1388,6 @@ port_INLINE void activity_csl_wakeup_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
 	//
 	// En caso afirmativo, utilizamos el Rendezvous time recibido para saber cuánto tiempo hay que dormir hasta recibir la trama de datos.
 	// En caso negativo, desactivamos la radio e iniciamos de nuevo el proceso de channel sampling.
-
-	ieee802154_header_iht ieee802514_header;
-	uint16_t rztime;
 
    // actualizamos el estado.
    changeState(S_CSLRXWAKEUPVALIDATE);
@@ -1455,16 +1447,6 @@ port_INLINE void activity_csl_wakeup_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
       // En el caso de que no sea una cabecera IEEE802.15.4 válida, finalizamos el proceso.
       if (ieee802514_header.valid==FALSE) { break; }
 
-      // CSL TEST CODE : Verify RZ Time
-      //if (rztime <= 0x07D0) { // 2000
-      //	  break;
-      // } else {
-	  //    changeState(S_CSLRXWAKEUPOFFSET);
-	  //	  radiotimer_schedule(DURATION_rt1);
-      //	  break;
-      // }
-      // END CSL TEST CODE
-
       // Verificamos que se trata de una trama WAKE-UP, perteneciente a la misma PAN ID, y dirigida a mi.
       if(ieee802514_header.frameType==IEEE154_TYPE_MULTIPURPOSE) {
     	  // Comentado y sustituido para CSL TESTING ya que está hard-codeada la direccion.
@@ -1478,17 +1460,17 @@ port_INLINE void activity_csl_wakeup_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
     	   // En este caso, debemos dormir el tiempo indicado por RZ Time, estableciendo el estado a S_CSLRXDATAOFFSET
  	       changeState(S_CSLRXDATAOFFSET);
 
+    	   // registro del tiempo de captura
+           ieee154e_vars.lastCapturedTime = capturedTime;
+
     	   // Tratamos el caso en el cual rztime_ie.time sea cero, es decir, sea la ultima trama wake-up antes del envío de la trama de datos.
     	   if (rztime == 0) {
     	     // Establecemos el timer rt1 (consideramos el mismo tiempo de offset para la recepción de la trama wake-up que para la de datos).
     	     radiotimer_schedule(DURATION_rt1);
     	   } else {
-    	     // Establecemos el timer al valor rt1 pero desplazado el tiempo indicado desde el rendezvous time.
+    	     // Establecemos el timer al valor rt1 pero desplazado el tiempo indicado por rendezvous-time.
         	 radiotimer_schedule(DURATION_rt1 + rztime);
            }
-
-    	   // registro del tiempo de captura
-           ieee154e_vars.lastCapturedTime = capturedTime;
 
            // Descartamos el paquete una vez recibido y tratado.
 
@@ -1504,6 +1486,7 @@ port_INLINE void activity_csl_wakeup_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
     	 //   - RZ time + Maximum length payload frame + secure ack frame (consideraremos un tiempo igual a RZ time + TsSlotDuration)
     	 // dado que TsSlotDuration es el tiempo utilizado en OpenWSN-TSCH para enviar y recibir una trama de datos + ack. Se requiere
     	 // en cualquier caso revisar estos timings mediante medidas y mecanismos más precisos (osciloscopio).
+
     	 else if( ! packetfunctions_sameAddress(&ieee802514_header.dest,idmanager_getMyID(ADDR_16B)) &&
     	   		    packetfunctions_sameAddress(&ieee802514_header.panid,idmanager_getMyID(ADDR_PANID))) {
 
@@ -1533,6 +1516,18 @@ port_INLINE void activity_csl_wakeup_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
    // clear local variable
    ieee154e_vars.wakeupReceived = NULL;
 
+   // abort
+   endOps();
+}
+
+
+/**
+ \brief Activity for CSL RX Sampling error [wake-up rie4].
+
+  This is triggered by rztime+TsSlotDuration expiring, i.e. timer fires while state = S_CSLRXWAKEUPVALIDATE because the wake-up frame is not for me.
+  The behaviour is to free mem used and restart CSL sampling.
+*/
+port_INLINE void activity_csl_wakeup_rie4() {
    // abort
    endOps();
 }
@@ -1769,6 +1764,10 @@ port_INLINE void activity_csl_data_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
          break;
       }
 
+      // CSL TEST - Force to not send ack packet
+      ieee802514_header.ackRequested = 0;
+      // END CSL TEST
+
       // check if ack requested
       if (ieee802514_header.ackRequested==1) {
          // arm rt5
@@ -1820,7 +1819,7 @@ port_INLINE void activity_csl_data_ri6() {
       // log the error
       openserial_printError(COMPONENT_IEEE802154E,ERR_NO_FREE_PACKET_BUFFER, (errorparameter_t)0, (errorparameter_t)0);
       // indicate we received a packet anyway (we don't want to loose any)
-      notif_receive(ieee154e_vars.dataReceived,2);
+      notif_receive(ieee154e_vars.dataReceived,0);
       // free local variable
       ieee154e_vars.dataReceived = NULL;
       // abort
@@ -1991,7 +1990,7 @@ port_INLINE void activity_csl_data_ri9(PORT_RADIOTIMER_WIDTH capturedTime) {
    //}
    
    // inform upper layer of reception (after ACK sent)
-   notif_receive(ieee154e_vars.dataReceived,3);
+   notif_receive(ieee154e_vars.dataReceived,1);
    
    // clear local variable
    ieee154e_vars.dataReceived = NULL;
@@ -2016,10 +2015,11 @@ Note that we are writing the field from the end of the header to the beginning.
 \param[in]     rztime           Rendezvoud time
 */
 
+// [CSL]: Prepend  a wake-up header to a packet.
 void ieee802154_createWakeUpFrame(OpenQueueEntry_t*		msg,
                                   uint8_t           	sequenceNumber,
                                   open_addr_t*        	nextHop,
-							      uint16_t				rztime) {
+							      uint16_t				rz_time) {
 
     open_addr_t	nextHop16b;
 
@@ -2029,7 +2029,7 @@ void ieee802154_createWakeUpFrame(OpenQueueEntry_t*		msg,
 	//   - SEQ NUMBER (macDSN): 1 byte
 	//   - PAN ID: 2 bytes
 	//   - DEST ADDR: 2 bytes
-	//   - RZ TIME IE: 2 bytes
+	//   - RZ TIME IE: 2 bytes (header) + 2 bytes (body)
 	//   - IE LIST TERMINATOR: 2 bytes
 	//
 	//  | FRAME   |  SEQ   | PAN | DEST | RZ TIME  | IE LIST    |
@@ -2048,7 +2048,7 @@ void ieee802154_createWakeUpFrame(OpenQueueEntry_t*		msg,
 	packetfunctions_reserveHeaderSize(msg,sizeof(uint16_t));
 	*((uint16_t*)(msg->payload)) = 0x3F00;  // Element ID = 0x7e
 
-	// RZ TIME IE, formado por 4 bytes con la siguiente estructura (0x0E82)
+	// RZ TIME IE, formado por 4 bytes con la siguiente estructura (0x0E82). La cabecera es igual a:
     //  - b0-b6 (Length) = 2
     //  - b7-b14 (Element ID) = 0x1D
     //  - b15 (Type) = 0
@@ -2059,7 +2059,7 @@ void ieee802154_createWakeUpFrame(OpenQueueEntry_t*		msg,
 
  	// rz time ie body (time)
 	packetfunctions_reserveHeaderSize(msg,sizeof(uint16_t));
-	*((uint16_t*)(msg->payload)) = rztime;
+	*((uint16_t*)(msg->payload)) = rz_time;
 
 	// rz time ie header
 	packetfunctions_reserveHeaderSize(msg,sizeof(uint16_t));
@@ -2104,6 +2104,8 @@ Note We are writing the fields from the beginning of the header to the end.
 \param[out] ieee802514_header The internal header to write the data to.
 \param[out] rztime  		  Rendezvous time to wait for data packet.
 */
+
+// [CSL]: Retrieve a wake-up header from the received packet.
 void ieee802154_retrieveWakeUpFrame(OpenQueueEntry_t*      msg,
                                     ieee802154_header_iht* ieee802514_header,
 									uint16_t* rztime) {
@@ -2112,7 +2114,7 @@ void ieee802154_retrieveWakeUpFrame(OpenQueueEntry_t*      msg,
    uint16_t temp_16b;
 
 
-   // La estructura de una trama Wake-Up es la siguiente
+   // La estructura de una trama Wake-Up es la siguiente:
    //
    //   - FRAME CONTROL: 1 byte
    //   - SEQ NUMBER (macDSN): 1 byte
@@ -2130,7 +2132,7 @@ void ieee802154_retrieveWakeUpFrame(OpenQueueEntry_t*      msg,
    ieee802514_header->valid=FALSE;
    ieee802514_header->headerLength = 0;
 
-   // Validamos que hay datos que leer.
+   // Validamos la existencia de datos que leer.
    if (ieee802514_header->headerLength > msg->length) { return; }
 
    // Frame Control Field (1 byte)
@@ -2189,12 +2191,10 @@ void ieee802154_retrieveWakeUpFrame(OpenQueueEntry_t*      msg,
    //   - IE LIST TERMINATOR: 2 bytes
    //
 
-
    // Avanzamos 1 byte en el procesamiento de la cabecera.
    ieee802514_header->headerLength += 1;
 
    // Posicionamos dentro del paquete para leer el resto de elementos.
-   //temp_8b = *((uint8_t*)(msg->payload)+ieee802514_header->headerLength);
 
    // 1.- SequenceNumber
    if (ieee802514_header->headerLength > msg->length) { return; } // no more to read!
@@ -2235,15 +2235,12 @@ void ieee802154_retrieveWakeUpFrame(OpenQueueEntry_t*      msg,
    temp_16b = (temp_8b2 << 8) | temp_8b1;
 
    // Comprobación de longitud a valor 2.
-
    if ((temp_16b & 0x007f) != 2) { return; }
 
    // Comprobación de element ID = 0x1D.
-
    if ((temp_16b >> 7) != 0x001d) { return; }
 
    // Comprobación del type = 0.
-
    if ((temp_16b >> 15) & 0x0001) { return; }
 
    // Obtención del IE Content (rztime).
@@ -2277,15 +2274,12 @@ void ieee802154_retrieveWakeUpFrame(OpenQueueEntry_t*      msg,
    temp_16b = (temp_8b2 << 8) | temp_8b1;
 
    // Comprobación de longitud a valor 0.
-
    if (temp_16b & 0x007f) { return; }
 
    // Comprobación de element ID = 0x7E o 0x7F.
-
    if (((temp_16b >> 7) != 0x7e) && ((temp_16b >> 7) != 0x7f)) { return; }
 
    // Comprobación del type = 0.
-
    if ((temp_16b >> 15) & 0x0001) { return; }
 
    // Por ultimo y en el caso de haber llegado aquí, consideramos la cabecera como válida.
@@ -2473,17 +2467,12 @@ void notif_receive(OpenQueueEntry_t* packetReceived, uint8_t action) {
    // post RES's Receive task
    //scheduler_push_task(task_sixtopNotifReceive,TASKPRIO_SIXTOP_NOTIF_RX);
 
-   // CSL Testing purposes
-   switch(action) {
-   // OK. verde toggle
-   case 1:
-   case 3: leds_radio_toggle(); break;
+   // CSL TEST CODE
    // Error ACK. naranja toggle
-   case 2: leds_sync_toggle();  break;
-   // Error EndOps
-   case 4: leds_error_toggle(); break;
-   default: leds_all_off();
-   }
+   if (action == 1)
+	leds_sync_blink();
+   else
+    leds_error_toggle();
 
    // wake up the scheduler
    SCHEDULER_WAKEUP();
@@ -2648,6 +2637,8 @@ have been sent to the upper layer. Similarly, in a Tx slot, the sendDone
 function should already have been done. If this is not the case, this function
 will do that for you, but assume that something went wrong.
 */
+
+//[CSL] – Modificación de firma del método endSlot.
 void endOps() {
 
    // turn off the radio
@@ -2697,7 +2688,7 @@ void endOps() {
       // assume something went wrong. If everything went well, dataReceived
       // would have been set to NULL in ri9.
       // indicate  "received packet" to upper layer since we don't want to loose packets
-      notif_receive(ieee154e_vars.dataReceived,4);
+      notif_receive(ieee154e_vars.dataReceived,0);
 
       // CSL - Remove packet for testing because no high entity for packet processing.
       openqueue_freePacketBuffer(ieee154e_vars.dataReceived);

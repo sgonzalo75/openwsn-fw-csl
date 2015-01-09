@@ -31,14 +31,15 @@ enum IEEE802154_fcf_frameversion_enums {
    IEEE154_FRAMEVERSION                = 2, //ieee154
 };
 
+// [CSL]: Added new FCF types (LLDN and MULTIPURPOSE)
 enum IEEE802154_fcf_type_enums {
    IEEE154_TYPE_BEACON                 = 0,
    IEEE154_TYPE_DATA                   = 1,
    IEEE154_TYPE_ACK                    = 2,
    IEEE154_TYPE_CMD                    = 3,
-   IEEE154_TYPE_LLDN				   = 4, // Defined for LLDN frames.
-   IEEE154_TYPE_MULTIPURPOSE           = 5, // Defined for Multipurpose frames, (frame type = 101b (5) )
-   IEEE154_TYPE_UNDEFINED              = 6, // Modified previous default type
+   IEEE154_TYPE_LLDN				   = 4, // CSL - Defined for LLDN frames.
+   IEEE154_TYPE_MULTIPURPOSE           = 5, // CSL - Defined for Multipurpose frames, (frame type = 101b (5) )
+   IEEE154_TYPE_UNDEFINED              = 6, // CSL - Modified previous default type
 };
 
 enum IEEE802154_fcf_sec_enums {
