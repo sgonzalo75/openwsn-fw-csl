@@ -548,22 +548,22 @@
  428              		.file 6 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 cinfo.c
-     /tmp/ccOwKKnD.s:19     .rodata:00000000 $d
-     /tmp/ccOwKKnD.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccOwKKnD.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccOwKKnD.s:32     .rodata:00000010 infouCName
-     /tmp/ccOwKKnD.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccOwKKnD.s:42     .rodata:00000024 infoStackName
-     /tmp/ccOwKKnD.s:47     .rodata:00000030 ipAddr_ipsoRD
-     /tmp/ccOwKKnD.s:67     .rodata:00000040 ipAddr_motesEecs
-     /tmp/ccOwKKnD.s:87     .rodata:00000050 ipAddr_local
-     /tmp/ccOwKKnD.s:107    .rodata:00000060 ipAddr_motedata
-     /tmp/ccOwKKnD.s:128    .rodata:00000070 cinfo_path0
+     /tmp/ccnTYRC8.s:19     .rodata:00000000 $d
+     /tmp/ccnTYRC8.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccnTYRC8.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccnTYRC8.s:32     .rodata:00000010 infouCName
+     /tmp/ccnTYRC8.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccnTYRC8.s:42     .rodata:00000024 infoStackName
+     /tmp/ccnTYRC8.s:47     .rodata:00000030 ipAddr_ipsoRD
+     /tmp/ccnTYRC8.s:67     .rodata:00000040 ipAddr_motesEecs
+     /tmp/ccnTYRC8.s:87     .rodata:00000050 ipAddr_local
+     /tmp/ccnTYRC8.s:107    .rodata:00000060 ipAddr_motedata
+     /tmp/ccnTYRC8.s:128    .rodata:00000070 cinfo_path0
                             *COM*:00000024 cinfo_vars
-     /tmp/ccOwKKnD.s:132    .text:00000000 $t
-     /tmp/ccOwKKnD.s:137    .text:00000000 cinfo_init
-     /tmp/ccOwKKnD.s:215    .text:00000090 cinfo_receive
-     /tmp/ccOwKKnD.s:393    .text:000001f0 cinfo_sendDone
+     /tmp/ccnTYRC8.s:132    .text:00000000 $t
+     /tmp/ccnTYRC8.s:137    .text:00000000 cinfo_init
+     /tmp/ccnTYRC8.s:215    .text:00000090 cinfo_receive
+     /tmp/ccnTYRC8.s:393    .text:000001f0 cinfo_sendDone
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

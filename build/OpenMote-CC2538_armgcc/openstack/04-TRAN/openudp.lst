@@ -694,24 +694,24 @@
  602              		.file 7 "openstack/04-TRAN/opencoap.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 openudp.c
-     /tmp/ccJeqzA4.s:19     .rodata:00000000 $d
-     /tmp/ccJeqzA4.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccJeqzA4.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccJeqzA4.s:32     .rodata:00000010 infouCName
-     /tmp/ccJeqzA4.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccJeqzA4.s:42     .rodata:00000024 infoStackName
-     /tmp/ccJeqzA4.s:47     .rodata:00000030 ipAddr_ipsoRD
-     /tmp/ccJeqzA4.s:67     .rodata:00000040 ipAddr_motesEecs
-     /tmp/ccJeqzA4.s:87     .rodata:00000050 ipAddr_local
-     /tmp/ccJeqzA4.s:107    .rodata:00000060 ipAddr_motedata
-     /tmp/ccJeqzA4.s:125    .text:00000000 $t
-     /tmp/ccJeqzA4.s:130    .text:00000000 openudp_init
-     /tmp/ccJeqzA4.s:157    .text:0000000c openudp_send
-     /tmp/ccJeqzA4.s:248    .text:0000009c openudp_sendDone
-     /tmp/ccJeqzA4.s:322    .text:000000fc openudp_receive
-     /tmp/ccJeqzA4.s:367    .text:0000013c $d
-     /tmp/ccJeqzA4.s:373    .text:0000014c $t
-     /tmp/ccJeqzA4.s:572    .text:000002d4 openudp_debugPrint
+     /tmp/cc9pPeGp.s:19     .rodata:00000000 $d
+     /tmp/cc9pPeGp.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cc9pPeGp.s:27     .rodata:00000008 infoBoardname
+     /tmp/cc9pPeGp.s:32     .rodata:00000010 infouCName
+     /tmp/cc9pPeGp.s:37     .rodata:00000018 infoRadioName
+     /tmp/cc9pPeGp.s:42     .rodata:00000024 infoStackName
+     /tmp/cc9pPeGp.s:47     .rodata:00000030 ipAddr_ipsoRD
+     /tmp/cc9pPeGp.s:67     .rodata:00000040 ipAddr_motesEecs
+     /tmp/cc9pPeGp.s:87     .rodata:00000050 ipAddr_local
+     /tmp/cc9pPeGp.s:107    .rodata:00000060 ipAddr_motedata
+     /tmp/cc9pPeGp.s:125    .text:00000000 $t
+     /tmp/cc9pPeGp.s:130    .text:00000000 openudp_init
+     /tmp/cc9pPeGp.s:157    .text:0000000c openudp_send
+     /tmp/cc9pPeGp.s:248    .text:0000009c openudp_sendDone
+     /tmp/cc9pPeGp.s:322    .text:000000fc openudp_receive
+     /tmp/cc9pPeGp.s:367    .text:0000013c $d
+     /tmp/cc9pPeGp.s:373    .text:0000014c $t
+     /tmp/cc9pPeGp.s:572    .text:000002d4 openudp_debugPrint
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

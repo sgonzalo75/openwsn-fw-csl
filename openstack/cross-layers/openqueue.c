@@ -253,7 +253,8 @@ void openqueue_reset_entry(OpenQueueEntry_t* entry) {
    entry->l3_sourceAdd.type            = ADDR_NONE;
    //l2
    entry->l2_nextORpreviousHop.type    = ADDR_NONE;
-   //CSL TEST
+
+   // [CSL-TEST]: To be sure that address arrays are reset.
    entry->l2_nextORpreviousHop.addr_128b[0]  = 0x00;
    entry->l2_nextORpreviousHop.addr_128b[1]  = 0x00;
    entry->l2_nextORpreviousHop.addr_128b[2]  = 0x00;
@@ -294,8 +295,7 @@ void openqueue_reset_entry(OpenQueueEntry_t* entry) {
    entry->l2_nextORpreviousHop.prefix[5]     = 0x00;
    entry->l2_nextORpreviousHop.prefix[6]     = 0x00;
    entry->l2_nextORpreviousHop.prefix[7]     = 0x00;
-
-   //end CSL
+   // [CSL-TEST]: end code
 
    entry->l2_frameType                 = IEEE154_TYPE_UNDEFINED;
    entry->l2_retriesLeft               = 0;

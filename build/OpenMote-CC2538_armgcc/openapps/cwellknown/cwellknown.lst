@@ -421,23 +421,23 @@
  350              		.file 6 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 cwellknown.c
-     /tmp/ccYvHPlP.s:19     .rodata:00000000 $d
-     /tmp/ccYvHPlP.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccYvHPlP.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccYvHPlP.s:32     .rodata:00000010 infouCName
-     /tmp/ccYvHPlP.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccYvHPlP.s:42     .rodata:00000024 infoStackName
-     /tmp/ccYvHPlP.s:47     .rodata:00000030 ipAddr_ipsoRD
-     /tmp/ccYvHPlP.s:67     .rodata:00000040 ipAddr_motesEecs
-     /tmp/ccYvHPlP.s:87     .rodata:00000050 ipAddr_local
-     /tmp/ccYvHPlP.s:107    .rodata:00000060 ipAddr_motedata
+     /tmp/cc7myBni.s:19     .rodata:00000000 $d
+     /tmp/cc7myBni.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cc7myBni.s:27     .rodata:00000008 infoBoardname
+     /tmp/cc7myBni.s:32     .rodata:00000010 infouCName
+     /tmp/cc7myBni.s:37     .rodata:00000018 infoRadioName
+     /tmp/cc7myBni.s:42     .rodata:00000024 infoStackName
+     /tmp/cc7myBni.s:47     .rodata:00000030 ipAddr_ipsoRD
+     /tmp/cc7myBni.s:67     .rodata:00000040 ipAddr_motesEecs
+     /tmp/cc7myBni.s:87     .rodata:00000050 ipAddr_local
+     /tmp/cc7myBni.s:107    .rodata:00000060 ipAddr_motedata
                             *COM*:00000024 cwellknown_vars
-     /tmp/ccYvHPlP.s:129    .rodata:00000070 cwellknown_path0
-     /tmp/ccYvHPlP.s:135    .rodata:0000007c cwellknown_path1
-     /tmp/ccYvHPlP.s:138    .text:00000000 $t
-     /tmp/ccYvHPlP.s:143    .text:00000000 cwellknown_init
-     /tmp/ccYvHPlP.s:222    .text:00000094 cwellknown_receive
-     /tmp/ccYvHPlP.s:315    .text:0000011c cwellknown_sendDone
+     /tmp/cc7myBni.s:129    .rodata:00000070 cwellknown_path0
+     /tmp/cc7myBni.s:135    .rodata:0000007c cwellknown_path1
+     /tmp/cc7myBni.s:138    .text:00000000 $t
+     /tmp/cc7myBni.s:143    .text:00000000 cwellknown_init
+     /tmp/cc7myBni.s:222    .text:00000094 cwellknown_receive
+     /tmp/cc7myBni.s:315    .text:0000011c cwellknown_sendDone
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

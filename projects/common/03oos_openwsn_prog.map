@@ -2359,7 +2359,7 @@ LOAD /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../
 LOAD /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7-m/libc.a
 END GROUP
 
-.text           0x00200000    0x1651c
+.text           0x00200000    0x16514
                 0x00200000                _text = .
  *(.vectors)
  .vectors       0x00200000      0x28c build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(startup_gcc.o)
@@ -2369,7 +2369,7 @@ END GROUP
                 0x0020028c                mote_main
  .text          0x002002a8       0x6c build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openstack.o)
                 0x002002a8                openstack_init
- .text          0x00200314     0x2ea0 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154Ecsl.o)
+ .text          0x00200314     0x2e98 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154Ecsl.o)
                 0x00200314                ieee154e_init
                 0x0020041c                isr_ieee154ecsl_newChannelSample
                 0x00200480                isr_ieee154ecsl_timer
@@ -2377,767 +2377,767 @@ END GROUP
                 0x002007c0                ieee154ecsl_endOfFrame
                 0x002008bc                isr_ieee154ecsl_txtimer_cb
                 0x00200900                isr_ieee154ecsl_addPacketToQueueForTestingCslTx_cb
-                0x00200a38                activity_csl_wakeup_ti1
-                0x00200b4c                activity_csl_wakeup_ti2
-                0x00200d44                activity_csl_wakeup_tie1
-                0x00200d70                activity_csl_wakeup_ti3
-                0x00200d98                activity_csl_wakeup_tie2
-                0x00200dc4                activity_csl_wakeup_ti4
-                0x00200e00                activity_csl_wakeup_tie3
-                0x00200e2c                activity_csl_wakeup_ti5
-                0x00200e64                activity_csl_data_ti1
-                0x00200e88                activity_csl_data_ti2
-                0x00200ef8                activity_csl_data_tie1
-                0x00200f24                activity_csl_data_ti3
-                0x00200f4c                activity_csl_data_tie2
-                0x00200f78                activity_csl_data_ti4
-                0x00200fb4                activity_csl_data_tie3
-                0x00200fe0                activity_csl_data_ti5
-                0x002010c0                activity_csl_data_ti6
-                0x00201110                activity_csl_data_tie4
-                0x0020113c                activity_csl_data_ti7
-                0x00201164                activity_csl_data_tie5
-                0x002011c8                activity_csl_data_ti8
-                0x002011f8                activity_csl_data_tie6
-                0x00201204                activity_csl_data_ti9
-                0x002014b4                activity_csl_wakeup_ri1
-                0x00201524                activity_csl_wakeup_ri2
-                0x00201574                activity_csl_wakeup_rie1
-                0x002015a4                activity_csl_wakeup_ri3
-                0x002015c0                activity_csl_wakeup_rie2
-                0x002015e8                activity_csl_wakeup_ri4
-                0x00201630                activity_csl_wakeup_rie3
-                0x00201660                activity_csl_wakeup_ri5
-                0x0020198c                activity_csl_wakeup_rie4
-                0x00201998                activity_csl_data_ri2
-                0x002019e8                activity_csl_data_rie1
-                0x00201a18                activity_csl_data_ri3
-                0x00201a34                activity_csl_data_rie2
-                0x00201a40                activity_csl_data_ri4
-                0x00201a88                activity_csl_data_rie3
-                0x00201ab8                activity_csl_data_ri5
-                0x00201dc4                activity_csl_data_ri6
-                0x00201fe0                activity_csl_data_rie4
-                0x00202010                activity_csl_data_ri7
-                0x00202038                activity_csl_data_rie5
-                0x00202068                activity_csl_data_ri8
-                0x002020a4                activity_csl_data_rie6
-                0x002020d4                activity_csl_data_ri9
-                0x00202140                ieee802154_createWakeUpFrame
-                0x00202208                ieee802154_retrieveWakeUpFrame
-                0x00202534                isValidRxFrame
-                0x002025b0                isValidAck
-                0x00202630                incrementAsnOffset
-                0x00202718                ieee154e_getAsn
-                0x002027a4                synchronizeAck
-                0x0020285c                changeIsSync
-                0x0020289c                notif_sendDone
-                0x002028e8                notif_receive
-                0x0020290c                resetStats
-                0x0020297c                updateStats
-                0x002029d0                changeState
-                0x00202b08                debugPrint_asn
-                0x00202b5c                debugPrint_isSync
-                0x00202b94                debugPrint_macStats
-                0x00202bb4                endOps
-                0x00202d7c                ieee154e_isSynch
-                0x00202d94                ieee154e_processIEs
-                0x00202fec                joinPriorityStoreFromAdv
-                0x00203024                asnStoreFromAdv
-                0x002030e8                ieee154e_asnDiff
- .text          0x002031b4      0x63c build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(adaptive_sync.o)
-                0x002031b4                adaptive_sync_init
-                0x00203208                adaptive_sync_indicateTimeCorrection
-                0x00203448                adaptive_sync_calculateCompensatedSlots
-                0x002035e0                adaptive_sync_countCompensationTimeout
-                0x002036b0                adaptive_sync_countCompensationTimeout_compoundSlots
-                0x002037d4                adaptive_sync_driftChanged
- .text          0x002037f0     0x1564 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(neighbors.o)
-                0x002037f0                neighbors_init
-                0x00203838                neighbors_getMyDAGrank
-                0x00203850                neighbors_getNumNeighbors
-                0x002038a8                neighbors_getPreferredParentEui64
-                0x00203a78                neighbors_getKANeighbor
-                0x00203b54                neighbors_isStableNeighbor
-                0x00203c08                neighbors_isPreferredParent
-                0x00203c78                neighbors_isNeighborWithLowerDAGrank
-                0x00203ce8                neighbors_isNeighborWithHigherDAGrank
-                0x00203d58                neighbors_indicateRx
-                0x00204078                neighbors_indicateTx
-                0x00204280                neighbors_indicateRxDIO
-                0x00204424                neighbors_getNeighbor
-                0x00204490                neighbors_updateMyDAGrankAndNeighborPreference
-                0x00204690                neighbors_removeOld
-                0x00204710                debugPrint_neighbors
-                0x002047dc                registerNewNeighbor
-                0x00204aac                isNeighbor
-                0x00204af4                removeNeighbor
-                0x00204cc0                isThisRowMatching
- .text          0x00204d54      0x8bc build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(processIE.o)
-                0x00204d54                processIE_prependMLMEIE
-                0x00204da8                processIE_prependSyncIE
-                0x00204e1c                processIE_prependSlotframeLinkIE
-                0x00204fa4                processIE_prependOpcodeIE
-                0x00205024                processIE_prependBandwidthIE
-                0x002050c0                processIE_prependSheduleIE
-                0x00205274                processIE_retrieveSlotframeLinkIE
-                0x002053c8                processIE_retrieveOpcodeIE
-                0x00205400                processIE_retrieveBandwidthIE
-                0x00205450                processIE_retrieveSheduleIE
- .text          0x00205610      0xad0 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(schedule.o)
-                0x00205610                schedule_init
-                0x00205730                debugPrint_schedule
-                0x00205940                debugPrint_backoff
-                0x00205984                schedule_setFrameLength
-                0x002059ac                schedule_getSlotInfo
-                0x00205a34                schedule_addActiveSlot
-                0x00205b64                schedule_removeActiveSlot
-                0x00205c64                schedule_isSlotOffsetAvailable
-                0x00205cbc                schedule_syncSlotOffset
-                0x00205cf0                schedule_advanceSlot
-                0x00205d18                schedule_getNextActiveSlotOffset
-                0x00205d44                schedule_getFrameLength
-                0x00205d6c                schedule_getType
-                0x00205d98                schedule_getNeighbor
-                0x00205dcc                schedule_getChannelOffset
-                0x00205df8                schedule_getOkToSend
-                0x00205e80                schedule_resetBackoff
-                0x00205eb0                schedule_indicateRx
-                0x00205efc                schedule_indicateTx
-                0x0020605c                schedule_resetEntry
- .text          0x002060e0     0x14d8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(sixtop.o)
-                0x002060e0                sixtop_init
-                0x0020619c                sixtop_setKaPeriod
-                0x002061d4                sixtop_addCells
-                0x00206338                sixtop_removeCell
-                0x0020647c                sixtop_send
-                0x002064d4                task_sixtopNotifSendDone
-                0x002065ec                task_sixtopNotifReceive
-                0x002066ec                debugPrint_myDAGrank
-                0x00206720                debugPrint_kaPeriod
-                0x00206754                sixtop_send_internal
-                0x00206810                sixtop_maintenance_timer_cb
-                0x00206828                sixtop_timeout_timer_cb
-                0x00206840                timer_sixtop_management_fired
-                0x002068ac                sixtop_sendEB
-                0x00206998                sixtop_sendKA
-                0x00206a6c                timer_sixtop_six2six_timeout_fired
-                0x00206a84                sixtop_six2six_sendDone
-                0x00206c58                sixtop_processIEs
-                0x00206e98                sixtop_notifyReceiveCommand
-                0x00206f44                sixtop_notifyReceiveLinkRequest
-                0x00206fdc                sixtop_linkResponse
-                0x002070ec                sixtop_notifyReceiveLinkResponse
-                0x00207190                sixtop_notifyReceiveRemoveLinkRequest
-                0x002071e0                sixtop_candidateAddCellList
-                0x002072a0                sixtop_candidateRemoveCellList
-                0x00207358                sixtop_addCellsByState
-                0x00207484                sixtop_removeCellsByState
-                0x002074e4                sixtop_areAvailableCellsToBeScheduled
- .text          0x002075b8      0xd88 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(iphc.o)
-                0x002075b8                iphc_init
-                0x002075c4                iphc_sendFromForwarding
-                0x00207838                iphc_sendFromBridge
-                0x00207884                iphc_sendDone
-                0x002078c0                iphc_receive
-                0x00207958                iphc_prependIPv6Header
-                0x00207d74                iphc_retrieveIPv6Header
-                0x0020830c                iphc_prependIPv6HopByHopHeader
-                0x00208328                iphc_retrieveIPv6HopByHopHeader
- .text          0x00208340      0x1e4 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openbridge.o)
-                0x00208340                openbridge_init
-                0x0020834c                openbridge_triggerData
-                0x00208474                openbridge_sendDone
-                0x002084b4                openbridge_receive
- .text          0x00208524      0x740 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(forwarding.o)
-                0x00208524                forwarding_init
-                0x00208530                forwarding_send
-                0x002085f0                forwarding_sendDone
-                0x00208674                forwarding_receive
-                0x00208830                forwarding_getNextHop
-                0x0020889c                forwarding_send_internal_RoutingTable
-                0x00208900                forwarding_send_internal_SourceRouting
-                0x00208bdc                forwarding_createRplOption
-                0x00208c20                forwarding_createFlowLabel
- .text          0x00208c64      0x100 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6.o)
-                0x00208c64                icmpv6_init
-                0x00208c70                icmpv6_send
-                0x00208c9c                icmpv6_sendDone
-                0x00208d00                icmpv6_receive
- .text          0x00208d64      0x340 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6echo.o)
-                0x00208d64                icmpv6echo_init
-                0x00208d8c                icmpv6echo_trigger
-                0x00208f00                icmpv6echo_sendDone
-                0x00208f4c                icmpv6echo_receive
- .text          0x002090a4      0x9c8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6rpl.o)
-                0x002090a4                icmpv6rpl_init
-                0x00209338                icmpv6rpl_writeDODAGid
-                0x00209378                icmpv6rpl_getRPLIntanceID
-                0x00209390                icmpv6rpl_sendDone
-                0x002093dc                icmpv6rpl_receive
-                0x0020948c                icmpv6rpl_timer_DIO_cb
-                0x002094a4                icmpv6rpl_timer_DIO_task
-                0x00209538                sendDIO
-                0x002096c4                icmpv6rpl_timer_DAO_cb
-                0x002096dc                icmpv6rpl_timer_DAO_task
-                0x00209778                sendDAO
- .text          0x00209a6c      0x7dc build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opencoap.o)
-                0x00209a6c                opencoap_init
-                0x00209a94                opencoap_receive
-                0x00209fc4                opencoap_sendDone
-                0x0020a048                opencoap_writeLinks
-                0x0020a124                opencoap_register
-                0x0020a17c                opencoap_send
- .text          0x0020a248     0x1574 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opentcp.o)
-                0x0020a248                opentcp_init
-                0x0020a268                opentcp_connect
-                0x0020a388                opentcp_send
-                0x0020a4c4                opentcp_sendDone
-                0x0020a71c                opentcp_receive
-                0x0020b2f4                opentcp_close
-                0x0020b3f8                tcp_debugPrint
-                0x0020b408                timers_tcp_fired
-                0x0020b414                prependTCPHeader
-                0x0020b574                containsControlBits
-                0x0020b698                opentcp_reset
-                0x0020b704                tcp_change_state
-                0x0020b7a4                opentcp_timer_cb
- .text          0x0020b7bc      0x2e4 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openudp.o)
-                0x0020b7bc                openudp_init
-                0x0020b7c8                openudp_send
-                0x0020b858                openudp_sendDone
-                0x0020b8b8                openudp_receive
-                0x0020ba90                openudp_debugPrint
- .text          0x0020baa0      0x4e0 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(idmanager.o)
-                0x0020baa0                idmanager_init
-                0x0020bb40                idmanager_getIsDAGroot
-                0x0020bb68                idmanager_setIsDAGroot
-                0x0020bb94                idmanager_getMyID
-                0x0020bc20                idmanager_setMyID
-                0x0020bd14                idmanager_isMyAddress
-                0x0020be1c                idmanager_triggerAboutRoot
-                0x0020bef8                debugPrint_id
- .text          0x0020bf80      0x854 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openqueue.o)
-                0x0020bf80                openqueue_init
-                0x0020bfc4                debugPrint_queue
-                0x0020c054                openqueue_getFreePacketBuffer
-                0x0020c120                openqueue_freePacketBuffer
-                0x0020c1e0                openqueue_removeAllCreatedBy
-                0x0020c250                openqueue_removeAllOwnedBy
-                0x0020c2c0                openqueue_sixtopGetSentPacket
-                0x0020c34c                openqueue_sixtopGetReceivedPacket
-                0x0020c3d8                openqueue_macGetDataPacket
-                0x0020c540                openqueue_macGetAdvPacket
-                0x0020c5f4                openqueue_reset_entry
- .text          0x0020c7d4       0xf8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openrandom.o)
-                0x0020c7d4                openrandom_init
-                0x0020c838                openrandom_get16b
- .text          0x0020c8cc      0xb44 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(packetfunctions.o)
-                0x0020c8cc                packetfunctions_ip128bToMac64b
-                0x0020c948                packetfunctions_mac64bToIp128b
-                0x0020c9c4                packetfunctions_mac64bToMac16b
-                0x0020ca18                packetfunctions_mac16bToMac64b
-                0x0020ca9c                packetfunctions_isBroadcastMulticast
-                0x0020cb34                packetfunctions_isAllRoutersMulticast
-                0x0020cbdc                packetfunctions_isAllHostsMulticast
-                0x0020cc84                packetfunctions_sameAddress
-                0x0020cd30                packetfunctions_readAddress
-                0x0020cdec                packetfunctions_writeAddress
-                0x0020ceb8                packetfunctions_reserveHeaderSize
-                0x0020cf0c                packetfunctions_tossHeader
-                0x0020cf5c                packetfunctions_reserveFooterSize
-                0x0020cfa0                packetfunctions_tossFooter
-                0x0020cfe0                packetfunctions_calculateCRC
-                0x0020d094                packetfunctions_checkCRC
-                0x0020d160                packetfunctions_calculateChecksum
-                0x0020d260                onesComplementSum
-                0x0020d31c                packetfunctions_htons
-                0x0020d34c                packetfunctions_ntohs
-                0x0020d378                packetfunctions_htonl
-                0x0020d3cc                packetfunctions_ntohl
- .text          0x0020d410      0x538 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154.o)
-                0x0020d410                ieee802154_prependHeader
-                0x0020d590                ieee802154_retrieveHeader
- .text          0x0020d948       0xa8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(otf.o)
-                0x0020d948                otf_init
-                0x0020d954                otf_notif_addedCell
-                0x0020d96c                otf_notif_removedCell
-                0x0020d984                otf_addCell_task
-                0x0020d9bc                otf_removeCell_task
- .text          0x0020d9f0       0x18 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(topology.o)
-                0x0020d9f0                topology_isAcceptablePacket
- .text          0x0020da08       0x20 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(openapps_dyn.o)
-                0x0020da08                openapps_init
- .text          0x0020da28      0x1a0 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(c6t.o)
-                0x0020da28                c6t_init
-                0x0020dab8                c6t_receive
-                0x0020dbac                c6t_sendDone
- .text          0x0020dbc8      0x20c build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cinfo.o)
-                0x0020dbc8                cinfo_init
-                0x0020dc58                cinfo_receive
-                0x0020ddb8                cinfo_sendDone
- .text          0x0020ddd4      0x170 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cleds.o)
-                0x0020ddd4                cleds__init
-                0x0020de54                cleds_receive
-                0x0020df28                cleds_sendDone
- .text          0x0020df44      0x138 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cwellknown.o)
-                0x0020df44                cwellknown_init
-                0x0020dfd8                cwellknown_receive
-                0x0020e060                cwellknown_sendDone
- .text          0x0020e07c       0xd4 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(techo.o)
-                0x0020e07c                techo_init
-                0x0020e088                techo_shouldIlisten
-                0x0020e098                techo_receive
-                0x0020e0e8                techo_sendDone
-                0x0020e12c                techo_connectDone
-                0x0020e140                techo_debugPrint
- .text          0x0020e150       0xf4 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(uecho.o)
-                0x0020e150                uecho_init
-                0x0020e15c                uecho_receive
-                0x0020e218                uecho_sendDone
-                0x0020e234                uecho_debugPrint
- .text          0x0020e244      0x188 build/OpenMote-CC2538_armgcc/kernel/openos/libkernel.a(scheduler.o)
-                0x0020e244                scheduler_init
-                0x0020e274                scheduler_start
-                0x0020e2ec                scheduler_push_task
- .text          0x0020e3cc      0xd00 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openserial.o)
-                0x0020e3cc                openserial_init
-                0x0020e508                openserial_printStatus
-                0x0020e5a0                openserial_printInfoErrorCritical
-                0x0020e64c                openserial_printData
-                0x0020e70c                openserial_printInfo
-                0x0020e738                openserial_printError
-                0x0020e768                openserial_printCritical
-                0x0020e7b0                openserial_getNumDataBytes
-                0x0020e7dc                openserial_getInputBuffer
-                0x0020e850                openserial_startInput
-                0x0020e8f4                openserial_startOutput
-                0x0020eaac                openserial_stop
-                0x0020ebb8                debugPrint_outBufferIndexes
-                0x0020ec04                outputHdlcOpen
-                0x0020ec50                outputHdlcWrite
-                0x0020ed00                outputHdlcClose
-                0x0020ed6c                inputHdlcOpen
-                0x0020ed94                inputHdlcWrite
-                0x0020ee38                inputHdlcClose
-                0x0020ee80                isr_openserial_tx
-                0x0020ef60                isr_openserial_rx
-                0x0020f098                openserial_echo
- .text          0x0020f0cc      0xdec build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(opentimers.o)
-                0x0020f0cc                opentimers_init
-                0x0020f1d4                opentimers_start
-                0x0020f4d4                opentimers_setPeriod
-                0x0020f644                opentimers_stop
-                0x0020f67c                opentimers_restart
-                0x0020f6b4                opentimers_timer_callback
-                0x0020fae4                opentimers_sleepTimeCompesation
- .text          0x0020feb8       0x3c build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openhdlc.o)
-                0x0020feb8                crcIteration
- .text          0x0020fef4      0x428 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(board.o)
-                0x0020fef4                main
-                0x0020ff04                board_init
-                0x0020ff3c                button_init
-                0x0020ff9c                GPIO_C_Isr_Handler
-                0x0020ffb8                antenna_init
-                0x00210008                antenna_external
-                0x00210038                antenna_internal
-                0x00210068                board_sleep
-                0x0021007c                board_reset
- .text          0x0021031c      0x194 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(bsp_timer.o)
-                0x0021031c                bsp_timer_init
-                0x00210348                bsp_timer_set_callback
-                0x00210368                bsp_timer_reset
-                0x00210390                bsp_timer_scheduleIn
-                0x0021045c                bsp_timer_cancel_schedule
-                0x0021046c                bsp_timer_get_currentValue
-                0x0021047c                bsp_timer_isr_private
-                0x00210498                bsp_timer_isr
- .text          0x002104b0      0x26c build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(debugpins.o)
-                0x002104b0                debugpins_init
-                0x00210500                debugpins_frame_toggle
-                0x00210518                debugpins_frame_clr
-                0x00210534                debugpins_frame_set
-                0x00210550                debugpins_slot_toggle
-                0x00210568                debugpins_slot_clr
-                0x00210584                debugpins_slot_set
-                0x002105a0                debugpins_fsm_toggle
-                0x002105b8                debugpins_fsm_clr
-                0x002105d4                debugpins_fsm_set
-                0x002105f0                debugpins_task_toggle
-                0x00210608                debugpins_task_clr
-                0x00210624                debugpins_task_set
-                0x00210640                debugpins_isr_toggle
-                0x00210658                debugpins_isr_clr
-                0x00210674                debugpins_isr_set
-                0x00210690                debugpins_radio_toggle
-                0x002106a8                debugpins_radio_clr
-                0x002106c4                debugpins_radio_set
-                0x002106e0                bspDBpinToggle
- .text          0x0021071c       0x78 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(eui64.o)
-                0x0021071c                eui64_get
- .text          0x00210794      0x240 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(i2c.o)
-                0x00210794                i2c_init
-                0x00210848                i2c_read_byte
-                0x00210888                i2c_read_bytes
-                0x002108fc                i2c_write_byte
-                0x0021093c                i2c_write_bytes
- .text          0x002109d4      0x358 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(leds.o)
-                0x002109d4                leds_init
-                0x00210a00                leds_error_on
-                0x00210a10                leds_error_off
-                0x00210a20                leds_error_toggle
-                0x00210a30                leds_error_isOn
-                0x00210a5c                leds_sync_on
-                0x00210a6c                leds_sync_off
-                0x00210a7c                leds_sync_toggle
-                0x00210a8c                leds_sync_isOn
-                0x00210abc                leds_sync_blink
-                0x00210b20                leds_radio_on
-                0x00210b30                leds_radio_off
-                0x00210b40                leds_radio_toggle
-                0x00210b50                leds_radio_isOn
-                0x00210b80                leds_debug_on
-                0x00210b90                leds_debug_off
-                0x00210ba0                leds_debug_toggle
-                0x00210bb0                leds_debug_isOn
-                0x00210be0                leds_all_on
-                0x00210bf0                leds_all_off
-                0x00210c00                leds_all_toggle
-                0x00210c10                leds_error_blink
-                0x00210c7c                leds_circular_shift
-                0x00210c88                leds_increment
-                0x00210c94                bspLedSet
-                0x00210cbc                bspLedClear
-                0x00210ce4                bspLedToggle
- .text          0x00210d2c      0x8d4 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radio.o)
-                0x00210d2c                radio_init
-                0x00210f18                radio_setOverflowCb
-                0x00210f30                radio_setCompareCb
-                0x00210f48                radio_setStartFrameCb
-                0x00210f68                radio_setEndFrameCb
-                0x00210f88                radio_reset
-                0x00210ffc                radio_startTimer
-                0x00211014                radio_getTimerValue
-                0x00211024                radio_setTimerPeriod
-                0x0021103c                radio_getTimerPeriod
-                0x0021104c                radio_setFrequency
-                0x002110a4                radio_rfOn
-                0x002110b0                radio_rfOff
-                0x002110e4                radio_loadPacket
-                0x00211184                radio_txEnable
-                0x002111b0                radio_txNow
-                0x00211214                radio_rxEnable
-                0x00211240                radio_rxNow
-                0x00211288                radio_getReceivedFrame
-                0x002113b0                enable_radio_interrupts
-                0x002113ec                disable_radio_interrupts
-                0x00211414                radio_on
-                0x0021142c                radio_off
-                0x00211474                radio_isr
-                0x00211484                radio_isr_internal
-                0x002115c0                radio_error_isr
- .text          0x00211600      0x518 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radiotimer.o)
-                0x00211600                radiotimer_init
-                0x0021161c                radiotimer_setOverflowCb
-                0x0021163c                radiotimer_setCompareCb
-                0x0021165c                radiotimer_setStartFrameCb
-                0x00211668                radiotimer_setEndFrameCb
-                0x00211674                radiotimer_start
-                0x002117b0                radiotimer_getValue
-                0x0021180c                radiotimer_setPeriod
-                0x00211864                radiotimer_getPeriod
-                0x002118c0                radiotimer_schedule
-                0x00211940                radiotimer_cancel
-                0x002119a8                radiotimer_getCapturedTime
-                0x00211a04                get_real_counter
-                0x00211a50                radiotimer_isr_private
-                0x00211a64                radiotimer_isr
- .text          0x00211b18       0xa0 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(startup_gcc.o)
-                0x00211b18                NmiSR
-                0x00211b24                FaultISR
-                0x00211b2c                IntDefaultHandler
-                0x00211b34                ResetISR
- .text          0x00211bb8      0x278 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(uart.o)
-                0x00211bb8                uart_init
-                0x00211cac                uart_setCallbacks
-                0x00211cd8                uart_enableInterrupts
-                0x00211cf0                uart_disableInterrupts
-                0x00211d08                uart_clearRxInterrupts
-                0x00211d20                uart_clearTxInterrupts
-                0x00211d38                uart_writeByte
-                0x00211d5c                uart_readByte
-                0x00211dd8                uart_tx_isr
-                0x00211e04                uart_rx_isr
- .text          0x00211e30      0x268 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(flash.o)
-                0x00211e30                FlashMainPageErase
-                0x00211e68                FlashUpperPageErase
-                0x00211eac                FlashMainPageProgram
-                0x00211ee8                FlashUpperPageProgram
-                0x00211f3c                FlashGet
-                0x00211f54                FlashCacheModeGet
-                0x00211f70                FlashCacheModeSet
-                0x00211fbc                FlashSizeGet
-                0x0021203c                FlashSramSizeGet
- .text          0x00212098      0x908 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(gpio.o)
-                0x00212098                GPIOGetIntNumber
-                0x00212118                GPIODirModeSet
-                0x00212194                GPIODirModeGet
-                0x002121f4                GPIOIntTypeSet
-                0x002122a4                GPIOIntTypeGet
-                0x00212324                GPIOPinIntEnable
-                0x00212350                GPIOPinIntDisable
-                0x00212380                GPIOPinIntStatus
-                0x002123b0                GPIOPinIntClear
-                0x002123d0                GPIOPortIntRegister
-                0x002123f8                GPIOPortIntUnregister
-                0x0021241c                GPIOPinRead
-                0x00212444                GPIOPinWrite
-                0x00212470                GPIOPinTypeGPIOInput
-                0x002124a0                GPIOPinTypeGPIOOutput
-                0x002124d0                GPIOPinTypeI2C
-                0x00212500                GPIOPinTypeSSI
-                0x00212530                GPIOPinTypeTimer
-                0x00212560                GPIOPinTypeUARTInput
-                0x00212590                GPIOPinTypeUARTOutput
-                0x002125c0                GPIOPowIntTypeSet
-                0x0021266c                GPIOPowIntTypeGet
-                0x00212704                GPIOPowIntEnable
-                0x00212790                GPIOPowIntDisable
-                0x00212820                GPIOPowIntStatus
-                0x002128b8                GPIOPowIntClear
-                0x00212944                GPIOIntWakeupEnable
-                0x00212970                GPIOIntWakeupDisable
- .text          0x002129a0      0x4d8 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(i2c.o)
-                0x002129a0                I2CMasterInitExpClk
-                0x00212a10                I2CSlaveInit
-                0x00212a34                I2CMasterEnable
-                0x00212a58                I2CSlaveEnable
-                0x00212a88                I2CMasterDisable
-                0x00212aac                I2CSlaveDisable
-                0x00212adc                I2CIntRegister
-                0x00212b00                I2CIntUnregister
-                0x00212b18                I2CMasterIntEnable
-                0x00212b30                I2CSlaveIntEnable
-                0x00212b54                I2CSlaveIntEnableEx
-                0x00212b80                I2CMasterIntDisable
-                0x00212b98                I2CSlaveIntDisable
-                0x00212bbc                I2CSlaveIntDisableEx
-                0x00212bec                I2CMasterIntStatus
-                0x00212c34                I2CSlaveIntStatus
-                0x00212c7c                I2CSlaveIntStatusEx
-                0x00212cb0                I2CMasterIntClear
-                0x00212cd8                I2CSlaveIntClear
-                0x00212cf0                I2CSlaveIntClearEx
-                0x00212d10                I2CMasterSlaveAddrSet
-                0x00212d3c                I2CMasterBusy
-                0x00212d64                I2CMasterBusBusy
-                0x00212d8c                I2CMasterControl
-                0x00212dac                I2CMasterErr
-                0x00212df0                I2CMasterDataPut
-                0x00212e10                I2CMasterDataGet
-                0x00212e28                I2CSlaveStatus
-                0x00212e40                I2CSlaveDataPut
-                0x00212e60                I2CSlaveDataGet
- .text          0x00212e78      0x568 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(interrupt.o)
-                0x00212e80                IntMasterEnable
-                0x00212e98                IntMasterDisable
-                0x00212eb0                IntRegister
-                0x00212f3c                IntUnregister
-                0x00212f64                IntPriorityGroupingSet
-                0x00212f98                IntPriorityGroupingGet
-                0x00212fec                IntPrioritySet
-                0x00213060                IntPriorityGet
-                0x00213098                IntEnable
-                0x0021315c                IntDisable
-                0x00213220                IntPendSet
-                0x002132c4                IntPendClear
-                0x00213348                IntPriorityMaskSet
-                0x00213360                IntPriorityMaskGet
-                0x00213370                IntAltMapEnable
-                0x00213394                IntAltMapDisable
-                0x002133b8                IntAltMapIsEnabled
- .text          0x002133e0      0x66c build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(ioc.o)
-                0x002133e0                IOCPinConfigPeriphOutput
-                0x002134c8                IOCPinConfigPeriphInput
-                0x002136d0                IOCPadConfigSet
-                0x002137b8                IOCPadConfigGet
- .text          0x00213a4c      0x1f8 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(sleepmode.o)
-                0x00213a4c                SleepModeIntRegister
-                0x00213a70                SleepModeIntUnregister
-                0x00213a88                SleepModeTimerCountGet
-                0x00213ae4                SleepModeCaptureConfig
-                0x00213b24                SleepModeTimerCompareSet
-                0x00213b8c                SleepModeCaptureGet
-                0x00213be8                SleepModeCaptureIsValid
-                0x00213c14                SleepModeCaptureNew
- .text          0x00213c44      0x794 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(sys_ctrl.o)
-                0x00213c44                SysCtrlClockSet
-                0x00213d28                SysCtrlClockGet
-                0x00213de4                SysCtrlIOClockSet
-                0x00213e24                SysCtrlIOClockGet
-                0x00213ee4                SysCtrlDelay
-                0x00213eec                SysCtrlReset
-                0x00213f00                SysCtrlSleep
-                0x00213f0c                SysCtrlDeepSleep
-                0x0021401c                SysCtrlPeripheralPresent
-                0x002140ac                SysCtrlPeripheralReset
-                0x0021415c                SysCtrlPeripheralEnable
-                0x002141b0                SysCtrlPeripheralDisable
-                0x00214208                SysCtrlPeripheralSleepEnable
-                0x0021425c                SysCtrlPeripheralSleepDisable
-                0x002142b4                SysCtrlPeripheralDeepSleepEnable
-                0x00214308                SysCtrlPeripheralDeepSleepDisable
-                0x00214360                SysCtrlPowerModeSet
-                0x00214380                SysCtrlPowerModeGet
-                0x002143a8                SysCtrlClockLossDetectEnable
- .text          0x002143d8      0x7b0 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(uarthal.o)
-                0x002143d8                UARTParityModeSet
-                0x00214404                UARTParityModeGet
-                0x00214424                UARTFIFOLevelSet
-                0x00214448                UARTFIFOLevelGet
-                0x0021447c                UARTConfigSetExpClk
-                0x00214520                UARTConfigGetExpClk
-                0x00214590                UARTEnable
-                0x002145d0                UARTDisable
-                0x00214624                UARTFIFOEnable
-                0x0021464c                UARTFIFODisable
-                0x00214674                UARTEnableSIR
-                0x002146bc                UARTDisableSIR
-                0x002146e4                UARTTxIntModeSet
-                0x00214710                UARTTxIntModeGet
-                0x00214730                UARTCharsAvail
-                0x0021475c                UARTSpaceAvail
-                0x00214788                UARTCharGetNonBlocking
-                0x002147b8                UARTCharGet
-                0x002147e4                UARTCharPutNonBlocking
-                0x0021481c                UARTCharPut
-                0x0021484c                UARTBreakCtl
-                0x0021488c                UARTBusy
-                0x002148b8                UARTIntRegister
-                0x002148f4                UARTIntUnregister
-                0x0021492c                UARTIntEnable
-                0x00214954                UARTIntDisable
-                0x00214980                UARTIntStatus
-                0x002149b0                UARTIntClear
-                0x002149d0                UARTDMAEnable
-                0x002149f8                UARTDMADisable
-                0x00214a24                UARTRxErrorGet
-                0x00214a44                UARTRxErrorClear
-                0x00214a64                UARTClockSourceSet
-                0x00214a84                UARTClockSourceGet
-                0x00214aa0                UART9BitEnable
-                0x00214ac8                UART9BitDisable
-                0x00214af0                UART9BitAddrSet
-                0x00214b20                UART9BitAddrSend
- .text          0x00214b88       0x44 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(cpu.o)
-                0x00214b88                CPUcpsid
-                0x00214b94                CPUprimask
-                0x00214ba0                CPUcpsie
-                0x00214bac                CPUwfi
-                0x00214bb0                CPUwfe
-                0x00214bb4                CPUsev
-                0x00214bb8                CPUbasepriSet
-                0x00214bc0                CPUbasepriGet
- .text          0x00214bcc      0x21c /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/armv7-m/libgcc.a(_arm_addsubsf3.o)
-                0x00214bcc                __aeabi_frsub
-                0x00214bd4                __subsf3
-                0x00214bd4                __aeabi_fsub
-                0x00214bd8                __aeabi_fadd
-                0x00214bd8                __addsf3
-                0x00214d38                __aeabi_ui2f
-                0x00214d38                __floatunsisf
-                0x00214d40                __aeabi_i2f
-                0x00214d40                __floatsisf
-                0x00214d5c                __floatundisf
-                0x00214d5c                __aeabi_ul2f
-                0x00214d6c                __floatdisf
-                0x00214d6c                __aeabi_l2f
- .text          0x00214de8      0x2a0 /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/armv7-m/libgcc.a(_arm_muldivsf3.o)
-                0x00214de8                __mulsf3
-                0x00214de8                __aeabi_fmul
-                0x00214f50                __divsf3
-                0x00214f50                __aeabi_fdiv
- .text          0x00215088       0x40 /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/armv7-m/libgcc.a(_arm_fixunssfsi.o)
-                0x00215088                __aeabi_f2uiz
-                0x00215088                __fixunssfsi
- .text          0x002150c8        0x0 /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7-m/libg.a(lib_a-memcmp.o)
- .text.memcmp   0x002150c8       0xb8 /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7-m/libg.a(lib_a-memcmp.o)
-                0x002150c8                memcmp
- .text          0x00215180        0x0 /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7-m/libg.a(lib_a-memcpy.o)
- .text.memcpy   0x00215180      0x15c /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7-m/libg.a(lib_a-memcpy.o)
-                0x00215180                memcpy
- .text          0x002152dc        0x0 /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7-m/libg.a(lib_a-memset.o)
- .text.memset   0x002152dc      0x12c /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7-m/libg.a(lib_a-memset.o)
-                0x002152dc                memset
+                0x00200a2c                activity_csl_wakeup_ti1
+                0x00200b40                activity_csl_wakeup_ti2
+                0x00200d38                activity_csl_wakeup_tie1
+                0x00200d64                activity_csl_wakeup_ti3
+                0x00200d8c                activity_csl_wakeup_tie2
+                0x00200db8                activity_csl_wakeup_ti4
+                0x00200df4                activity_csl_wakeup_tie3
+                0x00200e20                activity_csl_wakeup_ti5
+                0x00200e58                activity_csl_data_ti1
+                0x00200e7c                activity_csl_data_ti2
+                0x00200eec                activity_csl_data_tie1
+                0x00200f18                activity_csl_data_ti3
+                0x00200f40                activity_csl_data_tie2
+                0x00200f6c                activity_csl_data_ti4
+                0x00200fa8                activity_csl_data_tie3
+                0x00200fd4                activity_csl_data_ti5
+                0x002010a0                activity_csl_data_ti6
+                0x002010f0                activity_csl_data_tie4
+                0x0020111c                activity_csl_data_ti7
+                0x00201144                activity_csl_data_tie5
+                0x002011a8                activity_csl_data_ti8
+                0x002011d8                activity_csl_data_tie6
+                0x002011e4                activity_csl_data_ti9
+                0x002014ac                activity_csl_wakeup_ri1
+                0x0020151c                activity_csl_wakeup_ri2
+                0x0020156c                activity_csl_wakeup_rie1
+                0x0020159c                activity_csl_wakeup_ri3
+                0x002015b8                activity_csl_wakeup_rie2
+                0x002015e0                activity_csl_wakeup_ri4
+                0x00201628                activity_csl_wakeup_rie3
+                0x00201658                activity_csl_wakeup_ri5
+                0x00201984                activity_csl_wakeup_rie4
+                0x00201990                activity_csl_data_ri2
+                0x002019e0                activity_csl_data_rie1
+                0x00201a10                activity_csl_data_ri3
+                0x00201a2c                activity_csl_data_rie2
+                0x00201a38                activity_csl_data_ri4
+                0x00201a80                activity_csl_data_rie3
+                0x00201ab0                activity_csl_data_ri5
+                0x00201dbc                activity_csl_data_ri6
+                0x00201fd8                activity_csl_data_rie4
+                0x00202008                activity_csl_data_ri7
+                0x00202030                activity_csl_data_rie5
+                0x00202060                activity_csl_data_ri8
+                0x0020209c                activity_csl_data_rie6
+                0x002020cc                activity_csl_data_ri9
+                0x00202138                ieee802154_createWakeUpFrame
+                0x00202200                ieee802154_retrieveWakeUpFrame
+                0x0020252c                isValidRxFrame
+                0x002025a8                isValidAck
+                0x00202628                incrementAsnOffset
+                0x00202710                ieee154e_getAsn
+                0x0020279c                synchronizeAck
+                0x00202854                changeIsSync
+                0x00202894                notif_sendDone
+                0x002028e0                notif_receive
+                0x00202904                resetStats
+                0x00202974                updateStats
+                0x002029c8                changeState
+                0x00202b00                debugPrint_asn
+                0x00202b54                debugPrint_isSync
+                0x00202b8c                debugPrint_macStats
+                0x00202bac                endOps
+                0x00202d74                ieee154e_isSynch
+                0x00202d8c                ieee154e_processIEs
+                0x00202fe4                joinPriorityStoreFromAdv
+                0x0020301c                asnStoreFromAdv
+                0x002030e0                ieee154e_asnDiff
+ .text          0x002031ac      0x63c build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(adaptive_sync.o)
+                0x002031ac                adaptive_sync_init
+                0x00203200                adaptive_sync_indicateTimeCorrection
+                0x00203440                adaptive_sync_calculateCompensatedSlots
+                0x002035d8                adaptive_sync_countCompensationTimeout
+                0x002036a8                adaptive_sync_countCompensationTimeout_compoundSlots
+                0x002037cc                adaptive_sync_driftChanged
+ .text          0x002037e8     0x1564 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(neighbors.o)
+                0x002037e8                neighbors_init
+                0x00203830                neighbors_getMyDAGrank
+                0x00203848                neighbors_getNumNeighbors
+                0x002038a0                neighbors_getPreferredParentEui64
+                0x00203a70                neighbors_getKANeighbor
+                0x00203b4c                neighbors_isStableNeighbor
+                0x00203c00                neighbors_isPreferredParent
+                0x00203c70                neighbors_isNeighborWithLowerDAGrank
+                0x00203ce0                neighbors_isNeighborWithHigherDAGrank
+                0x00203d50                neighbors_indicateRx
+                0x00204070                neighbors_indicateTx
+                0x00204278                neighbors_indicateRxDIO
+                0x0020441c                neighbors_getNeighbor
+                0x00204488                neighbors_updateMyDAGrankAndNeighborPreference
+                0x00204688                neighbors_removeOld
+                0x00204708                debugPrint_neighbors
+                0x002047d4                registerNewNeighbor
+                0x00204aa4                isNeighbor
+                0x00204aec                removeNeighbor
+                0x00204cb8                isThisRowMatching
+ .text          0x00204d4c      0x8bc build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(processIE.o)
+                0x00204d4c                processIE_prependMLMEIE
+                0x00204da0                processIE_prependSyncIE
+                0x00204e14                processIE_prependSlotframeLinkIE
+                0x00204f9c                processIE_prependOpcodeIE
+                0x0020501c                processIE_prependBandwidthIE
+                0x002050b8                processIE_prependSheduleIE
+                0x0020526c                processIE_retrieveSlotframeLinkIE
+                0x002053c0                processIE_retrieveOpcodeIE
+                0x002053f8                processIE_retrieveBandwidthIE
+                0x00205448                processIE_retrieveSheduleIE
+ .text          0x00205608      0xad0 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(schedule.o)
+                0x00205608                schedule_init
+                0x00205728                debugPrint_schedule
+                0x00205938                debugPrint_backoff
+                0x0020597c                schedule_setFrameLength
+                0x002059a4                schedule_getSlotInfo
+                0x00205a2c                schedule_addActiveSlot
+                0x00205b5c                schedule_removeActiveSlot
+                0x00205c5c                schedule_isSlotOffsetAvailable
+                0x00205cb4                schedule_syncSlotOffset
+                0x00205ce8                schedule_advanceSlot
+                0x00205d10                schedule_getNextActiveSlotOffset
+                0x00205d3c                schedule_getFrameLength
+                0x00205d64                schedule_getType
+                0x00205d90                schedule_getNeighbor
+                0x00205dc4                schedule_getChannelOffset
+                0x00205df0                schedule_getOkToSend
+                0x00205e78                schedule_resetBackoff
+                0x00205ea8                schedule_indicateRx
+                0x00205ef4                schedule_indicateTx
+                0x00206054                schedule_resetEntry
+ .text          0x002060d8     0x14d8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(sixtop.o)
+                0x002060d8                sixtop_init
+                0x00206194                sixtop_setKaPeriod
+                0x002061cc                sixtop_addCells
+                0x00206330                sixtop_removeCell
+                0x00206474                sixtop_send
+                0x002064cc                task_sixtopNotifSendDone
+                0x002065e4                task_sixtopNotifReceive
+                0x002066e4                debugPrint_myDAGrank
+                0x00206718                debugPrint_kaPeriod
+                0x0020674c                sixtop_send_internal
+                0x00206808                sixtop_maintenance_timer_cb
+                0x00206820                sixtop_timeout_timer_cb
+                0x00206838                timer_sixtop_management_fired
+                0x002068a4                sixtop_sendEB
+                0x00206990                sixtop_sendKA
+                0x00206a64                timer_sixtop_six2six_timeout_fired
+                0x00206a7c                sixtop_six2six_sendDone
+                0x00206c50                sixtop_processIEs
+                0x00206e90                sixtop_notifyReceiveCommand
+                0x00206f3c                sixtop_notifyReceiveLinkRequest
+                0x00206fd4                sixtop_linkResponse
+                0x002070e4                sixtop_notifyReceiveLinkResponse
+                0x00207188                sixtop_notifyReceiveRemoveLinkRequest
+                0x002071d8                sixtop_candidateAddCellList
+                0x00207298                sixtop_candidateRemoveCellList
+                0x00207350                sixtop_addCellsByState
+                0x0020747c                sixtop_removeCellsByState
+                0x002074dc                sixtop_areAvailableCellsToBeScheduled
+ .text          0x002075b0      0xd88 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(iphc.o)
+                0x002075b0                iphc_init
+                0x002075bc                iphc_sendFromForwarding
+                0x00207830                iphc_sendFromBridge
+                0x0020787c                iphc_sendDone
+                0x002078b8                iphc_receive
+                0x00207950                iphc_prependIPv6Header
+                0x00207d6c                iphc_retrieveIPv6Header
+                0x00208304                iphc_prependIPv6HopByHopHeader
+                0x00208320                iphc_retrieveIPv6HopByHopHeader
+ .text          0x00208338      0x1e4 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openbridge.o)
+                0x00208338                openbridge_init
+                0x00208344                openbridge_triggerData
+                0x0020846c                openbridge_sendDone
+                0x002084ac                openbridge_receive
+ .text          0x0020851c      0x740 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(forwarding.o)
+                0x0020851c                forwarding_init
+                0x00208528                forwarding_send
+                0x002085e8                forwarding_sendDone
+                0x0020866c                forwarding_receive
+                0x00208828                forwarding_getNextHop
+                0x00208894                forwarding_send_internal_RoutingTable
+                0x002088f8                forwarding_send_internal_SourceRouting
+                0x00208bd4                forwarding_createRplOption
+                0x00208c18                forwarding_createFlowLabel
+ .text          0x00208c5c      0x100 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6.o)
+                0x00208c5c                icmpv6_init
+                0x00208c68                icmpv6_send
+                0x00208c94                icmpv6_sendDone
+                0x00208cf8                icmpv6_receive
+ .text          0x00208d5c      0x340 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6echo.o)
+                0x00208d5c                icmpv6echo_init
+                0x00208d84                icmpv6echo_trigger
+                0x00208ef8                icmpv6echo_sendDone
+                0x00208f44                icmpv6echo_receive
+ .text          0x0020909c      0x9c8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6rpl.o)
+                0x0020909c                icmpv6rpl_init
+                0x00209330                icmpv6rpl_writeDODAGid
+                0x00209370                icmpv6rpl_getRPLIntanceID
+                0x00209388                icmpv6rpl_sendDone
+                0x002093d4                icmpv6rpl_receive
+                0x00209484                icmpv6rpl_timer_DIO_cb
+                0x0020949c                icmpv6rpl_timer_DIO_task
+                0x00209530                sendDIO
+                0x002096bc                icmpv6rpl_timer_DAO_cb
+                0x002096d4                icmpv6rpl_timer_DAO_task
+                0x00209770                sendDAO
+ .text          0x00209a64      0x7dc build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opencoap.o)
+                0x00209a64                opencoap_init
+                0x00209a8c                opencoap_receive
+                0x00209fbc                opencoap_sendDone
+                0x0020a040                opencoap_writeLinks
+                0x0020a11c                opencoap_register
+                0x0020a174                opencoap_send
+ .text          0x0020a240     0x1574 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opentcp.o)
+                0x0020a240                opentcp_init
+                0x0020a260                opentcp_connect
+                0x0020a380                opentcp_send
+                0x0020a4bc                opentcp_sendDone
+                0x0020a714                opentcp_receive
+                0x0020b2ec                opentcp_close
+                0x0020b3f0                tcp_debugPrint
+                0x0020b400                timers_tcp_fired
+                0x0020b40c                prependTCPHeader
+                0x0020b56c                containsControlBits
+                0x0020b690                opentcp_reset
+                0x0020b6fc                tcp_change_state
+                0x0020b79c                opentcp_timer_cb
+ .text          0x0020b7b4      0x2e4 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openudp.o)
+                0x0020b7b4                openudp_init
+                0x0020b7c0                openudp_send
+                0x0020b850                openudp_sendDone
+                0x0020b8b0                openudp_receive
+                0x0020ba88                openudp_debugPrint
+ .text          0x0020ba98      0x4e0 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(idmanager.o)
+                0x0020ba98                idmanager_init
+                0x0020bb38                idmanager_getIsDAGroot
+                0x0020bb60                idmanager_setIsDAGroot
+                0x0020bb8c                idmanager_getMyID
+                0x0020bc18                idmanager_setMyID
+                0x0020bd0c                idmanager_isMyAddress
+                0x0020be14                idmanager_triggerAboutRoot
+                0x0020bef0                debugPrint_id
+ .text          0x0020bf78      0x854 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openqueue.o)
+                0x0020bf78                openqueue_init
+                0x0020bfbc                debugPrint_queue
+                0x0020c04c                openqueue_getFreePacketBuffer
+                0x0020c118                openqueue_freePacketBuffer
+                0x0020c1d8                openqueue_removeAllCreatedBy
+                0x0020c248                openqueue_removeAllOwnedBy
+                0x0020c2b8                openqueue_sixtopGetSentPacket
+                0x0020c344                openqueue_sixtopGetReceivedPacket
+                0x0020c3d0                openqueue_macGetDataPacket
+                0x0020c538                openqueue_macGetAdvPacket
+                0x0020c5ec                openqueue_reset_entry
+ .text          0x0020c7cc       0xf8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openrandom.o)
+                0x0020c7cc                openrandom_init
+                0x0020c830                openrandom_get16b
+ .text          0x0020c8c4      0xb44 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(packetfunctions.o)
+                0x0020c8c4                packetfunctions_ip128bToMac64b
+                0x0020c940                packetfunctions_mac64bToIp128b
+                0x0020c9bc                packetfunctions_mac64bToMac16b
+                0x0020ca10                packetfunctions_mac16bToMac64b
+                0x0020ca94                packetfunctions_isBroadcastMulticast
+                0x0020cb2c                packetfunctions_isAllRoutersMulticast
+                0x0020cbd4                packetfunctions_isAllHostsMulticast
+                0x0020cc7c                packetfunctions_sameAddress
+                0x0020cd28                packetfunctions_readAddress
+                0x0020cde4                packetfunctions_writeAddress
+                0x0020ceb0                packetfunctions_reserveHeaderSize
+                0x0020cf04                packetfunctions_tossHeader
+                0x0020cf54                packetfunctions_reserveFooterSize
+                0x0020cf98                packetfunctions_tossFooter
+                0x0020cfd8                packetfunctions_calculateCRC
+                0x0020d08c                packetfunctions_checkCRC
+                0x0020d158                packetfunctions_calculateChecksum
+                0x0020d258                onesComplementSum
+                0x0020d314                packetfunctions_htons
+                0x0020d344                packetfunctions_ntohs
+                0x0020d370                packetfunctions_htonl
+                0x0020d3c4                packetfunctions_ntohl
+ .text          0x0020d408      0x538 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154.o)
+                0x0020d408                ieee802154_prependHeader
+                0x0020d588                ieee802154_retrieveHeader
+ .text          0x0020d940       0xa8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(otf.o)
+                0x0020d940                otf_init
+                0x0020d94c                otf_notif_addedCell
+                0x0020d964                otf_notif_removedCell
+                0x0020d97c                otf_addCell_task
+                0x0020d9b4                otf_removeCell_task
+ .text          0x0020d9e8       0x18 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(topology.o)
+                0x0020d9e8                topology_isAcceptablePacket
+ .text          0x0020da00       0x20 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(openapps_dyn.o)
+                0x0020da00                openapps_init
+ .text          0x0020da20      0x1a0 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(c6t.o)
+                0x0020da20                c6t_init
+                0x0020dab0                c6t_receive
+                0x0020dba4                c6t_sendDone
+ .text          0x0020dbc0      0x20c build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cinfo.o)
+                0x0020dbc0                cinfo_init
+                0x0020dc50                cinfo_receive
+                0x0020ddb0                cinfo_sendDone
+ .text          0x0020ddcc      0x170 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cleds.o)
+                0x0020ddcc                cleds__init
+                0x0020de4c                cleds_receive
+                0x0020df20                cleds_sendDone
+ .text          0x0020df3c      0x138 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cwellknown.o)
+                0x0020df3c                cwellknown_init
+                0x0020dfd0                cwellknown_receive
+                0x0020e058                cwellknown_sendDone
+ .text          0x0020e074       0xd4 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(techo.o)
+                0x0020e074                techo_init
+                0x0020e080                techo_shouldIlisten
+                0x0020e090                techo_receive
+                0x0020e0e0                techo_sendDone
+                0x0020e124                techo_connectDone
+                0x0020e138                techo_debugPrint
+ .text          0x0020e148       0xf4 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(uecho.o)
+                0x0020e148                uecho_init
+                0x0020e154                uecho_receive
+                0x0020e210                uecho_sendDone
+                0x0020e22c                uecho_debugPrint
+ .text          0x0020e23c      0x188 build/OpenMote-CC2538_armgcc/kernel/openos/libkernel.a(scheduler.o)
+                0x0020e23c                scheduler_init
+                0x0020e26c                scheduler_start
+                0x0020e2e4                scheduler_push_task
+ .text          0x0020e3c4      0xd00 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openserial.o)
+                0x0020e3c4                openserial_init
+                0x0020e500                openserial_printStatus
+                0x0020e598                openserial_printInfoErrorCritical
+                0x0020e644                openserial_printData
+                0x0020e704                openserial_printInfo
+                0x0020e730                openserial_printError
+                0x0020e760                openserial_printCritical
+                0x0020e7a8                openserial_getNumDataBytes
+                0x0020e7d4                openserial_getInputBuffer
+                0x0020e848                openserial_startInput
+                0x0020e8ec                openserial_startOutput
+                0x0020eaa4                openserial_stop
+                0x0020ebb0                debugPrint_outBufferIndexes
+                0x0020ebfc                outputHdlcOpen
+                0x0020ec48                outputHdlcWrite
+                0x0020ecf8                outputHdlcClose
+                0x0020ed64                inputHdlcOpen
+                0x0020ed8c                inputHdlcWrite
+                0x0020ee30                inputHdlcClose
+                0x0020ee78                isr_openserial_tx
+                0x0020ef58                isr_openserial_rx
+                0x0020f090                openserial_echo
+ .text          0x0020f0c4      0xdec build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(opentimers.o)
+                0x0020f0c4                opentimers_init
+                0x0020f1cc                opentimers_start
+                0x0020f4cc                opentimers_setPeriod
+                0x0020f63c                opentimers_stop
+                0x0020f674                opentimers_restart
+                0x0020f6ac                opentimers_timer_callback
+                0x0020fadc                opentimers_sleepTimeCompesation
+ .text          0x0020feb0       0x3c build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openhdlc.o)
+                0x0020feb0                crcIteration
+ .text          0x0020feec      0x428 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(board.o)
+                0x0020feec                main
+                0x0020fefc                board_init
+                0x0020ff34                button_init
+                0x0020ff94                GPIO_C_Isr_Handler
+                0x0020ffb0                antenna_init
+                0x00210000                antenna_external
+                0x00210030                antenna_internal
+                0x00210060                board_sleep
+                0x00210074                board_reset
+ .text          0x00210314      0x194 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(bsp_timer.o)
+                0x00210314                bsp_timer_init
+                0x00210340                bsp_timer_set_callback
+                0x00210360                bsp_timer_reset
+                0x00210388                bsp_timer_scheduleIn
+                0x00210454                bsp_timer_cancel_schedule
+                0x00210464                bsp_timer_get_currentValue
+                0x00210474                bsp_timer_isr_private
+                0x00210490                bsp_timer_isr
+ .text          0x002104a8      0x26c build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(debugpins.o)
+                0x002104a8                debugpins_init
+                0x002104f8                debugpins_frame_toggle
+                0x00210510                debugpins_frame_clr
+                0x0021052c                debugpins_frame_set
+                0x00210548                debugpins_slot_toggle
+                0x00210560                debugpins_slot_clr
+                0x0021057c                debugpins_slot_set
+                0x00210598                debugpins_fsm_toggle
+                0x002105b0                debugpins_fsm_clr
+                0x002105cc                debugpins_fsm_set
+                0x002105e8                debugpins_task_toggle
+                0x00210600                debugpins_task_clr
+                0x0021061c                debugpins_task_set
+                0x00210638                debugpins_isr_toggle
+                0x00210650                debugpins_isr_clr
+                0x0021066c                debugpins_isr_set
+                0x00210688                debugpins_radio_toggle
+                0x002106a0                debugpins_radio_clr
+                0x002106bc                debugpins_radio_set
+                0x002106d8                bspDBpinToggle
+ .text          0x00210714       0x78 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(eui64.o)
+                0x00210714                eui64_get
+ .text          0x0021078c      0x240 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(i2c.o)
+                0x0021078c                i2c_init
+                0x00210840                i2c_read_byte
+                0x00210880                i2c_read_bytes
+                0x002108f4                i2c_write_byte
+                0x00210934                i2c_write_bytes
+ .text          0x002109cc      0x358 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(leds.o)
+                0x002109cc                leds_init
+                0x002109f8                leds_error_on
+                0x00210a08                leds_error_off
+                0x00210a18                leds_error_toggle
+                0x00210a28                leds_error_isOn
+                0x00210a54                leds_sync_on
+                0x00210a64                leds_sync_off
+                0x00210a74                leds_sync_toggle
+                0x00210a84                leds_sync_isOn
+                0x00210ab4                leds_sync_blink
+                0x00210b18                leds_radio_on
+                0x00210b28                leds_radio_off
+                0x00210b38                leds_radio_toggle
+                0x00210b48                leds_radio_isOn
+                0x00210b78                leds_debug_on
+                0x00210b88                leds_debug_off
+                0x00210b98                leds_debug_toggle
+                0x00210ba8                leds_debug_isOn
+                0x00210bd8                leds_all_on
+                0x00210be8                leds_all_off
+                0x00210bf8                leds_all_toggle
+                0x00210c08                leds_error_blink
+                0x00210c74                leds_circular_shift
+                0x00210c80                leds_increment
+                0x00210c8c                bspLedSet
+                0x00210cb4                bspLedClear
+                0x00210cdc                bspLedToggle
+ .text          0x00210d24      0x8d4 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radio.o)
+                0x00210d24                radio_init
+                0x00210f10                radio_setOverflowCb
+                0x00210f28                radio_setCompareCb
+                0x00210f40                radio_setStartFrameCb
+                0x00210f60                radio_setEndFrameCb
+                0x00210f80                radio_reset
+                0x00210ff4                radio_startTimer
+                0x0021100c                radio_getTimerValue
+                0x0021101c                radio_setTimerPeriod
+                0x00211034                radio_getTimerPeriod
+                0x00211044                radio_setFrequency
+                0x0021109c                radio_rfOn
+                0x002110a8                radio_rfOff
+                0x002110dc                radio_loadPacket
+                0x0021117c                radio_txEnable
+                0x002111a8                radio_txNow
+                0x0021120c                radio_rxEnable
+                0x00211238                radio_rxNow
+                0x00211280                radio_getReceivedFrame
+                0x002113a8                enable_radio_interrupts
+                0x002113e4                disable_radio_interrupts
+                0x0021140c                radio_on
+                0x00211424                radio_off
+                0x0021146c                radio_isr
+                0x0021147c                radio_isr_internal
+                0x002115b8                radio_error_isr
+ .text          0x002115f8      0x518 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radiotimer.o)
+                0x002115f8                radiotimer_init
+                0x00211614                radiotimer_setOverflowCb
+                0x00211634                radiotimer_setCompareCb
+                0x00211654                radiotimer_setStartFrameCb
+                0x00211660                radiotimer_setEndFrameCb
+                0x0021166c                radiotimer_start
+                0x002117a8                radiotimer_getValue
+                0x00211804                radiotimer_setPeriod
+                0x0021185c                radiotimer_getPeriod
+                0x002118b8                radiotimer_schedule
+                0x00211938                radiotimer_cancel
+                0x002119a0                radiotimer_getCapturedTime
+                0x002119fc                get_real_counter
+                0x00211a48                radiotimer_isr_private
+                0x00211a5c                radiotimer_isr
+ .text          0x00211b10       0xa0 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(startup_gcc.o)
+                0x00211b10                NmiSR
+                0x00211b1c                FaultISR
+                0x00211b24                IntDefaultHandler
+                0x00211b2c                ResetISR
+ .text          0x00211bb0      0x278 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(uart.o)
+                0x00211bb0                uart_init
+                0x00211ca4                uart_setCallbacks
+                0x00211cd0                uart_enableInterrupts
+                0x00211ce8                uart_disableInterrupts
+                0x00211d00                uart_clearRxInterrupts
+                0x00211d18                uart_clearTxInterrupts
+                0x00211d30                uart_writeByte
+                0x00211d54                uart_readByte
+                0x00211dd0                uart_tx_isr
+                0x00211dfc                uart_rx_isr
+ .text          0x00211e28      0x268 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(flash.o)
+                0x00211e28                FlashMainPageErase
+                0x00211e60                FlashUpperPageErase
+                0x00211ea4                FlashMainPageProgram
+                0x00211ee0                FlashUpperPageProgram
+                0x00211f34                FlashGet
+                0x00211f4c                FlashCacheModeGet
+                0x00211f68                FlashCacheModeSet
+                0x00211fb4                FlashSizeGet
+                0x00212034                FlashSramSizeGet
+ .text          0x00212090      0x908 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(gpio.o)
+                0x00212090                GPIOGetIntNumber
+                0x00212110                GPIODirModeSet
+                0x0021218c                GPIODirModeGet
+                0x002121ec                GPIOIntTypeSet
+                0x0021229c                GPIOIntTypeGet
+                0x0021231c                GPIOPinIntEnable
+                0x00212348                GPIOPinIntDisable
+                0x00212378                GPIOPinIntStatus
+                0x002123a8                GPIOPinIntClear
+                0x002123c8                GPIOPortIntRegister
+                0x002123f0                GPIOPortIntUnregister
+                0x00212414                GPIOPinRead
+                0x0021243c                GPIOPinWrite
+                0x00212468                GPIOPinTypeGPIOInput
+                0x00212498                GPIOPinTypeGPIOOutput
+                0x002124c8                GPIOPinTypeI2C
+                0x002124f8                GPIOPinTypeSSI
+                0x00212528                GPIOPinTypeTimer
+                0x00212558                GPIOPinTypeUARTInput
+                0x00212588                GPIOPinTypeUARTOutput
+                0x002125b8                GPIOPowIntTypeSet
+                0x00212664                GPIOPowIntTypeGet
+                0x002126fc                GPIOPowIntEnable
+                0x00212788                GPIOPowIntDisable
+                0x00212818                GPIOPowIntStatus
+                0x002128b0                GPIOPowIntClear
+                0x0021293c                GPIOIntWakeupEnable
+                0x00212968                GPIOIntWakeupDisable
+ .text          0x00212998      0x4d8 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(i2c.o)
+                0x00212998                I2CMasterInitExpClk
+                0x00212a08                I2CSlaveInit
+                0x00212a2c                I2CMasterEnable
+                0x00212a50                I2CSlaveEnable
+                0x00212a80                I2CMasterDisable
+                0x00212aa4                I2CSlaveDisable
+                0x00212ad4                I2CIntRegister
+                0x00212af8                I2CIntUnregister
+                0x00212b10                I2CMasterIntEnable
+                0x00212b28                I2CSlaveIntEnable
+                0x00212b4c                I2CSlaveIntEnableEx
+                0x00212b78                I2CMasterIntDisable
+                0x00212b90                I2CSlaveIntDisable
+                0x00212bb4                I2CSlaveIntDisableEx
+                0x00212be4                I2CMasterIntStatus
+                0x00212c2c                I2CSlaveIntStatus
+                0x00212c74                I2CSlaveIntStatusEx
+                0x00212ca8                I2CMasterIntClear
+                0x00212cd0                I2CSlaveIntClear
+                0x00212ce8                I2CSlaveIntClearEx
+                0x00212d08                I2CMasterSlaveAddrSet
+                0x00212d34                I2CMasterBusy
+                0x00212d5c                I2CMasterBusBusy
+                0x00212d84                I2CMasterControl
+                0x00212da4                I2CMasterErr
+                0x00212de8                I2CMasterDataPut
+                0x00212e08                I2CMasterDataGet
+                0x00212e20                I2CSlaveStatus
+                0x00212e38                I2CSlaveDataPut
+                0x00212e58                I2CSlaveDataGet
+ .text          0x00212e70      0x568 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(interrupt.o)
+                0x00212e78                IntMasterEnable
+                0x00212e90                IntMasterDisable
+                0x00212ea8                IntRegister
+                0x00212f34                IntUnregister
+                0x00212f5c                IntPriorityGroupingSet
+                0x00212f90                IntPriorityGroupingGet
+                0x00212fe4                IntPrioritySet
+                0x00213058                IntPriorityGet
+                0x00213090                IntEnable
+                0x00213154                IntDisable
+                0x00213218                IntPendSet
+                0x002132bc                IntPendClear
+                0x00213340                IntPriorityMaskSet
+                0x00213358                IntPriorityMaskGet
+                0x00213368                IntAltMapEnable
+                0x0021338c                IntAltMapDisable
+                0x002133b0                IntAltMapIsEnabled
+ .text          0x002133d8      0x66c build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(ioc.o)
+                0x002133d8                IOCPinConfigPeriphOutput
+                0x002134c0                IOCPinConfigPeriphInput
+                0x002136c8                IOCPadConfigSet
+                0x002137b0                IOCPadConfigGet
+ .text          0x00213a44      0x1f8 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(sleepmode.o)
+                0x00213a44                SleepModeIntRegister
+                0x00213a68                SleepModeIntUnregister
+                0x00213a80                SleepModeTimerCountGet
+                0x00213adc                SleepModeCaptureConfig
+                0x00213b1c                SleepModeTimerCompareSet
+                0x00213b84                SleepModeCaptureGet
+                0x00213be0                SleepModeCaptureIsValid
+                0x00213c0c                SleepModeCaptureNew
+ .text          0x00213c3c      0x794 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(sys_ctrl.o)
+                0x00213c3c                SysCtrlClockSet
+                0x00213d20                SysCtrlClockGet
+                0x00213ddc                SysCtrlIOClockSet
+                0x00213e1c                SysCtrlIOClockGet
+                0x00213edc                SysCtrlDelay
+                0x00213ee4                SysCtrlReset
+                0x00213ef8                SysCtrlSleep
+                0x00213f04                SysCtrlDeepSleep
+                0x00214014                SysCtrlPeripheralPresent
+                0x002140a4                SysCtrlPeripheralReset
+                0x00214154                SysCtrlPeripheralEnable
+                0x002141a8                SysCtrlPeripheralDisable
+                0x00214200                SysCtrlPeripheralSleepEnable
+                0x00214254                SysCtrlPeripheralSleepDisable
+                0x002142ac                SysCtrlPeripheralDeepSleepEnable
+                0x00214300                SysCtrlPeripheralDeepSleepDisable
+                0x00214358                SysCtrlPowerModeSet
+                0x00214378                SysCtrlPowerModeGet
+                0x002143a0                SysCtrlClockLossDetectEnable
+ .text          0x002143d0      0x7b0 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(uarthal.o)
+                0x002143d0                UARTParityModeSet
+                0x002143fc                UARTParityModeGet
+                0x0021441c                UARTFIFOLevelSet
+                0x00214440                UARTFIFOLevelGet
+                0x00214474                UARTConfigSetExpClk
+                0x00214518                UARTConfigGetExpClk
+                0x00214588                UARTEnable
+                0x002145c8                UARTDisable
+                0x0021461c                UARTFIFOEnable
+                0x00214644                UARTFIFODisable
+                0x0021466c                UARTEnableSIR
+                0x002146b4                UARTDisableSIR
+                0x002146dc                UARTTxIntModeSet
+                0x00214708                UARTTxIntModeGet
+                0x00214728                UARTCharsAvail
+                0x00214754                UARTSpaceAvail
+                0x00214780                UARTCharGetNonBlocking
+                0x002147b0                UARTCharGet
+                0x002147dc                UARTCharPutNonBlocking
+                0x00214814                UARTCharPut
+                0x00214844                UARTBreakCtl
+                0x00214884                UARTBusy
+                0x002148b0                UARTIntRegister
+                0x002148ec                UARTIntUnregister
+                0x00214924                UARTIntEnable
+                0x0021494c                UARTIntDisable
+                0x00214978                UARTIntStatus
+                0x002149a8                UARTIntClear
+                0x002149c8                UARTDMAEnable
+                0x002149f0                UARTDMADisable
+                0x00214a1c                UARTRxErrorGet
+                0x00214a3c                UARTRxErrorClear
+                0x00214a5c                UARTClockSourceSet
+                0x00214a7c                UARTClockSourceGet
+                0x00214a98                UART9BitEnable
+                0x00214ac0                UART9BitDisable
+                0x00214ae8                UART9BitAddrSet
+                0x00214b18                UART9BitAddrSend
+ .text          0x00214b80       0x44 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(cpu.o)
+                0x00214b80                CPUcpsid
+                0x00214b8c                CPUprimask
+                0x00214b98                CPUcpsie
+                0x00214ba4                CPUwfi
+                0x00214ba8                CPUwfe
+                0x00214bac                CPUsev
+                0x00214bb0                CPUbasepriSet
+                0x00214bb8                CPUbasepriGet
+ .text          0x00214bc4      0x21c /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/armv7-m/libgcc.a(_arm_addsubsf3.o)
+                0x00214bc4                __aeabi_frsub
+                0x00214bcc                __subsf3
+                0x00214bcc                __aeabi_fsub
+                0x00214bd0                __aeabi_fadd
+                0x00214bd0                __addsf3
+                0x00214d30                __aeabi_ui2f
+                0x00214d30                __floatunsisf
+                0x00214d38                __aeabi_i2f
+                0x00214d38                __floatsisf
+                0x00214d54                __floatundisf
+                0x00214d54                __aeabi_ul2f
+                0x00214d64                __floatdisf
+                0x00214d64                __aeabi_l2f
+ .text          0x00214de0      0x2a0 /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/armv7-m/libgcc.a(_arm_muldivsf3.o)
+                0x00214de0                __mulsf3
+                0x00214de0                __aeabi_fmul
+                0x00214f48                __divsf3
+                0x00214f48                __aeabi_fdiv
+ .text          0x00215080       0x40 /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/armv7-m/libgcc.a(_arm_fixunssfsi.o)
+                0x00215080                __aeabi_f2uiz
+                0x00215080                __fixunssfsi
+ .text          0x002150c0        0x0 /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7-m/libg.a(lib_a-memcmp.o)
+ .text.memcmp   0x002150c0       0xb8 /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7-m/libg.a(lib_a-memcmp.o)
+                0x002150c0                memcmp
+ .text          0x00215178        0x0 /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7-m/libg.a(lib_a-memcpy.o)
+ .text.memcpy   0x00215178      0x15c /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7-m/libg.a(lib_a-memcpy.o)
+                0x00215178                memcpy
+ .text          0x002152d4        0x0 /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7-m/libg.a(lib_a-memset.o)
+ .text.memset   0x002152d4      0x12c /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7-m/libg.a(lib_a-memset.o)
+                0x002152d4                memset
  *(.rodata*)
- .rodata        0x00215408       0x30 projects/common/03oos_openwsn/03oos_openwsn.o
- .rodata        0x00215438       0x80 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openstack.o)
- .rodata        0x002154b8       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154Ecsl.o)
- .rodata        0x002154f8       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(adaptive_sync.o)
- .rodata        0x00215538       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(neighbors.o)
- .rodata        0x00215578       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(processIE.o)
- .rodata        0x002155b8       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(schedule.o)
- .rodata        0x002155e8       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(sixtop.o)
- .rodata        0x00215628       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(iphc.o)
- .rodata        0x00215668       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openbridge.o)
- .rodata        0x00215698       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(forwarding.o)
- .rodata        0x002156d8       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6.o)
- .rodata        0x00215718       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6echo.o)
- .rodata        0x00215748       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6rpl.o)
- .rodata        0x00215788       0x70 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opencoap.o)
- .rodata        0x002157f8       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opentcp.o)
- .rodata        0x00215828       0x70 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openudp.o)
- .rodata        0x00215898       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(idmanager.o)
- .rodata        0x002158d8       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openqueue.o)
- .rodata        0x00215908       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openrandom.o)
- .rodata        0x00215938       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(packetfunctions.o)
- .rodata        0x00215968       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154.o)
- .rodata        0x00215998       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(otf.o)
- .rodata        0x002159d8       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(topology.o)
- .rodata        0x00215a08       0x70 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(openapps_dyn.o)
- .rodata        0x00215a78       0x84 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(c6t.o)
-                0x00215af8                c6t_path0
- .rodata        0x00215afc       0x74 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cinfo.o)
-                0x00215b6c                cinfo_path0
- .rodata        0x00215b70       0x74 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cleds.o)
-                0x00215be0                cleds_path0
- .rodata        0x00215be4       0x84 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cwellknown.o)
-                0x00215c54                cwellknown_path0
-                0x00215c60                cwellknown_path1
- .rodata        0x00215c68       0x30 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(techo.o)
- .rodata        0x00215c98       0x30 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(uecho.o)
- .rodata        0x00215cc8       0x30 build/OpenMote-CC2538_armgcc/kernel/openos/libkernel.a(scheduler.o)
- .rodata        0x00215cf8      0x240 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openserial.o)
- .rodata        0x00215f38       0x30 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(opentimers.o)
- .rodata        0x00215f68      0x230 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openhdlc.o)
- .rodata        0x00216198       0x24 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(board.o)
- .rodata        0x002161bc       0x24 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(bsp_timer.o)
- .rodata        0x002161e0       0x24 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(debugpins.o)
- .rodata        0x00216204       0x24 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(leds.o)
- .rodata        0x00216228       0x24 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radio.o)
- .rodata        0x0021624c       0x24 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radiotimer.o)
- .rodata        0x00216270       0x24 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(uart.o)
- .rodata        0x00216294      0x114 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(interrupt.o)
- .rodata        0x002163a8      0x100 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(ioc.o)
- .rodata        0x002164a8       0x74 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(sys_ctrl.o)
-                0x0021651c                _etext = .
+ .rodata        0x00215400       0x30 projects/common/03oos_openwsn/03oos_openwsn.o
+ .rodata        0x00215430       0x80 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openstack.o)
+ .rodata        0x002154b0       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154Ecsl.o)
+ .rodata        0x002154f0       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(adaptive_sync.o)
+ .rodata        0x00215530       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(neighbors.o)
+ .rodata        0x00215570       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(processIE.o)
+ .rodata        0x002155b0       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(schedule.o)
+ .rodata        0x002155e0       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(sixtop.o)
+ .rodata        0x00215620       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(iphc.o)
+ .rodata        0x00215660       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openbridge.o)
+ .rodata        0x00215690       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(forwarding.o)
+ .rodata        0x002156d0       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6.o)
+ .rodata        0x00215710       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6echo.o)
+ .rodata        0x00215740       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6rpl.o)
+ .rodata        0x00215780       0x70 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opencoap.o)
+ .rodata        0x002157f0       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opentcp.o)
+ .rodata        0x00215820       0x70 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openudp.o)
+ .rodata        0x00215890       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(idmanager.o)
+ .rodata        0x002158d0       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openqueue.o)
+ .rodata        0x00215900       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openrandom.o)
+ .rodata        0x00215930       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(packetfunctions.o)
+ .rodata        0x00215960       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154.o)
+ .rodata        0x00215990       0x40 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(otf.o)
+ .rodata        0x002159d0       0x30 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(topology.o)
+ .rodata        0x00215a00       0x70 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(openapps_dyn.o)
+ .rodata        0x00215a70       0x84 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(c6t.o)
+                0x00215af0                c6t_path0
+ .rodata        0x00215af4       0x74 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cinfo.o)
+                0x00215b64                cinfo_path0
+ .rodata        0x00215b68       0x74 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cleds.o)
+                0x00215bd8                cleds_path0
+ .rodata        0x00215bdc       0x84 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cwellknown.o)
+                0x00215c4c                cwellknown_path0
+                0x00215c58                cwellknown_path1
+ .rodata        0x00215c60       0x30 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(techo.o)
+ .rodata        0x00215c90       0x30 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(uecho.o)
+ .rodata        0x00215cc0       0x30 build/OpenMote-CC2538_armgcc/kernel/openos/libkernel.a(scheduler.o)
+ .rodata        0x00215cf0      0x240 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openserial.o)
+ .rodata        0x00215f30       0x30 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(opentimers.o)
+ .rodata        0x00215f60      0x230 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openhdlc.o)
+ .rodata        0x00216190       0x24 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(board.o)
+ .rodata        0x002161b4       0x24 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(bsp_timer.o)
+ .rodata        0x002161d8       0x24 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(debugpins.o)
+ .rodata        0x002161fc       0x24 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(leds.o)
+ .rodata        0x00216220       0x24 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radio.o)
+ .rodata        0x00216244       0x24 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radiotimer.o)
+ .rodata        0x00216268       0x24 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(uart.o)
+ .rodata        0x0021628c      0x114 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(interrupt.o)
+ .rodata        0x002163a0      0x100 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(ioc.o)
+ .rodata        0x002164a0       0x74 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(sys_ctrl.o)
+                0x00216514                _etext = .
 
-.glue_7         0x0021651c        0x0
+.glue_7         0x00216514        0x0
  .glue_7        0x00000000        0x0 linker stubs
 
-.glue_7t        0x0021651c        0x0
+.glue_7t        0x00216514        0x0
  .glue_7t       0x00000000        0x0 linker stubs
 
-.vfp11_veneer   0x0021651c        0x0
+.vfp11_veneer   0x00216514        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x0021651c        0x0
+.v4_bx          0x00216514        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
-.iplt           0x0021651c        0x0
+.iplt           0x00216514        0x0
  .iplt          0x00000000        0x0 projects/common/03oos_openwsn/03oos_openwsn.o
 
-.data           0x20004000      0x400 load address 0x0021651c
+.data           0x20004000      0x400 load address 0x00216514
                 0x20004000                _data = .
  *(vtable)
  vtable         0x20004000      0x400 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(interrupt.o)
@@ -3204,7 +3204,7 @@ END GROUP
  .data          0x20004400        0x0 /opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/lib/armv7-m/libg.a(lib_a-memset.o)
                 0x20004400                _edata = .
 
-.igot.plt       0x20004400        0x0 load address 0x0021691c
+.igot.plt       0x20004400        0x0 load address 0x00216914
  .igot.plt      0x00000000        0x0 projects/common/03oos_openwsn/03oos_openwsn.o
 
 .ARM.exidx
@@ -3337,61 +3337,61 @@ OUTPUT(projects/common/03oos_openwsn_prog elf32-littlearm)
 .rel.dyn        0x0027ffe0        0x0
  .rel.iplt      0x00000000        0x0 projects/common/03oos_openwsn/03oos_openwsn.o
 
-.debug_info     0x00000000    0x18d66
+.debug_info     0x00000000    0x18c1b
  .debug_info    0x00000000      0x158 projects/common/03oos_openwsn/03oos_openwsn.o
  .debug_info    0x00000158      0x44d build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openstack.o)
- .debug_info    0x000005a5     0x1a47 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154Ecsl.o)
- .debug_info    0x00001fec      0x511 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(adaptive_sync.o)
- .debug_info    0x000024fd      0xf53 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(neighbors.o)
- .debug_info    0x00003450      0xa8b build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(processIE.o)
- .debug_info    0x00003edb      0xc2b build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(schedule.o)
- .debug_info    0x00004b06     0x1542 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(sixtop.o)
- .debug_info    0x00006048      0xf2a build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(iphc.o)
- .debug_info    0x00006f72      0x7e8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openbridge.o)
- .debug_info    0x0000775a      0xd12 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(forwarding.o)
- .debug_info    0x0000846c      0x834 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6.o)
- .debug_info    0x00008ca0      0x8dc build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6echo.o)
- .debug_info    0x0000957c      0xced build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6rpl.o)
- .debug_info    0x0000a269      0xd52 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opencoap.o)
- .debug_info    0x0000afbb      0xdce build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opentcp.o)
- .debug_info    0x0000bd89      0x90e build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openudp.o)
- .debug_info    0x0000c697      0x77f build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(idmanager.o)
- .debug_info    0x0000ce16      0xab7 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openqueue.o)
- .debug_info    0x0000d8cd      0x20a build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openrandom.o)
- .debug_info    0x0000dad7      0xce0 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(packetfunctions.o)
- .debug_info    0x0000e7b7      0x9c5 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154.o)
- .debug_info    0x0000f17c      0x2f8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(otf.o)
- .debug_info    0x0000f474      0x2de build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(topology.o)
- .debug_info    0x0000f752      0x1bc build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(openapps_dyn.o)
- .debug_info    0x0000f90e      0x9dc build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(c6t.o)
- .debug_info    0x000102ea      0x99a build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cinfo.o)
- .debug_info    0x00010c84      0x99a build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cleds.o)
- .debug_info    0x0001161e      0x9fe build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cwellknown.o)
- .debug_info    0x0001201c      0x833 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(techo.o)
- .debug_info    0x0001284f      0x831 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(uecho.o)
- .debug_info    0x00013080      0x33d build/OpenMote-CC2538_armgcc/kernel/openos/libkernel.a(scheduler.o)
- .debug_info    0x000133bd      0xaf9 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openserial.o)
- .debug_info    0x00013eb6      0x439 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(opentimers.o)
- .debug_info    0x000142ef      0x1aa build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openhdlc.o)
- .debug_info    0x00014499      0x280 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(board.o)
- .debug_info    0x00014719      0x2c8 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(bsp_timer.o)
- .debug_info    0x000149e1      0x303 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(debugpins.o)
- .debug_info    0x00014ce4       0xc6 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(eui64.o)
- .debug_info    0x00014daa      0x1a9 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(i2c.o)
- .debug_info    0x00014f53      0x45f build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(leds.o)
- .debug_info    0x000153b2      0x633 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radio.o)
- .debug_info    0x000159e5      0x40a build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radiotimer.o)
- .debug_info    0x00015def      0x1d7 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(startup_gcc.o)
- .debug_info    0x00015fc6      0x2fe build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(uart.o)
- .debug_info    0x000162c4      0x510 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(flash.o)
- .debug_info    0x000167d4      0x7f8 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(gpio.o)
- .debug_info    0x00016fcc      0x4b2 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(i2c.o)
- .debug_info    0x0001747e      0x45f build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(interrupt.o)
- .debug_info    0x000178dd      0x2d7 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(ioc.o)
- .debug_info    0x00017bb4      0x1e7 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(sleepmode.o)
- .debug_info    0x00017d9b      0x51b build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(sys_ctrl.o)
- .debug_info    0x000182b6      0x920 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(uarthal.o)
- .debug_info    0x00018bd6      0x190 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(cpu.o)
+ .debug_info    0x000005a5     0x1a4c build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154Ecsl.o)
+ .debug_info    0x00001ff1      0x511 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(adaptive_sync.o)
+ .debug_info    0x00002502      0xf43 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(neighbors.o)
+ .debug_info    0x00003445      0xa7b build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(processIE.o)
+ .debug_info    0x00003ec0      0xc2b build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(schedule.o)
+ .debug_info    0x00004aeb     0x1532 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(sixtop.o)
+ .debug_info    0x0000601d      0xf1a build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(iphc.o)
+ .debug_info    0x00006f37      0x7d8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openbridge.o)
+ .debug_info    0x0000770f      0xd02 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(forwarding.o)
+ .debug_info    0x00008411      0x824 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6.o)
+ .debug_info    0x00008c35      0x8cc build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6echo.o)
+ .debug_info    0x00009501      0xcdd build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6rpl.o)
+ .debug_info    0x0000a1de      0xd42 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opencoap.o)
+ .debug_info    0x0000af20      0xdbe build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opentcp.o)
+ .debug_info    0x0000bcde      0x8fe build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openudp.o)
+ .debug_info    0x0000c5dc      0x77f build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(idmanager.o)
+ .debug_info    0x0000cd5b      0xaa7 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openqueue.o)
+ .debug_info    0x0000d802      0x20a build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openrandom.o)
+ .debug_info    0x0000da0c      0xcd0 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(packetfunctions.o)
+ .debug_info    0x0000e6dc      0x9b5 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154.o)
+ .debug_info    0x0000f091      0x2f8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(otf.o)
+ .debug_info    0x0000f389      0x2de build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(topology.o)
+ .debug_info    0x0000f667      0x1bc build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(openapps_dyn.o)
+ .debug_info    0x0000f823      0x9cc build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(c6t.o)
+ .debug_info    0x000101ef      0x98a build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cinfo.o)
+ .debug_info    0x00010b79      0x98a build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cleds.o)
+ .debug_info    0x00011503      0x9ee build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cwellknown.o)
+ .debug_info    0x00011ef1      0x823 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(techo.o)
+ .debug_info    0x00012714      0x821 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(uecho.o)
+ .debug_info    0x00012f35      0x33d build/OpenMote-CC2538_armgcc/kernel/openos/libkernel.a(scheduler.o)
+ .debug_info    0x00013272      0xaf9 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openserial.o)
+ .debug_info    0x00013d6b      0x439 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(opentimers.o)
+ .debug_info    0x000141a4      0x1aa build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openhdlc.o)
+ .debug_info    0x0001434e      0x280 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(board.o)
+ .debug_info    0x000145ce      0x2c8 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(bsp_timer.o)
+ .debug_info    0x00014896      0x303 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(debugpins.o)
+ .debug_info    0x00014b99       0xc6 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(eui64.o)
+ .debug_info    0x00014c5f      0x1a9 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(i2c.o)
+ .debug_info    0x00014e08      0x45f build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(leds.o)
+ .debug_info    0x00015267      0x633 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radio.o)
+ .debug_info    0x0001589a      0x40a build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radiotimer.o)
+ .debug_info    0x00015ca4      0x1d7 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(startup_gcc.o)
+ .debug_info    0x00015e7b      0x2fe build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(uart.o)
+ .debug_info    0x00016179      0x510 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(flash.o)
+ .debug_info    0x00016689      0x7f8 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(gpio.o)
+ .debug_info    0x00016e81      0x4b2 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(i2c.o)
+ .debug_info    0x00017333      0x45f build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(interrupt.o)
+ .debug_info    0x00017792      0x2d7 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(ioc.o)
+ .debug_info    0x00017a69      0x1e7 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(sleepmode.o)
+ .debug_info    0x00017c50      0x51b build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(sys_ctrl.o)
+ .debug_info    0x0001816b      0x920 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(uarthal.o)
+ .debug_info    0x00018a8b      0x190 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(cpu.o)
 
 .debug_abbrev   0x00000000     0x491f
  .debug_abbrev  0x00000000       0x7c projects/common/03oos_openwsn/03oos_openwsn.o
@@ -3805,114 +3805,114 @@ OUTPUT(projects/common/03oos_openwsn_prog elf32-littlearm)
  .debug_line    0x0000f2c1      0x483 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(uarthal.o)
  .debug_line    0x0000f744      0x2b3 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(cpu.o)
 
-.debug_str      0x00000000    0x2b57f
+.debug_str      0x00000000    0x2b577
  .debug_str     0x00000000     0x4c9a projects/common/03oos_openwsn/03oos_openwsn.o
                                0x4e04 (size before relaxing)
  .debug_str     0x00004c9a     0x1e06 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openstack.o)
                                0x6bb0 (size before relaxing)
- .debug_str     0x00006aa0     0x14f0 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154Ecsl.o)
-                               0x8066 (size before relaxing)
- .debug_str     0x00007f90      0x258 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(adaptive_sync.o)
+ .debug_str     0x00006aa0     0x14f9 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154Ecsl.o)
+                               0x806f (size before relaxing)
+ .debug_str     0x00007f99      0x258 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(adaptive_sync.o)
                                0x65a3 (size before relaxing)
- .debug_str     0x000081e8      0x47f build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(neighbors.o)
-                               0x7211 (size before relaxing)
- .debug_str     0x00008667      0x322 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(processIE.o)
-                               0x676a (size before relaxing)
- .debug_str     0x00008989      0x37e build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(schedule.o)
+ .debug_str     0x000081f1      0x47f build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(neighbors.o)
+                               0x7209 (size before relaxing)
+ .debug_str     0x00008670      0x322 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(processIE.o)
+                               0x6762 (size before relaxing)
+ .debug_str     0x00008992      0x36d build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(schedule.o)
                                0x600d (size before relaxing)
- .debug_str     0x00008d07      0x591 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(sixtop.o)
-                               0x7820 (size before relaxing)
- .debug_str     0x00009298      0x6c8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(iphc.o)
-                               0x6697 (size before relaxing)
- .debug_str     0x00009960       0x7b build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openbridge.o)
-                               0x5c0d (size before relaxing)
- .debug_str     0x000099db      0x20e build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(forwarding.o)
-                               0x6424 (size before relaxing)
- .debug_str     0x00009be9       0x5d build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6.o)
-                               0x5f7a (size before relaxing)
- .debug_str     0x00009c46       0xc8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6echo.o)
-                               0x5d17 (size before relaxing)
- .debug_str     0x00009d0e      0x2e9 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6rpl.o)
-                               0x727b (size before relaxing)
- .debug_str     0x00009ff7      0x660 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opencoap.o)
-                               0x642d (size before relaxing)
- .debug_str     0x0000a657      0x5d5 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opentcp.o)
-                               0x64b4 (size before relaxing)
- .debug_str     0x0000ac2c      0x125 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openudp.o)
-                               0x5ea7 (size before relaxing)
- .debug_str     0x0000ad51      0x142 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(idmanager.o)
+ .debug_str     0x00008cff      0x591 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(sixtop.o)
+                               0x7818 (size before relaxing)
+ .debug_str     0x00009290      0x6c8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(iphc.o)
+                               0x668f (size before relaxing)
+ .debug_str     0x00009958       0x7b build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openbridge.o)
+                               0x5c05 (size before relaxing)
+ .debug_str     0x000099d3      0x20e build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(forwarding.o)
+                               0x641c (size before relaxing)
+ .debug_str     0x00009be1       0x5d build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6.o)
+                               0x5f72 (size before relaxing)
+ .debug_str     0x00009c3e       0xc8 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6echo.o)
+                               0x5d0f (size before relaxing)
+ .debug_str     0x00009d06      0x2e9 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(icmpv6rpl.o)
+                               0x7273 (size before relaxing)
+ .debug_str     0x00009fef      0x660 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opencoap.o)
+                               0x6425 (size before relaxing)
+ .debug_str     0x0000a64f      0x5d5 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(opentcp.o)
+                               0x64ac (size before relaxing)
+ .debug_str     0x0000ac24      0x125 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openudp.o)
+                               0x5e9f (size before relaxing)
+ .debug_str     0x0000ad49      0x142 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(idmanager.o)
                                0x5f0c (size before relaxing)
- .debug_str     0x0000ae93      0x180 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openqueue.o)
-                               0x6d07 (size before relaxing)
- .debug_str     0x0000b013       0x77 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openrandom.o)
+ .debug_str     0x0000ae8b      0x180 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openqueue.o)
+                               0x6cff (size before relaxing)
+ .debug_str     0x0000b00b       0x77 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(openrandom.o)
                                0x4ebd (size before relaxing)
- .debug_str     0x0000b08a      0x360 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(packetfunctions.o)
-                               0x5e96 (size before relaxing)
- .debug_str     0x0000b3ea      0x1bb build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154.o)
-                               0x5fa9 (size before relaxing)
- .debug_str     0x0000b5a5       0x82 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(otf.o)
+ .debug_str     0x0000b082      0x360 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(packetfunctions.o)
+                               0x5e8e (size before relaxing)
+ .debug_str     0x0000b3e2      0x1bb build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(IEEE802154.o)
+                               0x5fa1 (size before relaxing)
+ .debug_str     0x0000b59d       0x82 build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(otf.o)
                                0x5359 (size before relaxing)
- .debug_str     0x0000b627       0x3c build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(topology.o)
+ .debug_str     0x0000b61f       0x3c build/OpenMote-CC2538_armgcc/openstack/libopenstack.a(topology.o)
                                0x4f0f (size before relaxing)
- .debug_str     0x0000b663       0x72 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(openapps_dyn.o)
+ .debug_str     0x0000b65b       0x72 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(openapps_dyn.o)
                                0x50b7 (size before relaxing)
- .debug_str     0x0000b6d5       0x53 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(c6t.o)
-                               0x5eae (size before relaxing)
- .debug_str     0x0000b728       0x63 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cinfo.o)
-                               0x5bb7 (size before relaxing)
- .debug_str     0x0000b78b       0x64 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cleds.o)
-                               0x59b7 (size before relaxing)
- .debug_str     0x0000b7ef      0x127 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cwellknown.o)
-                               0x5c65 (size before relaxing)
- .debug_str     0x0000b916       0x76 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(techo.o)
-                               0x5cd3 (size before relaxing)
- .debug_str     0x0000b98c       0x58 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(uecho.o)
-                               0x5c8e (size before relaxing)
- .debug_str     0x0000b9e4      0x113 build/OpenMote-CC2538_armgcc/kernel/openos/libkernel.a(scheduler.o)
+ .debug_str     0x0000b6cd       0x53 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(c6t.o)
+                               0x5ea6 (size before relaxing)
+ .debug_str     0x0000b720       0x63 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cinfo.o)
+                               0x5baf (size before relaxing)
+ .debug_str     0x0000b783       0x64 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cleds.o)
+                               0x59af (size before relaxing)
+ .debug_str     0x0000b7e7      0x127 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(cwellknown.o)
+                               0x5c5d (size before relaxing)
+ .debug_str     0x0000b90e       0x76 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(techo.o)
+                               0x5ccb (size before relaxing)
+ .debug_str     0x0000b984       0x58 build/OpenMote-CC2538_armgcc/openapps/libopenapps.a(uecho.o)
+                               0x5c86 (size before relaxing)
+ .debug_str     0x0000b9dc      0x113 build/OpenMote-CC2538_armgcc/kernel/openos/libkernel.a(scheduler.o)
                                0x4fd8 (size before relaxing)
- .debug_str     0x0000baf7      0x3da build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openserial.o)
+ .debug_str     0x0000baef      0x3da build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openserial.o)
                                0x6f62 (size before relaxing)
- .debug_str     0x0000bed1      0x195 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(opentimers.o)
+ .debug_str     0x0000bec9      0x195 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(opentimers.o)
                                0x5040 (size before relaxing)
- .debug_str     0x0000c066       0x27 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openhdlc.o)
+ .debug_str     0x0000c05e       0x27 build/OpenMote-CC2538_armgcc/drivers/libdrivers.a(openhdlc.o)
                                0x4e45 (size before relaxing)
- .debug_str     0x0000c08d     0x5c42 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(board.o)
+ .debug_str     0x0000c085     0x5c42 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(board.o)
                                0xa995 (size before relaxing)
- .debug_str     0x00011ccf      0xab5 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(bsp_timer.o)
+ .debug_str     0x00011cc7      0xab5 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(bsp_timer.o)
                                0x5b4c (size before relaxing)
- .debug_str     0x00012784      0x27c build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(debugpins.o)
+ .debug_str     0x0001277c      0x27c build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(debugpins.o)
                                0x5552 (size before relaxing)
- .debug_str     0x00012a00       0xd1 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(eui64.o)
+ .debug_str     0x000129f8       0xd1 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(eui64.o)
                                0x4745 (size before relaxing)
- .debug_str     0x00012ad1     0x4583 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(i2c.o)
+ .debug_str     0x00012ac9     0x4583 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(i2c.o)
                                0xc762 (size before relaxing)
- .debug_str     0x00017054      0x26b build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(leds.o)
+ .debug_str     0x0001704c      0x26b build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(leds.o)
                                0x555f (size before relaxing)
- .debug_str     0x000172bf     0x7c42 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radio.o)
+ .debug_str     0x000172b7     0x7c42 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radio.o)
                                0xd092 (size before relaxing)
- .debug_str     0x0001ef01      0x1d7 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radiotimer.o)
+ .debug_str     0x0001eef9      0x1d7 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(radiotimer.o)
                                0x7885 (size before relaxing)
- .debug_str     0x0001f0d8     0x75e3 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(startup_gcc.o)
+ .debug_str     0x0001f0d0     0x75e3 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(startup_gcc.o)
                                0xa53d (size before relaxing)
- .debug_str     0x000266bb      0x618 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(uart.o)
+ .debug_str     0x000266b3      0x618 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(uart.o)
                                0x8d78 (size before relaxing)
- .debug_str     0x00026cd3     0x11e0 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(flash.o)
+ .debug_str     0x00026ccb     0x11e0 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(flash.o)
                                0x477f (size before relaxing)
- .debug_str     0x00027eb3      0x2ab build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(gpio.o)
+ .debug_str     0x00027eab      0x2ab build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(gpio.o)
                                0xa12c (size before relaxing)
- .debug_str     0x0002815e      0x860 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(i2c.o)
+ .debug_str     0x00028156      0x860 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(i2c.o)
                                0x6f6d (size before relaxing)
- .debug_str     0x000289be      0x1d0 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(interrupt.o)
+ .debug_str     0x000289b6      0x1d0 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(interrupt.o)
                                0xd047 (size before relaxing)
- .debug_str     0x00028b8e      0x58a build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(ioc.o)
+ .debug_str     0x00028b86      0x58a build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(ioc.o)
                                0x98df (size before relaxing)
- .debug_str     0x00029118      0x104 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(sleepmode.o)
+ .debug_str     0x00029110      0x104 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(sleepmode.o)
                                0x3f69 (size before relaxing)
- .debug_str     0x0002921c      0x36e build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(sys_ctrl.o)
+ .debug_str     0x00029214      0x36e build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(sys_ctrl.o)
                                0xe2ff (size before relaxing)
- .debug_str     0x0002958a     0x1f68 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(uarthal.o)
+ .debug_str     0x00029582     0x1f68 build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(uarthal.o)
                                0x8194 (size before relaxing)
- .debug_str     0x0002b4f2       0x8d build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(cpu.o)
+ .debug_str     0x0002b4ea       0x8d build/OpenMote-CC2538_armgcc/bsp/boards/OpenMote-CC2538/libbsp.a(cpu.o)
                                0x31e1 (size before relaxing)
 
 .comment        0x00000000       0x70

@@ -40,7 +40,8 @@ void schedule_init() {
    // start at slot 0
    running_slotOffset = 0;
    
-   // CSL TESTS - Only first cell of nine cells in slot is CELLTYPE_TX
+   // [CSL TEST]: Only first cell of nine cells in slot is CELLTYPE_TX
+
    memset(&temp_neighbor,0,sizeof(temp_neighbor));
 
    // Simulate a ficticious address for CSL testing.
@@ -116,6 +117,8 @@ void schedule_init() {
    );
    running_slotOffset++;
    */
+
+   // [CSL-TEST]: end test code
 }
 
 /**

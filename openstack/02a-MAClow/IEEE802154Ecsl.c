@@ -376,7 +376,7 @@ void isr_ieee154ecsl_txtimer_cb() {
    }
 }
 
-// test timer interrupt callback to put a new packet on queue for testing CSL TX mode.
+// [CST-TEST]: test timer interrupt callback to put a new packet on queue for testing CSL TX mode.
 
 void isr_ieee154ecsl_addPacketToQueueForTestingCslTx_cb () {
 
@@ -417,9 +417,6 @@ void isr_ieee154ecsl_addPacketToQueueForTestingCslTx_cb () {
 
 	  // Frame type (data frame).
 	  pkt->l2_frameType=IEEE154_TYPE_DATA;
-
-	  // Flag created only to discriminate and toggle led indicator (only for TESTING)
-	  pkt->cslFlag=123;
 
 	  // Neighbor address.
 	  memcpy(&(pkt->l2_nextORpreviousHop),&neighbor,sizeof(open_addr_t));
@@ -905,15 +902,14 @@ port_INLINE void activity_csl_data_ti5(PORT_RADIOTIMER_WIDTH capturedTime) {
       listenForAck = TRUE;
    }
 
-   // CSL: TEST CODE
-   // toggle orange led to indicate TX.
+   // [CSL-TEST]: testing code for toggling orange led to indicate OK TX.
+
    if((ieee154e_vars.dataToSend->l2_frameType == IEEE154_TYPE_DATA) &&
-	  (ieee154e_vars.dataToSend->owner == COMPONENT_SIXTOP_TO_IEEE802154E) &&
-	  (ieee154e_vars.dataToSend->cslFlag == 123)) {
+	  (ieee154e_vars.dataToSend->owner == COMPONENT_SIXTOP_TO_IEEE802154E)) {
 	 leds_sync_blink();
 	 listenForAck = FALSE;
    }
-   // END TEST CODE
+   // [CSL-TEST]: end test code
 
 
    if (listenForAck==TRUE) {
@@ -923,13 +919,15 @@ port_INLINE void activity_csl_data_ti5(PORT_RADIOTIMER_WIDTH capturedTime) {
       // indicate succesful Tx to schedule to keep statistics
       schedule_indicateTx(&ieee154e_vars.asn,TRUE);
 
-      // CSL TEST CODE (comment notification)
+      // [CSL-TEST]: comment notification
+
       // indicate to upper later the packet was sent successfully
       //notif_sendDone(ieee154e_vars.dataToSend,E_SUCCESS);
 
       // reset local variable
       //ieee154e_vars.dataToSend = NULL;
-      // END TEST CODE
+
+      // [CSL-TEST]: end test code
 
       // abort
       endOps();
@@ -1006,8 +1004,7 @@ port_INLINE void activity_csl_data_tie5() {
 
    if (ieee154e_vars.dataToSend->l2_retriesLeft==0) {
       // indicate tx fail if no more retries left
-      // CSL testing commented
-	  // notif_sendDone(ieee154e_vars.dataToSend,E_FAIL);
+      notif_sendDone(ieee154e_vars.dataToSend,E_FAIL);
    } else {
       // return packet to the virtual COMPONENT_SIXTOP_TO_IEEE802154E component
       ieee154e_vars.dataToSend->owner = COMPONENT_SIXTOP_TO_IEEE802154E;
@@ -1171,8 +1168,8 @@ port_INLINE void activity_csl_data_ti9(PORT_RADIOTIMER_WIDTH capturedTime) {
       schedule_indicateTx(&ieee154e_vars.asn,TRUE);
 
       // inform upper layer
-      // CSL testing commented
-      //notif_sendDone(ieee154e_vars.dataToSend,E_SUCCESS);
+      notif_sendDone(ieee154e_vars.dataToSend,E_SUCCESS);
+
       ieee154e_vars.dataToSend = NULL;
 
       // in any case, execute the clean-up code below (processing of ACK done)
@@ -1363,8 +1360,7 @@ port_INLINE void activity_csl_wakeup_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
 	open_addr_t myID, myID16b;
 	uint16_t rztime = 0;
 
-	// CSL TEST CODE
-	// Only for Testing due to we are hard-coding destination (neighbor) address on schedule, sent packet and receiver activity (this activity).
+	// [CSL-TEST]: hard-code mac address to match dest address on schedule in tx activity.
 
     myID.addr_64b[0]=0x00;
 	myID.addr_64b[1]=0x11;
@@ -1377,7 +1373,7 @@ port_INLINE void activity_csl_wakeup_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
 
 	myID.type=ADDR_64B;
 
-	// END CSL TEST
+	// [CSL-TEST]: end test code
 
 	// En este punto ya hemos recibido la trama por lo que hay que hacer las siguientes validaciones:
 	//   1.- Cambiar el estado a S_CSLRXWAKEUPVALIDATE y cancelar el temporizador rt4.
@@ -1449,13 +1445,17 @@ port_INLINE void activity_csl_wakeup_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
 
       // Verificamos que se trata de una trama WAKE-UP, perteneciente a la misma PAN ID, y dirigida a mi.
       if(ieee802514_header.frameType==IEEE154_TYPE_MULTIPURPOSE) {
-    	  // Comentado y sustituido para CSL TESTING ya que está hard-codeada la direccion.
-     	  //if(packetfunctions_sameAddress(&ieee802514_header.dest,idmanager_getMyID(ADDR_16B)) &&
-    	  // CSL TEST
+
+    	  // [CSL-TEST]: comment and substituted due to mac address is hard-coded in tx and rx for testing.
+
+    	  //if(packetfunctions_sameAddress(&ieee802514_header.dest,idmanager_getMyID(ADDR_16B)) &&
+   	      //   packetfunctions_sameAddress(&ieee802514_header.panid,idmanager_getMyID(ADDR_PANID))) {
+
     	  packetfunctions_mac64bToMac16b(&myID,&myID16b);
     	  if(packetfunctions_sameAddress(&ieee802514_header.dest, &myID16b) &&
-   		  // END CSL TEST
     	     packetfunctions_sameAddress(&ieee802514_header.panid,idmanager_getMyID(ADDR_PANID))) {
+
+   		  // [CSL-TEST]: end test code
 
     	   // En este caso, debemos dormir el tiempo indicado por RZ Time, estableciendo el estado a S_CSLRXDATAOFFSET
  	       changeState(S_CSLRXDATAOFFSET);
@@ -1764,20 +1764,25 @@ port_INLINE void activity_csl_data_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
          break;
       }
 
-      // CSL TEST - Force to not send ack packet
+      // [CSL-TEST]: Force to not send ack packet
+
       ieee802514_header.ackRequested = 0;
-      // END CSL TEST
+
+      // [CSL-TEST]: end test code
 
       // check if ack requested
       if (ieee802514_header.ackRequested==1) {
          // arm rt5
          radiotimer_schedule(DURATION_rt5);
       } else {
+         // [CSL-TEST]: comment synchronization
          // synchronize to the received packet if I'm not a DAGroot and this is my preferred parent
          //if (idmanager_getIsDAGroot()==FALSE && neighbors_isPreferredParent(&(ieee154e_vars.dataReceived->l2_nextORpreviousHop))) {
          //   synchronizePacket(ieee154e_vars.syncCapturedTime);
          //}
-         // indicate reception to upper layer (no ACK asked)
+         // [CSL-TEST]: end test code
+
+    	 // indicate reception to upper layer (no ACK asked)
          notif_receive(ieee154e_vars.dataReceived, 1);
          // reset local variable
          ieee154e_vars.dataReceived = NULL;
@@ -2454,6 +2459,9 @@ void notif_sendDone(OpenQueueEntry_t* packetSent, owerror_t error) {
 // to no sixtop action is defined for receive and process incoming packets.
 // Then, we comment this actions here and add remove packet on endOps method.
 void notif_receive(OpenQueueEntry_t* packetReceived, uint8_t action) {
+
+   // [CSL-TEST]: comment and add led (orange) blink if OK or led (red) toggle if KO.
+
    // record the current ASN
    //memcpy(&packetReceived->l2_asn, &ieee154e_vars.asn, sizeof(asn_t));
 
@@ -2467,12 +2475,12 @@ void notif_receive(OpenQueueEntry_t* packetReceived, uint8_t action) {
    // post RES's Receive task
    //scheduler_push_task(task_sixtopNotifReceive,TASKPRIO_SIXTOP_NOTIF_RX);
 
-   // CSL TEST CODE
-   // Error ACK. naranja toggle
    if (action == 1)
 	leds_sync_blink();
    else
     leds_error_toggle();
+
+   // [CSL-TEST]: end test code
 
    // wake up the scheduler
    SCHEDULER_WAKEUP();
@@ -2667,10 +2675,10 @@ void endOps() {
       ieee154e_vars.dataToSend->l2_retriesLeft--;
 
       if (ieee154e_vars.dataToSend->l2_retriesLeft==0) {
-    	 // CSL TEST CODE (comment)
-         // indicate tx fail if no more retries left
-         //notif_sendDone(ieee154e_vars.dataToSend,E_FAIL);
-    	 // END TEST CODE
+    	 // indicate tx fail if no more retries left
+         // [CSL-TEST]: comment to avoid led error blinking
+    	 //notif_sendDone(ieee154e_vars.dataToSend,E_FAIL);
+    	 // [CSL-TEST]: end test code
       } else {
          // return packet to the virtual COMPONENT_SIXTOP_TO_IEEE802154E component
          ieee154e_vars.dataToSend->owner = COMPONENT_SIXTOP_TO_IEEE802154E;

@@ -653,20 +653,20 @@
  516              		.file 6 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 icmpv6echo.c
-     /tmp/ccvJfyQB.s:19     .rodata:00000000 $d
-     /tmp/ccvJfyQB.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccvJfyQB.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccvJfyQB.s:32     .rodata:00000010 infouCName
-     /tmp/ccvJfyQB.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccvJfyQB.s:42     .rodata:00000024 infoStackName
+     /tmp/cco75MBY.s:19     .rodata:00000000 $d
+     /tmp/cco75MBY.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cco75MBY.s:27     .rodata:00000008 infoBoardname
+     /tmp/cco75MBY.s:32     .rodata:00000010 infouCName
+     /tmp/cco75MBY.s:37     .rodata:00000018 infoRadioName
+     /tmp/cco75MBY.s:42     .rodata:00000024 infoStackName
                             *COM*:00000014 icmpv6echo_vars
-     /tmp/ccvJfyQB.s:46     .text:00000000 $t
-     /tmp/ccvJfyQB.s:51     .text:00000000 icmpv6echo_init
-     /tmp/ccvJfyQB.s:88     .text:00000028 icmpv6echo_trigger
-     /tmp/ccvJfyQB.s:267    .text:00000198 $d
-     /tmp/ccvJfyQB.s:271    .text:0000019c $t
-     /tmp/ccvJfyQB.s:276    .text:0000019c icmpv6echo_sendDone
-     /tmp/ccvJfyQB.s:332    .text:000001e8 icmpv6echo_receive
+     /tmp/cco75MBY.s:46     .text:00000000 $t
+     /tmp/cco75MBY.s:51     .text:00000000 icmpv6echo_init
+     /tmp/cco75MBY.s:88     .text:00000028 icmpv6echo_trigger
+     /tmp/cco75MBY.s:267    .text:00000198 $d
+     /tmp/cco75MBY.s:271    .text:0000019c $t
+     /tmp/cco75MBY.s:276    .text:0000019c icmpv6echo_sendDone
+     /tmp/cco75MBY.s:332    .text:000001e8 icmpv6echo_receive
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

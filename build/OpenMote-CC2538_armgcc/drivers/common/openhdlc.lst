@@ -369,15 +369,15 @@
  358              		.file 5 "drivers/common/openhdlc.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 openhdlc.c
-     /tmp/ccMpF1mf.s:19     .rodata:00000000 $d
-     /tmp/ccMpF1mf.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccMpF1mf.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccMpF1mf.s:32     .rodata:00000010 infouCName
-     /tmp/ccMpF1mf.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccMpF1mf.s:42     .rodata:00000024 infoStackName
-     /tmp/ccMpF1mf.s:47     .rodata:00000030 fcstab
-     /tmp/ccMpF1mf.s:305    .text:00000000 $t
-     /tmp/ccMpF1mf.s:310    .text:00000000 crcIteration
+     /tmp/ccWjon2w.s:19     .rodata:00000000 $d
+     /tmp/ccWjon2w.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccWjon2w.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccWjon2w.s:32     .rodata:00000010 infouCName
+     /tmp/ccWjon2w.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccWjon2w.s:42     .rodata:00000024 infoStackName
+     /tmp/ccWjon2w.s:47     .rodata:00000030 fcstab
+     /tmp/ccWjon2w.s:305    .text:00000000 $t
+     /tmp/ccWjon2w.s:310    .text:00000000 crcIteration
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

@@ -414,19 +414,19 @@
  313              		.file 5 "inc/opendefs.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 scheduler.c
-     /tmp/ccO2qJm6.s:19     .rodata:00000000 $d
-     /tmp/ccO2qJm6.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccO2qJm6.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccO2qJm6.s:32     .rodata:00000010 infouCName
-     /tmp/ccO2qJm6.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccO2qJm6.s:42     .rodata:00000024 infoStackName
+     /tmp/ccUitqWr.s:19     .rodata:00000000 $d
+     /tmp/ccUitqWr.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccUitqWr.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccUitqWr.s:32     .rodata:00000010 infouCName
+     /tmp/ccUitqWr.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccUitqWr.s:42     .rodata:00000024 infoStackName
                             *COM*:00000080 scheduler_vars
                             *COM*:00000002 scheduler_dbg
-     /tmp/ccO2qJm6.s:47     .text:00000000 $t
-     /tmp/ccO2qJm6.s:52     .text:00000000 scheduler_init
-     /tmp/ccO2qJm6.s:89     .text:00000030 scheduler_start
-     /tmp/ccO2qJm6.s:170    .text:000000a8 scheduler_push_task
-     /tmp/ccO2qJm6.s:304    .text:00000180 $d
+     /tmp/ccUitqWr.s:47     .text:00000000 $t
+     /tmp/ccUitqWr.s:52     .text:00000000 scheduler_init
+     /tmp/ccUitqWr.s:89     .text:00000030 scheduler_start
+     /tmp/ccUitqWr.s:170    .text:000000a8 scheduler_push_task
+     /tmp/ccUitqWr.s:304    .text:00000180 $d
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
