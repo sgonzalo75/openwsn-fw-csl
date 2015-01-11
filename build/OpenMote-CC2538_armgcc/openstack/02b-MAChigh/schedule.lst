@@ -149,54 +149,55 @@
  110 006a BB82     		strh	r3, [r7, #20]	@ movhi
   42:openstack/02b-MAChigh/schedule.c ****    
   43:openstack/02b-MAChigh/schedule.c ****    // [CSL TEST]: Only first cell of nine cells in slot is CELLTYPE_TX
-  44:openstack/02b-MAChigh/schedule.c ****    memset(&temp_neighbor,0,sizeof(temp_neighbor));
- 111              		.loc 1 44 0
+  44:openstack/02b-MAChigh/schedule.c **** 
+  45:openstack/02b-MAChigh/schedule.c ****    memset(&temp_neighbor,0,sizeof(temp_neighbor));
+ 111              		.loc 1 45 0
  112 006c 3B46     		mov	r3, r7
  113 006e 1846     		mov	r0, r3
  114 0070 4FF00001 		mov	r1, #0
  115 0074 4FF01102 		mov	r2, #17
  116 0078 FFF7FEFF 		bl	memset
-  45:openstack/02b-MAChigh/schedule.c **** 
-  46:openstack/02b-MAChigh/schedule.c ****    // Simulate a ficticious address for CSL testing.
-  47:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[0]=0x00;
- 117              		.loc 1 47 0
+  46:openstack/02b-MAChigh/schedule.c **** 
+  47:openstack/02b-MAChigh/schedule.c ****    // Simulate a ficticious address for CSL testing.
+  48:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[0]=0x00;
+ 117              		.loc 1 48 0
  118 007c 4FF00003 		mov	r3, #0
  119 0080 7B70     		strb	r3, [r7, #1]
-  48:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[1]=0x11;
- 120              		.loc 1 48 0
+  49:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[1]=0x11;
+ 120              		.loc 1 49 0
  121 0082 4FF01103 		mov	r3, #17
  122 0086 BB70     		strb	r3, [r7, #2]
-  49:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[2]=0x22;
- 123              		.loc 1 49 0
+  50:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[2]=0x22;
+ 123              		.loc 1 50 0
  124 0088 4FF02203 		mov	r3, #34
  125 008c FB70     		strb	r3, [r7, #3]
-  50:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[3]=0x33;
- 126              		.loc 1 50 0
+  51:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[3]=0x33;
+ 126              		.loc 1 51 0
  127 008e 4FF03303 		mov	r3, #51
  128 0092 3B71     		strb	r3, [r7, #4]
-  51:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[4]=0x44;
- 129              		.loc 1 51 0
+  52:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[4]=0x44;
+ 129              		.loc 1 52 0
  130 0094 4FF04403 		mov	r3, #68
  131 0098 7B71     		strb	r3, [r7, #5]
-  52:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[5]=0x55;
- 132              		.loc 1 52 0
+  53:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[5]=0x55;
+ 132              		.loc 1 53 0
  133 009a 4FF05503 		mov	r3, #85
  134 009e BB71     		strb	r3, [r7, #6]
-  53:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[6]=0x66;
- 135              		.loc 1 53 0
+  54:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[6]=0x66;
+ 135              		.loc 1 54 0
  136 00a0 4FF06603 		mov	r3, #102
  137 00a4 FB71     		strb	r3, [r7, #7]
-  54:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[7]=0x77;
- 138              		.loc 1 54 0
+  55:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.addr_64b[7]=0x77;
+ 138              		.loc 1 55 0
  139 00a6 4FF07703 		mov	r3, #119
  140 00aa 3B72     		strb	r3, [r7, #8]
-  55:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.type=ADDR_64B;
- 141              		.loc 1 55 0
+  56:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.type=ADDR_64B;
+ 141              		.loc 1 56 0
  142 00ac 4FF00203 		mov	r3, #2
  143 00b0 3B70     		strb	r3, [r7, #0]
-  56:openstack/02b-MAChigh/schedule.c **** 
-  57:openstack/02b-MAChigh/schedule.c ****    schedule_addActiveSlot(
- 144              		.loc 1 57 0
+  57:openstack/02b-MAChigh/schedule.c **** 
+  58:openstack/02b-MAChigh/schedule.c ****    schedule_addActiveSlot(
+ 144              		.loc 1 58 0
  145 00b2 BB8A     		ldrh	r3, [r7, #20]
  146 00b4 3A46     		mov	r2, r7
  147 00b6 0092     		str	r2, [sp, #0]
@@ -205,34 +206,34 @@
  150 00be 4FF00002 		mov	r2, #0
  151 00c2 4FF00003 		mov	r3, #0
  152 00c6 FFF7FEFF 		bl	schedule_addActiveSlot
-  58:openstack/02b-MAChigh/schedule.c ****          running_slotOffset,      // slot offset
-  59:openstack/02b-MAChigh/schedule.c ****          CELLTYPE_TX,             // type of slot
-  60:openstack/02b-MAChigh/schedule.c ****          FALSE,                   // shared?
-  61:openstack/02b-MAChigh/schedule.c ****          0,                       // channel offset
-  62:openstack/02b-MAChigh/schedule.c ****          &temp_neighbor           // neighbor
-  63:openstack/02b-MAChigh/schedule.c ****    );
-  64:openstack/02b-MAChigh/schedule.c ****    running_slotOffset++;
- 153              		.loc 1 64 0
+  59:openstack/02b-MAChigh/schedule.c ****          running_slotOffset,      // slot offset
+  60:openstack/02b-MAChigh/schedule.c ****          CELLTYPE_TX,             // type of slot
+  61:openstack/02b-MAChigh/schedule.c ****          FALSE,                   // shared?
+  62:openstack/02b-MAChigh/schedule.c ****          0,                       // channel offset
+  63:openstack/02b-MAChigh/schedule.c ****          &temp_neighbor           // neighbor
+  64:openstack/02b-MAChigh/schedule.c ****    );
+  65:openstack/02b-MAChigh/schedule.c ****    running_slotOffset++;
+ 153              		.loc 1 65 0
  154 00ca BB8A     		ldrh	r3, [r7, #20]	@ movhi
  155 00cc 03F10103 		add	r3, r3, #1
  156 00d0 BB82     		strh	r3, [r7, #20]	@ movhi
-  65:openstack/02b-MAChigh/schedule.c **** 
-  66:openstack/02b-MAChigh/schedule.c ****    // el resto de tipo RX
-  67:openstack/02b-MAChigh/schedule.c ****    memset(&temp_neighbor,0,sizeof(temp_neighbor));
- 157              		.loc 1 67 0
+  66:openstack/02b-MAChigh/schedule.c **** 
+  67:openstack/02b-MAChigh/schedule.c ****    // el resto de tipo RX
+  68:openstack/02b-MAChigh/schedule.c ****    memset(&temp_neighbor,0,sizeof(temp_neighbor));
+ 157              		.loc 1 68 0
  158 00d2 3B46     		mov	r3, r7
  159 00d4 1846     		mov	r0, r3
  160 00d6 4FF00001 		mov	r1, #0
  161 00da 4FF01102 		mov	r2, #17
  162 00de FFF7FEFF 		bl	memset
-  68:openstack/02b-MAChigh/schedule.c ****    for (i=0;i<8;i++) {
- 163              		.loc 1 68 0
+  69:openstack/02b-MAChigh/schedule.c ****    for (i=0;i<8;i++) {
+ 163              		.loc 1 69 0
  164 00e2 4FF00003 		mov	r3, #0
  165 00e6 FB75     		strb	r3, [r7, #23]
  166 00e8 13E0     		b	.L4
  167              	.L5:
-  69:openstack/02b-MAChigh/schedule.c ****       schedule_addActiveSlot(
- 168              		.loc 1 69 0 discriminator 2
+  70:openstack/02b-MAChigh/schedule.c ****       schedule_addActiveSlot(
+ 168              		.loc 1 70 0 discriminator 2
  169 00ea BB8A     		ldrh	r3, [r7, #20]
  170 00ec 3A46     		mov	r2, r7
  171 00ee 0092     		str	r2, [sp, #0]
@@ -241,74 +242,74 @@
  174 00f6 4FF00002 		mov	r2, #0
  175 00fa 4FF00003 		mov	r3, #0
  176 00fe FFF7FEFF 		bl	schedule_addActiveSlot
-  70:openstack/02b-MAChigh/schedule.c ****          running_slotOffset,      // slot offset
-  71:openstack/02b-MAChigh/schedule.c ****          CELLTYPE_RX,             // type of slot
-  72:openstack/02b-MAChigh/schedule.c ****          FALSE,                   // shared?
-  73:openstack/02b-MAChigh/schedule.c ****          0,                       // channel offset
-  74:openstack/02b-MAChigh/schedule.c ****          &temp_neighbor           // neighbor
-  75:openstack/02b-MAChigh/schedule.c ****       );
-  76:openstack/02b-MAChigh/schedule.c ****       running_slotOffset++;
- 177              		.loc 1 76 0 discriminator 2
+  71:openstack/02b-MAChigh/schedule.c ****          running_slotOffset,      // slot offset
+  72:openstack/02b-MAChigh/schedule.c ****          CELLTYPE_RX,             // type of slot
+  73:openstack/02b-MAChigh/schedule.c ****          FALSE,                   // shared?
+  74:openstack/02b-MAChigh/schedule.c ****          0,                       // channel offset
+  75:openstack/02b-MAChigh/schedule.c ****          &temp_neighbor           // neighbor
+  76:openstack/02b-MAChigh/schedule.c ****       );
+  77:openstack/02b-MAChigh/schedule.c ****       running_slotOffset++;
+ 177              		.loc 1 77 0 discriminator 2
  178 0102 BB8A     		ldrh	r3, [r7, #20]	@ movhi
  179 0104 03F10103 		add	r3, r3, #1
  180 0108 BB82     		strh	r3, [r7, #20]	@ movhi
-  68:openstack/02b-MAChigh/schedule.c ****    for (i=0;i<8;i++) {
- 181              		.loc 1 68 0 discriminator 2
+  69:openstack/02b-MAChigh/schedule.c ****    for (i=0;i<8;i++) {
+ 181              		.loc 1 69 0 discriminator 2
  182 010a FB7D     		ldrb	r3, [r7, #23]
  183 010c 03F10103 		add	r3, r3, #1
  184 0110 FB75     		strb	r3, [r7, #23]
  185              	.L4:
-  68:openstack/02b-MAChigh/schedule.c ****    for (i=0;i<8;i++) {
- 186              		.loc 1 68 0 is_stmt 0 discriminator 1
+  69:openstack/02b-MAChigh/schedule.c ****    for (i=0;i<8;i++) {
+ 186              		.loc 1 69 0 is_stmt 0 discriminator 1
  187 0112 FB7D     		ldrb	r3, [r7, #23]	@ zero_extendqisi2
  188 0114 072B     		cmp	r3, #7
  189 0116 E8D9     		bls	.L5
-  77:openstack/02b-MAChigh/schedule.c ****    }
-  78:openstack/02b-MAChigh/schedule.c **** 
-  79:openstack/02b-MAChigh/schedule.c ****    // advertisement slot(s)
-  80:openstack/02b-MAChigh/schedule.c ****    /*memset(&temp_neighbor,0,sizeof(temp_neighbor));
-  81:openstack/02b-MAChigh/schedule.c ****    for (i=0;i<NUMADVSLOTS;i++) {
-  82:openstack/02b-MAChigh/schedule.c ****       schedule_addActiveSlot(
-  83:openstack/02b-MAChigh/schedule.c ****          running_slotOffset,      // slot offset
-  84:openstack/02b-MAChigh/schedule.c ****          CELLTYPE_ADV,            // type of slot
-  85:openstack/02b-MAChigh/schedule.c ****          FALSE,                   // shared?
-  86:openstack/02b-MAChigh/schedule.c ****          0,                       // channel offset
-  87:openstack/02b-MAChigh/schedule.c ****          &temp_neighbor           // neighbor
-  88:openstack/02b-MAChigh/schedule.c ****       );
-  89:openstack/02b-MAChigh/schedule.c ****       running_slotOffset++;
-  90:openstack/02b-MAChigh/schedule.c ****    } 
-  91:openstack/02b-MAChigh/schedule.c ****    */
-  92:openstack/02b-MAChigh/schedule.c ****    
-  93:openstack/02b-MAChigh/schedule.c ****    // shared TXRX anycast slot(s)
-  94:openstack/02b-MAChigh/schedule.c ****    /*memset(&temp_neighbor,0,sizeof(temp_neighbor));
-  95:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.type             = ADDR_ANYCAST;
-  96:openstack/02b-MAChigh/schedule.c ****    for (i=0;i<NUMSHAREDTXRX;i++) {
-  97:openstack/02b-MAChigh/schedule.c ****       schedule_addActiveSlot(
-  98:openstack/02b-MAChigh/schedule.c ****          running_slotOffset,      // slot offset
-  99:openstack/02b-MAChigh/schedule.c ****          CELLTYPE_TXRX,           // type of slot
- 100:openstack/02b-MAChigh/schedule.c ****          TRUE,                    // shared?
- 101:openstack/02b-MAChigh/schedule.c ****          0,                       // channel offset
- 102:openstack/02b-MAChigh/schedule.c ****          &temp_neighbor           // neighbor
- 103:openstack/02b-MAChigh/schedule.c ****       );
- 104:openstack/02b-MAChigh/schedule.c ****       running_slotOffset++;
- 105:openstack/02b-MAChigh/schedule.c ****    }
- 106:openstack/02b-MAChigh/schedule.c ****    */
- 107:openstack/02b-MAChigh/schedule.c ****    
- 108:openstack/02b-MAChigh/schedule.c ****    // serial RX slot(s)
- 109:openstack/02b-MAChigh/schedule.c ****    /*memset(&temp_neighbor,0,sizeof(temp_neighbor));
- 110:openstack/02b-MAChigh/schedule.c ****    schedule_addActiveSlot(
- 111:openstack/02b-MAChigh/schedule.c ****       running_slotOffset,         // slot offset
- 112:openstack/02b-MAChigh/schedule.c ****       CELLTYPE_SERIALRX,          // type of slot
- 113:openstack/02b-MAChigh/schedule.c ****       FALSE,                      // shared?
- 114:openstack/02b-MAChigh/schedule.c ****       0,                          // channel offset
- 115:openstack/02b-MAChigh/schedule.c ****       &temp_neighbor              // neighbor
- 116:openstack/02b-MAChigh/schedule.c ****    );
- 117:openstack/02b-MAChigh/schedule.c ****    running_slotOffset++;
- 118:openstack/02b-MAChigh/schedule.c ****    */
- 119:openstack/02b-MAChigh/schedule.c **** 
- 120:openstack/02b-MAChigh/schedule.c ****    // end [CSL-TEST]
- 121:openstack/02b-MAChigh/schedule.c **** }
- 190              		.loc 1 121 0 is_stmt 1
+  78:openstack/02b-MAChigh/schedule.c ****    }
+  79:openstack/02b-MAChigh/schedule.c **** 
+  80:openstack/02b-MAChigh/schedule.c ****    // advertisement slot(s)
+  81:openstack/02b-MAChigh/schedule.c ****    /*memset(&temp_neighbor,0,sizeof(temp_neighbor));
+  82:openstack/02b-MAChigh/schedule.c ****    for (i=0;i<NUMADVSLOTS;i++) {
+  83:openstack/02b-MAChigh/schedule.c ****       schedule_addActiveSlot(
+  84:openstack/02b-MAChigh/schedule.c ****          running_slotOffset,      // slot offset
+  85:openstack/02b-MAChigh/schedule.c ****          CELLTYPE_ADV,            // type of slot
+  86:openstack/02b-MAChigh/schedule.c ****          FALSE,                   // shared?
+  87:openstack/02b-MAChigh/schedule.c ****          0,                       // channel offset
+  88:openstack/02b-MAChigh/schedule.c ****          &temp_neighbor           // neighbor
+  89:openstack/02b-MAChigh/schedule.c ****       );
+  90:openstack/02b-MAChigh/schedule.c ****       running_slotOffset++;
+  91:openstack/02b-MAChigh/schedule.c ****    } 
+  92:openstack/02b-MAChigh/schedule.c ****    */
+  93:openstack/02b-MAChigh/schedule.c ****    
+  94:openstack/02b-MAChigh/schedule.c ****    // shared TXRX anycast slot(s)
+  95:openstack/02b-MAChigh/schedule.c ****    /*memset(&temp_neighbor,0,sizeof(temp_neighbor));
+  96:openstack/02b-MAChigh/schedule.c ****    temp_neighbor.type             = ADDR_ANYCAST;
+  97:openstack/02b-MAChigh/schedule.c ****    for (i=0;i<NUMSHAREDTXRX;i++) {
+  98:openstack/02b-MAChigh/schedule.c ****       schedule_addActiveSlot(
+  99:openstack/02b-MAChigh/schedule.c ****          running_slotOffset,      // slot offset
+ 100:openstack/02b-MAChigh/schedule.c ****          CELLTYPE_TXRX,           // type of slot
+ 101:openstack/02b-MAChigh/schedule.c ****          TRUE,                    // shared?
+ 102:openstack/02b-MAChigh/schedule.c ****          0,                       // channel offset
+ 103:openstack/02b-MAChigh/schedule.c ****          &temp_neighbor           // neighbor
+ 104:openstack/02b-MAChigh/schedule.c ****       );
+ 105:openstack/02b-MAChigh/schedule.c ****       running_slotOffset++;
+ 106:openstack/02b-MAChigh/schedule.c ****    }
+ 107:openstack/02b-MAChigh/schedule.c ****    */
+ 108:openstack/02b-MAChigh/schedule.c ****    
+ 109:openstack/02b-MAChigh/schedule.c ****    // serial RX slot(s)
+ 110:openstack/02b-MAChigh/schedule.c ****    /*memset(&temp_neighbor,0,sizeof(temp_neighbor));
+ 111:openstack/02b-MAChigh/schedule.c ****    schedule_addActiveSlot(
+ 112:openstack/02b-MAChigh/schedule.c ****       running_slotOffset,         // slot offset
+ 113:openstack/02b-MAChigh/schedule.c ****       CELLTYPE_SERIALRX,          // type of slot
+ 114:openstack/02b-MAChigh/schedule.c ****       FALSE,                      // shared?
+ 115:openstack/02b-MAChigh/schedule.c ****       0,                          // channel offset
+ 116:openstack/02b-MAChigh/schedule.c ****       &temp_neighbor              // neighbor
+ 117:openstack/02b-MAChigh/schedule.c ****    );
+ 118:openstack/02b-MAChigh/schedule.c ****    running_slotOffset++;
+ 119:openstack/02b-MAChigh/schedule.c ****    */
+ 120:openstack/02b-MAChigh/schedule.c **** 
+ 121:openstack/02b-MAChigh/schedule.c ****    // [CSL-TEST]: end test code
+ 122:openstack/02b-MAChigh/schedule.c **** }
+ 190              		.loc 1 122 0 is_stmt 1
  191 0118 07F11807 		add	r7, r7, #24
  192 011c BD46     		mov	sp, r7
  193 011e 80BD     		pop	{r7, pc}
@@ -320,17 +321,17 @@
  200              		.thumb_func
  202              	debugPrint_schedule:
  203              	.LFB1:
- 122:openstack/02b-MAChigh/schedule.c **** 
- 123:openstack/02b-MAChigh/schedule.c **** /**
- 124:openstack/02b-MAChigh/schedule.c **** \brief Trigger this module to print status information, over serial.
- 125:openstack/02b-MAChigh/schedule.c **** 
- 126:openstack/02b-MAChigh/schedule.c **** debugPrint_* functions are used by the openserial module to continuously print
- 127:openstack/02b-MAChigh/schedule.c **** status information about several modules in the OpenWSN stack.
- 128:openstack/02b-MAChigh/schedule.c **** 
- 129:openstack/02b-MAChigh/schedule.c **** \returns TRUE if this function printed something, FALSE otherwise.
- 130:openstack/02b-MAChigh/schedule.c **** */
- 131:openstack/02b-MAChigh/schedule.c **** bool debugPrint_schedule() {
- 204              		.loc 1 131 0
+ 123:openstack/02b-MAChigh/schedule.c **** 
+ 124:openstack/02b-MAChigh/schedule.c **** /**
+ 125:openstack/02b-MAChigh/schedule.c **** \brief Trigger this module to print status information, over serial.
+ 126:openstack/02b-MAChigh/schedule.c **** 
+ 127:openstack/02b-MAChigh/schedule.c **** debugPrint_* functions are used by the openserial module to continuously print
+ 128:openstack/02b-MAChigh/schedule.c **** status information about several modules in the OpenWSN stack.
+ 129:openstack/02b-MAChigh/schedule.c **** 
+ 130:openstack/02b-MAChigh/schedule.c **** \returns TRUE if this function printed something, FALSE otherwise.
+ 131:openstack/02b-MAChigh/schedule.c **** */
+ 132:openstack/02b-MAChigh/schedule.c **** bool debugPrint_schedule() {
+ 204              		.loc 1 132 0
  205              		.cfi_startproc
  206              		@ args = 0, pretend = 0, frame = 32
  207              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -347,11 +348,11 @@
  218 0124 00AF     		add	r7, sp, #0
  219              	.LCFI5:
  220              		.cfi_def_cfa_register 7
- 132:openstack/02b-MAChigh/schedule.c ****    debugScheduleEntry_t temp;
- 133:openstack/02b-MAChigh/schedule.c ****    
- 134:openstack/02b-MAChigh/schedule.c ****    // increment the row just printed
- 135:openstack/02b-MAChigh/schedule.c ****    schedule_vars.debugPrintRow         = (schedule_vars.debugPrintRow+1)%MAXACTIVESLOTS;
- 221              		.loc 1 135 0
+ 133:openstack/02b-MAChigh/schedule.c ****    debugScheduleEntry_t temp;
+ 134:openstack/02b-MAChigh/schedule.c ****    
+ 135:openstack/02b-MAChigh/schedule.c ****    // increment the row just printed
+ 136:openstack/02b-MAChigh/schedule.c ****    schedule_vars.debugPrintRow         = (schedule_vars.debugPrintRow+1)%MAXACTIVESLOTS;
+ 221              		.loc 1 136 0
  222 0126 40F20003 		movw	r3, #:lower16:schedule_vars
  223 012a C0F20003 		movt	r3, #:upper16:schedule_vars
  224 012e 93F84C31 		ldrb	r3, [r3, #332]	@ zero_extendqisi2
@@ -370,17 +371,17 @@
  237 0158 40F20003 		movw	r3, #:lower16:schedule_vars
  238 015c C0F20003 		movt	r3, #:upper16:schedule_vars
  239 0160 83F84C21 		strb	r2, [r3, #332]
- 136:openstack/02b-MAChigh/schedule.c ****    
- 137:openstack/02b-MAChigh/schedule.c ****    // gather status data
- 138:openstack/02b-MAChigh/schedule.c ****    temp.row                            = schedule_vars.debugPrintRow;
- 240              		.loc 1 138 0
+ 137:openstack/02b-MAChigh/schedule.c ****    
+ 138:openstack/02b-MAChigh/schedule.c ****    // gather status data
+ 139:openstack/02b-MAChigh/schedule.c ****    temp.row                            = schedule_vars.debugPrintRow;
+ 240              		.loc 1 139 0
  241 0164 40F20003 		movw	r3, #:lower16:schedule_vars
  242 0168 C0F20003 		movt	r3, #:upper16:schedule_vars
  243 016c 93F84C31 		ldrb	r3, [r3, #332]	@ zero_extendqisi2
  244 0170 3B70     		strb	r3, [r7, #0]
- 139:openstack/02b-MAChigh/schedule.c ****    temp.slotOffset                     = \
- 140:openstack/02b-MAChigh/schedule.c ****       schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].slotOffset;
- 245              		.loc 1 140 0
+ 140:openstack/02b-MAChigh/schedule.c ****    temp.slotOffset                     = \
+ 141:openstack/02b-MAChigh/schedule.c ****       schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].slotOffset;
+ 245              		.loc 1 141 0
  246 0172 40F20003 		movw	r3, #:lower16:schedule_vars
  247 0176 C0F20003 		movt	r3, #:upper16:schedule_vars
  248 017a 93F84C31 		ldrb	r3, [r3, #332]	@ zero_extendqisi2
@@ -393,19 +394,19 @@
  255 0190 4FEA8303 		lsl	r3, r3, #2
  256 0194 D318     		adds	r3, r2, r3
  257 0196 1B88     		ldrh	r3, [r3, #0]
- 139:openstack/02b-MAChigh/schedule.c ****    temp.slotOffset                     = \
- 258              		.loc 1 139 0
+ 140:openstack/02b-MAChigh/schedule.c ****    temp.slotOffset                     = \
+ 258              		.loc 1 140 0
  259 0198 A7F80130 		strh	r3, [r7, #1]	@ unaligned
- 141:openstack/02b-MAChigh/schedule.c ****    temp.type                           = \
- 142:openstack/02b-MAChigh/schedule.c ****       schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].type;
- 260              		.loc 1 142 0
+ 142:openstack/02b-MAChigh/schedule.c ****    temp.type                           = \
+ 143:openstack/02b-MAChigh/schedule.c ****       schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].type;
+ 260              		.loc 1 143 0
  261 019c 40F20003 		movw	r3, #:lower16:schedule_vars
  262 01a0 C0F20003 		movt	r3, #:upper16:schedule_vars
  263 01a4 93F84C31 		ldrb	r3, [r3, #332]	@ zero_extendqisi2
- 141:openstack/02b-MAChigh/schedule.c ****    temp.type                           = \
- 264              		.loc 1 141 0
+ 142:openstack/02b-MAChigh/schedule.c ****    temp.type                           = \
+ 264              		.loc 1 142 0
  265 01a8 1946     		mov	r1, r3
- 266              		.loc 1 142 0
+ 266              		.loc 1 143 0
  267 01aa 40F20002 		movw	r2, #:lower16:schedule_vars
  268 01ae C0F20002 		movt	r2, #:upper16:schedule_vars
  269 01b2 0B46     		mov	r3, r1
@@ -414,12 +415,12 @@
  272 01ba 4FEA8303 		lsl	r3, r3, #2
  273 01be D318     		adds	r3, r2, r3
  274 01c0 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
- 141:openstack/02b-MAChigh/schedule.c ****    temp.type                           = \
- 275              		.loc 1 141 0
+ 142:openstack/02b-MAChigh/schedule.c ****    temp.type                           = \
+ 275              		.loc 1 142 0
  276 01c2 FB70     		strb	r3, [r7, #3]
- 143:openstack/02b-MAChigh/schedule.c ****    temp.shared                         = \
- 144:openstack/02b-MAChigh/schedule.c ****       schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].shared;
- 277              		.loc 1 144 0
+ 144:openstack/02b-MAChigh/schedule.c ****    temp.shared                         = \
+ 145:openstack/02b-MAChigh/schedule.c ****       schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].shared;
+ 277              		.loc 1 145 0
  278 01c4 40F20003 		movw	r3, #:lower16:schedule_vars
  279 01c8 C0F20003 		movt	r3, #:upper16:schedule_vars
  280 01cc 93F84C31 		ldrb	r3, [r3, #332]	@ zero_extendqisi2
@@ -432,12 +433,12 @@
  287 01e2 4FEA8303 		lsl	r3, r3, #2
  288 01e6 D318     		adds	r3, r2, r3
  289 01e8 DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
- 143:openstack/02b-MAChigh/schedule.c ****    temp.shared                         = \
- 290              		.loc 1 143 0
+ 144:openstack/02b-MAChigh/schedule.c ****    temp.shared                         = \
+ 290              		.loc 1 144 0
  291 01ea 3B71     		strb	r3, [r7, #4]
- 145:openstack/02b-MAChigh/schedule.c ****    temp.channelOffset                  = \
- 146:openstack/02b-MAChigh/schedule.c ****       schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].channelOffset;
- 292              		.loc 1 146 0
+ 146:openstack/02b-MAChigh/schedule.c ****    temp.channelOffset                  = \
+ 147:openstack/02b-MAChigh/schedule.c ****       schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].channelOffset;
+ 292              		.loc 1 147 0
  293 01ec 40F20003 		movw	r3, #:lower16:schedule_vars
  294 01f0 C0F20003 		movt	r3, #:upper16:schedule_vars
  295 01f4 93F84C31 		ldrb	r3, [r3, #332]	@ zero_extendqisi2
@@ -450,13 +451,13 @@
  302 020a 4FEA8303 		lsl	r3, r3, #2
  303 020e D318     		adds	r3, r2, r3
  304 0210 1B79     		ldrb	r3, [r3, #4]	@ zero_extendqisi2
- 145:openstack/02b-MAChigh/schedule.c ****    temp.channelOffset                  = \
- 305              		.loc 1 145 0
+ 146:openstack/02b-MAChigh/schedule.c ****    temp.channelOffset                  = \
+ 305              		.loc 1 146 0
  306 0212 7B71     		strb	r3, [r7, #5]
- 147:openstack/02b-MAChigh/schedule.c ****    memcpy(
- 148:openstack/02b-MAChigh/schedule.c ****       &temp.neighbor,
- 149:openstack/02b-MAChigh/schedule.c ****       &schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].neighbor,
- 307              		.loc 1 149 0
+ 148:openstack/02b-MAChigh/schedule.c ****    memcpy(
+ 149:openstack/02b-MAChigh/schedule.c ****       &temp.neighbor,
+ 150:openstack/02b-MAChigh/schedule.c ****       &schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].neighbor,
+ 307              		.loc 1 150 0
  308 0214 40F20003 		movw	r3, #:lower16:schedule_vars
  309 0218 C0F20003 		movt	r3, #:upper16:schedule_vars
  310 021c 93F84C31 		ldrb	r3, [r3, #332]	@ zero_extendqisi2
@@ -469,8 +470,8 @@
  317 0232 C0F20002 		movt	r2, #:upper16:schedule_vars
  318 0236 9B18     		adds	r3, r3, r2
  319 0238 03F10502 		add	r2, r3, #5
- 147:openstack/02b-MAChigh/schedule.c ****    memcpy(
- 320              		.loc 1 147 0
+ 148:openstack/02b-MAChigh/schedule.c ****    memcpy(
+ 320              		.loc 1 148 0
  321 023c 07F10603 		add	r3, r7, #6
  322 0240 1568     		ldr	r5, [r2, #0]	@ unaligned
  323 0242 5468     		ldr	r4, [r2, #4]	@ unaligned
@@ -482,11 +483,11 @@
  329 024e D960     		str	r1, [r3, #12]	@ unaligned
  330 0250 127C     		ldrb	r2, [r2, #16]
  331 0252 1A74     		strb	r2, [r3, #16]
- 150:openstack/02b-MAChigh/schedule.c ****       sizeof(open_addr_t)
- 151:openstack/02b-MAChigh/schedule.c ****    );
- 152:openstack/02b-MAChigh/schedule.c ****    temp.numRx                          = \
- 153:openstack/02b-MAChigh/schedule.c ****       schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].numRx;
- 332              		.loc 1 153 0
+ 151:openstack/02b-MAChigh/schedule.c ****       sizeof(open_addr_t)
+ 152:openstack/02b-MAChigh/schedule.c ****    );
+ 153:openstack/02b-MAChigh/schedule.c ****    temp.numRx                          = \
+ 154:openstack/02b-MAChigh/schedule.c ****       schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].numRx;
+ 332              		.loc 1 154 0
  333 0254 40F20003 		movw	r3, #:lower16:schedule_vars
  334 0258 C0F20003 		movt	r3, #:upper16:schedule_vars
  335 025c 93F84C31 		ldrb	r3, [r3, #332]	@ zero_extendqisi2
@@ -500,12 +501,12 @@
  343 0276 D318     		adds	r3, r2, r3
  344 0278 03F11003 		add	r3, r3, #16
  345 027c 9B79     		ldrb	r3, [r3, #6]	@ zero_extendqisi2
- 152:openstack/02b-MAChigh/schedule.c ****    temp.numRx                          = \
- 346              		.loc 1 152 0
+ 153:openstack/02b-MAChigh/schedule.c ****    temp.numRx                          = \
+ 346              		.loc 1 153 0
  347 027e FB75     		strb	r3, [r7, #23]
- 154:openstack/02b-MAChigh/schedule.c ****    temp.numTx                          = \
- 155:openstack/02b-MAChigh/schedule.c ****       schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].numTx;
- 348              		.loc 1 155 0
+ 155:openstack/02b-MAChigh/schedule.c ****    temp.numTx                          = \
+ 156:openstack/02b-MAChigh/schedule.c ****       schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].numTx;
+ 348              		.loc 1 156 0
  349 0280 40F20003 		movw	r3, #:lower16:schedule_vars
  350 0284 C0F20003 		movt	r3, #:upper16:schedule_vars
  351 0288 93F84C31 		ldrb	r3, [r3, #332]	@ zero_extendqisi2
@@ -519,12 +520,12 @@
  359 02a2 D318     		adds	r3, r2, r3
  360 02a4 03F11003 		add	r3, r3, #16
  361 02a8 DB79     		ldrb	r3, [r3, #7]	@ zero_extendqisi2
- 154:openstack/02b-MAChigh/schedule.c ****    temp.numTx                          = \
- 362              		.loc 1 154 0
+ 155:openstack/02b-MAChigh/schedule.c ****    temp.numTx                          = \
+ 362              		.loc 1 155 0
  363 02aa 3B76     		strb	r3, [r7, #24]
- 156:openstack/02b-MAChigh/schedule.c ****    temp.numTxACK                       = \
- 157:openstack/02b-MAChigh/schedule.c ****       schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].numTxACK;
- 364              		.loc 1 157 0
+ 157:openstack/02b-MAChigh/schedule.c ****    temp.numTxACK                       = \
+ 158:openstack/02b-MAChigh/schedule.c ****       schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].numTxACK;
+ 364              		.loc 1 158 0
  365 02ac 40F20003 		movw	r3, #:lower16:schedule_vars
  366 02b0 C0F20003 		movt	r3, #:upper16:schedule_vars
  367 02b4 93F84C31 		ldrb	r3, [r3, #332]	@ zero_extendqisi2
@@ -538,13 +539,13 @@
  375 02ce D318     		adds	r3, r2, r3
  376 02d0 03F11803 		add	r3, r3, #24
  377 02d4 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
- 156:openstack/02b-MAChigh/schedule.c ****    temp.numTxACK                       = \
- 378              		.loc 1 156 0
+ 157:openstack/02b-MAChigh/schedule.c ****    temp.numTxACK                       = \
+ 378              		.loc 1 157 0
  379 02d6 7B76     		strb	r3, [r7, #25]
- 158:openstack/02b-MAChigh/schedule.c ****    memcpy(
- 159:openstack/02b-MAChigh/schedule.c ****       &temp.lastUsedAsn,
- 160:openstack/02b-MAChigh/schedule.c ****       &schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].lastUsedAsn,
- 380              		.loc 1 160 0
+ 159:openstack/02b-MAChigh/schedule.c ****    memcpy(
+ 160:openstack/02b-MAChigh/schedule.c ****       &temp.lastUsedAsn,
+ 161:openstack/02b-MAChigh/schedule.c ****       &schedule_vars.scheduleBuf[schedule_vars.debugPrintRow].lastUsedAsn,
+ 380              		.loc 1 161 0
  381 02d8 40F20003 		movw	r3, #:lower16:schedule_vars
  382 02dc C0F20003 		movt	r3, #:upper16:schedule_vars
  383 02e0 93F84C31 		ldrb	r3, [r3, #332]	@ zero_extendqisi2
@@ -558,36 +559,36 @@
  391 02fa C0F20003 		movt	r3, #:upper16:schedule_vars
  392 02fe D318     		adds	r3, r2, r3
  393 0300 03F10102 		add	r2, r3, #1
- 158:openstack/02b-MAChigh/schedule.c ****    memcpy(
- 394              		.loc 1 158 0
+ 159:openstack/02b-MAChigh/schedule.c ****    memcpy(
+ 394              		.loc 1 159 0
  395 0304 07F11A03 		add	r3, r7, #26
  396 0308 1168     		ldr	r1, [r2, #0]	@ unaligned
  397 030a 1960     		str	r1, [r3, #0]	@ unaligned
  398 030c 1279     		ldrb	r2, [r2, #4]
  399 030e 1A71     		strb	r2, [r3, #4]
- 161:openstack/02b-MAChigh/schedule.c ****       sizeof(asn_t)
- 162:openstack/02b-MAChigh/schedule.c ****    );
- 163:openstack/02b-MAChigh/schedule.c ****    
- 164:openstack/02b-MAChigh/schedule.c ****    // send status data over serial port
- 165:openstack/02b-MAChigh/schedule.c ****    openserial_printStatus(
- 166:openstack/02b-MAChigh/schedule.c ****       STATUS_SCHEDULE,
- 167:openstack/02b-MAChigh/schedule.c ****       (uint8_t*)&temp,
- 400              		.loc 1 167 0
+ 162:openstack/02b-MAChigh/schedule.c ****       sizeof(asn_t)
+ 163:openstack/02b-MAChigh/schedule.c ****    );
+ 164:openstack/02b-MAChigh/schedule.c ****    
+ 165:openstack/02b-MAChigh/schedule.c ****    // send status data over serial port
+ 166:openstack/02b-MAChigh/schedule.c ****    openserial_printStatus(
+ 167:openstack/02b-MAChigh/schedule.c ****       STATUS_SCHEDULE,
+ 168:openstack/02b-MAChigh/schedule.c ****       (uint8_t*)&temp,
+ 400              		.loc 1 168 0
  401 0310 3B46     		mov	r3, r7
- 165:openstack/02b-MAChigh/schedule.c ****    openserial_printStatus(
- 402              		.loc 1 165 0
+ 166:openstack/02b-MAChigh/schedule.c ****    openserial_printStatus(
+ 402              		.loc 1 166 0
  403 0312 4FF00600 		mov	r0, #6
  404 0316 1946     		mov	r1, r3
  405 0318 4FF01F02 		mov	r2, #31
  406 031c FFF7FEFF 		bl	openserial_printStatus
- 168:openstack/02b-MAChigh/schedule.c ****       sizeof(debugScheduleEntry_t)
- 169:openstack/02b-MAChigh/schedule.c ****    );
- 170:openstack/02b-MAChigh/schedule.c ****    
- 171:openstack/02b-MAChigh/schedule.c ****    return TRUE;
- 407              		.loc 1 171 0
+ 169:openstack/02b-MAChigh/schedule.c ****       sizeof(debugScheduleEntry_t)
+ 170:openstack/02b-MAChigh/schedule.c ****    );
+ 171:openstack/02b-MAChigh/schedule.c ****    
+ 172:openstack/02b-MAChigh/schedule.c ****    return TRUE;
+ 407              		.loc 1 172 0
  408 0320 4FF00103 		mov	r3, #1
- 172:openstack/02b-MAChigh/schedule.c **** }
- 409              		.loc 1 172 0
+ 173:openstack/02b-MAChigh/schedule.c **** }
+ 409              		.loc 1 173 0
  410 0324 1846     		mov	r0, r3
  411 0326 07F12007 		add	r7, r7, #32
  412 032a BD46     		mov	sp, r7
@@ -600,17 +601,17 @@
  420              		.thumb_func
  422              	debugPrint_backoff:
  423              	.LFB2:
- 173:openstack/02b-MAChigh/schedule.c **** 
- 174:openstack/02b-MAChigh/schedule.c **** /**
- 175:openstack/02b-MAChigh/schedule.c **** \brief Trigger this module to print status information, over serial.
- 176:openstack/02b-MAChigh/schedule.c **** 
- 177:openstack/02b-MAChigh/schedule.c **** debugPrint_* functions are used by the openserial module to continuously print
- 178:openstack/02b-MAChigh/schedule.c **** status information about several modules in the OpenWSN stack.
- 179:openstack/02b-MAChigh/schedule.c **** 
- 180:openstack/02b-MAChigh/schedule.c **** \returns TRUE if this function printed something, FALSE otherwise.
- 181:openstack/02b-MAChigh/schedule.c **** */
- 182:openstack/02b-MAChigh/schedule.c **** bool debugPrint_backoff() {
- 424              		.loc 1 182 0
+ 174:openstack/02b-MAChigh/schedule.c **** 
+ 175:openstack/02b-MAChigh/schedule.c **** /**
+ 176:openstack/02b-MAChigh/schedule.c **** \brief Trigger this module to print status information, over serial.
+ 177:openstack/02b-MAChigh/schedule.c **** 
+ 178:openstack/02b-MAChigh/schedule.c **** debugPrint_* functions are used by the openserial module to continuously print
+ 179:openstack/02b-MAChigh/schedule.c **** status information about several modules in the OpenWSN stack.
+ 180:openstack/02b-MAChigh/schedule.c **** 
+ 181:openstack/02b-MAChigh/schedule.c **** \returns TRUE if this function printed something, FALSE otherwise.
+ 182:openstack/02b-MAChigh/schedule.c **** */
+ 183:openstack/02b-MAChigh/schedule.c **** bool debugPrint_backoff() {
+ 424              		.loc 1 183 0
  425              		.cfi_startproc
  426              		@ args = 0, pretend = 0, frame = 8
  427              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -625,42 +626,42 @@
  436 0334 00AF     		add	r7, sp, #0
  437              	.LCFI8:
  438              		.cfi_def_cfa_register 7
- 183:openstack/02b-MAChigh/schedule.c ****    uint8_t temp[2];
- 184:openstack/02b-MAChigh/schedule.c ****    
- 185:openstack/02b-MAChigh/schedule.c ****    // gather status data
- 186:openstack/02b-MAChigh/schedule.c ****    temp[0] = schedule_vars.backoffExponent;
- 439              		.loc 1 186 0
+ 184:openstack/02b-MAChigh/schedule.c ****    uint8_t temp[2];
+ 185:openstack/02b-MAChigh/schedule.c ****    
+ 186:openstack/02b-MAChigh/schedule.c ****    // gather status data
+ 187:openstack/02b-MAChigh/schedule.c ****    temp[0] = schedule_vars.backoffExponent;
+ 439              		.loc 1 187 0
  440 0336 40F20003 		movw	r3, #:lower16:schedule_vars
  441 033a C0F20003 		movt	r3, #:upper16:schedule_vars
  442 033e 93F84A31 		ldrb	r3, [r3, #330]	@ zero_extendqisi2
  443 0342 3B71     		strb	r3, [r7, #4]
- 187:openstack/02b-MAChigh/schedule.c ****    temp[1] = schedule_vars.backoff;
- 444              		.loc 1 187 0
+ 188:openstack/02b-MAChigh/schedule.c ****    temp[1] = schedule_vars.backoff;
+ 444              		.loc 1 188 0
  445 0344 40F20003 		movw	r3, #:lower16:schedule_vars
  446 0348 C0F20003 		movt	r3, #:upper16:schedule_vars
  447 034c 93F84B31 		ldrb	r3, [r3, #331]	@ zero_extendqisi2
  448 0350 7B71     		strb	r3, [r7, #5]
- 188:openstack/02b-MAChigh/schedule.c ****    
- 189:openstack/02b-MAChigh/schedule.c ****    // send status data over serial port
- 190:openstack/02b-MAChigh/schedule.c ****    openserial_printStatus(
- 191:openstack/02b-MAChigh/schedule.c ****       STATUS_BACKOFF,
- 192:openstack/02b-MAChigh/schedule.c ****       (uint8_t*)&temp,
- 449              		.loc 1 192 0
+ 189:openstack/02b-MAChigh/schedule.c ****    
+ 190:openstack/02b-MAChigh/schedule.c ****    // send status data over serial port
+ 191:openstack/02b-MAChigh/schedule.c ****    openserial_printStatus(
+ 192:openstack/02b-MAChigh/schedule.c ****       STATUS_BACKOFF,
+ 193:openstack/02b-MAChigh/schedule.c ****       (uint8_t*)&temp,
+ 449              		.loc 1 193 0
  450 0352 07F10403 		add	r3, r7, #4
- 190:openstack/02b-MAChigh/schedule.c ****    openserial_printStatus(
- 451              		.loc 1 190 0
+ 191:openstack/02b-MAChigh/schedule.c ****    openserial_printStatus(
+ 451              		.loc 1 191 0
  452 0356 4FF00700 		mov	r0, #7
  453 035a 1946     		mov	r1, r3
  454 035c 4FF00202 		mov	r2, #2
  455 0360 FFF7FEFF 		bl	openserial_printStatus
- 193:openstack/02b-MAChigh/schedule.c ****       sizeof(temp)
- 194:openstack/02b-MAChigh/schedule.c ****    );
- 195:openstack/02b-MAChigh/schedule.c ****    
- 196:openstack/02b-MAChigh/schedule.c ****    return TRUE;
- 456              		.loc 1 196 0
+ 194:openstack/02b-MAChigh/schedule.c ****       sizeof(temp)
+ 195:openstack/02b-MAChigh/schedule.c ****    );
+ 196:openstack/02b-MAChigh/schedule.c ****    
+ 197:openstack/02b-MAChigh/schedule.c ****    return TRUE;
+ 456              		.loc 1 197 0
  457 0364 4FF00103 		mov	r3, #1
- 197:openstack/02b-MAChigh/schedule.c **** }
- 458              		.loc 1 197 0
+ 198:openstack/02b-MAChigh/schedule.c **** }
+ 458              		.loc 1 198 0
  459 0368 1846     		mov	r0, r3
  460 036a 07F10807 		add	r7, r7, #8
  461 036e BD46     		mov	sp, r7
@@ -673,16 +674,16 @@
  469              		.thumb_func
  471              	schedule_setFrameLength:
  472              	.LFB3:
- 198:openstack/02b-MAChigh/schedule.c **** 
- 199:openstack/02b-MAChigh/schedule.c **** //=== from 6top (writing the schedule)
- 200:openstack/02b-MAChigh/schedule.c **** 
- 201:openstack/02b-MAChigh/schedule.c **** /**
- 202:openstack/02b-MAChigh/schedule.c **** \brief Set frame length.
- 203:openstack/02b-MAChigh/schedule.c **** 
- 204:openstack/02b-MAChigh/schedule.c **** \param newFrameLength The new frame length.
- 205:openstack/02b-MAChigh/schedule.c **** */
- 206:openstack/02b-MAChigh/schedule.c **** void schedule_setFrameLength(frameLength_t newFrameLength) {
- 473              		.loc 1 206 0
+ 199:openstack/02b-MAChigh/schedule.c **** 
+ 200:openstack/02b-MAChigh/schedule.c **** //=== from 6top (writing the schedule)
+ 201:openstack/02b-MAChigh/schedule.c **** 
+ 202:openstack/02b-MAChigh/schedule.c **** /**
+ 203:openstack/02b-MAChigh/schedule.c **** \brief Set frame length.
+ 204:openstack/02b-MAChigh/schedule.c **** 
+ 205:openstack/02b-MAChigh/schedule.c **** \param newFrameLength The new frame length.
+ 206:openstack/02b-MAChigh/schedule.c **** */
+ 207:openstack/02b-MAChigh/schedule.c **** void schedule_setFrameLength(frameLength_t newFrameLength) {
+ 473              		.loc 1 207 0
  474              		.cfi_startproc
  475              		@ args = 0, pretend = 0, frame = 8
  476              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -699,24 +700,24 @@
  487              		.cfi_def_cfa_register 7
  488 037a 0346     		mov	r3, r0
  489 037c FB80     		strh	r3, [r7, #6]	@ movhi
- 207:openstack/02b-MAChigh/schedule.c ****    
- 208:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
- 209:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
- 490              		.loc 1 209 0
+ 208:openstack/02b-MAChigh/schedule.c ****    
+ 209:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
+ 210:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
+ 490              		.loc 1 210 0
  491 037e FFF7FEFF 		bl	IntMasterDisable
- 210:openstack/02b-MAChigh/schedule.c ****    
- 211:openstack/02b-MAChigh/schedule.c ****    schedule_vars.frameLength = newFrameLength;
- 492              		.loc 1 211 0
+ 211:openstack/02b-MAChigh/schedule.c ****    
+ 212:openstack/02b-MAChigh/schedule.c ****    schedule_vars.frameLength = newFrameLength;
+ 492              		.loc 1 212 0
  493 0382 40F20003 		movw	r3, #:lower16:schedule_vars
  494 0386 C0F20003 		movt	r3, #:upper16:schedule_vars
  495 038a FA88     		ldrh	r2, [r7, #6]	@ movhi
  496 038c A3F84821 		strh	r2, [r3, #328]	@ movhi
- 212:openstack/02b-MAChigh/schedule.c ****    
- 213:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
- 497              		.loc 1 213 0
+ 213:openstack/02b-MAChigh/schedule.c ****    
+ 214:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
+ 497              		.loc 1 214 0
  498 0390 FFF7FEFF 		bl	IntMasterEnable
- 214:openstack/02b-MAChigh/schedule.c **** }
- 499              		.loc 1 214 0
+ 215:openstack/02b-MAChigh/schedule.c **** }
+ 499              		.loc 1 215 0
  500 0394 07F10807 		add	r7, r7, #8
  501 0398 BD46     		mov	sp, r7
  502 039a 80BD     		pop	{r7, pc}
@@ -728,20 +729,20 @@
  509              		.thumb_func
  511              	schedule_getSlotInfo:
  512              	.LFB4:
- 215:openstack/02b-MAChigh/schedule.c **** 
- 216:openstack/02b-MAChigh/schedule.c **** /**
- 217:openstack/02b-MAChigh/schedule.c **** \brief Get the information of a specific slot.
- 218:openstack/02b-MAChigh/schedule.c **** 
- 219:openstack/02b-MAChigh/schedule.c **** \param slotOffset
- 220:openstack/02b-MAChigh/schedule.c **** \param neighbor
- 221:openstack/02b-MAChigh/schedule.c **** \param info
- 222:openstack/02b-MAChigh/schedule.c **** */
- 223:openstack/02b-MAChigh/schedule.c **** void  schedule_getSlotInfo(
- 224:openstack/02b-MAChigh/schedule.c ****    slotOffset_t         slotOffset,
- 225:openstack/02b-MAChigh/schedule.c ****    open_addr_t*         neighbor,
- 226:openstack/02b-MAChigh/schedule.c ****    slotinfo_element_t*  info
- 227:openstack/02b-MAChigh/schedule.c **** ){
- 513              		.loc 1 227 0
+ 216:openstack/02b-MAChigh/schedule.c **** 
+ 217:openstack/02b-MAChigh/schedule.c **** /**
+ 218:openstack/02b-MAChigh/schedule.c **** \brief Get the information of a specific slot.
+ 219:openstack/02b-MAChigh/schedule.c **** 
+ 220:openstack/02b-MAChigh/schedule.c **** \param slotOffset
+ 221:openstack/02b-MAChigh/schedule.c **** \param neighbor
+ 222:openstack/02b-MAChigh/schedule.c **** \param info
+ 223:openstack/02b-MAChigh/schedule.c **** */
+ 224:openstack/02b-MAChigh/schedule.c **** void  schedule_getSlotInfo(
+ 225:openstack/02b-MAChigh/schedule.c ****    slotOffset_t         slotOffset,
+ 226:openstack/02b-MAChigh/schedule.c ****    open_addr_t*         neighbor,
+ 227:openstack/02b-MAChigh/schedule.c ****    slotinfo_element_t*  info
+ 228:openstack/02b-MAChigh/schedule.c **** ){
+ 513              		.loc 1 228 0
  514              		.cfi_startproc
  515              		@ args = 0, pretend = 0, frame = 24
  516              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -760,22 +761,22 @@
  529 03a4 B960     		str	r1, [r7, #8]
  530 03a6 7A60     		str	r2, [r7, #4]
  531 03a8 FB81     		strh	r3, [r7, #14]	@ movhi
- 228:openstack/02b-MAChigh/schedule.c ****    
- 229:openstack/02b-MAChigh/schedule.c ****    scheduleEntry_t* slotContainer;
- 230:openstack/02b-MAChigh/schedule.c ****   
- 231:openstack/02b-MAChigh/schedule.c ****    // find an empty schedule entry container
- 232:openstack/02b-MAChigh/schedule.c ****    slotContainer = &schedule_vars.scheduleBuf[0];
- 532              		.loc 1 232 0
+ 229:openstack/02b-MAChigh/schedule.c ****    
+ 230:openstack/02b-MAChigh/schedule.c ****    scheduleEntry_t* slotContainer;
+ 231:openstack/02b-MAChigh/schedule.c ****   
+ 232:openstack/02b-MAChigh/schedule.c ****    // find an empty schedule entry container
+ 233:openstack/02b-MAChigh/schedule.c ****    slotContainer = &schedule_vars.scheduleBuf[0];
+ 532              		.loc 1 233 0
  533 03aa 40F20003 		movw	r3, #:lower16:schedule_vars
  534 03ae C0F20003 		movt	r3, #:upper16:schedule_vars
  535 03b2 7B61     		str	r3, [r7, #20]
- 233:openstack/02b-MAChigh/schedule.c ****    while (slotContainer<=&schedule_vars.scheduleBuf[MAXACTIVESLOTS-1]) {
- 536              		.loc 1 233 0
+ 234:openstack/02b-MAChigh/schedule.c ****    while (slotContainer<=&schedule_vars.scheduleBuf[MAXACTIVESLOTS-1]) {
+ 536              		.loc 1 234 0
  537 03b4 1FE0     		b	.L12
  538              	.L15:
- 234:openstack/02b-MAChigh/schedule.c ****        //check that this entry for that neighbour and timeslot is not already scheduled.
- 235:openstack/02b-MAChigh/schedule.c ****        if (packetfunctions_sameAddress(neighbor,&(slotContainer->neighbor))&& (slotContainer->slotO
- 539              		.loc 1 235 0
+ 235:openstack/02b-MAChigh/schedule.c ****        //check that this entry for that neighbour and timeslot is not already scheduled.
+ 236:openstack/02b-MAChigh/schedule.c ****        if (packetfunctions_sameAddress(neighbor,&(slotContainer->neighbor))&& (slotContainer->slotO
+ 539              		.loc 1 236 0
  540 03b6 7B69     		ldr	r3, [r7, #20]
  541 03b8 03F10503 		add	r3, r3, #5
  542 03bc B868     		ldr	r0, [r7, #8]
@@ -784,68 +785,68 @@
  545 03c4 0346     		mov	r3, r0
  546 03c6 002B     		cmp	r3, #0
  547 03c8 11D0     		beq	.L13
- 548              		.loc 1 235 0 is_stmt 0 discriminator 1
+ 548              		.loc 1 236 0 is_stmt 0 discriminator 1
  549 03ca 7B69     		ldr	r3, [r7, #20]
  550 03cc 1B88     		ldrh	r3, [r3, #0]
  551 03ce FA89     		ldrh	r2, [r7, #14]
  552 03d0 9A42     		cmp	r2, r3
  553 03d2 0CD1     		bne	.L13
- 236:openstack/02b-MAChigh/schedule.c ****                //it exists so this is an update.
- 237:openstack/02b-MAChigh/schedule.c ****                info->link_type                 = slotContainer->type;
- 554              		.loc 1 237 0 is_stmt 1
+ 237:openstack/02b-MAChigh/schedule.c ****                //it exists so this is an update.
+ 238:openstack/02b-MAChigh/schedule.c ****                info->link_type                 = slotContainer->type;
+ 554              		.loc 1 238 0 is_stmt 1
  555 03d4 7B69     		ldr	r3, [r7, #20]
  556 03d6 9A78     		ldrb	r2, [r3, #2]	@ zero_extendqisi2
  557 03d8 7B68     		ldr	r3, [r7, #4]
  558 03da 1A72     		strb	r2, [r3, #8]
- 238:openstack/02b-MAChigh/schedule.c ****                info->shared                    =slotContainer->shared;
- 559              		.loc 1 238 0
+ 239:openstack/02b-MAChigh/schedule.c ****                info->shared                    =slotContainer->shared;
+ 559              		.loc 1 239 0
  560 03dc 7B69     		ldr	r3, [r7, #20]
  561 03de DA78     		ldrb	r2, [r3, #3]	@ zero_extendqisi2
  562 03e0 7B68     		ldr	r3, [r7, #4]
  563 03e2 5A72     		strb	r2, [r3, #9]
- 239:openstack/02b-MAChigh/schedule.c ****                info->channelOffset             = slotContainer->channelOffset;
- 564              		.loc 1 239 0
+ 240:openstack/02b-MAChigh/schedule.c ****                info->channelOffset             = slotContainer->channelOffset;
+ 564              		.loc 1 240 0
  565 03e4 7B69     		ldr	r3, [r7, #20]
  566 03e6 1A79     		ldrb	r2, [r3, #4]	@ zero_extendqisi2
  567 03e8 7B68     		ldr	r3, [r7, #4]
  568 03ea 1A73     		strb	r2, [r3, #12]
- 240:openstack/02b-MAChigh/schedule.c ****                return; //as this is an update. No need to re-insert as it is in the same position o
- 569              		.loc 1 240 0
+ 241:openstack/02b-MAChigh/schedule.c ****                return; //as this is an update. No need to re-insert as it is in the same position o
+ 569              		.loc 1 241 0
  570 03ec 13E0     		b	.L11
  571              	.L13:
- 241:openstack/02b-MAChigh/schedule.c ****         }
- 242:openstack/02b-MAChigh/schedule.c ****         slotContainer++;
- 572              		.loc 1 242 0
+ 242:openstack/02b-MAChigh/schedule.c ****         }
+ 243:openstack/02b-MAChigh/schedule.c ****         slotContainer++;
+ 572              		.loc 1 243 0
  573 03ee 7B69     		ldr	r3, [r7, #20]
  574 03f0 03F12403 		add	r3, r3, #36
  575 03f4 7B61     		str	r3, [r7, #20]
  576              	.L12:
- 233:openstack/02b-MAChigh/schedule.c ****    while (slotContainer<=&schedule_vars.scheduleBuf[MAXACTIVESLOTS-1]) {
- 577              		.loc 1 233 0 discriminator 1
+ 234:openstack/02b-MAChigh/schedule.c ****    while (slotContainer<=&schedule_vars.scheduleBuf[MAXACTIVESLOTS-1]) {
+ 577              		.loc 1 234 0 discriminator 1
  578 03f6 7A69     		ldr	r2, [r7, #20]
  579 03f8 094B     		ldr	r3, .L16
  580 03fa 9A42     		cmp	r2, r3
  581 03fc DBD9     		bls	.L15
- 243:openstack/02b-MAChigh/schedule.c ****    }
- 244:openstack/02b-MAChigh/schedule.c ****    //return cell type off.
- 245:openstack/02b-MAChigh/schedule.c ****    info->link_type                 = CELLTYPE_OFF;
- 582              		.loc 1 245 0
+ 244:openstack/02b-MAChigh/schedule.c ****    }
+ 245:openstack/02b-MAChigh/schedule.c ****    //return cell type off.
+ 246:openstack/02b-MAChigh/schedule.c ****    info->link_type                 = CELLTYPE_OFF;
+ 582              		.loc 1 246 0
  583 03fe 7B68     		ldr	r3, [r7, #4]
  584 0400 4FF00002 		mov	r2, #0
  585 0404 1A72     		strb	r2, [r3, #8]
- 246:openstack/02b-MAChigh/schedule.c ****    info->shared                    = FALSE;
- 586              		.loc 1 246 0
+ 247:openstack/02b-MAChigh/schedule.c ****    info->shared                    = FALSE;
+ 586              		.loc 1 247 0
  587 0406 7B68     		ldr	r3, [r7, #4]
  588 0408 4FF00002 		mov	r2, #0
  589 040c 5A72     		strb	r2, [r3, #9]
- 247:openstack/02b-MAChigh/schedule.c ****    info->channelOffset             = 0;//set to zero if not set.                          
- 590              		.loc 1 247 0
+ 248:openstack/02b-MAChigh/schedule.c ****    info->channelOffset             = 0;//set to zero if not set.                          
+ 590              		.loc 1 248 0
  591 040e 7B68     		ldr	r3, [r7, #4]
  592 0410 4FF00002 		mov	r2, #0
  593 0414 1A73     		strb	r2, [r3, #12]
  594              	.L11:
- 248:openstack/02b-MAChigh/schedule.c **** }
- 595              		.loc 1 248 0
+ 249:openstack/02b-MAChigh/schedule.c **** }
+ 595              		.loc 1 249 0
  596 0416 07F11807 		add	r7, r7, #24
  597 041a BD46     		mov	sp, r7
  598 041c 80BD     		pop	{r7, pc}
@@ -861,25 +862,25 @@
  609              		.thumb_func
  611              	schedule_addActiveSlot:
  612              	.LFB5:
- 249:openstack/02b-MAChigh/schedule.c **** 
- 250:openstack/02b-MAChigh/schedule.c **** /**
- 251:openstack/02b-MAChigh/schedule.c **** \brief Add a new active slot into the schedule.
- 252:openstack/02b-MAChigh/schedule.c **** 
- 253:openstack/02b-MAChigh/schedule.c **** \param slotOffset       The slotoffset of the new slot
- 254:openstack/02b-MAChigh/schedule.c **** \param type             The type of the cell
- 255:openstack/02b-MAChigh/schedule.c **** \param shared           Whether this cell is shared (TRUE) or not (FALSE).
- 256:openstack/02b-MAChigh/schedule.c **** \param channelOffset    The channelOffset of the new slot
- 257:openstack/02b-MAChigh/schedule.c **** \param neighbor         The neighbor associated with this cell (all 0's if
- 258:openstack/02b-MAChigh/schedule.c ****    none)
- 259:openstack/02b-MAChigh/schedule.c **** */
- 260:openstack/02b-MAChigh/schedule.c **** owerror_t schedule_addActiveSlot(
- 261:openstack/02b-MAChigh/schedule.c ****       slotOffset_t    slotOffset,
- 262:openstack/02b-MAChigh/schedule.c ****       cellType_t      type,
- 263:openstack/02b-MAChigh/schedule.c ****       bool            shared,
- 264:openstack/02b-MAChigh/schedule.c ****       channelOffset_t channelOffset,
- 265:openstack/02b-MAChigh/schedule.c ****       open_addr_t*    neighbor
- 266:openstack/02b-MAChigh/schedule.c ****    ) {
- 613              		.loc 1 266 0
+ 250:openstack/02b-MAChigh/schedule.c **** 
+ 251:openstack/02b-MAChigh/schedule.c **** /**
+ 252:openstack/02b-MAChigh/schedule.c **** \brief Add a new active slot into the schedule.
+ 253:openstack/02b-MAChigh/schedule.c **** 
+ 254:openstack/02b-MAChigh/schedule.c **** \param slotOffset       The slotoffset of the new slot
+ 255:openstack/02b-MAChigh/schedule.c **** \param type             The type of the cell
+ 256:openstack/02b-MAChigh/schedule.c **** \param shared           Whether this cell is shared (TRUE) or not (FALSE).
+ 257:openstack/02b-MAChigh/schedule.c **** \param channelOffset    The channelOffset of the new slot
+ 258:openstack/02b-MAChigh/schedule.c **** \param neighbor         The neighbor associated with this cell (all 0's if
+ 259:openstack/02b-MAChigh/schedule.c ****    none)
+ 260:openstack/02b-MAChigh/schedule.c **** */
+ 261:openstack/02b-MAChigh/schedule.c **** owerror_t schedule_addActiveSlot(
+ 262:openstack/02b-MAChigh/schedule.c ****       slotOffset_t    slotOffset,
+ 263:openstack/02b-MAChigh/schedule.c ****       cellType_t      type,
+ 264:openstack/02b-MAChigh/schedule.c ****       bool            shared,
+ 265:openstack/02b-MAChigh/schedule.c ****       channelOffset_t channelOffset,
+ 266:openstack/02b-MAChigh/schedule.c ****       open_addr_t*    neighbor
+ 267:openstack/02b-MAChigh/schedule.c ****    ) {
+ 613              		.loc 1 267 0
  614              		.cfi_startproc
  615              		@ args = 4, pretend = 0, frame = 24
  616              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -898,258 +899,258 @@
  629 042c 7971     		strb	r1, [r7, #5]
  630 042e 3A71     		strb	r2, [r7, #4]
  631 0430 FB70     		strb	r3, [r7, #3]
- 267:openstack/02b-MAChigh/schedule.c ****    scheduleEntry_t* slotContainer;
- 268:openstack/02b-MAChigh/schedule.c ****    scheduleEntry_t* previousSlotWalker;
- 269:openstack/02b-MAChigh/schedule.c ****    scheduleEntry_t* nextSlotWalker;
- 270:openstack/02b-MAChigh/schedule.c ****    
- 271:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
- 272:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
- 632              		.loc 1 272 0
+ 268:openstack/02b-MAChigh/schedule.c ****    scheduleEntry_t* slotContainer;
+ 269:openstack/02b-MAChigh/schedule.c ****    scheduleEntry_t* previousSlotWalker;
+ 270:openstack/02b-MAChigh/schedule.c ****    scheduleEntry_t* nextSlotWalker;
+ 271:openstack/02b-MAChigh/schedule.c ****    
+ 272:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
+ 273:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
+ 632              		.loc 1 273 0
  633 0432 FFF7FEFF 		bl	IntMasterDisable
- 273:openstack/02b-MAChigh/schedule.c ****    
- 274:openstack/02b-MAChigh/schedule.c ****    // find an empty schedule entry container
- 275:openstack/02b-MAChigh/schedule.c ****    slotContainer = &schedule_vars.scheduleBuf[0];
- 634              		.loc 1 275 0
+ 274:openstack/02b-MAChigh/schedule.c ****    
+ 275:openstack/02b-MAChigh/schedule.c ****    // find an empty schedule entry container
+ 276:openstack/02b-MAChigh/schedule.c ****    slotContainer = &schedule_vars.scheduleBuf[0];
+ 634              		.loc 1 276 0
  635 0436 40F20003 		movw	r3, #:lower16:schedule_vars
  636 043a C0F20003 		movt	r3, #:upper16:schedule_vars
  637 043e 7B61     		str	r3, [r7, #20]
- 276:openstack/02b-MAChigh/schedule.c ****    while (
- 638              		.loc 1 276 0
+ 277:openstack/02b-MAChigh/schedule.c ****    while (
+ 638              		.loc 1 277 0
  639 0440 03E0     		b	.L19
  640              	.L21:
- 277:openstack/02b-MAChigh/schedule.c ****          slotContainer->type!=CELLTYPE_OFF &&
- 278:openstack/02b-MAChigh/schedule.c ****          slotContainer<=&schedule_vars.scheduleBuf[MAXACTIVESLOTS-1]
- 279:openstack/02b-MAChigh/schedule.c ****       ) {
- 280:openstack/02b-MAChigh/schedule.c ****       slotContainer++;
- 641              		.loc 1 280 0
+ 278:openstack/02b-MAChigh/schedule.c ****          slotContainer->type!=CELLTYPE_OFF &&
+ 279:openstack/02b-MAChigh/schedule.c ****          slotContainer<=&schedule_vars.scheduleBuf[MAXACTIVESLOTS-1]
+ 280:openstack/02b-MAChigh/schedule.c ****       ) {
+ 281:openstack/02b-MAChigh/schedule.c ****       slotContainer++;
+ 641              		.loc 1 281 0
  642 0442 7B69     		ldr	r3, [r7, #20]
  643 0444 03F12403 		add	r3, r3, #36
  644 0448 7B61     		str	r3, [r7, #20]
  645              	.L19:
- 277:openstack/02b-MAChigh/schedule.c ****          slotContainer->type!=CELLTYPE_OFF &&
- 646              		.loc 1 277 0 discriminator 1
+ 278:openstack/02b-MAChigh/schedule.c ****          slotContainer->type!=CELLTYPE_OFF &&
+ 646              		.loc 1 278 0 discriminator 1
  647 044a 7B69     		ldr	r3, [r7, #20]
  648 044c 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
- 276:openstack/02b-MAChigh/schedule.c ****    while (
- 649              		.loc 1 276 0 discriminator 1
+ 277:openstack/02b-MAChigh/schedule.c ****    while (
+ 649              		.loc 1 277 0 discriminator 1
  650 044e 002B     		cmp	r3, #0
  651 0450 03D0     		beq	.L20
- 277:openstack/02b-MAChigh/schedule.c ****          slotContainer->type!=CELLTYPE_OFF &&
- 652              		.loc 1 277 0
+ 278:openstack/02b-MAChigh/schedule.c ****          slotContainer->type!=CELLTYPE_OFF &&
+ 652              		.loc 1 278 0
  653 0452 7A69     		ldr	r2, [r7, #20]
  654 0454 3E4B     		ldr	r3, .L31
  655 0456 9A42     		cmp	r2, r3
  656 0458 F3D9     		bls	.L21
  657              	.L20:
- 281:openstack/02b-MAChigh/schedule.c ****    }
- 282:openstack/02b-MAChigh/schedule.c ****    
- 283:openstack/02b-MAChigh/schedule.c ****    // abort it schedule overflow
- 284:openstack/02b-MAChigh/schedule.c ****    if (slotContainer>&schedule_vars.scheduleBuf[MAXACTIVESLOTS-1]) {
- 658              		.loc 1 284 0
+ 282:openstack/02b-MAChigh/schedule.c ****    }
+ 283:openstack/02b-MAChigh/schedule.c ****    
+ 284:openstack/02b-MAChigh/schedule.c ****    // abort it schedule overflow
+ 285:openstack/02b-MAChigh/schedule.c ****    if (slotContainer>&schedule_vars.scheduleBuf[MAXACTIVESLOTS-1]) {
+ 658              		.loc 1 285 0
  659 045a 7A69     		ldr	r2, [r7, #20]
  660 045c 3C4B     		ldr	r3, .L31
  661 045e 9A42     		cmp	r2, r3
  662 0460 0ED9     		bls	.L22
- 285:openstack/02b-MAChigh/schedule.c ****       ENABLE_INTERRUPTS();
- 663              		.loc 1 285 0
+ 286:openstack/02b-MAChigh/schedule.c ****       ENABLE_INTERRUPTS();
+ 663              		.loc 1 286 0
  664 0462 FFF7FEFF 		bl	IntMasterEnable
- 286:openstack/02b-MAChigh/schedule.c ****       openserial_printCritical(
- 665              		.loc 1 286 0
+ 287:openstack/02b-MAChigh/schedule.c ****       openserial_printCritical(
+ 665              		.loc 1 287 0
  666 0466 4FF00E00 		mov	r0, #14
  667 046a 4FF01701 		mov	r1, #23
  668 046e 4FF00002 		mov	r2, #0
  669 0472 4FF00003 		mov	r3, #0
  670 0476 FFF7FEFF 		bl	openserial_printCritical
- 287:openstack/02b-MAChigh/schedule.c ****          COMPONENT_SCHEDULE,ERR_SCHEDULE_OVERFLOWN,
- 288:openstack/02b-MAChigh/schedule.c ****          (errorparameter_t)0,
- 289:openstack/02b-MAChigh/schedule.c ****          (errorparameter_t)0
- 290:openstack/02b-MAChigh/schedule.c ****       );
- 291:openstack/02b-MAChigh/schedule.c ****       return E_FAIL;
- 671              		.loc 1 291 0
+ 288:openstack/02b-MAChigh/schedule.c ****          COMPONENT_SCHEDULE,ERR_SCHEDULE_OVERFLOWN,
+ 289:openstack/02b-MAChigh/schedule.c ****          (errorparameter_t)0,
+ 290:openstack/02b-MAChigh/schedule.c ****          (errorparameter_t)0
+ 291:openstack/02b-MAChigh/schedule.c ****       );
+ 292:openstack/02b-MAChigh/schedule.c ****       return E_FAIL;
+ 671              		.loc 1 292 0
  672 047a 4FF00103 		mov	r3, #1
  673 047e 62E0     		b	.L23
  674              	.L22:
- 292:openstack/02b-MAChigh/schedule.c ****    }
- 293:openstack/02b-MAChigh/schedule.c ****    
- 294:openstack/02b-MAChigh/schedule.c ****    // fill that schedule entry with parameters passed
- 295:openstack/02b-MAChigh/schedule.c ****    slotContainer->slotOffset                = slotOffset;
- 675              		.loc 1 295 0
+ 293:openstack/02b-MAChigh/schedule.c ****    }
+ 294:openstack/02b-MAChigh/schedule.c ****    
+ 295:openstack/02b-MAChigh/schedule.c ****    // fill that schedule entry with parameters passed
+ 296:openstack/02b-MAChigh/schedule.c ****    slotContainer->slotOffset                = slotOffset;
+ 675              		.loc 1 296 0
  676 0480 7B69     		ldr	r3, [r7, #20]
  677 0482 FA88     		ldrh	r2, [r7, #6]	@ movhi
  678 0484 1A80     		strh	r2, [r3, #0]	@ movhi
- 296:openstack/02b-MAChigh/schedule.c ****    slotContainer->type                      = type;
- 679              		.loc 1 296 0
+ 297:openstack/02b-MAChigh/schedule.c ****    slotContainer->type                      = type;
+ 679              		.loc 1 297 0
  680 0486 7B69     		ldr	r3, [r7, #20]
  681 0488 7A79     		ldrb	r2, [r7, #5]
  682 048a 9A70     		strb	r2, [r3, #2]
- 297:openstack/02b-MAChigh/schedule.c ****    slotContainer->shared                    = shared;
- 683              		.loc 1 297 0
+ 298:openstack/02b-MAChigh/schedule.c ****    slotContainer->shared                    = shared;
+ 683              		.loc 1 298 0
  684 048c 7B69     		ldr	r3, [r7, #20]
  685 048e 3A79     		ldrb	r2, [r7, #4]
  686 0490 DA70     		strb	r2, [r3, #3]
- 298:openstack/02b-MAChigh/schedule.c ****    slotContainer->channelOffset             = channelOffset;
- 687              		.loc 1 298 0
+ 299:openstack/02b-MAChigh/schedule.c ****    slotContainer->channelOffset             = channelOffset;
+ 687              		.loc 1 299 0
  688 0492 7B69     		ldr	r3, [r7, #20]
  689 0494 FA78     		ldrb	r2, [r7, #3]
  690 0496 1A71     		strb	r2, [r3, #4]
- 299:openstack/02b-MAChigh/schedule.c ****    memcpy(&slotContainer->neighbor,neighbor,sizeof(open_addr_t));
- 691              		.loc 1 299 0
+ 300:openstack/02b-MAChigh/schedule.c ****    memcpy(&slotContainer->neighbor,neighbor,sizeof(open_addr_t));
+ 691              		.loc 1 300 0
  692 0498 7B69     		ldr	r3, [r7, #20]
  693 049a 03F10503 		add	r3, r3, #5
  694 049e 1846     		mov	r0, r3
  695 04a0 396A     		ldr	r1, [r7, #32]
  696 04a2 4FF01102 		mov	r2, #17
  697 04a6 FFF7FEFF 		bl	memcpy
- 300:openstack/02b-MAChigh/schedule.c ****    
- 301:openstack/02b-MAChigh/schedule.c ****    // insert in circular list
- 302:openstack/02b-MAChigh/schedule.c ****    if (schedule_vars.currentScheduleEntry==NULL) {
- 698              		.loc 1 302 0
+ 301:openstack/02b-MAChigh/schedule.c ****    
+ 302:openstack/02b-MAChigh/schedule.c ****    // insert in circular list
+ 303:openstack/02b-MAChigh/schedule.c ****    if (schedule_vars.currentScheduleEntry==NULL) {
+ 698              		.loc 1 303 0
  699 04aa 40F20003 		movw	r3, #:lower16:schedule_vars
  700 04ae C0F20003 		movt	r3, #:upper16:schedule_vars
  701 04b2 D3F84431 		ldr	r3, [r3, #324]
  702 04b6 002B     		cmp	r3, #0
  703 04b8 0AD1     		bne	.L24
- 303:openstack/02b-MAChigh/schedule.c ****       // this is the first active slot added
- 304:openstack/02b-MAChigh/schedule.c ****       
- 305:openstack/02b-MAChigh/schedule.c ****       // the next slot of this slot is this slot
- 306:openstack/02b-MAChigh/schedule.c ****       slotContainer->next                   = slotContainer;
- 704              		.loc 1 306 0
+ 304:openstack/02b-MAChigh/schedule.c ****       // this is the first active slot added
+ 305:openstack/02b-MAChigh/schedule.c ****       
+ 306:openstack/02b-MAChigh/schedule.c ****       // the next slot of this slot is this slot
+ 307:openstack/02b-MAChigh/schedule.c ****       slotContainer->next                   = slotContainer;
+ 704              		.loc 1 307 0
  705 04ba 7B69     		ldr	r3, [r7, #20]
  706 04bc 7A69     		ldr	r2, [r7, #20]
  707 04be 1A62     		str	r2, [r3, #32]
- 307:openstack/02b-MAChigh/schedule.c ****       
- 308:openstack/02b-MAChigh/schedule.c ****       // current slot points to this slot
- 309:openstack/02b-MAChigh/schedule.c ****       schedule_vars.currentScheduleEntry    = slotContainer;
- 708              		.loc 1 309 0
+ 308:openstack/02b-MAChigh/schedule.c ****       
+ 309:openstack/02b-MAChigh/schedule.c ****       // current slot points to this slot
+ 310:openstack/02b-MAChigh/schedule.c ****       schedule_vars.currentScheduleEntry    = slotContainer;
+ 708              		.loc 1 310 0
  709 04c0 40F20003 		movw	r3, #:lower16:schedule_vars
  710 04c4 C0F20003 		movt	r3, #:upper16:schedule_vars
  711 04c8 7A69     		ldr	r2, [r7, #20]
  712 04ca C3F84421 		str	r2, [r3, #324]
  713 04ce 36E0     		b	.L25
  714              	.L24:
- 310:openstack/02b-MAChigh/schedule.c ****    } else  {
- 311:openstack/02b-MAChigh/schedule.c ****       // this is NOT the first active slot added
- 312:openstack/02b-MAChigh/schedule.c ****       
- 313:openstack/02b-MAChigh/schedule.c ****       // find position in schedule
- 314:openstack/02b-MAChigh/schedule.c ****       previousSlotWalker                    = schedule_vars.currentScheduleEntry;
- 715              		.loc 1 314 0
+ 311:openstack/02b-MAChigh/schedule.c ****    } else  {
+ 312:openstack/02b-MAChigh/schedule.c ****       // this is NOT the first active slot added
+ 313:openstack/02b-MAChigh/schedule.c ****       
+ 314:openstack/02b-MAChigh/schedule.c ****       // find position in schedule
+ 315:openstack/02b-MAChigh/schedule.c ****       previousSlotWalker                    = schedule_vars.currentScheduleEntry;
+ 715              		.loc 1 315 0
  716 04d0 40F20003 		movw	r3, #:lower16:schedule_vars
  717 04d4 C0F20003 		movt	r3, #:upper16:schedule_vars
  718 04d8 D3F84431 		ldr	r3, [r3, #324]
  719 04dc 3B61     		str	r3, [r7, #16]
  720              	.L30:
- 315:openstack/02b-MAChigh/schedule.c ****       while (1) {
- 316:openstack/02b-MAChigh/schedule.c ****          nextSlotWalker                     = previousSlotWalker->next;
- 721              		.loc 1 316 0
+ 316:openstack/02b-MAChigh/schedule.c ****       while (1) {
+ 317:openstack/02b-MAChigh/schedule.c ****          nextSlotWalker                     = previousSlotWalker->next;
+ 721              		.loc 1 317 0
  722 04de 3B69     		ldr	r3, [r7, #16]
  723 04e0 1B6A     		ldr	r3, [r3, #32]
  724 04e2 FB60     		str	r3, [r7, #12]
- 317:openstack/02b-MAChigh/schedule.c ****          if (
- 318:openstack/02b-MAChigh/schedule.c ****                (
- 319:openstack/02b-MAChigh/schedule.c ****                      (previousSlotWalker->slotOffset <  slotContainer->slotOffset) &&
- 725              		.loc 1 319 0
+ 318:openstack/02b-MAChigh/schedule.c ****          if (
+ 319:openstack/02b-MAChigh/schedule.c ****                (
+ 320:openstack/02b-MAChigh/schedule.c ****                      (previousSlotWalker->slotOffset <  slotContainer->slotOffset) &&
+ 725              		.loc 1 320 0
  726 04e4 3B69     		ldr	r3, [r7, #16]
  727 04e6 1A88     		ldrh	r2, [r3, #0]
  728 04e8 7B69     		ldr	r3, [r7, #20]
  729 04ea 1B88     		ldrh	r3, [r3, #0]
- 317:openstack/02b-MAChigh/schedule.c ****          if (
- 730              		.loc 1 317 0
+ 318:openstack/02b-MAChigh/schedule.c ****          if (
+ 730              		.loc 1 318 0
  731 04ec 9A42     		cmp	r2, r3
  732 04ee 05D2     		bcs	.L26
- 320:openstack/02b-MAChigh/schedule.c ****                      (slotContainer->slotOffset <  nextSlotWalker->slotOffset)
- 733              		.loc 1 320 0
+ 321:openstack/02b-MAChigh/schedule.c ****                      (slotContainer->slotOffset <  nextSlotWalker->slotOffset)
+ 733              		.loc 1 321 0
  734 04f0 7B69     		ldr	r3, [r7, #20]
  735 04f2 1A88     		ldrh	r2, [r3, #0]
  736 04f4 FB68     		ldr	r3, [r7, #12]
  737 04f6 1B88     		ldrh	r3, [r3, #0]
- 319:openstack/02b-MAChigh/schedule.c ****                      (previousSlotWalker->slotOffset <  slotContainer->slotOffset) &&
- 738              		.loc 1 319 0
+ 320:openstack/02b-MAChigh/schedule.c ****                      (previousSlotWalker->slotOffset <  slotContainer->slotOffset) &&
+ 738              		.loc 1 320 0
  739 04f8 9A42     		cmp	r2, r3
  740 04fa 1AD3     		bcc	.L27
  741              	.L26:
- 321:openstack/02b-MAChigh/schedule.c ****                )
- 322:openstack/02b-MAChigh/schedule.c ****                ||
- 323:openstack/02b-MAChigh/schedule.c ****                (
- 324:openstack/02b-MAChigh/schedule.c ****                      (previousSlotWalker->slotOffset <  slotContainer->slotOffset) &&
- 742              		.loc 1 324 0
+ 322:openstack/02b-MAChigh/schedule.c ****                )
+ 323:openstack/02b-MAChigh/schedule.c ****                ||
+ 324:openstack/02b-MAChigh/schedule.c ****                (
+ 325:openstack/02b-MAChigh/schedule.c ****                      (previousSlotWalker->slotOffset <  slotContainer->slotOffset) &&
+ 742              		.loc 1 325 0
  743 04fc 3B69     		ldr	r3, [r7, #16]
  744 04fe 1A88     		ldrh	r2, [r3, #0]
  745 0500 7B69     		ldr	r3, [r7, #20]
  746 0502 1B88     		ldrh	r3, [r3, #0]
- 322:openstack/02b-MAChigh/schedule.c ****                ||
- 747              		.loc 1 322 0
+ 323:openstack/02b-MAChigh/schedule.c ****                ||
+ 747              		.loc 1 323 0
  748 0504 9A42     		cmp	r2, r3
  749 0506 05D2     		bcs	.L28
- 325:openstack/02b-MAChigh/schedule.c ****                      (nextSlotWalker->slotOffset <= previousSlotWalker->slotOffset)
- 750              		.loc 1 325 0
+ 326:openstack/02b-MAChigh/schedule.c ****                      (nextSlotWalker->slotOffset <= previousSlotWalker->slotOffset)
+ 750              		.loc 1 326 0
  751 0508 FB68     		ldr	r3, [r7, #12]
  752 050a 1A88     		ldrh	r2, [r3, #0]
  753 050c 3B69     		ldr	r3, [r7, #16]
  754 050e 1B88     		ldrh	r3, [r3, #0]
- 324:openstack/02b-MAChigh/schedule.c ****                      (previousSlotWalker->slotOffset <  slotContainer->slotOffset) &&
- 755              		.loc 1 324 0
+ 325:openstack/02b-MAChigh/schedule.c ****                      (previousSlotWalker->slotOffset <  slotContainer->slotOffset) &&
+ 755              		.loc 1 325 0
  756 0510 9A42     		cmp	r2, r3
  757 0512 0ED9     		bls	.L27
  758              	.L28:
- 326:openstack/02b-MAChigh/schedule.c ****                )
- 327:openstack/02b-MAChigh/schedule.c ****                ||
- 328:openstack/02b-MAChigh/schedule.c ****                (
- 329:openstack/02b-MAChigh/schedule.c ****                      (slotContainer->slotOffset <  nextSlotWalker->slotOffset) &&
- 759              		.loc 1 329 0
+ 327:openstack/02b-MAChigh/schedule.c ****                )
+ 328:openstack/02b-MAChigh/schedule.c ****                ||
+ 329:openstack/02b-MAChigh/schedule.c ****                (
+ 330:openstack/02b-MAChigh/schedule.c ****                      (slotContainer->slotOffset <  nextSlotWalker->slotOffset) &&
+ 759              		.loc 1 330 0
  760 0514 7B69     		ldr	r3, [r7, #20]
  761 0516 1A88     		ldrh	r2, [r3, #0]
  762 0518 FB68     		ldr	r3, [r7, #12]
  763 051a 1B88     		ldrh	r3, [r3, #0]
- 327:openstack/02b-MAChigh/schedule.c ****                ||
- 764              		.loc 1 327 0
+ 328:openstack/02b-MAChigh/schedule.c ****                ||
+ 764              		.loc 1 328 0
  765 051c 9A42     		cmp	r2, r3
  766 051e 05D2     		bcs	.L29
- 330:openstack/02b-MAChigh/schedule.c ****                      (nextSlotWalker->slotOffset <= previousSlotWalker->slotOffset)
- 767              		.loc 1 330 0
+ 331:openstack/02b-MAChigh/schedule.c ****                      (nextSlotWalker->slotOffset <= previousSlotWalker->slotOffset)
+ 767              		.loc 1 331 0
  768 0520 FB68     		ldr	r3, [r7, #12]
  769 0522 1A88     		ldrh	r2, [r3, #0]
  770 0524 3B69     		ldr	r3, [r7, #16]
  771 0526 1B88     		ldrh	r3, [r3, #0]
- 329:openstack/02b-MAChigh/schedule.c ****                      (slotContainer->slotOffset <  nextSlotWalker->slotOffset) &&
- 772              		.loc 1 329 0
+ 330:openstack/02b-MAChigh/schedule.c ****                      (slotContainer->slotOffset <  nextSlotWalker->slotOffset) &&
+ 772              		.loc 1 330 0
  773 0528 9A42     		cmp	r2, r3
  774 052a 02D9     		bls	.L27
  775              	.L29:
- 331:openstack/02b-MAChigh/schedule.c ****                )
- 332:openstack/02b-MAChigh/schedule.c ****          ) {
- 333:openstack/02b-MAChigh/schedule.c ****             break;
- 334:openstack/02b-MAChigh/schedule.c ****          }
- 335:openstack/02b-MAChigh/schedule.c ****          previousSlotWalker                 = nextSlotWalker;
- 776              		.loc 1 335 0
+ 332:openstack/02b-MAChigh/schedule.c ****                )
+ 333:openstack/02b-MAChigh/schedule.c ****          ) {
+ 334:openstack/02b-MAChigh/schedule.c ****             break;
+ 335:openstack/02b-MAChigh/schedule.c ****          }
+ 336:openstack/02b-MAChigh/schedule.c ****          previousSlotWalker                 = nextSlotWalker;
+ 776              		.loc 1 336 0
  777 052c FB68     		ldr	r3, [r7, #12]
  778 052e 3B61     		str	r3, [r7, #16]
- 336:openstack/02b-MAChigh/schedule.c ****       }
- 779              		.loc 1 336 0
+ 337:openstack/02b-MAChigh/schedule.c ****       }
+ 779              		.loc 1 337 0
  780 0530 D5E7     		b	.L30
  781              	.L27:
- 337:openstack/02b-MAChigh/schedule.c ****       // insert between previousSlotWalker and nextSlotWalker
- 338:openstack/02b-MAChigh/schedule.c ****       previousSlotWalker->next              = slotContainer;
- 782              		.loc 1 338 0
+ 338:openstack/02b-MAChigh/schedule.c ****       // insert between previousSlotWalker and nextSlotWalker
+ 339:openstack/02b-MAChigh/schedule.c ****       previousSlotWalker->next              = slotContainer;
+ 782              		.loc 1 339 0
  783 0532 3B69     		ldr	r3, [r7, #16]
  784 0534 7A69     		ldr	r2, [r7, #20]
  785 0536 1A62     		str	r2, [r3, #32]
- 339:openstack/02b-MAChigh/schedule.c ****       slotContainer->next                   = nextSlotWalker;
- 786              		.loc 1 339 0
+ 340:openstack/02b-MAChigh/schedule.c ****       slotContainer->next                   = nextSlotWalker;
+ 786              		.loc 1 340 0
  787 0538 7B69     		ldr	r3, [r7, #20]
  788 053a FA68     		ldr	r2, [r7, #12]
  789 053c 1A62     		str	r2, [r3, #32]
  790              	.L25:
- 340:openstack/02b-MAChigh/schedule.c ****    }
- 341:openstack/02b-MAChigh/schedule.c ****    
- 342:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
- 791              		.loc 1 342 0
+ 341:openstack/02b-MAChigh/schedule.c ****    }
+ 342:openstack/02b-MAChigh/schedule.c ****    
+ 343:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
+ 791              		.loc 1 343 0
  792 053e FFF7FEFF 		bl	IntMasterEnable
- 343:openstack/02b-MAChigh/schedule.c ****    return E_SUCCESS;
- 793              		.loc 1 343 0
+ 344:openstack/02b-MAChigh/schedule.c ****    return E_SUCCESS;
+ 793              		.loc 1 344 0
  794 0542 4FF00003 		mov	r3, #0
  795              	.L23:
- 344:openstack/02b-MAChigh/schedule.c **** }
- 796              		.loc 1 344 0
+ 345:openstack/02b-MAChigh/schedule.c **** }
+ 796              		.loc 1 345 0
  797 0546 1846     		mov	r0, r3
  798 0548 07F11807 		add	r7, r7, #24
  799 054c BD46     		mov	sp, r7
@@ -1166,16 +1167,16 @@
  811              		.thumb_func
  813              	schedule_removeActiveSlot:
  814              	.LFB6:
- 345:openstack/02b-MAChigh/schedule.c **** 
- 346:openstack/02b-MAChigh/schedule.c **** /**
- 347:openstack/02b-MAChigh/schedule.c **** \brief Remove an active slot from the schedule.
- 348:openstack/02b-MAChigh/schedule.c **** 
- 349:openstack/02b-MAChigh/schedule.c **** \param slotOffset       The slotoffset of the slot to remove.
- 350:openstack/02b-MAChigh/schedule.c **** \param neighbor         The neighbor associated with this cell (all 0's if
- 351:openstack/02b-MAChigh/schedule.c ****    none)
- 352:openstack/02b-MAChigh/schedule.c **** */
- 353:openstack/02b-MAChigh/schedule.c **** owerror_t schedule_removeActiveSlot(slotOffset_t slotOffset, open_addr_t* neighbor) {
- 815              		.loc 1 353 0
+ 346:openstack/02b-MAChigh/schedule.c **** 
+ 347:openstack/02b-MAChigh/schedule.c **** /**
+ 348:openstack/02b-MAChigh/schedule.c **** \brief Remove an active slot from the schedule.
+ 349:openstack/02b-MAChigh/schedule.c **** 
+ 350:openstack/02b-MAChigh/schedule.c **** \param slotOffset       The slotoffset of the slot to remove.
+ 351:openstack/02b-MAChigh/schedule.c **** \param neighbor         The neighbor associated with this cell (all 0's if
+ 352:openstack/02b-MAChigh/schedule.c ****    none)
+ 353:openstack/02b-MAChigh/schedule.c **** */
+ 354:openstack/02b-MAChigh/schedule.c **** owerror_t schedule_removeActiveSlot(slotOffset_t slotOffset, open_addr_t* neighbor) {
+ 815              		.loc 1 354 0
  816              		.cfi_startproc
  817              		@ args = 0, pretend = 0, frame = 16
  818              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -1193,207 +1194,207 @@
  830 055a 0346     		mov	r3, r0
  831 055c 3960     		str	r1, [r7, #0]
  832 055e FB80     		strh	r3, [r7, #6]	@ movhi
- 354:openstack/02b-MAChigh/schedule.c ****    scheduleEntry_t* slotContainer;
- 355:openstack/02b-MAChigh/schedule.c ****    scheduleEntry_t* previousSlotWalker;
- 356:openstack/02b-MAChigh/schedule.c ****    
- 357:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
- 358:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
- 833              		.loc 1 358 0
+ 355:openstack/02b-MAChigh/schedule.c ****    scheduleEntry_t* slotContainer;
+ 356:openstack/02b-MAChigh/schedule.c ****    scheduleEntry_t* previousSlotWalker;
+ 357:openstack/02b-MAChigh/schedule.c ****    
+ 358:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
+ 359:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
+ 833              		.loc 1 359 0
  834 0560 FFF7FEFF 		bl	IntMasterDisable
- 359:openstack/02b-MAChigh/schedule.c ****    
- 360:openstack/02b-MAChigh/schedule.c ****    // find the schedule entry
- 361:openstack/02b-MAChigh/schedule.c ****    slotContainer = &schedule_vars.scheduleBuf[0];
- 835              		.loc 1 361 0
+ 360:openstack/02b-MAChigh/schedule.c ****    
+ 361:openstack/02b-MAChigh/schedule.c ****    // find the schedule entry
+ 362:openstack/02b-MAChigh/schedule.c ****    slotContainer = &schedule_vars.scheduleBuf[0];
+ 835              		.loc 1 362 0
  836 0564 40F20003 		movw	r3, #:lower16:schedule_vars
  837 0568 C0F20003 		movt	r3, #:upper16:schedule_vars
  838 056c FB60     		str	r3, [r7, #12]
- 362:openstack/02b-MAChigh/schedule.c ****    while (slotContainer<=&schedule_vars.scheduleBuf[MAXACTIVESLOTS-1]) {
- 839              		.loc 1 362 0
+ 363:openstack/02b-MAChigh/schedule.c ****    while (slotContainer<=&schedule_vars.scheduleBuf[MAXACTIVESLOTS-1]) {
+ 839              		.loc 1 363 0
  840 056e 12E0     		b	.L34
  841              	.L37:
- 363:openstack/02b-MAChigh/schedule.c ****       if (
- 364:openstack/02b-MAChigh/schedule.c ****             slotContainer->slotOffset==slotOffset
- 842              		.loc 1 364 0
+ 364:openstack/02b-MAChigh/schedule.c ****       if (
+ 365:openstack/02b-MAChigh/schedule.c ****             slotContainer->slotOffset==slotOffset
+ 842              		.loc 1 365 0
  843 0570 FB68     		ldr	r3, [r7, #12]
  844 0572 1B88     		ldrh	r3, [r3, #0]
- 363:openstack/02b-MAChigh/schedule.c ****       if (
- 845              		.loc 1 363 0
+ 364:openstack/02b-MAChigh/schedule.c ****       if (
+ 845              		.loc 1 364 0
  846 0574 FA88     		ldrh	r2, [r7, #6]
  847 0576 9A42     		cmp	r2, r3
  848 0578 09D1     		bne	.L35
- 365:openstack/02b-MAChigh/schedule.c ****             &&
- 366:openstack/02b-MAChigh/schedule.c ****             packetfunctions_sameAddress(neighbor,&(slotContainer->neighbor))
- 849              		.loc 1 366 0
+ 366:openstack/02b-MAChigh/schedule.c ****             &&
+ 367:openstack/02b-MAChigh/schedule.c ****             packetfunctions_sameAddress(neighbor,&(slotContainer->neighbor))
+ 849              		.loc 1 367 0
  850 057a FB68     		ldr	r3, [r7, #12]
  851 057c 03F10503 		add	r3, r3, #5
  852 0580 3868     		ldr	r0, [r7, #0]
  853 0582 1946     		mov	r1, r3
  854 0584 FFF7FEFF 		bl	packetfunctions_sameAddress
  855 0588 0346     		mov	r3, r0
- 365:openstack/02b-MAChigh/schedule.c ****             &&
- 856              		.loc 1 365 0
+ 366:openstack/02b-MAChigh/schedule.c ****             &&
+ 856              		.loc 1 366 0
  857 058a 002B     		cmp	r3, #0
  858 058c 08D1     		bne	.L46
  859              	.L35:
- 367:openstack/02b-MAChigh/schedule.c ****             ){
- 368:openstack/02b-MAChigh/schedule.c ****          break;
- 369:openstack/02b-MAChigh/schedule.c ****       }
- 370:openstack/02b-MAChigh/schedule.c ****       slotContainer++;
- 860              		.loc 1 370 0
+ 368:openstack/02b-MAChigh/schedule.c ****             ){
+ 369:openstack/02b-MAChigh/schedule.c ****          break;
+ 370:openstack/02b-MAChigh/schedule.c ****       }
+ 371:openstack/02b-MAChigh/schedule.c ****       slotContainer++;
+ 860              		.loc 1 371 0
  861 058e FB68     		ldr	r3, [r7, #12]
  862 0590 03F12403 		add	r3, r3, #36
  863 0594 FB60     		str	r3, [r7, #12]
  864              	.L34:
- 362:openstack/02b-MAChigh/schedule.c ****    while (slotContainer<=&schedule_vars.scheduleBuf[MAXACTIVESLOTS-1]) {
- 865              		.loc 1 362 0 discriminator 1
+ 363:openstack/02b-MAChigh/schedule.c ****    while (slotContainer<=&schedule_vars.scheduleBuf[MAXACTIVESLOTS-1]) {
+ 865              		.loc 1 363 0 discriminator 1
  866 0596 FA68     		ldr	r2, [r7, #12]
  867 0598 2D4B     		ldr	r3, .L48
  868 059a 9A42     		cmp	r2, r3
  869 059c E8D9     		bls	.L37
  870 059e 00E0     		b	.L36
  871              	.L46:
- 368:openstack/02b-MAChigh/schedule.c ****          break;
- 872              		.loc 1 368 0
+ 369:openstack/02b-MAChigh/schedule.c ****          break;
+ 872              		.loc 1 369 0
  873 05a0 00BF     		nop
  874              	.L36:
- 371:openstack/02b-MAChigh/schedule.c ****    }
- 372:openstack/02b-MAChigh/schedule.c ****    
- 373:openstack/02b-MAChigh/schedule.c ****    // abort it could not find
- 374:openstack/02b-MAChigh/schedule.c ****    if (slotContainer>&schedule_vars.scheduleBuf[MAXACTIVESLOTS-1]) {
- 875              		.loc 1 374 0
+ 372:openstack/02b-MAChigh/schedule.c ****    }
+ 373:openstack/02b-MAChigh/schedule.c ****    
+ 374:openstack/02b-MAChigh/schedule.c ****    // abort it could not find
+ 375:openstack/02b-MAChigh/schedule.c ****    if (slotContainer>&schedule_vars.scheduleBuf[MAXACTIVESLOTS-1]) {
+ 875              		.loc 1 375 0
  876 05a2 FA68     		ldr	r2, [r7, #12]
  877 05a4 2A4B     		ldr	r3, .L48
  878 05a6 9A42     		cmp	r2, r3
  879 05a8 0ED9     		bls	.L38
- 375:openstack/02b-MAChigh/schedule.c ****       ENABLE_INTERRUPTS();
- 880              		.loc 1 375 0
+ 376:openstack/02b-MAChigh/schedule.c ****       ENABLE_INTERRUPTS();
+ 880              		.loc 1 376 0
  881 05aa FFF7FEFF 		bl	IntMasterEnable
- 376:openstack/02b-MAChigh/schedule.c ****       openserial_printCritical(
- 882              		.loc 1 376 0
+ 377:openstack/02b-MAChigh/schedule.c ****       openserial_printCritical(
+ 882              		.loc 1 377 0
  883 05ae 4FF00E00 		mov	r0, #14
  884 05b2 4FF02E01 		mov	r1, #46
  885 05b6 4FF00002 		mov	r2, #0
  886 05ba 4FF00003 		mov	r3, #0
  887 05be FFF7FEFF 		bl	openserial_printCritical
- 377:openstack/02b-MAChigh/schedule.c ****          COMPONENT_SCHEDULE,ERR_FREEING_ERROR,
- 378:openstack/02b-MAChigh/schedule.c ****          (errorparameter_t)0,
- 379:openstack/02b-MAChigh/schedule.c ****          (errorparameter_t)0
- 380:openstack/02b-MAChigh/schedule.c ****       );
- 381:openstack/02b-MAChigh/schedule.c ****       return E_FAIL;
- 888              		.loc 1 381 0
+ 378:openstack/02b-MAChigh/schedule.c ****          COMPONENT_SCHEDULE,ERR_FREEING_ERROR,
+ 379:openstack/02b-MAChigh/schedule.c ****          (errorparameter_t)0,
+ 380:openstack/02b-MAChigh/schedule.c ****          (errorparameter_t)0
+ 381:openstack/02b-MAChigh/schedule.c ****       );
+ 382:openstack/02b-MAChigh/schedule.c ****       return E_FAIL;
+ 888              		.loc 1 382 0
  889 05c2 4FF00103 		mov	r3, #1
  890 05c6 3EE0     		b	.L39
  891              	.L38:
- 382:openstack/02b-MAChigh/schedule.c ****    }
- 383:openstack/02b-MAChigh/schedule.c ****    
- 384:openstack/02b-MAChigh/schedule.c ****    // remove from linked list
- 385:openstack/02b-MAChigh/schedule.c ****    if (slotContainer->next==slotContainer) {
- 892              		.loc 1 385 0
+ 383:openstack/02b-MAChigh/schedule.c ****    }
+ 384:openstack/02b-MAChigh/schedule.c ****    
+ 385:openstack/02b-MAChigh/schedule.c ****    // remove from linked list
+ 386:openstack/02b-MAChigh/schedule.c ****    if (slotContainer->next==slotContainer) {
+ 892              		.loc 1 386 0
  893 05c8 FB68     		ldr	r3, [r7, #12]
  894 05ca 1A6A     		ldr	r2, [r3, #32]
  895 05cc FB68     		ldr	r3, [r7, #12]
  896 05ce 9A42     		cmp	r2, r3
  897 05d0 0CD1     		bne	.L40
- 386:openstack/02b-MAChigh/schedule.c ****       // this is the last active slot
- 387:openstack/02b-MAChigh/schedule.c ****       
- 388:openstack/02b-MAChigh/schedule.c ****       // the next slot of this slot is NULL
- 389:openstack/02b-MAChigh/schedule.c ****       slotContainer->next                   = NULL;
- 898              		.loc 1 389 0
+ 387:openstack/02b-MAChigh/schedule.c ****       // this is the last active slot
+ 388:openstack/02b-MAChigh/schedule.c ****       
+ 389:openstack/02b-MAChigh/schedule.c ****       // the next slot of this slot is NULL
+ 390:openstack/02b-MAChigh/schedule.c ****       slotContainer->next                   = NULL;
+ 898              		.loc 1 390 0
  899 05d2 FB68     		ldr	r3, [r7, #12]
  900 05d4 4FF00002 		mov	r2, #0
  901 05d8 1A62     		str	r2, [r3, #32]
- 390:openstack/02b-MAChigh/schedule.c ****       
- 391:openstack/02b-MAChigh/schedule.c ****       // current slot points to this slot
- 392:openstack/02b-MAChigh/schedule.c ****       schedule_vars.currentScheduleEntry    = NULL;
- 902              		.loc 1 392 0
+ 391:openstack/02b-MAChigh/schedule.c ****       
+ 392:openstack/02b-MAChigh/schedule.c ****       // current slot points to this slot
+ 393:openstack/02b-MAChigh/schedule.c ****       schedule_vars.currentScheduleEntry    = NULL;
+ 902              		.loc 1 393 0
  903 05da 40F20003 		movw	r3, #:lower16:schedule_vars
  904 05de C0F20003 		movt	r3, #:upper16:schedule_vars
  905 05e2 4FF00002 		mov	r2, #0
  906 05e6 C3F84421 		str	r2, [r3, #324]
  907 05ea 25E0     		b	.L41
  908              	.L40:
- 393:openstack/02b-MAChigh/schedule.c ****    } else  {
- 394:openstack/02b-MAChigh/schedule.c ****       // this is NOT the last active slot
- 395:openstack/02b-MAChigh/schedule.c ****       
- 396:openstack/02b-MAChigh/schedule.c ****       // find the previous in the schedule
- 397:openstack/02b-MAChigh/schedule.c ****       previousSlotWalker                    = schedule_vars.currentScheduleEntry;
- 909              		.loc 1 397 0
+ 394:openstack/02b-MAChigh/schedule.c ****    } else  {
+ 395:openstack/02b-MAChigh/schedule.c ****       // this is NOT the last active slot
+ 396:openstack/02b-MAChigh/schedule.c ****       
+ 397:openstack/02b-MAChigh/schedule.c ****       // find the previous in the schedule
+ 398:openstack/02b-MAChigh/schedule.c ****       previousSlotWalker                    = schedule_vars.currentScheduleEntry;
+ 909              		.loc 1 398 0
  910 05ec 40F20003 		movw	r3, #:lower16:schedule_vars
  911 05f0 C0F20003 		movt	r3, #:upper16:schedule_vars
  912 05f4 D3F84431 		ldr	r3, [r3, #324]
  913 05f8 BB60     		str	r3, [r7, #8]
  914              	.L44:
- 398:openstack/02b-MAChigh/schedule.c ****       
- 399:openstack/02b-MAChigh/schedule.c ****       while (1) {
- 400:openstack/02b-MAChigh/schedule.c ****          if (previousSlotWalker->next==slotContainer){
- 915              		.loc 1 400 0
+ 399:openstack/02b-MAChigh/schedule.c ****       
+ 400:openstack/02b-MAChigh/schedule.c ****       while (1) {
+ 401:openstack/02b-MAChigh/schedule.c ****          if (previousSlotWalker->next==slotContainer){
+ 915              		.loc 1 401 0
  916 05fa BB68     		ldr	r3, [r7, #8]
  917 05fc 1A6A     		ldr	r2, [r3, #32]
  918 05fe FB68     		ldr	r3, [r7, #12]
  919 0600 9A42     		cmp	r2, r3
  920 0602 03D0     		beq	.L47
  921              	.L42:
- 401:openstack/02b-MAChigh/schedule.c ****             break;
- 402:openstack/02b-MAChigh/schedule.c ****          }
- 403:openstack/02b-MAChigh/schedule.c ****          previousSlotWalker                 = previousSlotWalker->next;
- 922              		.loc 1 403 0
+ 402:openstack/02b-MAChigh/schedule.c ****             break;
+ 403:openstack/02b-MAChigh/schedule.c ****          }
+ 404:openstack/02b-MAChigh/schedule.c ****          previousSlotWalker                 = previousSlotWalker->next;
+ 922              		.loc 1 404 0
  923 0604 BB68     		ldr	r3, [r7, #8]
  924 0606 1B6A     		ldr	r3, [r3, #32]
  925 0608 BB60     		str	r3, [r7, #8]
- 404:openstack/02b-MAChigh/schedule.c ****       }
- 926              		.loc 1 404 0
+ 405:openstack/02b-MAChigh/schedule.c ****       }
+ 926              		.loc 1 405 0
  927 060a F6E7     		b	.L44
  928              	.L47:
- 401:openstack/02b-MAChigh/schedule.c ****             break;
- 929              		.loc 1 401 0
+ 402:openstack/02b-MAChigh/schedule.c ****             break;
+ 929              		.loc 1 402 0
  930 060c 00BF     		nop
  931              	.L45:
- 405:openstack/02b-MAChigh/schedule.c ****       
- 406:openstack/02b-MAChigh/schedule.c ****       // remove this element from the linked list, i.e. have the previous slot
- 407:openstack/02b-MAChigh/schedule.c ****       // "jump" to slotContainer's next
- 408:openstack/02b-MAChigh/schedule.c ****       previousSlotWalker->next              = slotContainer->next;
- 932              		.loc 1 408 0
+ 406:openstack/02b-MAChigh/schedule.c ****       
+ 407:openstack/02b-MAChigh/schedule.c ****       // remove this element from the linked list, i.e. have the previous slot
+ 408:openstack/02b-MAChigh/schedule.c ****       // "jump" to slotContainer's next
+ 409:openstack/02b-MAChigh/schedule.c ****       previousSlotWalker->next              = slotContainer->next;
+ 932              		.loc 1 409 0
  933 060e FB68     		ldr	r3, [r7, #12]
  934 0610 1A6A     		ldr	r2, [r3, #32]
  935 0612 BB68     		ldr	r3, [r7, #8]
  936 0614 1A62     		str	r2, [r3, #32]
- 409:openstack/02b-MAChigh/schedule.c ****       
- 410:openstack/02b-MAChigh/schedule.c ****       // update current slot if points to slot I just removed
- 411:openstack/02b-MAChigh/schedule.c ****       if (schedule_vars.currentScheduleEntry==slotContainer) {
- 937              		.loc 1 411 0
+ 410:openstack/02b-MAChigh/schedule.c ****       
+ 411:openstack/02b-MAChigh/schedule.c ****       // update current slot if points to slot I just removed
+ 412:openstack/02b-MAChigh/schedule.c ****       if (schedule_vars.currentScheduleEntry==slotContainer) {
+ 937              		.loc 1 412 0
  938 0616 40F20003 		movw	r3, #:lower16:schedule_vars
  939 061a C0F20003 		movt	r3, #:upper16:schedule_vars
  940 061e D3F84421 		ldr	r2, [r3, #324]
  941 0622 FB68     		ldr	r3, [r7, #12]
  942 0624 9A42     		cmp	r2, r3
  943 0626 07D1     		bne	.L41
- 412:openstack/02b-MAChigh/schedule.c ****          schedule_vars.currentScheduleEntry = slotContainer->next;
- 944              		.loc 1 412 0
+ 413:openstack/02b-MAChigh/schedule.c ****          schedule_vars.currentScheduleEntry = slotContainer->next;
+ 944              		.loc 1 413 0
  945 0628 FB68     		ldr	r3, [r7, #12]
  946 062a 1A6A     		ldr	r2, [r3, #32]
  947 062c 40F20003 		movw	r3, #:lower16:schedule_vars
  948 0630 C0F20003 		movt	r3, #:upper16:schedule_vars
  949 0634 C3F84421 		str	r2, [r3, #324]
  950              	.L41:
- 413:openstack/02b-MAChigh/schedule.c ****       }
- 414:openstack/02b-MAChigh/schedule.c ****    }
- 415:openstack/02b-MAChigh/schedule.c ****    
- 416:openstack/02b-MAChigh/schedule.c ****    // reset removed schedule entry
- 417:openstack/02b-MAChigh/schedule.c ****    schedule_resetEntry(slotContainer);
- 951              		.loc 1 417 0
+ 414:openstack/02b-MAChigh/schedule.c ****       }
+ 415:openstack/02b-MAChigh/schedule.c ****    }
+ 416:openstack/02b-MAChigh/schedule.c ****    
+ 417:openstack/02b-MAChigh/schedule.c ****    // reset removed schedule entry
+ 418:openstack/02b-MAChigh/schedule.c ****    schedule_resetEntry(slotContainer);
+ 951              		.loc 1 418 0
  952 0638 F868     		ldr	r0, [r7, #12]
  953 063a FFF7FEFF 		bl	schedule_resetEntry
- 418:openstack/02b-MAChigh/schedule.c ****    
- 419:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
- 954              		.loc 1 419 0
+ 419:openstack/02b-MAChigh/schedule.c ****    
+ 420:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
+ 954              		.loc 1 420 0
  955 063e FFF7FEFF 		bl	IntMasterEnable
- 420:openstack/02b-MAChigh/schedule.c ****    
- 421:openstack/02b-MAChigh/schedule.c ****    return E_SUCCESS;
- 956              		.loc 1 421 0
+ 421:openstack/02b-MAChigh/schedule.c ****    
+ 422:openstack/02b-MAChigh/schedule.c ****    return E_SUCCESS;
+ 956              		.loc 1 422 0
  957 0642 4FF00003 		mov	r3, #0
  958              	.L39:
- 422:openstack/02b-MAChigh/schedule.c **** }
- 959              		.loc 1 422 0
+ 423:openstack/02b-MAChigh/schedule.c **** }
+ 959              		.loc 1 423 0
  960 0646 1846     		mov	r0, r3
  961 0648 07F11007 		add	r7, r7, #16
  962 064c BD46     		mov	sp, r7
@@ -1410,9 +1411,9 @@
  974              		.thumb_func
  976              	schedule_isSlotOffsetAvailable:
  977              	.LFB7:
- 423:openstack/02b-MAChigh/schedule.c **** 
- 424:openstack/02b-MAChigh/schedule.c **** bool schedule_isSlotOffsetAvailable(uint16_t slotOffset){
- 978              		.loc 1 424 0
+ 424:openstack/02b-MAChigh/schedule.c **** 
+ 425:openstack/02b-MAChigh/schedule.c **** bool schedule_isSlotOffsetAvailable(uint16_t slotOffset){
+ 978              		.loc 1 425 0
  979              		.cfi_startproc
  980              		@ args = 0, pretend = 0, frame = 16
  981              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -1429,59 +1430,59 @@
  992              		.cfi_def_cfa_register 7
  993 065a 0346     		mov	r3, r0
  994 065c FB80     		strh	r3, [r7, #6]	@ movhi
- 425:openstack/02b-MAChigh/schedule.c ****    
- 426:openstack/02b-MAChigh/schedule.c ****    scheduleEntry_t* scheduleWalker;
- 427:openstack/02b-MAChigh/schedule.c ****    
- 428:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
- 429:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
- 995              		.loc 1 429 0
+ 426:openstack/02b-MAChigh/schedule.c ****    
+ 427:openstack/02b-MAChigh/schedule.c ****    scheduleEntry_t* scheduleWalker;
+ 428:openstack/02b-MAChigh/schedule.c ****    
+ 429:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
+ 430:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
+ 995              		.loc 1 430 0
  996 065e FFF7FEFF 		bl	IntMasterDisable
- 430:openstack/02b-MAChigh/schedule.c ****    
- 431:openstack/02b-MAChigh/schedule.c ****    scheduleWalker = schedule_vars.currentScheduleEntry;
- 997              		.loc 1 431 0
+ 431:openstack/02b-MAChigh/schedule.c ****    
+ 432:openstack/02b-MAChigh/schedule.c ****    scheduleWalker = schedule_vars.currentScheduleEntry;
+ 997              		.loc 1 432 0
  998 0662 40F20003 		movw	r3, #:lower16:schedule_vars
  999 0666 C0F20003 		movt	r3, #:upper16:schedule_vars
  1000 066a D3F84431 		ldr	r3, [r3, #324]
  1001 066e FB60     		str	r3, [r7, #12]
  1002              	.L53:
- 432:openstack/02b-MAChigh/schedule.c ****    do {
- 433:openstack/02b-MAChigh/schedule.c ****       if(slotOffset == scheduleWalker->slotOffset){
- 1003              		.loc 1 433 0
+ 433:openstack/02b-MAChigh/schedule.c ****    do {
+ 434:openstack/02b-MAChigh/schedule.c ****       if(slotOffset == scheduleWalker->slotOffset){
+ 1003              		.loc 1 434 0
  1004 0670 FB68     		ldr	r3, [r7, #12]
  1005 0672 1B88     		ldrh	r3, [r3, #0]
  1006 0674 FA88     		ldrh	r2, [r7, #6]
  1007 0676 9A42     		cmp	r2, r3
  1008 0678 02D1     		bne	.L51
- 434:openstack/02b-MAChigh/schedule.c ****          return FALSE;
- 1009              		.loc 1 434 0
+ 435:openstack/02b-MAChigh/schedule.c ****          return FALSE;
+ 1009              		.loc 1 435 0
  1010 067a 4FF00003 		mov	r3, #0
  1011 067e 0FE0     		b	.L52
  1012              	.L51:
- 435:openstack/02b-MAChigh/schedule.c ****       }
- 436:openstack/02b-MAChigh/schedule.c ****       scheduleWalker = scheduleWalker->next;
- 1013              		.loc 1 436 0
+ 436:openstack/02b-MAChigh/schedule.c ****       }
+ 437:openstack/02b-MAChigh/schedule.c ****       scheduleWalker = scheduleWalker->next;
+ 1013              		.loc 1 437 0
  1014 0680 FB68     		ldr	r3, [r7, #12]
  1015 0682 1B6A     		ldr	r3, [r3, #32]
  1016 0684 FB60     		str	r3, [r7, #12]
- 437:openstack/02b-MAChigh/schedule.c ****    }while(scheduleWalker!=schedule_vars.currentScheduleEntry);
- 1017              		.loc 1 437 0
+ 438:openstack/02b-MAChigh/schedule.c ****    }while(scheduleWalker!=schedule_vars.currentScheduleEntry);
+ 1017              		.loc 1 438 0
  1018 0686 40F20003 		movw	r3, #:lower16:schedule_vars
  1019 068a C0F20003 		movt	r3, #:upper16:schedule_vars
  1020 068e D3F84421 		ldr	r2, [r3, #324]
  1021 0692 FB68     		ldr	r3, [r7, #12]
  1022 0694 9A42     		cmp	r2, r3
  1023 0696 EBD1     		bne	.L53
- 438:openstack/02b-MAChigh/schedule.c ****    
- 439:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
- 1024              		.loc 1 439 0
+ 439:openstack/02b-MAChigh/schedule.c ****    
+ 440:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
+ 1024              		.loc 1 440 0
  1025 0698 FFF7FEFF 		bl	IntMasterEnable
- 440:openstack/02b-MAChigh/schedule.c ****    
- 441:openstack/02b-MAChigh/schedule.c ****    return TRUE;
- 1026              		.loc 1 441 0
+ 441:openstack/02b-MAChigh/schedule.c ****    
+ 442:openstack/02b-MAChigh/schedule.c ****    return TRUE;
+ 1026              		.loc 1 442 0
  1027 069c 4FF00103 		mov	r3, #1
  1028              	.L52:
- 442:openstack/02b-MAChigh/schedule.c **** }
- 1029              		.loc 1 442 0
+ 443:openstack/02b-MAChigh/schedule.c **** }
+ 1029              		.loc 1 443 0
  1030 06a0 1846     		mov	r0, r3
  1031 06a2 07F11007 		add	r7, r7, #16
  1032 06a6 BD46     		mov	sp, r7
@@ -1494,11 +1495,11 @@
  1040              		.thumb_func
  1042              	schedule_syncSlotOffset:
  1043              	.LFB8:
- 443:openstack/02b-MAChigh/schedule.c **** 
- 444:openstack/02b-MAChigh/schedule.c **** //=== from IEEE802154E: reading the schedule and updating statistics
- 445:openstack/02b-MAChigh/schedule.c **** 
- 446:openstack/02b-MAChigh/schedule.c **** void schedule_syncSlotOffset(slotOffset_t targetSlotOffset) {
- 1044              		.loc 1 446 0
+ 444:openstack/02b-MAChigh/schedule.c **** 
+ 445:openstack/02b-MAChigh/schedule.c **** //=== from IEEE802154E: reading the schedule and updating statistics
+ 446:openstack/02b-MAChigh/schedule.c **** 
+ 447:openstack/02b-MAChigh/schedule.c **** void schedule_syncSlotOffset(slotOffset_t targetSlotOffset) {
+ 1044              		.loc 1 447 0
  1045              		.cfi_startproc
  1046              		@ args = 0, pretend = 0, frame = 8
  1047              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -1515,22 +1516,22 @@
  1058              		.cfi_def_cfa_register 7
  1059 06b2 0346     		mov	r3, r0
  1060 06b4 FB80     		strh	r3, [r7, #6]	@ movhi
- 447:openstack/02b-MAChigh/schedule.c ****    
- 448:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
- 449:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
- 1061              		.loc 1 449 0
+ 448:openstack/02b-MAChigh/schedule.c ****    
+ 449:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
+ 450:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
+ 1061              		.loc 1 450 0
  1062 06b6 FFF7FEFF 		bl	IntMasterDisable
- 450:openstack/02b-MAChigh/schedule.c ****    
- 451:openstack/02b-MAChigh/schedule.c ****    while (schedule_vars.currentScheduleEntry->slotOffset!=targetSlotOffset) {
- 1063              		.loc 1 451 0
+ 451:openstack/02b-MAChigh/schedule.c ****    
+ 452:openstack/02b-MAChigh/schedule.c ****    while (schedule_vars.currentScheduleEntry->slotOffset!=targetSlotOffset) {
+ 1063              		.loc 1 452 0
  1064 06ba 01E0     		b	.L55
  1065              	.L56:
- 452:openstack/02b-MAChigh/schedule.c ****       schedule_advanceSlot();
- 1066              		.loc 1 452 0
+ 453:openstack/02b-MAChigh/schedule.c ****       schedule_advanceSlot();
+ 1066              		.loc 1 453 0
  1067 06bc FFF7FEFF 		bl	schedule_advanceSlot
  1068              	.L55:
- 451:openstack/02b-MAChigh/schedule.c ****    while (schedule_vars.currentScheduleEntry->slotOffset!=targetSlotOffset) {
- 1069              		.loc 1 451 0 discriminator 1
+ 452:openstack/02b-MAChigh/schedule.c ****    while (schedule_vars.currentScheduleEntry->slotOffset!=targetSlotOffset) {
+ 1069              		.loc 1 452 0 discriminator 1
  1070 06c0 40F20003 		movw	r3, #:lower16:schedule_vars
  1071 06c4 C0F20003 		movt	r3, #:upper16:schedule_vars
  1072 06c8 D3F84431 		ldr	r3, [r3, #324]
@@ -1538,13 +1539,13 @@
  1074 06ce FA88     		ldrh	r2, [r7, #6]
  1075 06d0 9A42     		cmp	r2, r3
  1076 06d2 F3D1     		bne	.L56
- 453:openstack/02b-MAChigh/schedule.c ****    }
- 454:openstack/02b-MAChigh/schedule.c ****    
- 455:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
- 1077              		.loc 1 455 0
+ 454:openstack/02b-MAChigh/schedule.c ****    }
+ 455:openstack/02b-MAChigh/schedule.c ****    
+ 456:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
+ 1077              		.loc 1 456 0
  1078 06d4 FFF7FEFF 		bl	IntMasterEnable
- 456:openstack/02b-MAChigh/schedule.c **** }
- 1079              		.loc 1 456 0
+ 457:openstack/02b-MAChigh/schedule.c **** }
+ 1079              		.loc 1 457 0
  1080 06d8 07F10807 		add	r7, r7, #8
  1081 06dc BD46     		mov	sp, r7
  1082 06de 80BD     		pop	{r7, pc}
@@ -1556,12 +1557,12 @@
  1089              		.thumb_func
  1091              	schedule_advanceSlot:
  1092              	.LFB9:
- 457:openstack/02b-MAChigh/schedule.c **** 
- 458:openstack/02b-MAChigh/schedule.c **** /**
- 459:openstack/02b-MAChigh/schedule.c **** \brief advance to next active slot
- 460:openstack/02b-MAChigh/schedule.c **** */
- 461:openstack/02b-MAChigh/schedule.c **** void schedule_advanceSlot() {
- 1093              		.loc 1 461 0
+ 458:openstack/02b-MAChigh/schedule.c **** 
+ 459:openstack/02b-MAChigh/schedule.c **** /**
+ 460:openstack/02b-MAChigh/schedule.c **** \brief advance to next active slot
+ 461:openstack/02b-MAChigh/schedule.c **** */
+ 462:openstack/02b-MAChigh/schedule.c **** void schedule_advanceSlot() {
+ 1093              		.loc 1 462 0
  1094              		.cfi_startproc
  1095              		@ args = 0, pretend = 0, frame = 0
  1096              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -1573,14 +1574,14 @@
  1102 06e2 00AF     		add	r7, sp, #0
  1103              	.LCFI28:
  1104              		.cfi_def_cfa_register 7
- 462:openstack/02b-MAChigh/schedule.c ****    
- 463:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
- 464:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
- 1105              		.loc 1 464 0
+ 463:openstack/02b-MAChigh/schedule.c ****    
+ 464:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
+ 465:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
+ 1105              		.loc 1 465 0
  1106 06e4 FFF7FEFF 		bl	IntMasterDisable
- 465:openstack/02b-MAChigh/schedule.c ****    
- 466:openstack/02b-MAChigh/schedule.c ****    schedule_vars.currentScheduleEntry = schedule_vars.currentScheduleEntry->next;
- 1107              		.loc 1 466 0
+ 466:openstack/02b-MAChigh/schedule.c ****    
+ 467:openstack/02b-MAChigh/schedule.c ****    schedule_vars.currentScheduleEntry = schedule_vars.currentScheduleEntry->next;
+ 1107              		.loc 1 467 0
  1108 06e8 40F20003 		movw	r3, #:lower16:schedule_vars
  1109 06ec C0F20003 		movt	r3, #:upper16:schedule_vars
  1110 06f0 D3F84431 		ldr	r3, [r3, #324]
@@ -1588,12 +1589,12 @@
  1112 06f6 40F20003 		movw	r3, #:lower16:schedule_vars
  1113 06fa C0F20003 		movt	r3, #:upper16:schedule_vars
  1114 06fe C3F84421 		str	r2, [r3, #324]
- 467:openstack/02b-MAChigh/schedule.c ****    
- 468:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
- 1115              		.loc 1 468 0
+ 468:openstack/02b-MAChigh/schedule.c ****    
+ 469:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
+ 1115              		.loc 1 469 0
  1116 0702 FFF7FEFF 		bl	IntMasterEnable
- 469:openstack/02b-MAChigh/schedule.c **** }
- 1117              		.loc 1 469 0
+ 470:openstack/02b-MAChigh/schedule.c **** }
+ 1117              		.loc 1 470 0
  1118 0706 80BD     		pop	{r7, pc}
  1119              		.cfi_endproc
  1120              	.LFE9:
@@ -1603,12 +1604,12 @@
  1125              		.thumb_func
  1127              	schedule_getNextActiveSlotOffset:
  1128              	.LFB10:
- 470:openstack/02b-MAChigh/schedule.c **** 
- 471:openstack/02b-MAChigh/schedule.c **** /**
- 472:openstack/02b-MAChigh/schedule.c **** \brief return slotOffset of next active slot
- 473:openstack/02b-MAChigh/schedule.c **** */
- 474:openstack/02b-MAChigh/schedule.c **** slotOffset_t schedule_getNextActiveSlotOffset() {
- 1129              		.loc 1 474 0
+ 471:openstack/02b-MAChigh/schedule.c **** 
+ 472:openstack/02b-MAChigh/schedule.c **** /**
+ 473:openstack/02b-MAChigh/schedule.c **** \brief return slotOffset of next active slot
+ 474:openstack/02b-MAChigh/schedule.c **** */
+ 475:openstack/02b-MAChigh/schedule.c **** slotOffset_t schedule_getNextActiveSlotOffset() {
+ 1129              		.loc 1 475 0
  1130              		.cfi_startproc
  1131              		@ args = 0, pretend = 0, frame = 8
  1132              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -1623,31 +1624,31 @@
  1141 070c 00AF     		add	r7, sp, #0
  1142              	.LCFI31:
  1143              		.cfi_def_cfa_register 7
- 475:openstack/02b-MAChigh/schedule.c ****    slotOffset_t res;   
- 476:openstack/02b-MAChigh/schedule.c ****    
- 477:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
- 478:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
- 1144              		.loc 1 478 0
+ 476:openstack/02b-MAChigh/schedule.c ****    slotOffset_t res;   
+ 477:openstack/02b-MAChigh/schedule.c ****    
+ 478:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
+ 479:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
+ 1144              		.loc 1 479 0
  1145 070e FFF7FEFF 		bl	IntMasterDisable
- 479:openstack/02b-MAChigh/schedule.c ****    
- 480:openstack/02b-MAChigh/schedule.c ****    res = ((scheduleEntry_t*)(schedule_vars.currentScheduleEntry->next))->slotOffset;
- 1146              		.loc 1 480 0
+ 480:openstack/02b-MAChigh/schedule.c ****    
+ 481:openstack/02b-MAChigh/schedule.c ****    res = ((scheduleEntry_t*)(schedule_vars.currentScheduleEntry->next))->slotOffset;
+ 1146              		.loc 1 481 0
  1147 0712 40F20003 		movw	r3, #:lower16:schedule_vars
  1148 0716 C0F20003 		movt	r3, #:upper16:schedule_vars
  1149 071a D3F84431 		ldr	r3, [r3, #324]
  1150 071e 1B6A     		ldr	r3, [r3, #32]
  1151 0720 1B88     		ldrh	r3, [r3, #0]	@ movhi
  1152 0722 FB80     		strh	r3, [r7, #6]	@ movhi
- 481:openstack/02b-MAChigh/schedule.c ****    
- 482:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
- 1153              		.loc 1 482 0
+ 482:openstack/02b-MAChigh/schedule.c ****    
+ 483:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
+ 1153              		.loc 1 483 0
  1154 0724 FFF7FEFF 		bl	IntMasterEnable
- 483:openstack/02b-MAChigh/schedule.c ****    
- 484:openstack/02b-MAChigh/schedule.c ****    return res;
- 1155              		.loc 1 484 0
+ 484:openstack/02b-MAChigh/schedule.c ****    
+ 485:openstack/02b-MAChigh/schedule.c ****    return res;
+ 1155              		.loc 1 485 0
  1156 0728 FB88     		ldrh	r3, [r7, #6]
- 485:openstack/02b-MAChigh/schedule.c **** }
- 1157              		.loc 1 485 0
+ 486:openstack/02b-MAChigh/schedule.c **** }
+ 1157              		.loc 1 486 0
  1158 072a 1846     		mov	r0, r3
  1159 072c 07F10807 		add	r7, r7, #8
  1160 0730 BD46     		mov	sp, r7
@@ -1660,14 +1661,14 @@
  1168              		.thumb_func
  1170              	schedule_getFrameLength:
  1171              	.LFB11:
- 486:openstack/02b-MAChigh/schedule.c **** 
- 487:openstack/02b-MAChigh/schedule.c **** /**
- 488:openstack/02b-MAChigh/schedule.c **** \brief Get the frame length.
- 489:openstack/02b-MAChigh/schedule.c **** 
- 490:openstack/02b-MAChigh/schedule.c **** \returns The frame length.
- 491:openstack/02b-MAChigh/schedule.c **** */
- 492:openstack/02b-MAChigh/schedule.c **** frameLength_t schedule_getFrameLength() {
- 1172              		.loc 1 492 0
+ 487:openstack/02b-MAChigh/schedule.c **** 
+ 488:openstack/02b-MAChigh/schedule.c **** /**
+ 489:openstack/02b-MAChigh/schedule.c **** \brief Get the frame length.
+ 490:openstack/02b-MAChigh/schedule.c **** 
+ 491:openstack/02b-MAChigh/schedule.c **** \returns The frame length.
+ 492:openstack/02b-MAChigh/schedule.c **** */
+ 493:openstack/02b-MAChigh/schedule.c **** frameLength_t schedule_getFrameLength() {
+ 1172              		.loc 1 493 0
  1173              		.cfi_startproc
  1174              		@ args = 0, pretend = 0, frame = 8
  1175              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -1682,29 +1683,29 @@
  1184 0738 00AF     		add	r7, sp, #0
  1185              	.LCFI34:
  1186              		.cfi_def_cfa_register 7
- 493:openstack/02b-MAChigh/schedule.c ****    frameLength_t returnVal;
- 494:openstack/02b-MAChigh/schedule.c ****    
- 495:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
- 496:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
- 1187              		.loc 1 496 0
+ 494:openstack/02b-MAChigh/schedule.c ****    frameLength_t returnVal;
+ 495:openstack/02b-MAChigh/schedule.c ****    
+ 496:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
+ 497:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
+ 1187              		.loc 1 497 0
  1188 073a FFF7FEFF 		bl	IntMasterDisable
- 497:openstack/02b-MAChigh/schedule.c ****    
- 498:openstack/02b-MAChigh/schedule.c ****    returnVal = schedule_vars.frameLength;
- 1189              		.loc 1 498 0
+ 498:openstack/02b-MAChigh/schedule.c ****    
+ 499:openstack/02b-MAChigh/schedule.c ****    returnVal = schedule_vars.frameLength;
+ 1189              		.loc 1 499 0
  1190 073e 40F20003 		movw	r3, #:lower16:schedule_vars
  1191 0742 C0F20003 		movt	r3, #:upper16:schedule_vars
  1192 0746 B3F84831 		ldrh	r3, [r3, #328]	@ movhi
  1193 074a FB80     		strh	r3, [r7, #6]	@ movhi
- 499:openstack/02b-MAChigh/schedule.c ****    
- 500:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
- 1194              		.loc 1 500 0
+ 500:openstack/02b-MAChigh/schedule.c ****    
+ 501:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
+ 1194              		.loc 1 501 0
  1195 074c FFF7FEFF 		bl	IntMasterEnable
- 501:openstack/02b-MAChigh/schedule.c ****    
- 502:openstack/02b-MAChigh/schedule.c ****    return returnVal;
- 1196              		.loc 1 502 0
+ 502:openstack/02b-MAChigh/schedule.c ****    
+ 503:openstack/02b-MAChigh/schedule.c ****    return returnVal;
+ 1196              		.loc 1 503 0
  1197 0750 FB88     		ldrh	r3, [r7, #6]
- 503:openstack/02b-MAChigh/schedule.c **** }
- 1198              		.loc 1 503 0
+ 504:openstack/02b-MAChigh/schedule.c **** }
+ 1198              		.loc 1 504 0
  1199 0752 1846     		mov	r0, r3
  1200 0754 07F10807 		add	r7, r7, #8
  1201 0758 BD46     		mov	sp, r7
@@ -1717,14 +1718,14 @@
  1209              		.thumb_func
  1211              	schedule_getType:
  1212              	.LFB12:
- 504:openstack/02b-MAChigh/schedule.c **** 
- 505:openstack/02b-MAChigh/schedule.c **** /**
- 506:openstack/02b-MAChigh/schedule.c **** \brief Get the type of the current schedule entry.
- 507:openstack/02b-MAChigh/schedule.c **** 
- 508:openstack/02b-MAChigh/schedule.c **** \returns The type of the current schedule entry.
- 509:openstack/02b-MAChigh/schedule.c **** */
- 510:openstack/02b-MAChigh/schedule.c **** cellType_t schedule_getType() {
- 1213              		.loc 1 510 0
+ 505:openstack/02b-MAChigh/schedule.c **** 
+ 506:openstack/02b-MAChigh/schedule.c **** /**
+ 507:openstack/02b-MAChigh/schedule.c **** \brief Get the type of the current schedule entry.
+ 508:openstack/02b-MAChigh/schedule.c **** 
+ 509:openstack/02b-MAChigh/schedule.c **** \returns The type of the current schedule entry.
+ 510:openstack/02b-MAChigh/schedule.c **** */
+ 511:openstack/02b-MAChigh/schedule.c **** cellType_t schedule_getType() {
+ 1213              		.loc 1 511 0
  1214              		.cfi_startproc
  1215              		@ args = 0, pretend = 0, frame = 8
  1216              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -1739,30 +1740,30 @@
  1225 0760 00AF     		add	r7, sp, #0
  1226              	.LCFI37:
  1227              		.cfi_def_cfa_register 7
- 511:openstack/02b-MAChigh/schedule.c ****    cellType_t returnVal;
- 512:openstack/02b-MAChigh/schedule.c ****    
- 513:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
- 514:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
- 1228              		.loc 1 514 0
+ 512:openstack/02b-MAChigh/schedule.c ****    cellType_t returnVal;
+ 513:openstack/02b-MAChigh/schedule.c ****    
+ 514:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
+ 515:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
+ 1228              		.loc 1 515 0
  1229 0762 FFF7FEFF 		bl	IntMasterDisable
- 515:openstack/02b-MAChigh/schedule.c ****    
- 516:openstack/02b-MAChigh/schedule.c ****    returnVal = schedule_vars.currentScheduleEntry->type;
- 1230              		.loc 1 516 0
+ 516:openstack/02b-MAChigh/schedule.c ****    
+ 517:openstack/02b-MAChigh/schedule.c ****    returnVal = schedule_vars.currentScheduleEntry->type;
+ 1230              		.loc 1 517 0
  1231 0766 40F20003 		movw	r3, #:lower16:schedule_vars
  1232 076a C0F20003 		movt	r3, #:upper16:schedule_vars
  1233 076e D3F84431 		ldr	r3, [r3, #324]
  1234 0772 9B78     		ldrb	r3, [r3, #2]
  1235 0774 FB71     		strb	r3, [r7, #7]
- 517:openstack/02b-MAChigh/schedule.c ****    
- 518:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
- 1236              		.loc 1 518 0
+ 518:openstack/02b-MAChigh/schedule.c ****    
+ 519:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
+ 1236              		.loc 1 519 0
  1237 0776 FFF7FEFF 		bl	IntMasterEnable
- 519:openstack/02b-MAChigh/schedule.c ****    
- 520:openstack/02b-MAChigh/schedule.c ****    return returnVal;
- 1238              		.loc 1 520 0
+ 520:openstack/02b-MAChigh/schedule.c ****    
+ 521:openstack/02b-MAChigh/schedule.c ****    return returnVal;
+ 1238              		.loc 1 521 0
  1239 077a FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
- 521:openstack/02b-MAChigh/schedule.c **** }
- 1240              		.loc 1 521 0
+ 522:openstack/02b-MAChigh/schedule.c **** }
+ 1240              		.loc 1 522 0
  1241 077c 1846     		mov	r0, r3
  1242 077e 07F10807 		add	r7, r7, #8
  1243 0782 BD46     		mov	sp, r7
@@ -1775,14 +1776,14 @@
  1251              		.thumb_func
  1253              	schedule_getNeighbor:
  1254              	.LFB13:
- 522:openstack/02b-MAChigh/schedule.c **** 
- 523:openstack/02b-MAChigh/schedule.c **** /**
- 524:openstack/02b-MAChigh/schedule.c **** \brief Get the neighbor associated wit the current schedule entry.
- 525:openstack/02b-MAChigh/schedule.c **** 
- 526:openstack/02b-MAChigh/schedule.c **** \returns The neighbor associated wit the current schedule entry.
- 527:openstack/02b-MAChigh/schedule.c **** */
- 528:openstack/02b-MAChigh/schedule.c **** void schedule_getNeighbor(open_addr_t* addrToWrite) {
- 1255              		.loc 1 528 0
+ 523:openstack/02b-MAChigh/schedule.c **** 
+ 524:openstack/02b-MAChigh/schedule.c **** /**
+ 525:openstack/02b-MAChigh/schedule.c **** \brief Get the neighbor associated wit the current schedule entry.
+ 526:openstack/02b-MAChigh/schedule.c **** 
+ 527:openstack/02b-MAChigh/schedule.c **** \returns The neighbor associated wit the current schedule entry.
+ 528:openstack/02b-MAChigh/schedule.c **** */
+ 529:openstack/02b-MAChigh/schedule.c **** void schedule_getNeighbor(open_addr_t* addrToWrite) {
+ 1255              		.loc 1 529 0
  1256              		.cfi_startproc
  1257              		@ args = 0, pretend = 0, frame = 8
  1258              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -1798,14 +1799,14 @@
  1268              	.LCFI40:
  1269              		.cfi_def_cfa_register 7
  1270 078e 7860     		str	r0, [r7, #4]
- 529:openstack/02b-MAChigh/schedule.c ****    
- 530:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
- 531:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
- 1271              		.loc 1 531 0
+ 530:openstack/02b-MAChigh/schedule.c ****    
+ 531:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
+ 532:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
+ 1271              		.loc 1 532 0
  1272 0790 FFF7FEFF 		bl	IntMasterDisable
- 532:openstack/02b-MAChigh/schedule.c ****    
- 533:openstack/02b-MAChigh/schedule.c ****    memcpy(addrToWrite,&(schedule_vars.currentScheduleEntry->neighbor),sizeof(open_addr_t));
- 1273              		.loc 1 533 0
+ 533:openstack/02b-MAChigh/schedule.c ****    
+ 534:openstack/02b-MAChigh/schedule.c ****    memcpy(addrToWrite,&(schedule_vars.currentScheduleEntry->neighbor),sizeof(open_addr_t));
+ 1273              		.loc 1 534 0
  1274 0794 40F20003 		movw	r3, #:lower16:schedule_vars
  1275 0798 C0F20003 		movt	r3, #:upper16:schedule_vars
  1276 079c D3F84431 		ldr	r3, [r3, #324]
@@ -1814,12 +1815,12 @@
  1279 07a6 1946     		mov	r1, r3
  1280 07a8 4FF01102 		mov	r2, #17
  1281 07ac FFF7FEFF 		bl	memcpy
- 534:openstack/02b-MAChigh/schedule.c ****    
- 535:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
- 1282              		.loc 1 535 0
+ 535:openstack/02b-MAChigh/schedule.c ****    
+ 536:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
+ 1282              		.loc 1 536 0
  1283 07b0 FFF7FEFF 		bl	IntMasterEnable
- 536:openstack/02b-MAChigh/schedule.c **** }
- 1284              		.loc 1 536 0
+ 537:openstack/02b-MAChigh/schedule.c **** }
+ 1284              		.loc 1 537 0
  1285 07b4 07F10807 		add	r7, r7, #8
  1286 07b8 BD46     		mov	sp, r7
  1287 07ba 80BD     		pop	{r7, pc}
@@ -1831,14 +1832,14 @@
  1294              		.thumb_func
  1296              	schedule_getChannelOffset:
  1297              	.LFB14:
- 537:openstack/02b-MAChigh/schedule.c **** 
- 538:openstack/02b-MAChigh/schedule.c **** /**
- 539:openstack/02b-MAChigh/schedule.c **** \brief Get the channel offset of the current schedule entry.
- 540:openstack/02b-MAChigh/schedule.c **** 
- 541:openstack/02b-MAChigh/schedule.c **** \returns The channel offset of the current schedule entry.
- 542:openstack/02b-MAChigh/schedule.c **** */
- 543:openstack/02b-MAChigh/schedule.c **** channelOffset_t schedule_getChannelOffset() {
- 1298              		.loc 1 543 0
+ 538:openstack/02b-MAChigh/schedule.c **** 
+ 539:openstack/02b-MAChigh/schedule.c **** /**
+ 540:openstack/02b-MAChigh/schedule.c **** \brief Get the channel offset of the current schedule entry.
+ 541:openstack/02b-MAChigh/schedule.c **** 
+ 542:openstack/02b-MAChigh/schedule.c **** \returns The channel offset of the current schedule entry.
+ 543:openstack/02b-MAChigh/schedule.c **** */
+ 544:openstack/02b-MAChigh/schedule.c **** channelOffset_t schedule_getChannelOffset() {
+ 1298              		.loc 1 544 0
  1299              		.cfi_startproc
  1300              		@ args = 0, pretend = 0, frame = 8
  1301              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -1853,30 +1854,30 @@
  1310 07c0 00AF     		add	r7, sp, #0
  1311              	.LCFI43:
  1312              		.cfi_def_cfa_register 7
- 544:openstack/02b-MAChigh/schedule.c ****    channelOffset_t returnVal;
- 545:openstack/02b-MAChigh/schedule.c ****    
- 546:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
- 547:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
- 1313              		.loc 1 547 0
+ 545:openstack/02b-MAChigh/schedule.c ****    channelOffset_t returnVal;
+ 546:openstack/02b-MAChigh/schedule.c ****    
+ 547:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
+ 548:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
+ 1313              		.loc 1 548 0
  1314 07c2 FFF7FEFF 		bl	IntMasterDisable
- 548:openstack/02b-MAChigh/schedule.c ****    
- 549:openstack/02b-MAChigh/schedule.c ****    returnVal = schedule_vars.currentScheduleEntry->channelOffset;
- 1315              		.loc 1 549 0
+ 549:openstack/02b-MAChigh/schedule.c ****    
+ 550:openstack/02b-MAChigh/schedule.c ****    returnVal = schedule_vars.currentScheduleEntry->channelOffset;
+ 1315              		.loc 1 550 0
  1316 07c6 40F20003 		movw	r3, #:lower16:schedule_vars
  1317 07ca C0F20003 		movt	r3, #:upper16:schedule_vars
  1318 07ce D3F84431 		ldr	r3, [r3, #324]
  1319 07d2 1B79     		ldrb	r3, [r3, #4]
  1320 07d4 FB71     		strb	r3, [r7, #7]
- 550:openstack/02b-MAChigh/schedule.c ****    
- 551:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
- 1321              		.loc 1 551 0
+ 551:openstack/02b-MAChigh/schedule.c ****    
+ 552:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
+ 1321              		.loc 1 552 0
  1322 07d6 FFF7FEFF 		bl	IntMasterEnable
- 552:openstack/02b-MAChigh/schedule.c ****    
- 553:openstack/02b-MAChigh/schedule.c ****    return returnVal;
- 1323              		.loc 1 553 0
+ 553:openstack/02b-MAChigh/schedule.c ****    
+ 554:openstack/02b-MAChigh/schedule.c ****    return returnVal;
+ 1323              		.loc 1 554 0
  1324 07da FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
- 554:openstack/02b-MAChigh/schedule.c **** }
- 1325              		.loc 1 554 0
+ 555:openstack/02b-MAChigh/schedule.c **** }
+ 1325              		.loc 1 555 0
  1326 07dc 1846     		mov	r0, r3
  1327 07de 07F10807 		add	r7, r7, #8
  1328 07e2 BD46     		mov	sp, r7
@@ -1889,21 +1890,21 @@
  1336              		.thumb_func
  1338              	schedule_getOkToSend:
  1339              	.LFB15:
- 555:openstack/02b-MAChigh/schedule.c **** 
- 556:openstack/02b-MAChigh/schedule.c **** /**
- 557:openstack/02b-MAChigh/schedule.c **** \brief Check whether I can send on this slot.
- 558:openstack/02b-MAChigh/schedule.c **** 
- 559:openstack/02b-MAChigh/schedule.c **** This function is called at the beginning of every TX slot.
- 560:openstack/02b-MAChigh/schedule.c **** If the slot is *not* a shared slot, it always return TRUE.
- 561:openstack/02b-MAChigh/schedule.c **** If the slot is a shared slot, it decrements the backoff counter and returns 
- 562:openstack/02b-MAChigh/schedule.c **** TRUE only if it hits 0.
- 563:openstack/02b-MAChigh/schedule.c **** 
- 564:openstack/02b-MAChigh/schedule.c **** Note that the backoff counter is global, not per slot.
- 565:openstack/02b-MAChigh/schedule.c **** 
- 566:openstack/02b-MAChigh/schedule.c **** \returns TRUE if it is OK to send on this slot, FALSE otherwise.
- 567:openstack/02b-MAChigh/schedule.c **** */
- 568:openstack/02b-MAChigh/schedule.c **** bool schedule_getOkToSend() {
- 1340              		.loc 1 568 0
+ 556:openstack/02b-MAChigh/schedule.c **** 
+ 557:openstack/02b-MAChigh/schedule.c **** /**
+ 558:openstack/02b-MAChigh/schedule.c **** \brief Check whether I can send on this slot.
+ 559:openstack/02b-MAChigh/schedule.c **** 
+ 560:openstack/02b-MAChigh/schedule.c **** This function is called at the beginning of every TX slot.
+ 561:openstack/02b-MAChigh/schedule.c **** If the slot is *not* a shared slot, it always return TRUE.
+ 562:openstack/02b-MAChigh/schedule.c **** If the slot is a shared slot, it decrements the backoff counter and returns 
+ 563:openstack/02b-MAChigh/schedule.c **** TRUE only if it hits 0.
+ 564:openstack/02b-MAChigh/schedule.c **** 
+ 565:openstack/02b-MAChigh/schedule.c **** Note that the backoff counter is global, not per slot.
+ 566:openstack/02b-MAChigh/schedule.c **** 
+ 567:openstack/02b-MAChigh/schedule.c **** \returns TRUE if it is OK to send on this slot, FALSE otherwise.
+ 568:openstack/02b-MAChigh/schedule.c **** */
+ 569:openstack/02b-MAChigh/schedule.c **** bool schedule_getOkToSend() {
+ 1340              		.loc 1 569 0
  1341              		.cfi_startproc
  1342              		@ args = 0, pretend = 0, frame = 8
  1343              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -1918,15 +1919,15 @@
  1352 07ec 00AF     		add	r7, sp, #0
  1353              	.LCFI46:
  1354              		.cfi_def_cfa_register 7
- 569:openstack/02b-MAChigh/schedule.c ****    bool returnVal;
- 570:openstack/02b-MAChigh/schedule.c ****    
- 571:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
- 572:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
- 1355              		.loc 1 572 0
+ 570:openstack/02b-MAChigh/schedule.c ****    bool returnVal;
+ 571:openstack/02b-MAChigh/schedule.c ****    
+ 572:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
+ 573:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
+ 1355              		.loc 1 573 0
  1356 07ee FFF7FEFF 		bl	IntMasterDisable
- 573:openstack/02b-MAChigh/schedule.c ****    
- 574:openstack/02b-MAChigh/schedule.c ****    if (schedule_vars.currentScheduleEntry->shared==FALSE) {
- 1357              		.loc 1 574 0
+ 574:openstack/02b-MAChigh/schedule.c ****    
+ 575:openstack/02b-MAChigh/schedule.c ****    if (schedule_vars.currentScheduleEntry->shared==FALSE) {
+ 1357              		.loc 1 575 0
  1358 07f2 40F20003 		movw	r3, #:lower16:schedule_vars
  1359 07f6 C0F20003 		movt	r3, #:upper16:schedule_vars
  1360 07fa D3F84431 		ldr	r3, [r3, #324]
@@ -1935,27 +1936,27 @@
  1363 0804 DBB2     		uxtb	r3, r3
  1364 0806 002B     		cmp	r3, #0
  1365 0808 03D0     		beq	.L68
- 575:openstack/02b-MAChigh/schedule.c ****       // non-shared slot: backoff does not apply
- 576:openstack/02b-MAChigh/schedule.c ****       
- 577:openstack/02b-MAChigh/schedule.c ****       returnVal = TRUE;
- 1366              		.loc 1 577 0
+ 576:openstack/02b-MAChigh/schedule.c ****       // non-shared slot: backoff does not apply
+ 577:openstack/02b-MAChigh/schedule.c ****       
+ 578:openstack/02b-MAChigh/schedule.c ****       returnVal = TRUE;
+ 1366              		.loc 1 578 0
  1367 080a 4FF00103 		mov	r3, #1
  1368 080e FB71     		strb	r3, [r7, #7]
  1369 0810 25E0     		b	.L69
  1370              	.L68:
- 578:openstack/02b-MAChigh/schedule.c ****    } else {
- 579:openstack/02b-MAChigh/schedule.c ****       // non-shared slot: check backoff before answering
- 580:openstack/02b-MAChigh/schedule.c ****       
- 581:openstack/02b-MAChigh/schedule.c ****       // decrement backoff
- 582:openstack/02b-MAChigh/schedule.c ****       if (schedule_vars.backoff>0) {
- 1371              		.loc 1 582 0
+ 579:openstack/02b-MAChigh/schedule.c ****    } else {
+ 580:openstack/02b-MAChigh/schedule.c ****       // non-shared slot: check backoff before answering
+ 581:openstack/02b-MAChigh/schedule.c ****       
+ 582:openstack/02b-MAChigh/schedule.c ****       // decrement backoff
+ 583:openstack/02b-MAChigh/schedule.c ****       if (schedule_vars.backoff>0) {
+ 1371              		.loc 1 583 0
  1372 0812 40F20003 		movw	r3, #:lower16:schedule_vars
  1373 0816 C0F20003 		movt	r3, #:upper16:schedule_vars
  1374 081a 93F84B31 		ldrb	r3, [r3, #331]	@ zero_extendqisi2
  1375 081e 002B     		cmp	r3, #0
  1376 0820 0ED0     		beq	.L70
- 583:openstack/02b-MAChigh/schedule.c ****          schedule_vars.backoff--;
- 1377              		.loc 1 583 0
+ 584:openstack/02b-MAChigh/schedule.c ****          schedule_vars.backoff--;
+ 1377              		.loc 1 584 0
  1378 0822 40F20003 		movw	r3, #:lower16:schedule_vars
  1379 0826 C0F20003 		movt	r3, #:upper16:schedule_vars
  1380 082a 93F84B31 		ldrb	r3, [r3, #331]	@ zero_extendqisi2
@@ -1965,40 +1966,40 @@
  1384 0838 C0F20003 		movt	r3, #:upper16:schedule_vars
  1385 083c 83F84B21 		strb	r2, [r3, #331]
  1386              	.L70:
- 584:openstack/02b-MAChigh/schedule.c ****       }
- 585:openstack/02b-MAChigh/schedule.c ****       
- 586:openstack/02b-MAChigh/schedule.c ****       // only return TRUE if backoff hit 0
- 587:openstack/02b-MAChigh/schedule.c ****       if (schedule_vars.backoff==0) {
- 1387              		.loc 1 587 0
+ 585:openstack/02b-MAChigh/schedule.c ****       }
+ 586:openstack/02b-MAChigh/schedule.c ****       
+ 587:openstack/02b-MAChigh/schedule.c ****       // only return TRUE if backoff hit 0
+ 588:openstack/02b-MAChigh/schedule.c ****       if (schedule_vars.backoff==0) {
+ 1387              		.loc 1 588 0
  1388 0840 40F20003 		movw	r3, #:lower16:schedule_vars
  1389 0844 C0F20003 		movt	r3, #:upper16:schedule_vars
  1390 0848 93F84B31 		ldrb	r3, [r3, #331]	@ zero_extendqisi2
  1391 084c 002B     		cmp	r3, #0
  1392 084e 03D1     		bne	.L71
- 588:openstack/02b-MAChigh/schedule.c ****          returnVal = TRUE;
- 1393              		.loc 1 588 0
+ 589:openstack/02b-MAChigh/schedule.c ****          returnVal = TRUE;
+ 1393              		.loc 1 589 0
  1394 0850 4FF00103 		mov	r3, #1
  1395 0854 FB71     		strb	r3, [r7, #7]
  1396 0856 02E0     		b	.L69
  1397              	.L71:
- 589:openstack/02b-MAChigh/schedule.c ****       } else {
- 590:openstack/02b-MAChigh/schedule.c ****          returnVal = FALSE;
- 1398              		.loc 1 590 0
+ 590:openstack/02b-MAChigh/schedule.c ****       } else {
+ 591:openstack/02b-MAChigh/schedule.c ****          returnVal = FALSE;
+ 1398              		.loc 1 591 0
  1399 0858 4FF00003 		mov	r3, #0
  1400 085c FB71     		strb	r3, [r7, #7]
  1401              	.L69:
- 591:openstack/02b-MAChigh/schedule.c ****       }
- 592:openstack/02b-MAChigh/schedule.c ****    }
- 593:openstack/02b-MAChigh/schedule.c ****    
- 594:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
- 1402              		.loc 1 594 0
+ 592:openstack/02b-MAChigh/schedule.c ****       }
+ 593:openstack/02b-MAChigh/schedule.c ****    }
+ 594:openstack/02b-MAChigh/schedule.c ****    
+ 595:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
+ 1402              		.loc 1 595 0
  1403 085e FFF7FEFF 		bl	IntMasterEnable
- 595:openstack/02b-MAChigh/schedule.c ****    
- 596:openstack/02b-MAChigh/schedule.c ****    return returnVal;
- 1404              		.loc 1 596 0
+ 596:openstack/02b-MAChigh/schedule.c ****    
+ 597:openstack/02b-MAChigh/schedule.c ****    return returnVal;
+ 1404              		.loc 1 597 0
  1405 0862 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
- 597:openstack/02b-MAChigh/schedule.c **** }
- 1406              		.loc 1 597 0
+ 598:openstack/02b-MAChigh/schedule.c **** }
+ 1406              		.loc 1 598 0
  1407 0864 1846     		mov	r0, r3
  1408 0866 07F10807 		add	r7, r7, #8
  1409 086a BD46     		mov	sp, r7
@@ -2011,12 +2012,12 @@
  1417              		.thumb_func
  1419              	schedule_resetBackoff:
  1420              	.LFB16:
- 598:openstack/02b-MAChigh/schedule.c **** 
- 599:openstack/02b-MAChigh/schedule.c **** /**
- 600:openstack/02b-MAChigh/schedule.c **** \brief Reset the backoff and backoffExponent.
- 601:openstack/02b-MAChigh/schedule.c **** */
- 602:openstack/02b-MAChigh/schedule.c **** void schedule_resetBackoff() {
- 1421              		.loc 1 602 0
+ 599:openstack/02b-MAChigh/schedule.c **** 
+ 600:openstack/02b-MAChigh/schedule.c **** /**
+ 601:openstack/02b-MAChigh/schedule.c **** \brief Reset the backoff and backoffExponent.
+ 602:openstack/02b-MAChigh/schedule.c **** */
+ 603:openstack/02b-MAChigh/schedule.c **** void schedule_resetBackoff() {
+ 1421              		.loc 1 603 0
  1422              		.cfi_startproc
  1423              		@ args = 0, pretend = 0, frame = 0
  1424              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -2028,32 +2029,32 @@
  1430 0872 00AF     		add	r7, sp, #0
  1431              	.LCFI48:
  1432              		.cfi_def_cfa_register 7
- 603:openstack/02b-MAChigh/schedule.c ****    
- 604:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
- 605:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
- 1433              		.loc 1 605 0
+ 604:openstack/02b-MAChigh/schedule.c ****    
+ 605:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
+ 606:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
+ 1433              		.loc 1 606 0
  1434 0874 FFF7FEFF 		bl	IntMasterDisable
- 606:openstack/02b-MAChigh/schedule.c ****    
- 607:openstack/02b-MAChigh/schedule.c ****    // reset backoffExponent
- 608:openstack/02b-MAChigh/schedule.c ****    schedule_vars.backoffExponent = MINBE-1;
- 1435              		.loc 1 608 0
+ 607:openstack/02b-MAChigh/schedule.c ****    
+ 608:openstack/02b-MAChigh/schedule.c ****    // reset backoffExponent
+ 609:openstack/02b-MAChigh/schedule.c ****    schedule_vars.backoffExponent = MINBE-1;
+ 1435              		.loc 1 609 0
  1436 0878 40F20003 		movw	r3, #:lower16:schedule_vars
  1437 087c C0F20003 		movt	r3, #:upper16:schedule_vars
  1438 0880 4FF00102 		mov	r2, #1
  1439 0884 83F84A21 		strb	r2, [r3, #330]
- 609:openstack/02b-MAChigh/schedule.c ****    // reset backoff
- 610:openstack/02b-MAChigh/schedule.c ****    schedule_vars.backoff         = 0;
- 1440              		.loc 1 610 0
+ 610:openstack/02b-MAChigh/schedule.c ****    // reset backoff
+ 611:openstack/02b-MAChigh/schedule.c ****    schedule_vars.backoff         = 0;
+ 1440              		.loc 1 611 0
  1441 0888 40F20003 		movw	r3, #:lower16:schedule_vars
  1442 088c C0F20003 		movt	r3, #:upper16:schedule_vars
  1443 0890 4FF00002 		mov	r2, #0
  1444 0894 83F84B21 		strb	r2, [r3, #331]
- 611:openstack/02b-MAChigh/schedule.c ****    
- 612:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
- 1445              		.loc 1 612 0
+ 612:openstack/02b-MAChigh/schedule.c ****    
+ 613:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
+ 1445              		.loc 1 613 0
  1446 0898 FFF7FEFF 		bl	IntMasterEnable
- 613:openstack/02b-MAChigh/schedule.c **** }
- 1447              		.loc 1 613 0
+ 614:openstack/02b-MAChigh/schedule.c **** }
+ 1447              		.loc 1 614 0
  1448 089c 80BD     		pop	{r7, pc}
  1449              		.cfi_endproc
  1450              	.LFE16:
@@ -2063,12 +2064,12 @@
  1455              		.thumb_func
  1457              	schedule_indicateRx:
  1458              	.LFB17:
- 614:openstack/02b-MAChigh/schedule.c **** 
- 615:openstack/02b-MAChigh/schedule.c **** /**
- 616:openstack/02b-MAChigh/schedule.c **** \brief Indicate the reception of a packet.
- 617:openstack/02b-MAChigh/schedule.c **** */
- 618:openstack/02b-MAChigh/schedule.c **** void schedule_indicateRx(asn_t* asnTimestamp) {
- 1459              		.loc 1 618 0
+ 615:openstack/02b-MAChigh/schedule.c **** 
+ 616:openstack/02b-MAChigh/schedule.c **** /**
+ 617:openstack/02b-MAChigh/schedule.c **** \brief Indicate the reception of a packet.
+ 618:openstack/02b-MAChigh/schedule.c **** */
+ 619:openstack/02b-MAChigh/schedule.c **** void schedule_indicateRx(asn_t* asnTimestamp) {
+ 1459              		.loc 1 619 0
  1460              		.cfi_startproc
  1461              		@ args = 0, pretend = 0, frame = 8
  1462              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -2084,15 +2085,15 @@
  1472              	.LCFI51:
  1473              		.cfi_def_cfa_register 7
  1474 08a6 7860     		str	r0, [r7, #4]
- 619:openstack/02b-MAChigh/schedule.c ****    
- 620:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
- 621:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
- 1475              		.loc 1 621 0
+ 620:openstack/02b-MAChigh/schedule.c ****    
+ 621:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
+ 622:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
+ 1475              		.loc 1 622 0
  1476 08a8 FFF7FEFF 		bl	IntMasterDisable
- 622:openstack/02b-MAChigh/schedule.c ****    
- 623:openstack/02b-MAChigh/schedule.c ****    // increment usage statistics
- 624:openstack/02b-MAChigh/schedule.c ****    schedule_vars.currentScheduleEntry->numRx++;
- 1477              		.loc 1 624 0
+ 623:openstack/02b-MAChigh/schedule.c ****    
+ 624:openstack/02b-MAChigh/schedule.c ****    // increment usage statistics
+ 625:openstack/02b-MAChigh/schedule.c ****    schedule_vars.currentScheduleEntry->numRx++;
+ 1477              		.loc 1 625 0
  1478 08ac 40F20003 		movw	r3, #:lower16:schedule_vars
  1479 08b0 C0F20003 		movt	r3, #:upper16:schedule_vars
  1480 08b4 D3F84431 		ldr	r3, [r3, #324]
@@ -2100,10 +2101,10 @@
  1482 08ba 02F10102 		add	r2, r2, #1
  1483 08be D2B2     		uxtb	r2, r2
  1484 08c0 9A75     		strb	r2, [r3, #22]
- 625:openstack/02b-MAChigh/schedule.c **** 
- 626:openstack/02b-MAChigh/schedule.c ****    // update last used timestamp
- 627:openstack/02b-MAChigh/schedule.c ****    memcpy(&(schedule_vars.currentScheduleEntry->lastUsedAsn), asnTimestamp, sizeof(asn_t));
- 1485              		.loc 1 627 0
+ 626:openstack/02b-MAChigh/schedule.c **** 
+ 627:openstack/02b-MAChigh/schedule.c ****    // update last used timestamp
+ 628:openstack/02b-MAChigh/schedule.c ****    memcpy(&(schedule_vars.currentScheduleEntry->lastUsedAsn), asnTimestamp, sizeof(asn_t));
+ 1485              		.loc 1 628 0
  1486 08c2 40F20003 		movw	r3, #:lower16:schedule_vars
  1487 08c6 C0F20003 		movt	r3, #:upper16:schedule_vars
  1488 08ca D3F84431 		ldr	r3, [r3, #324]
@@ -2112,12 +2113,12 @@
  1491 08d4 7968     		ldr	r1, [r7, #4]
  1492 08d6 4FF00502 		mov	r2, #5
  1493 08da FFF7FEFF 		bl	memcpy
- 628:openstack/02b-MAChigh/schedule.c ****    
- 629:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
- 1494              		.loc 1 629 0
+ 629:openstack/02b-MAChigh/schedule.c ****    
+ 630:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
+ 1494              		.loc 1 630 0
  1495 08de FFF7FEFF 		bl	IntMasterEnable
- 630:openstack/02b-MAChigh/schedule.c **** }
- 1496              		.loc 1 630 0
+ 631:openstack/02b-MAChigh/schedule.c **** }
+ 1496              		.loc 1 631 0
  1497 08e2 07F10807 		add	r7, r7, #8
  1498 08e6 BD46     		mov	sp, r7
  1499 08e8 80BD     		pop	{r7, pc}
@@ -2129,12 +2130,12 @@
  1506              		.thumb_func
  1508              	schedule_indicateTx:
  1509              	.LFB18:
- 631:openstack/02b-MAChigh/schedule.c **** 
- 632:openstack/02b-MAChigh/schedule.c **** /**
- 633:openstack/02b-MAChigh/schedule.c **** \brief Indicate the transmission of a packet.
- 634:openstack/02b-MAChigh/schedule.c **** */
- 635:openstack/02b-MAChigh/schedule.c **** void schedule_indicateTx(asn_t* asnTimestamp, bool succesfullTx) {
- 1510              		.loc 1 635 0
+ 632:openstack/02b-MAChigh/schedule.c **** 
+ 633:openstack/02b-MAChigh/schedule.c **** /**
+ 634:openstack/02b-MAChigh/schedule.c **** \brief Indicate the transmission of a packet.
+ 635:openstack/02b-MAChigh/schedule.c **** */
+ 636:openstack/02b-MAChigh/schedule.c **** void schedule_indicateTx(asn_t* asnTimestamp, bool succesfullTx) {
+ 1510              		.loc 1 636 0
  1511              		.cfi_startproc
  1512              		@ args = 0, pretend = 0, frame = 8
  1513              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -2152,23 +2153,23 @@
  1525 08f2 7860     		str	r0, [r7, #4]
  1526 08f4 0B46     		mov	r3, r1
  1527 08f6 FB70     		strb	r3, [r7, #3]
- 636:openstack/02b-MAChigh/schedule.c ****    
- 637:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
- 638:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
- 1528              		.loc 1 638 0
+ 637:openstack/02b-MAChigh/schedule.c ****    
+ 638:openstack/02b-MAChigh/schedule.c ****    INTERRUPT_DECLARATION();
+ 639:openstack/02b-MAChigh/schedule.c ****    DISABLE_INTERRUPTS();
+ 1528              		.loc 1 639 0
  1529 08f8 FFF7FEFF 		bl	IntMasterDisable
- 639:openstack/02b-MAChigh/schedule.c ****    
- 640:openstack/02b-MAChigh/schedule.c ****    // increment usage statistics
- 641:openstack/02b-MAChigh/schedule.c ****    if (schedule_vars.currentScheduleEntry->numTx==0xFF) {
- 1530              		.loc 1 641 0
+ 640:openstack/02b-MAChigh/schedule.c ****    
+ 641:openstack/02b-MAChigh/schedule.c ****    // increment usage statistics
+ 642:openstack/02b-MAChigh/schedule.c ****    if (schedule_vars.currentScheduleEntry->numTx==0xFF) {
+ 1530              		.loc 1 642 0
  1531 08fc 40F20003 		movw	r3, #:lower16:schedule_vars
  1532 0900 C0F20003 		movt	r3, #:upper16:schedule_vars
  1533 0904 D3F84431 		ldr	r3, [r3, #324]
  1534 0908 DB7D     		ldrb	r3, [r3, #23]	@ zero_extendqisi2
  1535 090a FF2B     		cmp	r3, #255
  1536 090c 21D1     		bne	.L76
- 642:openstack/02b-MAChigh/schedule.c ****       schedule_vars.currentScheduleEntry->numTx/=2;
- 1537              		.loc 1 642 0
+ 643:openstack/02b-MAChigh/schedule.c ****       schedule_vars.currentScheduleEntry->numTx/=2;
+ 1537              		.loc 1 643 0
  1538 090e 40F20003 		movw	r3, #:lower16:schedule_vars
  1539 0912 C0F20003 		movt	r3, #:upper16:schedule_vars
  1540 0916 D3F84421 		ldr	r2, [r3, #324]
@@ -2179,8 +2180,8 @@
  1545 0928 4FEA5303 		lsr	r3, r3, #1
  1546 092c DBB2     		uxtb	r3, r3
  1547 092e D375     		strb	r3, [r2, #23]
- 643:openstack/02b-MAChigh/schedule.c ****       schedule_vars.currentScheduleEntry->numTxACK/=2;
- 1548              		.loc 1 643 0
+ 644:openstack/02b-MAChigh/schedule.c ****       schedule_vars.currentScheduleEntry->numTxACK/=2;
+ 1548              		.loc 1 644 0
  1549 0930 40F20003 		movw	r3, #:lower16:schedule_vars
  1550 0934 C0F20003 		movt	r3, #:upper16:schedule_vars
  1551 0938 D3F84421 		ldr	r2, [r3, #324]
@@ -2192,9 +2193,9 @@
  1557 094e DBB2     		uxtb	r3, r3
  1558 0950 1376     		strb	r3, [r2, #24]
  1559              	.L76:
- 644:openstack/02b-MAChigh/schedule.c ****    }
- 645:openstack/02b-MAChigh/schedule.c ****    schedule_vars.currentScheduleEntry->numTx++;
- 1560              		.loc 1 645 0
+ 645:openstack/02b-MAChigh/schedule.c ****    }
+ 646:openstack/02b-MAChigh/schedule.c ****    schedule_vars.currentScheduleEntry->numTx++;
+ 1560              		.loc 1 646 0
  1561 0952 40F20003 		movw	r3, #:lower16:schedule_vars
  1562 0956 C0F20003 		movt	r3, #:upper16:schedule_vars
  1563 095a D3F84431 		ldr	r3, [r3, #324]
@@ -2202,13 +2203,13 @@
  1565 0960 02F10102 		add	r2, r2, #1
  1566 0964 D2B2     		uxtb	r2, r2
  1567 0966 DA75     		strb	r2, [r3, #23]
- 646:openstack/02b-MAChigh/schedule.c ****    if (succesfullTx==TRUE) {
- 1568              		.loc 1 646 0
+ 647:openstack/02b-MAChigh/schedule.c ****    if (succesfullTx==TRUE) {
+ 1568              		.loc 1 647 0
  1569 0968 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
  1570 096a 002B     		cmp	r3, #0
  1571 096c 0AD0     		beq	.L77
- 647:openstack/02b-MAChigh/schedule.c ****       schedule_vars.currentScheduleEntry->numTxACK++;
- 1572              		.loc 1 647 0
+ 648:openstack/02b-MAChigh/schedule.c ****       schedule_vars.currentScheduleEntry->numTxACK++;
+ 1572              		.loc 1 648 0
  1573 096e 40F20003 		movw	r3, #:lower16:schedule_vars
  1574 0972 C0F20003 		movt	r3, #:upper16:schedule_vars
  1575 0976 D3F84431 		ldr	r3, [r3, #324]
@@ -2217,11 +2218,11 @@
  1578 0980 D2B2     		uxtb	r2, r2
  1579 0982 1A76     		strb	r2, [r3, #24]
  1580              	.L77:
- 648:openstack/02b-MAChigh/schedule.c ****    }
- 649:openstack/02b-MAChigh/schedule.c **** 
- 650:openstack/02b-MAChigh/schedule.c ****    // update last used timestamp
- 651:openstack/02b-MAChigh/schedule.c ****    memcpy(&schedule_vars.currentScheduleEntry->lastUsedAsn, asnTimestamp, sizeof(asn_t));
- 1581              		.loc 1 651 0
+ 649:openstack/02b-MAChigh/schedule.c ****    }
+ 650:openstack/02b-MAChigh/schedule.c **** 
+ 651:openstack/02b-MAChigh/schedule.c ****    // update last used timestamp
+ 652:openstack/02b-MAChigh/schedule.c ****    memcpy(&schedule_vars.currentScheduleEntry->lastUsedAsn, asnTimestamp, sizeof(asn_t));
+ 1581              		.loc 1 652 0
  1582 0984 40F20003 		movw	r3, #:lower16:schedule_vars
  1583 0988 C0F20003 		movt	r3, #:upper16:schedule_vars
  1584 098c D3F84431 		ldr	r3, [r3, #324]
@@ -2230,48 +2231,48 @@
  1587 0996 7968     		ldr	r1, [r7, #4]
  1588 0998 4FF00502 		mov	r2, #5
  1589 099c FFF7FEFF 		bl	memcpy
- 652:openstack/02b-MAChigh/schedule.c **** 
- 653:openstack/02b-MAChigh/schedule.c ****    // update this backoff parameters for shared slots
- 654:openstack/02b-MAChigh/schedule.c ****    if (schedule_vars.currentScheduleEntry->shared==TRUE) {
- 1590              		.loc 1 654 0
+ 653:openstack/02b-MAChigh/schedule.c **** 
+ 654:openstack/02b-MAChigh/schedule.c ****    // update this backoff parameters for shared slots
+ 655:openstack/02b-MAChigh/schedule.c ****    if (schedule_vars.currentScheduleEntry->shared==TRUE) {
+ 1590              		.loc 1 655 0
  1591 09a0 40F20003 		movw	r3, #:lower16:schedule_vars
  1592 09a4 C0F20003 		movt	r3, #:upper16:schedule_vars
  1593 09a8 D3F84431 		ldr	r3, [r3, #324]
  1594 09ac DB78     		ldrb	r3, [r3, #3]	@ zero_extendqisi2
  1595 09ae 002B     		cmp	r3, #0
  1596 09b0 46D0     		beq	.L78
- 655:openstack/02b-MAChigh/schedule.c ****       if (succesfullTx==TRUE) {
- 1597              		.loc 1 655 0
+ 656:openstack/02b-MAChigh/schedule.c ****       if (succesfullTx==TRUE) {
+ 1597              		.loc 1 656 0
  1598 09b2 FB78     		ldrb	r3, [r7, #3]	@ zero_extendqisi2
  1599 09b4 002B     		cmp	r3, #0
  1600 09b6 10D0     		beq	.L79
- 656:openstack/02b-MAChigh/schedule.c ****          // reset backoffExponent
- 657:openstack/02b-MAChigh/schedule.c ****          schedule_vars.backoffExponent = MINBE-1;
- 1601              		.loc 1 657 0
+ 657:openstack/02b-MAChigh/schedule.c ****          // reset backoffExponent
+ 658:openstack/02b-MAChigh/schedule.c ****          schedule_vars.backoffExponent = MINBE-1;
+ 1601              		.loc 1 658 0
  1602 09b8 40F20003 		movw	r3, #:lower16:schedule_vars
  1603 09bc C0F20003 		movt	r3, #:upper16:schedule_vars
  1604 09c0 4FF00102 		mov	r2, #1
  1605 09c4 83F84A21 		strb	r2, [r3, #330]
- 658:openstack/02b-MAChigh/schedule.c ****          // reset backoff
- 659:openstack/02b-MAChigh/schedule.c ****          schedule_vars.backoff         = 0;
- 1606              		.loc 1 659 0
+ 659:openstack/02b-MAChigh/schedule.c ****          // reset backoff
+ 660:openstack/02b-MAChigh/schedule.c ****          schedule_vars.backoff         = 0;
+ 1606              		.loc 1 660 0
  1607 09c8 40F20003 		movw	r3, #:lower16:schedule_vars
  1608 09cc C0F20003 		movt	r3, #:upper16:schedule_vars
  1609 09d0 4FF00002 		mov	r2, #0
  1610 09d4 83F84B21 		strb	r2, [r3, #331]
  1611 09d8 32E0     		b	.L78
  1612              	.L79:
- 660:openstack/02b-MAChigh/schedule.c ****       } else {
- 661:openstack/02b-MAChigh/schedule.c ****          // increase the backoffExponent
- 662:openstack/02b-MAChigh/schedule.c ****          if (schedule_vars.backoffExponent<MAXBE) {
- 1613              		.loc 1 662 0
+ 661:openstack/02b-MAChigh/schedule.c ****       } else {
+ 662:openstack/02b-MAChigh/schedule.c ****          // increase the backoffExponent
+ 663:openstack/02b-MAChigh/schedule.c ****          if (schedule_vars.backoffExponent<MAXBE) {
+ 1613              		.loc 1 663 0
  1614 09da 40F20003 		movw	r3, #:lower16:schedule_vars
  1615 09de C0F20003 		movt	r3, #:upper16:schedule_vars
  1616 09e2 93F84A31 		ldrb	r3, [r3, #330]	@ zero_extendqisi2
  1617 09e6 032B     		cmp	r3, #3
  1618 09e8 0ED8     		bhi	.L80
- 663:openstack/02b-MAChigh/schedule.c ****             schedule_vars.backoffExponent++;
- 1619              		.loc 1 663 0
+ 664:openstack/02b-MAChigh/schedule.c ****             schedule_vars.backoffExponent++;
+ 1619              		.loc 1 664 0
  1620 09ea 40F20003 		movw	r3, #:lower16:schedule_vars
  1621 09ee C0F20003 		movt	r3, #:upper16:schedule_vars
  1622 09f2 93F84A31 		ldrb	r3, [r3, #330]	@ zero_extendqisi2
@@ -2281,10 +2282,10 @@
  1626 0a00 C0F20003 		movt	r3, #:upper16:schedule_vars
  1627 0a04 83F84A21 		strb	r2, [r3, #330]
  1628              	.L80:
- 664:openstack/02b-MAChigh/schedule.c ****          }
- 665:openstack/02b-MAChigh/schedule.c ****          // set the backoff to a random value in [0..2^BE]
- 666:openstack/02b-MAChigh/schedule.c ****          schedule_vars.backoff         = openrandom_get16b()%(1<<schedule_vars.backoffExponent);
- 1629              		.loc 1 666 0
+ 665:openstack/02b-MAChigh/schedule.c ****          }
+ 666:openstack/02b-MAChigh/schedule.c ****          // set the backoff to a random value in [0..2^BE]
+ 667:openstack/02b-MAChigh/schedule.c ****          schedule_vars.backoff         = openrandom_get16b()%(1<<schedule_vars.backoffExponent);
+ 1629              		.loc 1 667 0
  1630 0a08 FFF7FEFF 		bl	openrandom_get16b
  1631 0a0c 0346     		mov	r3, r0
  1632 0a0e DAB2     		uxtb	r2, r3
@@ -2304,14 +2305,14 @@
  1646 0a38 C0F20003 		movt	r3, #:upper16:schedule_vars
  1647 0a3c 83F84B21 		strb	r2, [r3, #331]
  1648              	.L78:
- 667:openstack/02b-MAChigh/schedule.c ****       }
- 668:openstack/02b-MAChigh/schedule.c ****    }
- 669:openstack/02b-MAChigh/schedule.c ****    
- 670:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
- 1649              		.loc 1 670 0
+ 668:openstack/02b-MAChigh/schedule.c ****       }
+ 669:openstack/02b-MAChigh/schedule.c ****    }
+ 670:openstack/02b-MAChigh/schedule.c ****    
+ 671:openstack/02b-MAChigh/schedule.c ****    ENABLE_INTERRUPTS();
+ 1649              		.loc 1 671 0
  1650 0a40 FFF7FEFF 		bl	IntMasterEnable
- 671:openstack/02b-MAChigh/schedule.c **** }
- 1651              		.loc 1 671 0
+ 672:openstack/02b-MAChigh/schedule.c **** }
+ 1651              		.loc 1 672 0
  1652 0a44 07F10807 		add	r7, r7, #8
  1653 0a48 BD46     		mov	sp, r7
  1654 0a4a 80BD     		pop	{r7, pc}
@@ -2323,14 +2324,14 @@
  1661              		.thumb_func
  1663              	schedule_resetEntry:
  1664              	.LFB19:
- 672:openstack/02b-MAChigh/schedule.c **** 
- 673:openstack/02b-MAChigh/schedule.c **** //=========================== private =========================================
- 674:openstack/02b-MAChigh/schedule.c **** 
- 675:openstack/02b-MAChigh/schedule.c **** /**
- 676:openstack/02b-MAChigh/schedule.c **** \pre This function assumes interrupts are already disabled.
- 677:openstack/02b-MAChigh/schedule.c **** */
- 678:openstack/02b-MAChigh/schedule.c **** void schedule_resetEntry(scheduleEntry_t* e) {
- 1665              		.loc 1 678 0
+ 673:openstack/02b-MAChigh/schedule.c **** 
+ 674:openstack/02b-MAChigh/schedule.c **** //=========================== private =========================================
+ 675:openstack/02b-MAChigh/schedule.c **** 
+ 676:openstack/02b-MAChigh/schedule.c **** /**
+ 677:openstack/02b-MAChigh/schedule.c **** \pre This function assumes interrupts are already disabled.
+ 678:openstack/02b-MAChigh/schedule.c **** */
+ 679:openstack/02b-MAChigh/schedule.c **** void schedule_resetEntry(scheduleEntry_t* e) {
+ 1665              		.loc 1 679 0
  1666              		.cfi_startproc
  1667              		@ args = 0, pretend = 0, frame = 8
  1668              		@ frame_needed = 1, uses_anonymous_args = 0
@@ -2346,78 +2347,78 @@
  1678              	.LCFI57:
  1679              		.cfi_def_cfa_register 7
  1680 0a52 7860     		str	r0, [r7, #4]
- 679:openstack/02b-MAChigh/schedule.c ****    e->slotOffset             = 0;
- 1681              		.loc 1 679 0
+ 680:openstack/02b-MAChigh/schedule.c ****    e->slotOffset             = 0;
+ 1681              		.loc 1 680 0
  1682 0a54 7B68     		ldr	r3, [r7, #4]
  1683 0a56 4FF00002 		mov	r2, #0
  1684 0a5a 1A80     		strh	r2, [r3, #0]	@ movhi
- 680:openstack/02b-MAChigh/schedule.c ****    e->type                   = CELLTYPE_OFF;
- 1685              		.loc 1 680 0
+ 681:openstack/02b-MAChigh/schedule.c ****    e->type                   = CELLTYPE_OFF;
+ 1685              		.loc 1 681 0
  1686 0a5c 7B68     		ldr	r3, [r7, #4]
  1687 0a5e 4FF00002 		mov	r2, #0
  1688 0a62 9A70     		strb	r2, [r3, #2]
- 681:openstack/02b-MAChigh/schedule.c ****    e->shared                 = FALSE;
- 1689              		.loc 1 681 0
+ 682:openstack/02b-MAChigh/schedule.c ****    e->shared                 = FALSE;
+ 1689              		.loc 1 682 0
  1690 0a64 7B68     		ldr	r3, [r7, #4]
  1691 0a66 4FF00002 		mov	r2, #0
  1692 0a6a DA70     		strb	r2, [r3, #3]
- 682:openstack/02b-MAChigh/schedule.c ****    e->channelOffset          = 0;
- 1693              		.loc 1 682 0
+ 683:openstack/02b-MAChigh/schedule.c ****    e->channelOffset          = 0;
+ 1693              		.loc 1 683 0
  1694 0a6c 7B68     		ldr	r3, [r7, #4]
  1695 0a6e 4FF00002 		mov	r2, #0
  1696 0a72 1A71     		strb	r2, [r3, #4]
- 683:openstack/02b-MAChigh/schedule.c **** 
- 684:openstack/02b-MAChigh/schedule.c ****    e->neighbor.type          = ADDR_NONE;
- 1697              		.loc 1 684 0
+ 684:openstack/02b-MAChigh/schedule.c **** 
+ 685:openstack/02b-MAChigh/schedule.c ****    e->neighbor.type          = ADDR_NONE;
+ 1697              		.loc 1 685 0
  1698 0a74 7B68     		ldr	r3, [r7, #4]
  1699 0a76 4FF00002 		mov	r2, #0
  1700 0a7a 5A71     		strb	r2, [r3, #5]
- 685:openstack/02b-MAChigh/schedule.c ****    memset(&e->neighbor.addr_64b[0], 0x00, sizeof(e->neighbor.addr_64b));
- 1701              		.loc 1 685 0
+ 686:openstack/02b-MAChigh/schedule.c ****    memset(&e->neighbor.addr_64b[0], 0x00, sizeof(e->neighbor.addr_64b));
+ 1701              		.loc 1 686 0
  1702 0a7c 7B68     		ldr	r3, [r7, #4]
  1703 0a7e 03F10603 		add	r3, r3, #6
  1704 0a82 1846     		mov	r0, r3
  1705 0a84 4FF00001 		mov	r1, #0
  1706 0a88 4FF00802 		mov	r2, #8
  1707 0a8c FFF7FEFF 		bl	memset
- 686:openstack/02b-MAChigh/schedule.c **** 
- 687:openstack/02b-MAChigh/schedule.c ****    e->numRx                  = 0;
- 1708              		.loc 1 687 0
+ 687:openstack/02b-MAChigh/schedule.c **** 
+ 688:openstack/02b-MAChigh/schedule.c ****    e->numRx                  = 0;
+ 1708              		.loc 1 688 0
  1709 0a90 7B68     		ldr	r3, [r7, #4]
  1710 0a92 4FF00002 		mov	r2, #0
  1711 0a96 9A75     		strb	r2, [r3, #22]
- 688:openstack/02b-MAChigh/schedule.c ****    e->numTx                  = 0;
- 1712              		.loc 1 688 0
+ 689:openstack/02b-MAChigh/schedule.c ****    e->numTx                  = 0;
+ 1712              		.loc 1 689 0
  1713 0a98 7B68     		ldr	r3, [r7, #4]
  1714 0a9a 4FF00002 		mov	r2, #0
  1715 0a9e DA75     		strb	r2, [r3, #23]
- 689:openstack/02b-MAChigh/schedule.c ****    e->numTxACK               = 0;
- 1716              		.loc 1 689 0
+ 690:openstack/02b-MAChigh/schedule.c ****    e->numTxACK               = 0;
+ 1716              		.loc 1 690 0
  1717 0aa0 7B68     		ldr	r3, [r7, #4]
  1718 0aa2 4FF00002 		mov	r2, #0
  1719 0aa6 1A76     		strb	r2, [r3, #24]
- 690:openstack/02b-MAChigh/schedule.c ****    e->lastUsedAsn.bytes0and1 = 0;
- 1720              		.loc 1 690 0
+ 691:openstack/02b-MAChigh/schedule.c ****    e->lastUsedAsn.bytes0and1 = 0;
+ 1720              		.loc 1 691 0
  1721 0aa8 7B68     		ldr	r3, [r7, #4]
  1722 0aaa 4FF00002 		mov	r2, #0
  1723 0aae 9A83     		strh	r2, [r3, #28]	@ movhi
- 691:openstack/02b-MAChigh/schedule.c ****    e->lastUsedAsn.bytes2and3 = 0;
- 1724              		.loc 1 691 0
+ 692:openstack/02b-MAChigh/schedule.c ****    e->lastUsedAsn.bytes2and3 = 0;
+ 1724              		.loc 1 692 0
  1725 0ab0 7B68     		ldr	r3, [r7, #4]
  1726 0ab2 4FF00002 		mov	r2, #0
  1727 0ab6 5A83     		strh	r2, [r3, #26]	@ movhi
- 692:openstack/02b-MAChigh/schedule.c ****    e->lastUsedAsn.byte4      = 0;
- 1728              		.loc 1 692 0
+ 693:openstack/02b-MAChigh/schedule.c ****    e->lastUsedAsn.byte4      = 0;
+ 1728              		.loc 1 693 0
  1729 0ab8 7B68     		ldr	r3, [r7, #4]
  1730 0aba 4FF00002 		mov	r2, #0
  1731 0abe 5A76     		strb	r2, [r3, #25]
- 693:openstack/02b-MAChigh/schedule.c ****    e->next                   = NULL;
- 1732              		.loc 1 693 0
+ 694:openstack/02b-MAChigh/schedule.c ****    e->next                   = NULL;
+ 1732              		.loc 1 694 0
  1733 0ac0 7B68     		ldr	r3, [r7, #4]
  1734 0ac2 4FF00002 		mov	r2, #0
  1735 0ac6 1A62     		str	r2, [r3, #32]
- 694:openstack/02b-MAChigh/schedule.c **** }
- 1736              		.loc 1 694 0
+ 695:openstack/02b-MAChigh/schedule.c **** }
+ 1736              		.loc 1 695 0
  1737 0ac8 07F10807 		add	r7, r7, #8
  1738 0acc BD46     		mov	sp, r7
  1739 0ace 80BD     		pop	{r7, pc}
@@ -2430,40 +2431,40 @@
  1747              		.file 5 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 schedule.c
-     /tmp/ccNXCqNc.s:19     .rodata:00000000 $d
-     /tmp/ccNXCqNc.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccNXCqNc.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccNXCqNc.s:32     .rodata:00000010 infouCName
-     /tmp/ccNXCqNc.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccNXCqNc.s:42     .rodata:00000024 infoStackName
+     /tmp/ccgx2vtu.s:19     .rodata:00000000 $d
+     /tmp/ccgx2vtu.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccgx2vtu.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccgx2vtu.s:32     .rodata:00000010 infouCName
+     /tmp/ccgx2vtu.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccgx2vtu.s:42     .rodata:00000024 infoStackName
                             *COM*:00000150 schedule_vars
-     /tmp/ccNXCqNc.s:46     .text:00000000 $t
-     /tmp/ccNXCqNc.s:51     .text:00000000 schedule_init
-     /tmp/ccNXCqNc.s:1663   .text:00000a4c schedule_resetEntry
-     /tmp/ccNXCqNc.s:471    .text:00000374 schedule_setFrameLength
-     /tmp/ccNXCqNc.s:611    .text:00000424 schedule_addActiveSlot
-     /tmp/ccNXCqNc.s:202    .text:00000120 debugPrint_schedule
-     /tmp/ccNXCqNc.s:422    .text:00000330 debugPrint_backoff
-     /tmp/ccNXCqNc.s:511    .text:0000039c schedule_getSlotInfo
-     /tmp/ccNXCqNc.s:602    .text:00000420 $d
-     /tmp/ccNXCqNc.s:606    .text:00000424 $t
-     /tmp/ccNXCqNc.s:804    .text:00000550 $d
-     /tmp/ccNXCqNc.s:808    .text:00000554 $t
-     /tmp/ccNXCqNc.s:813    .text:00000554 schedule_removeActiveSlot
-     /tmp/ccNXCqNc.s:967    .text:00000650 $d
-     /tmp/ccNXCqNc.s:971    .text:00000654 $t
-     /tmp/ccNXCqNc.s:976    .text:00000654 schedule_isSlotOffsetAvailable
-     /tmp/ccNXCqNc.s:1042   .text:000006ac schedule_syncSlotOffset
-     /tmp/ccNXCqNc.s:1091   .text:000006e0 schedule_advanceSlot
-     /tmp/ccNXCqNc.s:1127   .text:00000708 schedule_getNextActiveSlotOffset
-     /tmp/ccNXCqNc.s:1170   .text:00000734 schedule_getFrameLength
-     /tmp/ccNXCqNc.s:1211   .text:0000075c schedule_getType
-     /tmp/ccNXCqNc.s:1253   .text:00000788 schedule_getNeighbor
-     /tmp/ccNXCqNc.s:1296   .text:000007bc schedule_getChannelOffset
-     /tmp/ccNXCqNc.s:1338   .text:000007e8 schedule_getOkToSend
-     /tmp/ccNXCqNc.s:1419   .text:00000870 schedule_resetBackoff
-     /tmp/ccNXCqNc.s:1457   .text:000008a0 schedule_indicateRx
-     /tmp/ccNXCqNc.s:1508   .text:000008ec schedule_indicateTx
+     /tmp/ccgx2vtu.s:46     .text:00000000 $t
+     /tmp/ccgx2vtu.s:51     .text:00000000 schedule_init
+     /tmp/ccgx2vtu.s:1663   .text:00000a4c schedule_resetEntry
+     /tmp/ccgx2vtu.s:471    .text:00000374 schedule_setFrameLength
+     /tmp/ccgx2vtu.s:611    .text:00000424 schedule_addActiveSlot
+     /tmp/ccgx2vtu.s:202    .text:00000120 debugPrint_schedule
+     /tmp/ccgx2vtu.s:422    .text:00000330 debugPrint_backoff
+     /tmp/ccgx2vtu.s:511    .text:0000039c schedule_getSlotInfo
+     /tmp/ccgx2vtu.s:602    .text:00000420 $d
+     /tmp/ccgx2vtu.s:606    .text:00000424 $t
+     /tmp/ccgx2vtu.s:804    .text:00000550 $d
+     /tmp/ccgx2vtu.s:808    .text:00000554 $t
+     /tmp/ccgx2vtu.s:813    .text:00000554 schedule_removeActiveSlot
+     /tmp/ccgx2vtu.s:967    .text:00000650 $d
+     /tmp/ccgx2vtu.s:971    .text:00000654 $t
+     /tmp/ccgx2vtu.s:976    .text:00000654 schedule_isSlotOffsetAvailable
+     /tmp/ccgx2vtu.s:1042   .text:000006ac schedule_syncSlotOffset
+     /tmp/ccgx2vtu.s:1091   .text:000006e0 schedule_advanceSlot
+     /tmp/ccgx2vtu.s:1127   .text:00000708 schedule_getNextActiveSlotOffset
+     /tmp/ccgx2vtu.s:1170   .text:00000734 schedule_getFrameLength
+     /tmp/ccgx2vtu.s:1211   .text:0000075c schedule_getType
+     /tmp/ccgx2vtu.s:1253   .text:00000788 schedule_getNeighbor
+     /tmp/ccgx2vtu.s:1296   .text:000007bc schedule_getChannelOffset
+     /tmp/ccgx2vtu.s:1338   .text:000007e8 schedule_getOkToSend
+     /tmp/ccgx2vtu.s:1419   .text:00000870 schedule_resetBackoff
+     /tmp/ccgx2vtu.s:1457   .text:000008a0 schedule_indicateRx
+     /tmp/ccgx2vtu.s:1508   .text:000008ec schedule_indicateTx
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

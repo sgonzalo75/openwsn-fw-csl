@@ -1002,27 +1002,27 @@
  736              		.file 3 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 board.c
-     /tmp/ccDKzgpd.s:19     .rodata:00000000 $d
-     /tmp/ccDKzgpd.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccDKzgpd.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccDKzgpd.s:32     .rodata:00000010 infouCName
-     /tmp/ccDKzgpd.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccDKzgpd.s:40     .text:00000000 $t
-     /tmp/ccDKzgpd.s:45     .text:00000000 main
-     /tmp/ccDKzgpd.s:74     .text:00000010 board_init
-     /tmp/ccDKzgpd.s:377    .text:00000194 gpio_init
-     /tmp/ccDKzgpd.s:444    .text:0000022c clock_init
-     /tmp/ccDKzgpd.s:205    .text:000000c4 antenna_init
-     /tmp/ccDKzgpd.s:251    .text:00000114 antenna_external
-     /tmp/ccDKzgpd.s:122    .text:00000048 button_init
-     /tmp/ccDKzgpd.s:173    .text:000000a8 GPIO_C_Isr_Handler
-     /tmp/ccDKzgpd.s:287    .text:00000144 antenna_internal
-     /tmp/ccDKzgpd.s:323    .text:00000174 board_sleep
-     /tmp/ccDKzgpd.s:352    .text:00000188 board_reset
-     /tmp/ccDKzgpd.s:535    .text:000002e0 SysCtrlDeepSleepSetting
-     /tmp/ccDKzgpd.s:594    .text:00000348 SysCtrlSleepSetting
-     /tmp/ccDKzgpd.s:653    .text:000003b0 SysCtrlRunSetting
-     /tmp/ccDKzgpd.s:712    .text:00000418 SysCtrlWakeupSetting
+     /tmp/cc1epEG0.s:19     .rodata:00000000 $d
+     /tmp/cc1epEG0.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cc1epEG0.s:27     .rodata:00000008 infoBoardname
+     /tmp/cc1epEG0.s:32     .rodata:00000010 infouCName
+     /tmp/cc1epEG0.s:37     .rodata:00000018 infoRadioName
+     /tmp/cc1epEG0.s:40     .text:00000000 $t
+     /tmp/cc1epEG0.s:45     .text:00000000 main
+     /tmp/cc1epEG0.s:74     .text:00000010 board_init
+     /tmp/cc1epEG0.s:377    .text:00000194 gpio_init
+     /tmp/cc1epEG0.s:444    .text:0000022c clock_init
+     /tmp/cc1epEG0.s:205    .text:000000c4 antenna_init
+     /tmp/cc1epEG0.s:251    .text:00000114 antenna_external
+     /tmp/cc1epEG0.s:122    .text:00000048 button_init
+     /tmp/cc1epEG0.s:173    .text:000000a8 GPIO_C_Isr_Handler
+     /tmp/cc1epEG0.s:287    .text:00000144 antenna_internal
+     /tmp/cc1epEG0.s:323    .text:00000174 board_sleep
+     /tmp/cc1epEG0.s:352    .text:00000188 board_reset
+     /tmp/cc1epEG0.s:535    .text:000002e0 SysCtrlDeepSleepSetting
+     /tmp/cc1epEG0.s:594    .text:00000348 SysCtrlSleepSetting
+     /tmp/cc1epEG0.s:653    .text:000003b0 SysCtrlRunSetting
+     /tmp/cc1epEG0.s:712    .text:00000418 SysCtrlWakeupSetting
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.hw_ioc.h.39.7722cce4a3cc0e3380c3cd135aee3b21

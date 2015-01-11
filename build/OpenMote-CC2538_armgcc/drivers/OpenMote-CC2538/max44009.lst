@@ -520,15 +520,15 @@
  383              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
 DEFINED SYMBOLS
                             *ABS*:00000000 max44009.c
-     /tmp/ccfGIoNC.s:19     .rodata:00000000 $d
-     /tmp/ccfGIoNC.s:20     .rodata:00000000 .LC0
-     /tmp/ccfGIoNC.s:27     .text:00000000 $t
-     /tmp/ccfGIoNC.s:32     .text:00000000 max44009_init
-     /tmp/ccfGIoNC.s:114    .rodata:00000008 .LC1
-     /tmp/ccfGIoNC.s:126    .text:00000084 max44009_reset
-     /tmp/ccfGIoNC.s:203    .text:00000100 max44009_is_present
-     /tmp/ccfGIoNC.s:249    .text:00000138 max44009_read_light
-     /tmp/ccfGIoNC.s:328    .text:000001b8 max44009_convert_light
+     /tmp/ccTgtxlO.s:19     .rodata:00000000 $d
+     /tmp/ccTgtxlO.s:20     .rodata:00000000 .LC0
+     /tmp/ccTgtxlO.s:27     .text:00000000 $t
+     /tmp/ccTgtxlO.s:32     .text:00000000 max44009_init
+     /tmp/ccTgtxlO.s:114    .rodata:00000008 .LC1
+     /tmp/ccTgtxlO.s:126    .text:00000084 max44009_reset
+     /tmp/ccTgtxlO.s:203    .text:00000100 max44009_is_present
+     /tmp/ccTgtxlO.s:249    .text:00000138 max44009_read_light
+     /tmp/ccTgtxlO.s:328    .text:000001b8 max44009_convert_light
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

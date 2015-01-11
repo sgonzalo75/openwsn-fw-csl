@@ -1701,24 +1701,24 @@
  1244              		.file 5 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 opencoap.c
-     /tmp/ccQparo9.s:19     .rodata:00000000 $d
-     /tmp/ccQparo9.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccQparo9.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccQparo9.s:32     .rodata:00000010 infouCName
-     /tmp/ccQparo9.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccQparo9.s:42     .rodata:00000024 infoStackName
-     /tmp/ccQparo9.s:47     .rodata:00000030 ipAddr_ipsoRD
-     /tmp/ccQparo9.s:67     .rodata:00000040 ipAddr_motesEecs
-     /tmp/ccQparo9.s:87     .rodata:00000050 ipAddr_local
-     /tmp/ccQparo9.s:107    .rodata:00000060 ipAddr_motedata
+     /tmp/cc1boYii.s:19     .rodata:00000000 $d
+     /tmp/cc1boYii.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cc1boYii.s:27     .rodata:00000008 infoBoardname
+     /tmp/cc1boYii.s:32     .rodata:00000010 infouCName
+     /tmp/cc1boYii.s:37     .rodata:00000018 infoRadioName
+     /tmp/cc1boYii.s:42     .rodata:00000024 infoStackName
+     /tmp/cc1boYii.s:47     .rodata:00000030 ipAddr_ipsoRD
+     /tmp/cc1boYii.s:67     .rodata:00000040 ipAddr_motesEecs
+     /tmp/cc1boYii.s:87     .rodata:00000050 ipAddr_local
+     /tmp/cc1boYii.s:107    .rodata:00000060 ipAddr_motedata
                             *COM*:00000008 opencoap_vars
-     /tmp/ccQparo9.s:126    .text:00000000 $t
-     /tmp/ccQparo9.s:131    .text:00000000 opencoap_init
-     /tmp/ccQparo9.s:168    .text:00000028 opencoap_receive
-     /tmp/ccQparo9.s:826    .text:00000558 opencoap_sendDone
-     /tmp/ccQparo9.s:924    .text:000005dc opencoap_writeLinks
-     /tmp/ccQparo9.s:1059   .text:000006b8 opencoap_register
-     /tmp/ccQparo9.s:1131   .text:00000710 opencoap_send
+     /tmp/cc1boYii.s:126    .text:00000000 $t
+     /tmp/cc1boYii.s:131    .text:00000000 opencoap_init
+     /tmp/cc1boYii.s:168    .text:00000028 opencoap_receive
+     /tmp/cc1boYii.s:826    .text:00000558 opencoap_sendDone
+     /tmp/cc1boYii.s:924    .text:000005dc opencoap_writeLinks
+     /tmp/cc1boYii.s:1059   .text:000006b8 opencoap_register
+     /tmp/cc1boYii.s:1131   .text:00000710 opencoap_send
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

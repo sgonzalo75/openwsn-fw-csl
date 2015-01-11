@@ -166,10 +166,10 @@ void ieee154e_init() {
    radio_setEndFrameCb(ieee154ecsl_endOfFrame);           // CSL – Fires on end of frame detected on radio
 
    // [CSL]: set timer for checking frames on local queue to transmit.
-   ieee154e_vars.txTimer = opentimers_start(macCSLTxChkFreq, TIMER_PERIODIC, TIME_TICS, isr_ieee154ecsl_txtimer_cb);
+   //ieee154e_vars.txTimer = opentimers_start(macCSLTxChkFreq, TIMER_PERIODIC, TIME_TICS, isr_ieee154ecsl_txtimer_cb);
 
    // [CSL-TEST]: set timer for callback to add packet to queue for testing CSL TX (every 5 seconds)
-   ieee154e_vars.cslTxTestTimer = opentimers_start(2000, TIMER_PERIODIC, TIME_MS, isr_ieee154ecsl_addPacketToQueueForTestingCslTx_cb);
+   //ieee154e_vars.cslTxTestTimer = opentimers_start(2000, TIMER_PERIODIC, TIME_MS, isr_ieee154ecsl_addPacketToQueueForTestingCslTx_cb);
 
    // [CSL]: have the radio start its timer for channel sampling (macCSLPeriod)
    radio_startTimer(macCSLPeriod);
@@ -333,6 +333,8 @@ void ieee154ecsl_endOfFrame(PORT_RADIOTIMER_WIDTH capturedTime) {
 		 case S_CSLRXWAKEUP:           activity_csl_wakeup_ri5(capturedTime);  break;
 		 case S_CSLRXDATA:             activity_csl_data_ri5(capturedTime);    break;
 		 case S_CSLTXACK:              activity_csl_data_ri9(capturedTime);    break;
+		 // [CSL]: En caso que en el periodo de LISTEN solo detectemos el fin de trama al no haber sincronismo con el Tx.
+		 case S_CSLRXWAKEUPLISTEN:	   activity_csl_wakeup_ri1();			   break;
 		 default:
 			// log the error
 			openserial_printError(COMPONENT_IEEE802154E,ERR_WRONG_STATE_IN_CSL_ENDOFFRAME,
@@ -604,8 +606,10 @@ port_INLINE void activity_csl_wakeup_ti2() {
 		   // - 2 bytes DEST ADDR
 		   // - 2 bytes RZTIME IE HEADER
 		   // - 2 bytes RZTIME (el cual se sobrescribirá con el nuevo valor).
-		   *((uint16_t*)(ieee154e_vars.wakeupToSend->payload+8)) = ieee154e_vars.remainingRzTime;
-	   }
+		   //*((uint16_t*)(ieee154e_vars.wakeupToSend->payload+8)) = ieee154e_vars.remainingRzTime;
+		   *((uint8_t*)(ieee154e_vars.wakeupToSend->payload+8)) = (uint8_t)(ieee154e_vars.remainingRzTime & 0xFF);
+		   *((uint8_t*)(ieee154e_vars.wakeupToSend->payload+9)) = (uint8_t)((ieee154e_vars.remainingRzTime >> 8) & 0xFF);
+		}
 
 	   // load the packet in the radio's Tx buffer
 	   radio_loadPacket(ieee154e_vars.wakeupToSend->payload, ieee154e_vars.wakeupToSend->length);
@@ -625,6 +629,12 @@ port_INLINE void activity_csl_wakeup_ti2() {
 	   // Si no da tiempo a enviar una nueva trama, simplemente esperamos un tiempo igual a remainingRzTime que será
 	   // el tiempo que queda pendiente hasta el envío de la trama de datos y actualizamos directamente el estado para
 	   // pasar a la transmisión de los datos, a través del estado CSLTXDATAPREOFFSET.
+
+       // Descartamos el paquete una vez finalizada la transmisión.
+       openqueue_freePacketBuffer(ieee154e_vars.wakeupToSend);
+
+       // clear local variable
+       ieee154e_vars.wakeupToSend = NULL;
 
 	   // change state
 	   changeState(S_CSLTXDATAPREOFFSET);
@@ -727,17 +737,7 @@ port_INLINE void activity_csl_wakeup_ti5(PORT_RADIOTIMER_WIDTH capturedTime) {
 	// record the captured time
 	ieee154e_vars.lastCapturedTime = capturedTime;
 
-	// Mientras el tiempo capturado en el envío de la ultima trama wake-up de la trama wake-up sequence
-	// sea inferior al tiempo de la duración del rztime inicial, debemos seguir enviando tramas wake-up.
-	// En caso contrario, enviamos la trama de datos.
-
-	//if((macCSLMaxPeriod - ieee154e_vars.lastCapturedTime) < ieee154e_vars.remainingRzTime) {
-	//	changeState(S_CSLTXWAKEUPOFFSET);
-	//}
-	//else {
-    //   changeState(S_CSLTXDATAOFFSET);
-    //}
-
+    // change state
 	changeState(S_CSLTXWAKEUPOFFSET);
 
     // arm tt1 (enviemos de nuevo una trama de wake-up o de datos, el tiempo será tt1).
@@ -832,7 +832,6 @@ port_INLINE void activity_csl_data_tie2() {
    // log the error
    openserial_printError(COMPONENT_IEEE802154E,ERR_WDRADIO_OVERFLOWS,
                          (errorparameter_t)ieee154e_vars.state, (errorparameter_t)ieee154e_vars.slotOffset);
-
    // abort
    endOps();
 }
@@ -2063,8 +2062,14 @@ void ieee802154_createWakeUpFrame(OpenQueueEntry_t*		msg,
     //   0  |  0  |  0  |  0  |  1  |  1  |  1 |  0 |  1 |  0 |  0 |  0 |  0 |  0 |  1 |  0 |
 
  	// rz time ie body (time)
-	packetfunctions_reserveHeaderSize(msg,sizeof(uint16_t));
-	*((uint16_t*)(msg->payload)) = rz_time;
+	packetfunctions_reserveHeaderSize(msg,sizeof(uint8_t));
+	*((uint8_t*)(msg->payload)) = (uint8_t)((rz_time >> 8) & 0xFF);
+
+	packetfunctions_reserveHeaderSize(msg,sizeof(uint8_t));
+	*((uint8_t*)(msg->payload)) = (uint8_t)(rz_time & 0xFF);
+
+	//packetfunctions_reserveHeaderSize(msg,sizeof(uint16_t));
+	//*((uint16_t*)(msg->payload)) = rz_time;
 
 	// rz time ie header
 	packetfunctions_reserveHeaderSize(msg,sizeof(uint16_t));

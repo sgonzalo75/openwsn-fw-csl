@@ -550,16 +550,16 @@
  422              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
 DEFINED SYMBOLS
                             *ABS*:00000000 sht21.c
-     /tmp/ccpl8n23.s:18     .text:00000000 $t
-     /tmp/ccpl8n23.s:23     .text:00000000 sht21_init
-     /tmp/ccpl8n23.s:85     .text:00000060 sht21_reset
-     /tmp/ccpl8n23.s:113    .text:00000074 sht21_is_present
-     /tmp/ccpl8n23.s:164    .text:000000b4 sht21_read_temperature
-     /tmp/ccpl8n23.s:220    .text:000000f4 sht21_convert_temperature
-     /tmp/ccpl8n23.s:290    .text:00000170 $d
-     /tmp/ccpl8n23.s:295    .text:00000178 $t
-     /tmp/ccpl8n23.s:300    .text:00000178 sht21_read_humidity
-     /tmp/ccpl8n23.s:350    .text:000001b8 sht21_convert_humidity
+     /tmp/ccZ5uG1U.s:18     .text:00000000 $t
+     /tmp/ccZ5uG1U.s:23     .text:00000000 sht21_init
+     /tmp/ccZ5uG1U.s:85     .text:00000060 sht21_reset
+     /tmp/ccZ5uG1U.s:113    .text:00000074 sht21_is_present
+     /tmp/ccZ5uG1U.s:164    .text:000000b4 sht21_read_temperature
+     /tmp/ccZ5uG1U.s:220    .text:000000f4 sht21_convert_temperature
+     /tmp/ccZ5uG1U.s:290    .text:00000170 $d
+     /tmp/ccZ5uG1U.s:295    .text:00000178 $t
+     /tmp/ccZ5uG1U.s:300    .text:00000178 sht21_read_humidity
+     /tmp/ccZ5uG1U.s:350    .text:000001b8 sht21_convert_humidity
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

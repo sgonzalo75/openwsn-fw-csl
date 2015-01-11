@@ -1344,193 +1344,193 @@
  1082 06b8 7B68     		ldr	r3, [r7, #4]
  1083 06ba 4FF00002 		mov	r2, #0
  1084 06be 83F83820 		strb	r2, [r3, #56]
- 256:openstack/cross-layers/openqueue.c ****    //CSL TEST
- 257:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[0]  = 0x00;
- 1085              		.loc 1 257 0
+ 256:openstack/cross-layers/openqueue.c **** 
+ 257:openstack/cross-layers/openqueue.c ****    // [CSL-TEST]: To be sure that address arrays are reset.
+ 258:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[0]  = 0x00;
+ 1085              		.loc 1 258 0
  1086 06c2 7B68     		ldr	r3, [r7, #4]
  1087 06c4 4FF00002 		mov	r2, #0
  1088 06c8 83F83920 		strb	r2, [r3, #57]
- 258:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[1]  = 0x00;
- 1089              		.loc 1 258 0
+ 259:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[1]  = 0x00;
+ 1089              		.loc 1 259 0
  1090 06cc 7B68     		ldr	r3, [r7, #4]
  1091 06ce 4FF00002 		mov	r2, #0
  1092 06d2 83F83A20 		strb	r2, [r3, #58]
- 259:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[2]  = 0x00;
- 1093              		.loc 1 259 0
+ 260:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[2]  = 0x00;
+ 1093              		.loc 1 260 0
  1094 06d6 7B68     		ldr	r3, [r7, #4]
  1095 06d8 4FF00002 		mov	r2, #0
  1096 06dc 83F83B20 		strb	r2, [r3, #59]
- 260:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[3]  = 0x00;
- 1097              		.loc 1 260 0
+ 261:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[3]  = 0x00;
+ 1097              		.loc 1 261 0
  1098 06e0 7B68     		ldr	r3, [r7, #4]
  1099 06e2 4FF00002 		mov	r2, #0
  1100 06e6 83F83C20 		strb	r2, [r3, #60]
- 261:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[4]  = 0x00;
- 1101              		.loc 1 261 0
+ 262:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[4]  = 0x00;
+ 1101              		.loc 1 262 0
  1102 06ea 7B68     		ldr	r3, [r7, #4]
  1103 06ec 4FF00002 		mov	r2, #0
  1104 06f0 83F83D20 		strb	r2, [r3, #61]
- 262:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[5]  = 0x00;
- 1105              		.loc 1 262 0
+ 263:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[5]  = 0x00;
+ 1105              		.loc 1 263 0
  1106 06f4 7B68     		ldr	r3, [r7, #4]
  1107 06f6 4FF00002 		mov	r2, #0
  1108 06fa 83F83E20 		strb	r2, [r3, #62]
- 263:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[6]  = 0x00;
- 1109              		.loc 1 263 0
+ 264:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[6]  = 0x00;
+ 1109              		.loc 1 264 0
  1110 06fe 7B68     		ldr	r3, [r7, #4]
  1111 0700 4FF00002 		mov	r2, #0
  1112 0704 83F83F20 		strb	r2, [r3, #63]
- 264:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[7]  = 0x00;
- 1113              		.loc 1 264 0
+ 265:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[7]  = 0x00;
+ 1113              		.loc 1 265 0
  1114 0708 7B68     		ldr	r3, [r7, #4]
  1115 070a 4FF00002 		mov	r2, #0
  1116 070e 83F84020 		strb	r2, [r3, #64]
- 265:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[8]  = 0x00;
- 1117              		.loc 1 265 0
+ 266:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[8]  = 0x00;
+ 1117              		.loc 1 266 0
  1118 0712 7B68     		ldr	r3, [r7, #4]
  1119 0714 4FF00002 		mov	r2, #0
  1120 0718 83F84120 		strb	r2, [r3, #65]
- 266:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[9]  = 0x00;
- 1121              		.loc 1 266 0
+ 267:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[9]  = 0x00;
+ 1121              		.loc 1 267 0
  1122 071c 7B68     		ldr	r3, [r7, #4]
  1123 071e 4FF00002 		mov	r2, #0
  1124 0722 83F84220 		strb	r2, [r3, #66]
- 267:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[10] = 0x00;
- 1125              		.loc 1 267 0
+ 268:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[10] = 0x00;
+ 1125              		.loc 1 268 0
  1126 0726 7B68     		ldr	r3, [r7, #4]
  1127 0728 4FF00002 		mov	r2, #0
  1128 072c 83F84320 		strb	r2, [r3, #67]
- 268:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[11] = 0x00;
- 1129              		.loc 1 268 0
+ 269:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[11] = 0x00;
+ 1129              		.loc 1 269 0
  1130 0730 7B68     		ldr	r3, [r7, #4]
  1131 0732 4FF00002 		mov	r2, #0
  1132 0736 83F84420 		strb	r2, [r3, #68]
- 269:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[12] = 0x00;
- 1133              		.loc 1 269 0
+ 270:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[12] = 0x00;
+ 1133              		.loc 1 270 0
  1134 073a 7B68     		ldr	r3, [r7, #4]
  1135 073c 4FF00002 		mov	r2, #0
  1136 0740 83F84520 		strb	r2, [r3, #69]
- 270:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[13] = 0x00;
- 1137              		.loc 1 270 0
+ 271:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[13] = 0x00;
+ 1137              		.loc 1 271 0
  1138 0744 7B68     		ldr	r3, [r7, #4]
  1139 0746 4FF00002 		mov	r2, #0
  1140 074a 83F84620 		strb	r2, [r3, #70]
- 271:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[14] = 0x00;
- 1141              		.loc 1 271 0
+ 272:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[14] = 0x00;
+ 1141              		.loc 1 272 0
  1142 074e 7B68     		ldr	r3, [r7, #4]
  1143 0750 4FF00002 		mov	r2, #0
  1144 0754 83F84720 		strb	r2, [r3, #71]
- 272:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[15] = 0x00;
- 1145              		.loc 1 272 0
+ 273:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_128b[15] = 0x00;
+ 1145              		.loc 1 273 0
  1146 0758 7B68     		ldr	r3, [r7, #4]
  1147 075a 4FF00002 		mov	r2, #0
  1148 075e 83F84820 		strb	r2, [r3, #72]
- 273:openstack/cross-layers/openqueue.c **** 
- 274:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[0]   = 0x00;
- 1149              		.loc 1 274 0
+ 274:openstack/cross-layers/openqueue.c **** 
+ 275:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[0]   = 0x00;
+ 1149              		.loc 1 275 0
  1150 0762 7B68     		ldr	r3, [r7, #4]
  1151 0764 4FF00002 		mov	r2, #0
  1152 0768 83F83920 		strb	r2, [r3, #57]
- 275:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[1]   = 0x00;
- 1153              		.loc 1 275 0
+ 276:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[1]   = 0x00;
+ 1153              		.loc 1 276 0
  1154 076c 7B68     		ldr	r3, [r7, #4]
  1155 076e 4FF00002 		mov	r2, #0
  1156 0772 83F83A20 		strb	r2, [r3, #58]
- 276:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[2]   = 0x00;
- 1157              		.loc 1 276 0
+ 277:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[2]   = 0x00;
+ 1157              		.loc 1 277 0
  1158 0776 7B68     		ldr	r3, [r7, #4]
  1159 0778 4FF00002 		mov	r2, #0
  1160 077c 83F83B20 		strb	r2, [r3, #59]
- 277:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[3]   = 0x00;
- 1161              		.loc 1 277 0
+ 278:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[3]   = 0x00;
+ 1161              		.loc 1 278 0
  1162 0780 7B68     		ldr	r3, [r7, #4]
  1163 0782 4FF00002 		mov	r2, #0
  1164 0786 83F83C20 		strb	r2, [r3, #60]
- 278:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[4]   = 0x00;
- 1165              		.loc 1 278 0
+ 279:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[4]   = 0x00;
+ 1165              		.loc 1 279 0
  1166 078a 7B68     		ldr	r3, [r7, #4]
  1167 078c 4FF00002 		mov	r2, #0
  1168 0790 83F83D20 		strb	r2, [r3, #61]
- 279:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[5]   = 0x00;
- 1169              		.loc 1 279 0
+ 280:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[5]   = 0x00;
+ 1169              		.loc 1 280 0
  1170 0794 7B68     		ldr	r3, [r7, #4]
  1171 0796 4FF00002 		mov	r2, #0
  1172 079a 83F83E20 		strb	r2, [r3, #62]
- 280:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[6]   = 0x00;
- 1173              		.loc 1 280 0
+ 281:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[6]   = 0x00;
+ 1173              		.loc 1 281 0
  1174 079e 7B68     		ldr	r3, [r7, #4]
  1175 07a0 4FF00002 		mov	r2, #0
  1176 07a4 83F83F20 		strb	r2, [r3, #63]
- 281:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[7]   = 0x00;
- 1177              		.loc 1 281 0
+ 282:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_64b[7]   = 0x00;
+ 1177              		.loc 1 282 0
  1178 07a8 7B68     		ldr	r3, [r7, #4]
  1179 07aa 4FF00002 		mov	r2, #0
  1180 07ae 83F84020 		strb	r2, [r3, #64]
- 282:openstack/cross-layers/openqueue.c **** 
- 283:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_16b[0]   = 0x00;
- 1181              		.loc 1 283 0
+ 283:openstack/cross-layers/openqueue.c **** 
+ 284:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_16b[0]   = 0x00;
+ 1181              		.loc 1 284 0
  1182 07b2 7B68     		ldr	r3, [r7, #4]
  1183 07b4 4FF00002 		mov	r2, #0
  1184 07b8 83F83920 		strb	r2, [r3, #57]
- 284:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_16b[1]   = 0x00;
- 1185              		.loc 1 284 0
+ 285:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.addr_16b[1]   = 0x00;
+ 1185              		.loc 1 285 0
  1186 07bc 7B68     		ldr	r3, [r7, #4]
  1187 07be 4FF00002 		mov	r2, #0
  1188 07c2 83F83A20 		strb	r2, [r3, #58]
- 285:openstack/cross-layers/openqueue.c **** 
- 286:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.panid[0]      = 0x00;
- 1189              		.loc 1 286 0
+ 286:openstack/cross-layers/openqueue.c **** 
+ 287:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.panid[0]      = 0x00;
+ 1189              		.loc 1 287 0
  1190 07c6 7B68     		ldr	r3, [r7, #4]
  1191 07c8 4FF00002 		mov	r2, #0
  1192 07cc 83F83920 		strb	r2, [r3, #57]
- 287:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.panid[1]      = 0x00;
- 1193              		.loc 1 287 0
+ 288:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.panid[1]      = 0x00;
+ 1193              		.loc 1 288 0
  1194 07d0 7B68     		ldr	r3, [r7, #4]
  1195 07d2 4FF00002 		mov	r2, #0
  1196 07d6 83F83A20 		strb	r2, [r3, #58]
- 288:openstack/cross-layers/openqueue.c **** 
- 289:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[0]     = 0x00;
- 1197              		.loc 1 289 0
+ 289:openstack/cross-layers/openqueue.c **** 
+ 290:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[0]     = 0x00;
+ 1197              		.loc 1 290 0
  1198 07da 7B68     		ldr	r3, [r7, #4]
  1199 07dc 4FF00002 		mov	r2, #0
  1200 07e0 83F83920 		strb	r2, [r3, #57]
- 290:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[1]     = 0x00;
- 1201              		.loc 1 290 0
+ 291:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[1]     = 0x00;
+ 1201              		.loc 1 291 0
  1202 07e4 7B68     		ldr	r3, [r7, #4]
  1203 07e6 4FF00002 		mov	r2, #0
  1204 07ea 83F83A20 		strb	r2, [r3, #58]
- 291:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[2]     = 0x00;
- 1205              		.loc 1 291 0
+ 292:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[2]     = 0x00;
+ 1205              		.loc 1 292 0
  1206 07ee 7B68     		ldr	r3, [r7, #4]
  1207 07f0 4FF00002 		mov	r2, #0
  1208 07f4 83F83B20 		strb	r2, [r3, #59]
- 292:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[3]     = 0x00;
- 1209              		.loc 1 292 0
+ 293:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[3]     = 0x00;
+ 1209              		.loc 1 293 0
  1210 07f8 7B68     		ldr	r3, [r7, #4]
  1211 07fa 4FF00002 		mov	r2, #0
  1212 07fe 83F83C20 		strb	r2, [r3, #60]
- 293:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[4]     = 0x00;
- 1213              		.loc 1 293 0
+ 294:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[4]     = 0x00;
+ 1213              		.loc 1 294 0
  1214 0802 7B68     		ldr	r3, [r7, #4]
  1215 0804 4FF00002 		mov	r2, #0
  1216 0808 83F83D20 		strb	r2, [r3, #61]
- 294:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[5]     = 0x00;
- 1217              		.loc 1 294 0
+ 295:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[5]     = 0x00;
+ 1217              		.loc 1 295 0
  1218 080c 7B68     		ldr	r3, [r7, #4]
  1219 080e 4FF00002 		mov	r2, #0
  1220 0812 83F83E20 		strb	r2, [r3, #62]
- 295:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[6]     = 0x00;
- 1221              		.loc 1 295 0
+ 296:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[6]     = 0x00;
+ 1221              		.loc 1 296 0
  1222 0816 7B68     		ldr	r3, [r7, #4]
  1223 0818 4FF00002 		mov	r2, #0
  1224 081c 83F83F20 		strb	r2, [r3, #63]
- 296:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[7]     = 0x00;
- 1225              		.loc 1 296 0
+ 297:openstack/cross-layers/openqueue.c ****    entry->l2_nextORpreviousHop.prefix[7]     = 0x00;
+ 1225              		.loc 1 297 0
  1226 0820 7B68     		ldr	r3, [r7, #4]
  1227 0822 4FF00002 		mov	r2, #0
  1228 0826 83F84020 		strb	r2, [r3, #64]
- 297:openstack/cross-layers/openqueue.c **** 
- 298:openstack/cross-layers/openqueue.c ****    //end CSL
+ 298:openstack/cross-layers/openqueue.c ****    // [CSL-TEST]: end code
  299:openstack/cross-layers/openqueue.c **** 
  300:openstack/cross-layers/openqueue.c ****    entry->l2_frameType                 = IEEE154_TYPE_UNDEFINED;
  1229              		.loc 1 300 0
@@ -1563,25 +1563,25 @@
  1254              		.file 6 "openstack/02a-MAClow/IEEE802154.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 openqueue.c
-     /tmp/ccXp8f2B.s:19     .rodata:00000000 $d
-     /tmp/ccXp8f2B.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccXp8f2B.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccXp8f2B.s:32     .rodata:00000010 infouCName
-     /tmp/ccXp8f2B.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccXp8f2B.s:42     .rodata:00000024 infoStackName
+     /tmp/ccVICWXa.s:19     .rodata:00000000 $d
+     /tmp/ccVICWXa.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/ccVICWXa.s:27     .rodata:00000008 infoBoardname
+     /tmp/ccVICWXa.s:32     .rodata:00000010 infouCName
+     /tmp/ccVICWXa.s:37     .rodata:00000018 infoRadioName
+     /tmp/ccVICWXa.s:42     .rodata:00000024 infoStackName
                             *COM*:00000960 openqueue_vars
-     /tmp/ccXp8f2B.s:46     .text:00000000 $t
-     /tmp/ccXp8f2B.s:51     .text:00000000 openqueue_init
-     /tmp/ccXp8f2B.s:1034   .text:00000674 openqueue_reset_entry
-     /tmp/ccXp8f2B.s:106    .text:00000044 debugPrint_queue
-     /tmp/ccXp8f2B.s:188    .text:000000d4 openqueue_getFreePacketBuffer
-     /tmp/ccXp8f2B.s:305    .text:000001a0 openqueue_freePacketBuffer
-     /tmp/ccXp8f2B.s:411    .text:00000260 openqueue_removeAllCreatedBy
-     /tmp/ccXp8f2B.s:485    .text:000002d0 openqueue_removeAllOwnedBy
-     /tmp/ccXp8f2B.s:559    .text:00000340 openqueue_sixtopGetSentPacket
-     /tmp/ccXp8f2B.s:648    .text:000003cc openqueue_sixtopGetReceivedPacket
-     /tmp/ccXp8f2B.s:737    .text:00000458 openqueue_macGetDataPacket
-     /tmp/ccXp8f2B.s:929    .text:000005c0 openqueue_macGetAdvPacket
+     /tmp/ccVICWXa.s:46     .text:00000000 $t
+     /tmp/ccVICWXa.s:51     .text:00000000 openqueue_init
+     /tmp/ccVICWXa.s:1034   .text:00000674 openqueue_reset_entry
+     /tmp/ccVICWXa.s:106    .text:00000044 debugPrint_queue
+     /tmp/ccVICWXa.s:188    .text:000000d4 openqueue_getFreePacketBuffer
+     /tmp/ccVICWXa.s:305    .text:000001a0 openqueue_freePacketBuffer
+     /tmp/ccVICWXa.s:411    .text:00000260 openqueue_removeAllCreatedBy
+     /tmp/ccVICWXa.s:485    .text:000002d0 openqueue_removeAllOwnedBy
+     /tmp/ccVICWXa.s:559    .text:00000340 openqueue_sixtopGetSentPacket
+     /tmp/ccVICWXa.s:648    .text:000003cc openqueue_sixtopGetReceivedPacket
+     /tmp/ccVICWXa.s:737    .text:00000458 openqueue_macGetDataPacket
+     /tmp/ccVICWXa.s:929    .text:000005c0 openqueue_macGetAdvPacket
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

@@ -425,17 +425,17 @@
  338              		.file 4 "bsp/boards/OpenMote-CC2538/board_info.h"
 DEFINED SYMBOLS
                             *ABS*:00000000 openbridge.c
-     /tmp/ccQbuORE.s:19     .rodata:00000000 $d
-     /tmp/ccQbuORE.s:22     .rodata:00000000 rreg_uriquery
-     /tmp/ccQbuORE.s:27     .rodata:00000008 infoBoardname
-     /tmp/ccQbuORE.s:32     .rodata:00000010 infouCName
-     /tmp/ccQbuORE.s:37     .rodata:00000018 infoRadioName
-     /tmp/ccQbuORE.s:42     .rodata:00000024 infoStackName
-     /tmp/ccQbuORE.s:45     .text:00000000 $t
-     /tmp/ccQbuORE.s:50     .text:00000000 openbridge_init
-     /tmp/ccQbuORE.s:77     .text:0000000c openbridge_triggerData
-     /tmp/ccQbuORE.s:219    .text:00000134 openbridge_sendDone
-     /tmp/ccQbuORE.s:270    .text:00000174 openbridge_receive
+     /tmp/cc4QghNY.s:19     .rodata:00000000 $d
+     /tmp/cc4QghNY.s:22     .rodata:00000000 rreg_uriquery
+     /tmp/cc4QghNY.s:27     .rodata:00000008 infoBoardname
+     /tmp/cc4QghNY.s:32     .rodata:00000010 infouCName
+     /tmp/cc4QghNY.s:37     .rodata:00000018 infoRadioName
+     /tmp/cc4QghNY.s:42     .rodata:00000024 infoStackName
+     /tmp/cc4QghNY.s:45     .text:00000000 $t
+     /tmp/cc4QghNY.s:50     .text:00000000 openbridge_init
+     /tmp/cc4QghNY.s:77     .text:0000000c openbridge_triggerData
+     /tmp/cc4QghNY.s:219    .text:00000134 openbridge_sendDone
+     /tmp/cc4QghNY.s:270    .text:00000174 openbridge_receive
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5

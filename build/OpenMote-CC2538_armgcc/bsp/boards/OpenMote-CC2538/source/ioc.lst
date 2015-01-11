@@ -1974,20 +1974,20 @@
  1127              		.file 2 "/opt/gcc-arm-none-eabi-4_7-2013q3/bin/../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none
 DEFINED SYMBOLS
                             *ABS*:00000000 ioc.c
-     /tmp/cc5JqPgT.s:19     .rodata:00000000 $d
-     /tmp/cc5JqPgT.s:22     .rodata:00000000 g_pui32IOCPortAOverrideReg
-     /tmp/cc5JqPgT.s:34     .rodata:00000020 g_pui32IOCPortBOverrideReg
-     /tmp/cc5JqPgT.s:46     .rodata:00000040 g_pui32IOCPortCOverrideReg
-     /tmp/cc5JqPgT.s:58     .rodata:00000060 g_pui32IOCPortDOverrideReg
-     /tmp/cc5JqPgT.s:70     .rodata:00000080 g_pui32IOCPortASignSelectReg
-     /tmp/cc5JqPgT.s:82     .rodata:000000a0 g_pui32IOCPortBSignSelectReg
-     /tmp/cc5JqPgT.s:94     .rodata:000000c0 g_pui32IOCPortCSignSelectReg
-     /tmp/cc5JqPgT.s:106    .rodata:000000e0 g_pui32IOCPortDSignSelectReg
-     /tmp/cc5JqPgT.s:116    .text:00000000 $t
-     /tmp/cc5JqPgT.s:121    .text:00000000 IOCPinConfigPeriphOutput
-     /tmp/cc5JqPgT.s:258    .text:000000e8 IOCPinConfigPeriphInput
-     /tmp/cc5JqPgT.s:610    .text:000002f0 IOCPadConfigSet
-     /tmp/cc5JqPgT.s:746    .text:000003d8 IOCPadConfigGet
+     /tmp/cc5rh7nz.s:19     .rodata:00000000 $d
+     /tmp/cc5rh7nz.s:22     .rodata:00000000 g_pui32IOCPortAOverrideReg
+     /tmp/cc5rh7nz.s:34     .rodata:00000020 g_pui32IOCPortBOverrideReg
+     /tmp/cc5rh7nz.s:46     .rodata:00000040 g_pui32IOCPortCOverrideReg
+     /tmp/cc5rh7nz.s:58     .rodata:00000060 g_pui32IOCPortDOverrideReg
+     /tmp/cc5rh7nz.s:70     .rodata:00000080 g_pui32IOCPortASignSelectReg
+     /tmp/cc5rh7nz.s:82     .rodata:000000a0 g_pui32IOCPortBSignSelectReg
+     /tmp/cc5rh7nz.s:94     .rodata:000000c0 g_pui32IOCPortCSignSelectReg
+     /tmp/cc5rh7nz.s:106    .rodata:000000e0 g_pui32IOCPortDSignSelectReg
+     /tmp/cc5rh7nz.s:116    .text:00000000 $t
+     /tmp/cc5rh7nz.s:121    .text:00000000 IOCPinConfigPeriphOutput
+     /tmp/cc5rh7nz.s:258    .text:000000e8 IOCPinConfigPeriphInput
+     /tmp/cc5rh7nz.s:610    .text:000002f0 IOCPadConfigSet
+     /tmp/cc5rh7nz.s:746    .text:000003d8 IOCPadConfigGet
                      .debug_frame:00000010 $d
                            .group:00000000 wm4.1.e96eee74da26538b12ac9582e3798382
                            .group:00000000 wm4.hw_gpio.h.39.abbe53cff9a4c1fb5f1c34960fe1e7aa
